@@ -1,0 +1,47 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5A_0_3_IMMUTABLE_TASK_COMPLETION_LEDGER_AND_DEPENDENCY_RESOLUTION",
+  "stage": "V0.5A-0.3",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5A_0_3_IMMUTABLE_TASK_COMPLETION_LEDGER_AND_DEPENDENCY_RESOLUTION.json",
+  "authorizationHash": "d8a60114aca66c08efa062d2e0fb5080372e203f97463441e8a4c07ed5ba152a",
+  "authorizationCommit": "a26eb5b3ac633fa6942b1136a25fcdd822f3d515",
+  "completionCommit": "ca0f019e2724f1e4ddc8fe6870c80e1c4487af8b",
+  "completedAt": "2026-06-21T14:27:58+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-21T14:28:50+08:00"
+}
