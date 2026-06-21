@@ -16,11 +16,13 @@ import {
   type V05ImportPlatformOption,
   type V05ImportStoreInput,
 } from "@/lib/v05/import";
+import type { ReimportContext } from "@/lib/v05/data-quality";
 import { saveTmallAnalysisResult } from "@/lib/storage/tmall-analysis-storage";
 import type { TmallSourceType } from "@/types/tmall";
 
 interface TmallBatchImportWorkbenchProps {
   idFactory?: () => string;
+  reimportContext?: ReimportContext | null;
 }
 
 type MessageTone = "success" | "error" | "info";
@@ -79,12 +81,13 @@ const sourceStatusLabel = (sourceType: TmallSourceType, detection: V05BatchDetec
 
 export function TmallBatchImportWorkbench({
   idFactory = createBrowserStoreId,
+  reimportContext = null,
 }: TmallBatchImportWorkbenchProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [stores, setStores] = useState<StoreRecord[]>([]);
   const [activeDatasetId, setActiveDatasetId] = useState<string | null>(null);
   const [selectedPlatform, setSelectedPlatform] = useState<V05ImportPlatformOption>(V05_IMPORT_PLATFORM_OPTIONS[0]!);
-  const [selectedStoreId, setSelectedStoreId] = useState("tmall-default-store");
+  const [selectedStoreId, setSelectedStoreId] = useState(reimportContext?.storeId ?? "tmall-default-store");
   const [pendingStore, setPendingStore] = useState<V05ImportStoreInput | null>(null);
   const [newStoreName, setNewStoreName] = useState("");
   const [detection, setDetection] = useState<V05BatchDetectionResult>(emptyDetection);
@@ -117,9 +120,15 @@ export function TmallBatchImportWorkbench({
         if (cancelled) return;
         setStores(context.stores);
         setActiveDatasetId(context.activeDatasetId);
+        if (reimportContext?.platformCode) {
+          const nextPlatform = V05_IMPORT_PLATFORM_OPTIONS.find(
+            (platform) => platform.platformCode === reimportContext.platformCode,
+          );
+          if (nextPlatform) setSelectedPlatform(nextPlatform);
+        }
         setSelectedStoreId((currentStoreId) =>
-          context.stores.some((store) => store.storeId === currentStoreId)
-            ? currentStoreId
+          context.stores.some((store) => store.storeId === (reimportContext?.storeId ?? currentStoreId))
+            ? reimportContext?.storeId ?? currentStoreId
             : context.stores[0]?.storeId ?? "tmall-default-store",
         );
       })
@@ -132,7 +141,7 @@ export function TmallBatchImportWorkbench({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [reimportContext]);
 
   const availableStores = useMemo(() => {
     if (!pendingStore) return stores;
@@ -265,6 +274,15 @@ export function TmallBatchImportWorkbench({
             Active V2：{activeDatasetId ? "已存在" : "暂无"}
           </div>
         </div>
+
+        {reimportContext ? (
+          <div className="mt-5 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm leading-6 text-blue-800">
+            本次重新导入会创建新批次，不会修改原批次。
+            <span className="ml-2 font-mono text-xs text-blue-700">
+              {reimportContext.sourceBatchId}
+            </span>
+          </div>
+        ) : null}
 
         <div className="mt-5 grid gap-4 xl:grid-cols-[1fr_1.2fr]">
           <div>
