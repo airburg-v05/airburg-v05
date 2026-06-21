@@ -9,7 +9,7 @@ const LOCK_PATH = "docs/project/v0.5-lock.json";
 const CURRENT_TASK_PATH = "docs/project/current-task.json";
 const FREEZE_DOC_PATH = "docs/releases/v0.5a-platform-store-data-foundation-freeze.md";
 const FINAL_COMPLETION_PATH =
-  "docs/project/task-completions/V0.5A_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json";
+  "docs/project/task-completions/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json";
 const NEXT_TASK_ID = "V0.5B_1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT";
 
 const REQUIRED_COMPLETION_TASKS = [
@@ -24,6 +24,32 @@ const REQUIRED_COMPLETION_TASKS = [
   "V0.5A_4_R1_INDEXEDDB_V2_PERSISTENCE_AND_ATOMIC_DEFAULT_STORE_ACTIVATION_ENGINE",
   "V0.5A_4_1_REAL_INDEXEDDB_ADAPTER_BROWSER_INTEGRATION_CLOSURE",
   "V0.5A_5_0_STAGE_AWARE_FREEZE_TRANSITION_GATE_FIX",
+] as const;
+
+const HISTORY_SCOPED_COMMANDS = [
+  {
+    taskId: "V0.5A_2_V2_DOMAIN_REPOSITORY_CONTRACTS_VALIDATORS_AND_MEMORY_ADAPTER",
+    command: "npx tsx scripts/private-audit/validate-v05a2-v2-domain-repositories.ts",
+  },
+  {
+    taskId: "V0.5A_3_LEGACY_SNAPSHOT_AND_DRY_RUN_MIGRATION",
+    command: "npx tsx scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts",
+  },
+  {
+    taskId: "V0.5A_3_1_DRY_RUN_IDENTITY_SOURCE_STATE_AND_REAL_FIXTURE_CLOSURE",
+    command: "npx tsx scripts/private-audit/validate-v05a31-dry-run-closure.ts",
+  },
+  {
+    taskId: "V0.5A_3_2_AFTER_SALES_SAFE_AGGREGATE_CONTRACT_AND_REAL_FIXTURE_READINESS",
+    command: "npx tsx scripts/private-audit/validate-v05a32-after-sales-safe-aggregate-readiness.ts",
+  },
+] as const;
+
+const TASK_SCOPED_COMMANDS_FORBIDDEN_IN_CURRENT_TASK = [
+  "npx tsx scripts/private-audit/validate-v05a2-v2-domain-repositories.ts",
+  "npx tsx scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts",
+  "npx tsx scripts/private-audit/validate-v05a31-dry-run-closure.ts",
+  "npx tsx scripts/private-audit/validate-v05a32-after-sales-safe-aggregate-readiness.ts",
 ] as const;
 
 const LEGACY_KEYS = [
@@ -42,8 +68,17 @@ const FORBIDDEN_PAGE_TOKENS = [
   "IndexedDB",
   "airburg_v05",
   "airburg-v05",
+  "airburg_storage_v2",
 ] as const;
 
+const FOUNDATION_PATHS = [
+  "lib/v05/domain",
+  "lib/v05/validation",
+  "lib/v05/repositories",
+  "lib/v05/migration",
+] as const;
+
+const PERSISTENCE_PATHS = ["lib/v05/persistence"] as const;
 const FORBIDDEN_CHANGED_PREFIXES = ["app/", "components/", "lib/", "types/"] as const;
 const FORBIDDEN_CHANGED_FILES: readonly string[] = ["package.json", "package-lock.json"];
 
@@ -121,7 +156,7 @@ interface CompletionRecord {
   authorizationCommit: string;
   completionCommit: string;
   completedAt: string;
-  requiredCommands: CommandResult[] | string[];
+  requiredCommands: string[];
   commandResults: CommandResult[];
   sourceTaskContractPath: "docs/project/current-task.json";
   registeredAt: string;
@@ -143,6 +178,8 @@ interface ReadinessGateOutput {
 interface BrowserIntegrationOutput {
   status: string;
   productionIndexResourceLoaded: boolean;
+  productionCompiledEntryHash: string;
+  browserLoadedProductionHash: string;
   prepareStatus: string;
   readbackStatus: string;
   activateStatus: string;
@@ -245,6 +282,20 @@ const changedFilesSince = (commit: string): string[] => {
   ).sort();
 };
 
+const changedFilesInPathsSince = (commit: string, paths: readonly string[]): string[] => {
+  const stdout = git([
+    "-c",
+    "core.quotepath=false",
+    "diff",
+    "--name-only",
+    commit,
+    "HEAD",
+    "--",
+    ...paths,
+  ]);
+  return stdout.split("\n").map((line) => line.trim()).filter(Boolean).sort();
+};
+
 const matchesPathPattern = (file: string, pattern: string): boolean => {
   if (file === pattern) return true;
   if (pattern.endsWith("/**")) return file.startsWith(pattern.slice(0, -3));
@@ -280,10 +331,16 @@ const fileUnchangedFromFirstCommit = (relativePath: string): boolean => {
     readFile(relativePath).replace(/\r\n/g, "\n").trimEnd();
 };
 
+const readCompletionRecord = (taskId: string): CompletionRecord | null => {
+  const recordPath = `docs/project/task-completions/${taskId}.json`;
+  if (!fileExists(recordPath)) return null;
+  return readJson<CompletionRecord>(recordPath);
+};
+
 const completionRecordValid = (taskId: string): boolean => {
   const recordPath = `docs/project/task-completions/${taskId}.json`;
-  if (!fileExists(recordPath)) return false;
-  const record = readJson<CompletionRecord>(recordPath);
+  const record = readCompletionRecord(taskId);
+  if (!record) return false;
   if (record.taskId !== taskId || record.status !== "complete") return false;
   if (!fileUnchangedFromFirstCommit(recordPath)) return false;
   try {
@@ -291,10 +348,20 @@ const completionRecordValid = (taskId: string): boolean => {
     if (calculateAuthorizationHash(authorizationAtCommit) !== record.authorizationHash) return false;
     const completionTask = JSON.parse(readFileAtCommit(record.completionCommit, record.sourceTaskContractPath)) as CurrentTask;
     if (completionTask.taskId !== taskId || completionTask.status !== "complete") return false;
-    return record.commandResults.every((result) => result.status === "PASS");
+    if (!git(["merge-base", "--is-ancestor", record.authorizationCommit, record.completionCommit]).includes("")) {
+      return false;
+    }
+    return record.requiredCommands.every((command) =>
+      record.commandResults.some((result) => result.command === command && result.status === "PASS"),
+    );
   } catch {
     return false;
   }
+};
+
+const historyCommandPassesFromCompletion = (taskId: string, command: string): boolean => {
+  const record = readCompletionRecord(taskId);
+  return Boolean(record?.commandResults.some((result) => result.command === command && result.status === "PASS"));
 };
 
 const sourceFilesContainAny = (relativeDirs: readonly string[], tokens: readonly string[]): string[] =>
@@ -313,6 +380,20 @@ const changedFileForbidden = (file: string): boolean =>
   FORBIDDEN_CHANGED_PREFIXES.some((prefix) => file.startsWith(prefix)) ||
   FORBIDDEN_CHANGED_FILES.includes(file);
 
+const findBlockedTaskEvidence = (taskId: string): string | null => {
+  const commits = git(["log", "--format=%H", "--", CURRENT_TASK_PATH])
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  for (const commit of commits) {
+    try {
+      const task = JSON.parse(readFileAtCommit(commit, CURRENT_TASK_PATH)) as CurrentTask;
+      if (task.taskId === taskId && task.status === "blocked") return commit;
+    } catch {}
+  }
+  return null;
+};
+
 const main = () => {
   const lock = readJson<GovernanceLock>(LOCK_PATH);
   const task = readJson<CurrentTask>(CURRENT_TASK_PATH);
@@ -327,6 +408,14 @@ const main = () => {
   const decisionRegister = fileExists("docs/decisions/V05A_MIGRATION_DECISION_REGISTER.md")
     ? readFile("docs/decisions/V05A_MIGRATION_DECISION_REGISTER.md")
     : "";
+  const a32Record = readCompletionRecord("V0.5A_3_2_AFTER_SALES_SAFE_AGGREGATE_CONTRACT_AND_REAL_FIXTURE_READINESS");
+  const a41Record = readCompletionRecord("V0.5A_4_1_REAL_INDEXEDDB_ADAPTER_BROWSER_INTEGRATION_CLOSURE");
+  const foundationChangesAfterA32 = a32Record
+    ? changedFilesInPathsSince(a32Record.completionCommit, FOUNDATION_PATHS)
+    : ["missing-a32-completion-record"];
+  const persistenceChangesAfterA41 = a41Record
+    ? changedFilesInPathsSince(a41Record.completionCommit, PERSISTENCE_PATHS)
+    : ["missing-a41-completion-record"];
 
   const readinessGate = runJsonCommand<ReadinessGateOutput>("npx", [
     "tsx",
@@ -353,25 +442,39 @@ const main = () => {
   const allHistoricalAuthorizationsImmutable = authorizationFiles.every(fileUnchangedFromFirstCommit);
   const blockedA4EvidenceExists =
     fileExists("docs/project/task-authorizations/V0.5A_4_INDEXEDDB_V2_PERSISTENCE_AND_ATOMIC_DEFAULT_STORE_ACTIVATION_ENGINE.json") &&
-    !fileExists("docs/project/task-completions/V0.5A_4_INDEXEDDB_V2_PERSISTENCE_AND_ATOMIC_DEFAULT_STORE_ACTIVATION_ENGINE.json");
+    !fileExists("docs/project/task-completions/V0.5A_4_INDEXEDDB_V2_PERSISTENCE_AND_ATOMIC_DEFAULT_STORE_ACTIVATION_ENGINE.json") &&
+    Boolean(findBlockedTaskEvidence("V0.5A_4_INDEXEDDB_V2_PERSISTENCE_AND_ATOMIC_DEFAULT_STORE_ACTIVATION_ENGINE"));
   const blockedA5PolicyEvidenceExists =
     fileExists("scripts/private-audit/validate-v05-stage-freeze-transition.ts") &&
     readFile("scripts/private-audit/validate-v05-stage-freeze-transition.ts").includes("old blocked A-5 does not satisfy transition") &&
     readFile("scripts/private-audit/validate-v05-stage-freeze-transition.ts").includes("V0.5A_5_FINAL_REGRESSION_AND_STAGE_FREEZE");
+  const blockedR1EvidenceExists =
+    fileExists("docs/project/task-authorizations/V0.5A_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json") &&
+    !fileExists("docs/project/task-completions/V0.5A_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json") &&
+    Boolean(findBlockedTaskEvidence("V0.5A_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE"));
 
   const requiredCompletions = Object.fromEntries(
     REQUIRED_COMPLETION_TASKS.map((taskId) => [taskId, completionRecordValid(taskId)]),
   );
   const allRequiredCompletionsValid = Object.values(requiredCompletions).every(Boolean);
+  const historicalScriptEvidence = Object.fromEntries(
+    HISTORY_SCOPED_COMMANDS.map(({ taskId, command }) => [
+      command,
+      historyCommandPassesFromCompletion(taskId, command),
+    ]),
+  );
+  const historicalScriptEvidencePass = Object.values(historicalScriptEvidence).every(Boolean);
+  const currentTaskDoesNotRequireHistoryScopedCommands =
+    !TASK_SCOPED_COMMANDS_FORBIDDEN_IN_CURRENT_TASK.some((command) =>
+      task.requiredCommands.includes(command),
+    );
   const legacyKeyPolicyPresent = LEGACY_KEYS.every((key) =>
     decisionRegister.includes(key) && freezeDoc.includes(key),
   );
   const legacyPreservePolicyPresent =
-    decisionRegister.includes("not auto-delete any legacy key") ||
-    decisionRegister.includes("remain in place") ||
     decisionRegister.includes("Legacy keys are preserved and never cleared by migration") ||
     freezeDoc.includes("不自动删除、覆盖或清空任何 legacy key") ||
-    freezeDoc.includes("不得自动清空");
+    freezeDoc.includes("五个旧 key 全部保留");
   const readinessPass =
     readinessGate.status === "PASS" &&
     readinessGate.realFixtureStatus === "ready" &&
@@ -385,6 +488,8 @@ const main = () => {
   const browserIntegrationPass =
     browserIntegration.status === "PASS" &&
     browserIntegration.productionIndexResourceLoaded === true &&
+    browserIntegration.productionCompiledEntryHash.length > 0 &&
+    browserIntegration.browserLoadedProductionHash === browserIntegration.productionCompiledEntryHash &&
     browserIntegration.prepareStatus === "prepared" &&
     browserIntegration.readbackStatus === "readback_validated" &&
     browserIntegration.activateStatus === "activated" &&
@@ -409,9 +514,20 @@ const main = () => {
     browserIntegration.missingModulePaths.length === 0;
 
   addCheck("all V0.5A completion records valid", allRequiredCompletionsValid, requiredCompletions);
+  addCheck("historical task-scoped scripts proven by immutable completion records", historicalScriptEvidencePass, historicalScriptEvidence);
+  addCheck("current task does not require historical task-scoped scripts", currentTaskDoesNotRequireHistoryScopedCommands);
   addCheck("all historical authorizations immutable", allHistoricalAuthorizationsImmutable, authorizationFiles);
   addCheck("old blocked A-4 evidence exists", blockedA4EvidenceExists);
   addCheck("old blocked A-5 policy evidence exists", blockedA5PolicyEvidenceExists);
+  addCheck("old blocked R1 evidence exists", blockedR1EvidenceExists);
+  addCheck("foundation code unchanged after A-3.2 completion", foundationChangesAfterA32.length === 0, {
+    checkpoint: a32Record?.completionCommit ?? null,
+    changedFiles: foundationChangesAfterA32,
+  });
+  addCheck("persistence code unchanged after A-4.1 completion", persistenceChangesAfterA41.length === 0, {
+    checkpoint: a41Record?.completionCommit ?? null,
+    changedFiles: persistenceChangesAfterA41,
+  });
   addCheck("readiness gate PASS", readinessPass, {
     realFixtureStatus: readinessGate.realFixtureStatus,
     futureActivationEligible: readinessGate.futureActivationEligible,
@@ -428,7 +544,7 @@ const main = () => {
   });
   addCheck("legacy key policy present", legacyKeyPolicyPresent && legacyPreservePolicyPresent);
   addCheck("privacy and number safety PASS", readinessPass && browserIntegrationPass);
-  addCheck("pages do not import V0.5 runtime", pageForbiddenTokenMatches.length === 0, pageForbiddenTokenMatches);
+  addCheck("pages do not import V0.5 runtime or direct V2 IndexedDB", pageForbiddenTokenMatches.length === 0, pageForbiddenTokenMatches);
   addCheck("automatic migration not enabled", pageForbiddenTokenMatches.length === 0);
   addCheck("V0.5A pending to complete legal", stageTransition.transitionValid, stageTransition);
   addCheck("V0.5A is complete", lock.stageStatuses["V0.5A"] === "complete");
@@ -476,6 +592,16 @@ const main = () => {
     currentV05AStatus: lock.stageStatuses["V0.5A"],
     currentV05BStatus: lock.stageStatuses["V0.5B"],
     stageTransition,
+    completionRecordEvidence: requiredCompletions,
+    historicalTaskScopedScriptEvidence: historicalScriptEvidence,
+    foundationCheckpoint: {
+      completionCommit: a32Record?.completionCommit ?? null,
+      changedFiles: foundationChangesAfterA32,
+    },
+    persistenceCheckpoint: {
+      completionCommit: a41Record?.completionCommit ?? null,
+      changedFiles: persistenceChangesAfterA41,
+    },
     readinessGate: {
       status: readinessGate.status,
       realFixtureStatus: readinessGate.realFixtureStatus,
@@ -485,6 +611,7 @@ const main = () => {
     },
     productionAdapterBrowserIntegration: {
       status: browserIntegration.status,
+      productionHashMatched: browserIntegration.browserLoadedProductionHash === browserIntegration.productionCompiledEntryHash,
       prepareStatus: browserIntegration.prepareStatus,
       readbackStatus: browserIntegration.readbackStatus,
       activateStatus: browserIntegration.activateStatus,

@@ -1,7 +1,7 @@
 {
   "currentVersion": "V0.5A-0.3",
   "lockName": "PROJECT_GOVERNANCE_AND_ARCHITECTURE_LOCK",
-  "lastContractUpdatedAt": "2026-06-21T14:14:54+08:00",
+  "lastContractUpdatedAt": "2026-06-22T02:12:00+08:00",
   "governanceEnforcementVersion": "V0.5A-0.3",
   "currentGovernanceStage": "V0.5A-0.3",
   "gitBaselineRequired": true,
@@ -26,7 +26,6 @@
     "AI",
     "backend API",
     "server database",
-    "IndexedDB",
     "platform API",
     "crawler"
   ],
@@ -102,7 +101,7 @@
       "dependsOn": [
         "V0.5A-0"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "V0.5B",
@@ -237,12 +236,15 @@
     "V0.5A-0": "complete",
     "V0.5A-0.1": "complete",
     "V0.5A-0.2": "complete",
-    "V0.5A": "pending",
+    "V0.5A": "complete",
     "V0.5B": "pending",
     "V0.5C": "pending",
     "V0.5D": "pending",
     "V0.5E": "pending",
     "V0.5F": "pending",
     "V0.5G": "pending"
-  }
+  },
+  "v05aCompletedAt": "2026-06-22T02:12:00+08:00",
+  "v05aFreezeDocument": "docs/releases/v0.5a-platform-store-data-foundation-freeze.md",
+  "v05aFinalCompletionRecord": "docs/project/task-completions/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
 }

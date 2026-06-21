@@ -1,12 +1,13 @@
 {
-  "taskId": "V0.5A_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE",
-  "stage": "V0.5A-5-R1",
+  "taskId": "V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE",
+  "stage": "V0.5A-5-R2",
   "dependsOn": [
-    "V0.5A_5_0_STAGE_AWARE_FREEZE_TRANSITION_GATE_FIX"
+    "V0.5A_5_0_STAGE_AWARE_FREEZE_TRANSITION_GATE_FIX",
+    "V0.5A_4_1_REAL_INDEXEDDB_ADAPTER_BROWSER_INTEGRATION_CLOSURE"
   ],
-  "baselineCommit": "51d3d19e77d3bc27766a35def53247d2b73b6c9a",
-  "authorizationFile": "docs/project/task-authorizations/V0.5A_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-  "authorizationHash": "de7d89b44bade50246dea20cbe3e36f8560f7be2d3c9437ad0572e8ff8ecd2c5",
+  "baselineCommit": "824048d1c23c08c60618cc35645d74d72bfa8ea6",
+  "authorizationFile": "docs/project/task-authorizations/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "authorizationHash": "5f45905e25843e813f1c6db932cdaf1417529fe13160766d9b7e5499d49c566e",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
   "governanceContractHash": "efba9a1b641890faa112752fefc9d2497716cd465a5d7f74dd4218de7a865605",
   "requiredDocuments": [
@@ -23,6 +24,7 @@
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
     "docs/project/task-completions/V0.5A_5_0_STAGE_AWARE_FREEZE_TRANSITION_GATE_FIX.json",
+    "docs/project/task-completions/V0.5A_4_1_REAL_INDEXEDDB_ADAPTER_BROWSER_INTEGRATION_CLOSURE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
@@ -36,8 +38,8 @@
     "docs/project/v0.5-lock.json",
     "scripts/private-audit/validate-v05a-final-regression-and-freeze.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5A_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5A_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
+    "docs/project/task-authorizations/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-completions/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
   ],
   "forbiddenModifyPaths": [
     "app/**",
@@ -58,6 +60,8 @@
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/task-authorizations/V0.5A_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "docs/project/task-completions/V0.5A_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-authorizations/V0.5A_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-completions/V0.5A_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "docs/project/task-authorizations/V0.5A_5_0_STAGE_AWARE_FREEZE_TRANSITION_GATE_FIX.json",
     "docs/project/task-authorizations/V0.5A_5_0_STAGE_AWARE_FREEZE_TRANSITION_GATE_FIX_R1.json",
     "docs/project/task-completions/V0.5A_5_0_STAGE_AWARE_FREEZE_TRANSITION_GATE_FIX.json",
@@ -73,8 +77,8 @@
     "scripts/private-audit/validate-v05a2-v2-domain-repositories.ts",
     "scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts",
     "scripts/private-audit/validate-v05a31-dry-run-closure.ts",
+    "scripts/private-audit/validate-v05a32-after-sales-safe-aggregate-readiness.ts",
     "scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-    "scripts/private-audit/validate-v05a4r1-indexeddb-atomic-activation.ts",
     "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
   ],
   "requiredCommands": [
@@ -83,11 +87,7 @@
     "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
     "npx tsx scripts/private-audit/validate-v05-stage-freeze-transition.ts",
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
-    "npx tsx scripts/private-audit/validate-v05a2-v2-domain-repositories.ts",
-    "npx tsx scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts",
-    "npx tsx scripts/private-audit/validate-v05a31-dry-run-closure.ts",
     "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-    "npx tsx scripts/private-audit/validate-v05a4r1-indexeddb-atomic-activation.ts",
     "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
     "npx tsx scripts/private-audit/validate-v05a-final-regression-and-freeze.ts",
     "npm run lint",
@@ -116,23 +116,7 @@
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05a2-v2-domain-repositories.ts",
-      "status": "FAIL"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts",
-      "status": "FAIL"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05a31-dry-run-closure.ts",
-      "status": "FAIL"
-    },
-    {
       "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05a4r1-indexeddb-atomic-activation.ts",
       "status": "PASS"
     },
     {
@@ -153,25 +137,27 @@
     },
     {
       "command": "browser full page regression",
-      "status": "FAIL"
+      "status": "PASS"
     }
   ],
   "stopConditions": [
-    "A-5.0 dependency is not satisfied by an immutable task completion record.",
+    "A-5.0 or A-4.1 dependency is not satisfied by an immutable task completion record.",
     "PRE-FLIGHT does not pass before editing freeze materials.",
     "The baseline V0.5A stage status is not pending.",
+    "The current V0.5A stage status is not pending before the lock update.",
     "The final stage transition cannot be validated as pending to complete.",
-    "The old blocked A-4 or A-5 evidence would need to be modified or fabricated.",
-    "A business page, component, storage module, Tmall parser, V0.5 domain module, target diagnostic module, package file, private sample, ADR, architecture contract, migration decision, historical authorization, or historical completion record would need modification.",
+    "The old blocked A-4, A-5, or A-5-R1 evidence would need to be modified or fabricated.",
+    "A business page, component, lib module, type file, package file, private sample, product document, architecture contract, ADR, migration decision, historical authorization, historical completion record, or historical task-scoped validation script would need modification.",
+    "A historical task-scoped script would need to be reclassified as a current reusable gate.",
     "The real fixture readiness gate is not ready and eligible.",
     "The production IndexedDB adapter browser integration regression fails.",
     "Legacy keys would need to be cleared, overwritten, or hidden to pass.",
-    "Runtime pages would need to import lib/v05 or auto-run migration.",
+    "Runtime pages would need to import lib/v05, directly access V2 IndexedDB, or auto-run migration.",
     "Privacy or numeric safety checks fail.",
     "lint or build fails.",
     "The working tree contains unexplained out-of-scope changes."
   ],
-  "startedAt": "2026-06-22T01:09:00+08:00",
-  "completedAt": null,
-  "status": "blocked"
+  "startedAt": "2026-06-22T02:04:00+08:00",
+  "completedAt": "2026-06-22T02:38:00+08:00",
+  "status": "complete"
 }
