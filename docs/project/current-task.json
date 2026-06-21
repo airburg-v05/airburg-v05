@@ -1,12 +1,12 @@
 {
-  "taskId": "V0.5B_1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT",
-  "stage": "V0.5B-1",
+  "taskId": "V0.5B_1_R1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT",
+  "stage": "V0.5B-1-R1",
   "dependsOn": [
     "V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE"
   ],
-  "baselineCommit": "cdad4fe72738b7f0fd1c0069cdfbc504d6720a2c",
-  "authorizationFile": "docs/project/task-authorizations/V0.5B_1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
-  "authorizationHash": "23fbcb2d8bcb898605c080c05d99d28e23f93b884343f7e1779425dfc3556d69",
+  "baselineCommit": "7bec84b8f81c95d921863fef226ba8de29ecb9ab",
+  "authorizationFile": "docs/project/task-authorizations/V0.5B_1_R1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
+  "authorizationHash": "82bb31a3b90df02550bfe7c6cfa07d3b6fdc886488dac092580d713f27fdb162",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
   "governanceContractHash": "ada25bae453aa0ad1f3a8807aaf0349aa696d827d2d3152940b120239c80c008",
   "requiredDocuments": [
@@ -27,7 +27,6 @@
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
-    "scripts/private-audit/validate-v05-stage-freeze-transition.ts",
     "scripts/private-audit/validate-v05-governance-lock.ts",
     "scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
@@ -40,8 +39,8 @@
     "scripts/private-audit/validate-v05b1-platform-store-batch-import.ts",
     "scripts/private-audit/validate-v05b1-upload-page-ui.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5B_1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
-    "docs/project/task-completions/V0.5B_1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json"
+    "docs/project/task-authorizations/V0.5B_1_R1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
+    "docs/project/task-completions/V0.5B_1_R1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json"
   ],
   "forbiddenModifyPaths": [
     "app/(workspace)/home/**",
@@ -77,6 +76,7 @@
     "docs/decisions/**",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
+    "docs/project/task-authorizations/V0.5B_1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
     "docs/project/task-authorizations/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "docs/project/task-completions/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
@@ -91,7 +91,6 @@
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
     "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
-    "npx tsx scripts/private-audit/validate-v05-stage-freeze-transition.ts",
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
     "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
@@ -99,7 +98,7 @@
     "npx tsx scripts/private-audit/validate-v05b1-upload-page-ui.ts",
     "npm run lint",
     "npm run build",
-    "Chrome browser full acceptance"
+    "Chrome full browser acceptance"
   ],
   "commandResults": [
     {
@@ -115,8 +114,36 @@
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05-stage-freeze-transition.ts",
-      "status": "FAIL"
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05b1-platform-store-batch-import.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05b1-upload-page-ui.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    },
+    {
+      "command": "Chrome full browser acceptance",
+      "status": "PASS"
     }
   ],
   "stopConditions": [
@@ -125,18 +152,20 @@
     "Git root is not the ecommerce-platform-optimized repository.",
     "The working tree is not clean before starting implementation.",
     "V0.5A is not complete or V0.5B is not pending.",
+    "The old blocked B1 authorization commit 1d4cba3 or blocked commit 7bec84b would need modification.",
+    "The implementation would need to run validate-v05-stage-freeze-transition.ts as a B1-R1 gate.",
     "The production IndexedDB adapter browser integration or real fixture readiness gate fails.",
     "The implementation would need to modify V0.5A frozen domain, validation, repository, migration, or persistence code.",
     "The implementation would need to modify home, store-board, series-board, product-board, targets, raw-data, storage, Tmall bottom logic, package files, private samples, or fixed governance documents.",
     "The upload page cannot support platform/store ownership without touching forbidden files.",
     "The import flow cannot preserve legacy keys and other store data.",
     "The import flow would need to infer store from file name, store file names in V2, store raw rows, store preview rows, or expose after-sales sensitive details.",
-    "The browser acceptance would need to touch production audit-forbidden database cleanup outside the isolated audit database.",
+    "The browser acceptance would need to touch production database cleanup outside the isolated audit database.",
     "Privacy or numeric safety checks fail.",
     "lint or build fails.",
     "The working tree contains unexplained out-of-scope changes."
   ],
-  "startedAt": "2026-06-22T01:54:00+08:00",
-  "completedAt": null,
-  "status": "blocked"
+  "startedAt": "2026-06-22T02:04:00+08:00",
+  "completedAt": "2026-06-22T02:38:16+08:00",
+  "status": "complete"
 }
