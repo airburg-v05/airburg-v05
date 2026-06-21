@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "v0.5a-indexeddb-schema-v1",
+  "productionDatabaseName": "airburg-v05",
+  "auditDatabaseName": "airburg-v05-a4r1-audit",
+  "databaseVersion": 1,
+  "envelopeVersion": "v2_record_envelope_v1",
+  "objectStores": [
+    { "name": "metadata", "keyPath": "key", "indexes": ["value.datasetId", "value.state"] },
+    { "name": "datasetMetadata", "keyPath": "datasetId", "indexes": ["status", "manifestId"] },
+    { "name": "platforms", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "stores", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "importBatches", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "importFiles", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "businessProductFacts", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "adProductFacts", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "adPlanFacts", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "afterSalesDailyAggregates", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "afterSalesRangeAggregates", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "afterSalesOperationalSnapshots", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "afterSalesDistributionItems", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "series", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "trackedProducts", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "targets", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "legacyTargetCandidates", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "migrationManifests", "keyPath": "id", "indexes": ["datasetId", "recordKey", "platformCode", "storeId", "businessDate"] },
+    { "name": "activationJournal", "keyPath": "journalId", "indexes": ["datasetId", "action", "createdAt"] }
+  ],
+  "forbidden": {
+    "productionDatabaseInValidation": true,
+    "legacyKeyDeletion": true,
+    "rawRows": true,
+    "previewRows": true,
+    "fileName": true,
+    "afterSalesSensitiveDetails": true,
+    "thirdPartyIndexedDbLibrary": true
+  }
+}
