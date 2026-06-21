@@ -1,0 +1,60 @@
+{
+  "taskId": "V0.5A_0_2_IMMUTABLE_TASK_AUTHORIZATION_SEAL",
+  "stage": "V0.5A-0.2",
+  "dependsOn": [
+    "V0.5A-0.1"
+  ],
+  "governanceContractHash": "a7ee800da05e5d563c2dd9780c44d939e11d0d184a25675d4c497c18d8d1c764",
+  "requiredDocuments": [
+    "AGENTS.md",
+    "docs/product/V05_PRODUCT_NORTH_STAR.md",
+    "docs/product/V05_INFORMATION_ARCHITECTURE.md",
+    "docs/architecture/V05_PLATFORM_STORE_DATA_CONTRACT.md",
+    "docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md",
+    "docs/design/V05_DESIGN_SYSTEM.md",
+    "docs/design/V05_REFERENCE_PLATFORM_MAP.md",
+    "docs/roadmap/V05_EXECUTION_SEQUENCE.md",
+    "docs/quality/V05_ACCEPTANCE_GATES.md",
+    "docs/decisions/ADR-001-platform-and-store-ownership.md",
+    "docs/project/V05_TASK_CONTRACT.md",
+    "docs/project/v0.5-lock.json"
+  ],
+  "allowedModifyPaths": [
+    "AGENTS.md",
+    ".gitignore",
+    "docs/quality/V05_ACCEPTANCE_GATES.md",
+    "docs/project/V05_TASK_CONTRACT.md",
+    "docs/project/current-task.json",
+    "docs/project/v0.5-lock.json",
+    "scripts/private-audit/validate-v05-governance-lock.ts",
+    "scripts/private-audit/validate-v05-task-authorization.ts",
+    "scripts/private-audit/validate-v05-task-preflight.ts"
+  ],
+  "forbiddenModifyPaths": [
+    "app/**",
+    "components/**",
+    "lib/**",
+    "types/**",
+    "package.json",
+    "package-lock.json",
+    "private-samples/**"
+  ],
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "stopConditions": [
+    "Cannot determine the first commit that added the authorization file.",
+    "Authorization commit is not an ancestor of HEAD.",
+    "Current task has unexplained business file modifications.",
+    "Authorization contract conflicts with governance contract.",
+    "A forbidden business file must be modified.",
+    "Cannot prevent current-task self-escalation.",
+    "Destructive authorization tests would pollute the repository worktree."
+  ],
+  "authorizedAt": "2026-06-21T13:19:49+08:00",
+  "contractVersion": "v0.5-task-authorization-v1"
+}
