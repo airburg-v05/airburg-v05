@@ -1,0 +1,122 @@
+{
+  "currentVersion": "V0.5A-0",
+  "lockName": "PROJECT_GOVERNANCE_AND_ARCHITECTURE_LOCK",
+  "lastContractUpdatedAt": "2026-06-21T00:00:00+08:00",
+  "multiPlatform": true,
+  "multiStore": true,
+  "storeOwnershipRequired": true,
+  "legacyMigrationRequired": true,
+  "currentStageDoesNotImplement": ["AI", "backend API", "database", "platform API", "crawler"],
+  "platforms": ["tmall", "jd", "pdd", "douyin", "youzan"],
+  "dataOwnershipRequiredFields": [
+    "platformCode",
+    "storeId",
+    "businessDate",
+    "sourceType",
+    "importBatchId"
+  ],
+  "privacy": {
+    "afterSalesSafeAggregatesOnly": true,
+    "forbidSensitiveAfterSalesDetails": true,
+    "forbiddenOutput": [
+      "order identifiers",
+      "refund identifiers",
+      "transaction identifiers",
+      "contact details",
+      "addresses",
+      "logistics details",
+      "buyer explanations",
+      "seller notes",
+      "operators",
+      "subaccounts",
+      "raw rows",
+      "preview rows"
+    ]
+  },
+  "freezeRules": [
+    "Do not change product direction without explicit user approval.",
+    "Do not expand scope beyond the current V0.5 stage.",
+    "If contracts conflict, output BLOCKED.",
+    "Do not clear legacy data to avoid migration.",
+    "Do not add AI, backend, database, platform API, or crawler work in V0.5A-0."
+  ],
+  "executionSequence": [
+    {
+      "id": "V0.5A",
+      "name": "Platform, store, and data ownership model",
+      "dependsOn": ["V0.5A-0"],
+      "status": "pending"
+    },
+    {
+      "id": "V0.5B",
+      "name": "Batch import and automatic analysis",
+      "dependsOn": ["V0.5A"],
+      "status": "pending"
+    },
+    {
+      "id": "V0.5C",
+      "name": "Home relayout",
+      "dependsOn": ["V0.5B"],
+      "status": "pending"
+    },
+    {
+      "id": "V0.5D",
+      "name": "Multi-store boards",
+      "dependsOn": ["V0.5C"],
+      "status": "pending"
+    },
+    {
+      "id": "V0.5E",
+      "name": "Series and tracked product custom management",
+      "dependsOn": ["V0.5D"],
+      "status": "pending"
+    },
+    {
+      "id": "V0.5F",
+      "name": "Target allocation and target drawer",
+      "dependsOn": ["V0.5E"],
+      "status": "pending"
+    },
+    {
+      "id": "V0.5G",
+      "name": "Full visual closure and final regression",
+      "dependsOn": ["V0.5F"],
+      "status": "pending"
+    }
+  ],
+  "forbiddenModifyPaths": [
+    "app/**",
+    "components/**",
+    "lib/storage/**",
+    "lib/tmall/parsers/**",
+    "lib/tmall/pipeline/**",
+    "lib/tmall/view-models/**",
+    "types/**",
+    "package.json",
+    "package-lock.json"
+  ],
+  "allowedInThisTask": [
+    "AGENTS.md",
+    "docs/product/V05_PRODUCT_NORTH_STAR.md",
+    "docs/product/V05_INFORMATION_ARCHITECTURE.md",
+    "docs/architecture/V05_PLATFORM_STORE_DATA_CONTRACT.md",
+    "docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md",
+    "docs/design/V05_DESIGN_SYSTEM.md",
+    "docs/design/V05_REFERENCE_PLATFORM_MAP.md",
+    "docs/roadmap/V05_EXECUTION_SEQUENCE.md",
+    "docs/quality/V05_ACCEPTANCE_GATES.md",
+    "docs/decisions/ADR-001-platform-and-store-ownership.md",
+    "docs/project/v0.5-lock.json",
+    "scripts/private-audit/validate-v05-governance-lock.ts"
+  ],
+  "stageStatuses": {
+    "V0.5A-0": "complete",
+    "V0.5A": "pending",
+    "V0.5B": "pending",
+    "V0.5C": "pending",
+    "V0.5D": "pending",
+    "V0.5E": "pending",
+    "V0.5F": "pending",
+    "V0.5G": "pending"
+  }
+}
