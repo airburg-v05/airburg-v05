@@ -1,15 +1,14 @@
 {
-  "taskId": "V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE",
-  "stage": "V0.5A-5-R2",
+  "taskId": "V0.5B_1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT",
+  "stage": "V0.5B-1",
   "dependsOn": [
-    "V0.5A_5_0_STAGE_AWARE_FREEZE_TRANSITION_GATE_FIX",
-    "V0.5A_4_1_REAL_INDEXEDDB_ADAPTER_BROWSER_INTEGRATION_CLOSURE"
+    "V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE"
   ],
-  "baselineCommit": "824048d1c23c08c60618cc35645d74d72bfa8ea6",
-  "authorizationFile": "docs/project/task-authorizations/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-  "authorizationHash": "5f45905e25843e813f1c6db932cdaf1417529fe13160766d9b7e5499d49c566e",
+  "baselineCommit": "cdad4fe72738b7f0fd1c0069cdfbc504d6720a2c",
+  "authorizationFile": "docs/project/task-authorizations/V0.5B_1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
+  "authorizationHash": "23fbcb2d8bcb898605c080c05d99d28e23f93b884343f7e1779425dfc3556d69",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
-  "governanceContractHash": "efba9a1b641890faa112752fefc9d2497716cd465a5d7f74dd4218de7a865605",
+  "governanceContractHash": "ada25bae453aa0ad1f3a8807aaf0349aa696d827d2d3152940b120239c80c008",
   "requiredDocuments": [
     "AGENTS.md",
     "docs/product/V05_PRODUCT_NORTH_STAR.md",
@@ -23,8 +22,8 @@
     "docs/decisions/ADR-001-platform-and-store-ownership.md",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
-    "docs/project/task-completions/V0.5A_5_0_STAGE_AWARE_FREEZE_TRANSITION_GATE_FIX.json",
-    "docs/project/task-completions/V0.5A_4_1_REAL_INDEXEDDB_ADAPTER_BROWSER_INTEGRATION_CLOSURE.json",
+    "docs/project/task-completions/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/releases/v0.5a-platform-store-data-foundation-freeze.md",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
@@ -34,21 +33,41 @@
     "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
   ],
   "allowedModifyPaths": [
-    "docs/releases/v0.5a-platform-store-data-foundation-freeze.md",
-    "docs/project/v0.5-lock.json",
-    "scripts/private-audit/validate-v05a-final-regression-and-freeze.ts",
+    "app/(workspace)/upload/page.tsx",
+    "components/upload/batch-import/**",
+    "lib/v05/import/**",
+    "lib/v05/index.ts",
+    "scripts/private-audit/validate-v05b1-platform-store-batch-import.ts",
+    "scripts/private-audit/validate-v05b1-upload-page-ui.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
+    "docs/project/task-authorizations/V0.5B_1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
+    "docs/project/task-completions/V0.5B_1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json"
   ],
   "forbiddenModifyPaths": [
-    "app/**",
-    "components/**",
-    "lib/**",
+    "app/(workspace)/home/**",
+    "app/(workspace)/store-board/**",
+    "app/(workspace)/series-board/**",
+    "app/(workspace)/product-board/**",
+    "app/(workspace)/targets/**",
+    "app/(workspace)/raw-data/**",
+    "components/home/**",
+    "components/store-board/**",
+    "components/series-board/**",
+    "components/product-board/**",
+    "components/upload/upload-data-quality-center.tsx",
+    "components/upload/upload-source-status-card.tsx",
+    "lib/storage/**",
+    "lib/tmall/**",
+    "lib/v05/domain/**",
+    "lib/v05/validation/**",
+    "lib/v05/repositories/**",
+    "lib/v05/migration/**",
+    "lib/v05/persistence/**",
     "types/**",
     "package.json",
     "package-lock.json",
     "private-samples/**",
+    "docs/releases/v0.5a-platform-store-data-foundation-freeze.md",
     "AGENTS.md",
     "docs/product/**",
     "docs/design/**",
@@ -56,28 +75,15 @@
     "docs/quality/**",
     "docs/architecture/**",
     "docs/decisions/**",
-    "docs/audits/**",
     "docs/project/V05_TASK_CONTRACT.md",
-    "docs/project/task-authorizations/V0.5A_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5A_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-authorizations/V0.5A_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5A_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-authorizations/V0.5A_5_0_STAGE_AWARE_FREEZE_TRANSITION_GATE_FIX.json",
-    "docs/project/task-authorizations/V0.5A_5_0_STAGE_AWARE_FREEZE_TRANSITION_GATE_FIX_R1.json",
-    "docs/project/task-completions/V0.5A_5_0_STAGE_AWARE_FREEZE_TRANSITION_GATE_FIX.json",
-    "docs/project/task-authorizations/V0.5A_4_1_REAL_INDEXEDDB_ADAPTER_BROWSER_INTEGRATION_CLOSURE.json",
-    "docs/project/task-completions/V0.5A_4_1_REAL_INDEXEDDB_ADAPTER_BROWSER_INTEGRATION_CLOSURE.json",
-    "docs/project/task-authorizations/V0.5A_4_R1_INDEXEDDB_V2_PERSISTENCE_AND_ATOMIC_DEFAULT_STORE_ACTIVATION_ENGINE.json",
-    "docs/project/task-completions/V0.5A_4_R1_INDEXEDDB_V2_PERSISTENCE_AND_ATOMIC_DEFAULT_STORE_ACTIVATION_ENGINE.json",
+    "docs/project/v0.5-lock.json",
+    "docs/project/task-authorizations/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-completions/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
     "scripts/private-audit/validate-v05-stage-freeze-transition.ts",
     "scripts/private-audit/validate-v05-governance-lock.ts",
-    "scripts/private-audit/validate-v05a2-v2-domain-repositories.ts",
-    "scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts",
-    "scripts/private-audit/validate-v05a31-dry-run-closure.ts",
-    "scripts/private-audit/validate-v05a32-after-sales-safe-aggregate-readiness.ts",
     "scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
   ],
@@ -89,10 +95,11 @@
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
     "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "npx tsx scripts/private-audit/validate-v05a-final-regression-and-freeze.ts",
+    "npx tsx scripts/private-audit/validate-v05b1-platform-store-batch-import.ts",
+    "npx tsx scripts/private-audit/validate-v05b1-upload-page-ui.ts",
     "npm run lint",
     "npm run build",
-    "browser full page regression"
+    "Chrome browser full acceptance"
   ],
   "commandResults": [
     {
@@ -109,55 +116,27 @@
     },
     {
       "command": "npx tsx scripts/private-audit/validate-v05-stage-freeze-transition.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05a-final-regression-and-freeze.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npm run lint",
-      "status": "PASS"
-    },
-    {
-      "command": "npm run build",
-      "status": "PASS"
-    },
-    {
-      "command": "browser full page regression",
-      "status": "PASS"
+      "status": "FAIL"
     }
   ],
   "stopConditions": [
-    "A-5.0 or A-4.1 dependency is not satisfied by an immutable task completion record.",
-    "PRE-FLIGHT does not pass before editing freeze materials.",
-    "The baseline V0.5A stage status is not pending.",
-    "The current V0.5A stage status is not pending before the lock update.",
-    "The final stage transition cannot be validated as pending to complete.",
-    "The old blocked A-4, A-5, or A-5-R1 evidence would need to be modified or fabricated.",
-    "A business page, component, lib module, type file, package file, private sample, product document, architecture contract, ADR, migration decision, historical authorization, historical completion record, or historical task-scoped validation script would need modification.",
-    "A historical task-scoped script would need to be reclassified as a current reusable gate.",
-    "The real fixture readiness gate is not ready and eligible.",
-    "The production IndexedDB adapter browser integration regression fails.",
-    "Legacy keys would need to be cleared, overwritten, or hidden to pass.",
-    "Runtime pages would need to import lib/v05, directly access V2 IndexedDB, or auto-run migration.",
+    "V0.5A final freeze dependency is not satisfied by an immutable task completion record.",
+    "PRE-FLIGHT does not pass before implementation edits.",
+    "Git root is not the ecommerce-platform-optimized repository.",
+    "The working tree is not clean before starting implementation.",
+    "V0.5A is not complete or V0.5B is not pending.",
+    "The production IndexedDB adapter browser integration or real fixture readiness gate fails.",
+    "The implementation would need to modify V0.5A frozen domain, validation, repository, migration, or persistence code.",
+    "The implementation would need to modify home, store-board, series-board, product-board, targets, raw-data, storage, Tmall bottom logic, package files, private samples, or fixed governance documents.",
+    "The upload page cannot support platform/store ownership without touching forbidden files.",
+    "The import flow cannot preserve legacy keys and other store data.",
+    "The import flow would need to infer store from file name, store file names in V2, store raw rows, store preview rows, or expose after-sales sensitive details.",
+    "The browser acceptance would need to touch production audit-forbidden database cleanup outside the isolated audit database.",
     "Privacy or numeric safety checks fail.",
     "lint or build fails.",
     "The working tree contains unexplained out-of-scope changes."
   ],
-  "startedAt": "2026-06-22T02:04:00+08:00",
-  "completedAt": "2026-06-22T02:38:00+08:00",
-  "status": "complete"
+  "startedAt": "2026-06-22T01:54:00+08:00",
+  "completedAt": null,
+  "status": "blocked"
 }
