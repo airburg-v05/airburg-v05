@@ -12,6 +12,15 @@ Before any V0.5 task, Codex must read:
 8. `docs/quality/V05_ACCEPTANCE_GATES.md`
 9. `docs/decisions/ADR-001-platform-and-store-ownership.md`
 10. `docs/project/v0.5-lock.json`
+11. `docs/project/V05_TASK_CONTRACT.md`
+12. `docs/project/current-task.json`
+
+Before edits, Codex must complete PRE-FLIGHT:
+
+1. confirm project root and Git root;
+2. confirm current task, baseline commit, governance hash, allowed paths, and forbidden paths;
+3. scan for `AGENTS.md` and `AGENTS.override.md`;
+4. output `BLOCKED` if PRE-FLIGHT fails.
 
 Rules:
 
@@ -22,3 +31,5 @@ Rules:
 5. Do not clear legacy local data to avoid migration work.
 6. Do not expose after-sales sensitive details. Only safe aggregates may be shown.
 7. Current V0.5 work must not add AI, backend, database, platform API, or crawler features unless a later locked document explicitly changes that boundary.
+8. Forbidden paths override allowed paths.
+9. Do not modify `current-task.json` to hide an out-of-scope change.

@@ -67,4 +67,10 @@ If migration fails:
 
 ## IndexedDB Direction
 
-IndexedDB may be introduced later when the repository contract is stable. It must not change business ownership rules. Pages must call repositories, not direct storage APIs.
+IndexedDB may be introduced later when the repository contract is stable and when a locked task explicitly authorizes it. It must not change business ownership rules. Pages must call repositories, not direct storage APIs.
+
+V0.5A-0.1 does not introduce IndexedDB, does not change current storage structures, and does not implement migration.
+
+## Database Boundary
+
+Current V0.5 governance forbids server-side databases unless a later locked stage explicitly changes that boundary. Browser IndexedDB is a local browser storage mechanism, not a server database, but it remains forbidden until explicitly authorized because it changes persistence and migration behavior.

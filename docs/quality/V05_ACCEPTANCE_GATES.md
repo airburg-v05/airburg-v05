@@ -13,6 +13,11 @@ Every V0.5 task must pass:
 7. lint.
 8. build.
 9. A focused private validation script when data behavior changes.
+10. Git baseline check.
+11. Single-task contract check.
+12. Instruction-file scan.
+
+PRE-FLIGHT must pass before edits. If PRE-FLIGHT fails, output `BLOCKED` and do not modify files.
 
 ## Data Ownership Gate
 
@@ -56,3 +61,18 @@ Fail if:
 ## Stage Gate
 
 Each V0.5 stage may only start after the previous stage is PASS. If a task asks to skip a stage, output `BLOCKED`.
+
+## Governance Enforcement Gate
+
+Every V0.5 task must:
+
+1. run from the Git root;
+2. read `docs/project/current-task.json`;
+3. verify the baseline commit exists;
+4. verify the governance contract hash;
+5. compare all changes after the baseline commit with `allowedModifyPaths`;
+6. fail if any changed path matches `forbiddenModifyPaths`;
+7. fail if nested `AGENTS.md` or any `AGENTS.override.md` exists without explicit lock authorization;
+8. fail if private samples, env files, build output, or logs are tracked by Git.
+
+Forbidden paths override allowed paths. A task may not edit its task contract to hide a prior unauthorized modification.

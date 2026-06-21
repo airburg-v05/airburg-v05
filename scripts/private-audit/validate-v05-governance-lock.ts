@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -15,8 +16,11 @@ const REQUIRED_FILES = [
   "docs/roadmap/V05_EXECUTION_SEQUENCE.md",
   "docs/quality/V05_ACCEPTANCE_GATES.md",
   "docs/decisions/ADR-001-platform-and-store-ownership.md",
+  "docs/project/V05_TASK_CONTRACT.md",
   "docs/project/v0.5-lock.json",
+  "docs/project/current-task.json",
   "scripts/private-audit/validate-v05-governance-lock.ts",
+  "scripts/private-audit/validate-v05-task-preflight.ts",
 ] as const;
 
 const REQUIRED_STAGE_SEQUENCE = [
@@ -29,25 +33,15 @@ const REQUIRED_STAGE_SEQUENCE = [
   "V0.5G",
 ] as const;
 
-const FORBIDDEN_CURRENT_IMPLEMENTED_FEATURES = [
-  "AI implemented",
-  "AI 已实现",
-  "backend implemented",
-  "后端已实现",
-  "database implemented",
-  "数据库已实现",
-  "platform API implemented",
-  "平台 API 已实现",
-] as const;
-
-const FORBIDDEN_BUSINESS_PREFIXES = [
-  "app/",
-  "components/",
-  "lib/storage/",
-  "lib/tmall/parsers/",
-  "lib/tmall/pipeline/",
-  "lib/tmall/view-models/",
-  "types/",
+const SENSITIVE_TRACKED_PATTERNS = [
+  "node_modules/",
+  ".next/",
+  "dist/",
+  "build/",
+  "coverage/",
+  "private-samples/",
+  ".env",
+  ".env.",
 ] as const;
 
 interface LockStage {
@@ -60,13 +54,19 @@ interface LockStage {
 interface GovernanceLock {
   currentVersion: string;
   lockName: string;
-  lastContractUpdatedAt: string;
   multiPlatform: boolean;
   multiStore: boolean;
   storeOwnershipRequired: boolean;
   legacyMigrationRequired: boolean;
+  gitBaselineRequired: boolean;
+  currentTaskContractRequired: boolean;
+  governanceContractHashRequired: boolean;
+  serverDatabaseForbidden: boolean;
+  indexedDbRequiresExplicitStageAuthorization: boolean;
+  allowedInstructionFiles: string[];
+  forbiddenInstructionFiles: string[];
+  governanceContractFiles: string[];
   currentStageDoesNotImplement: string[];
-  platforms: string[];
   dataOwnershipRequiredFields: string[];
   privacy: {
     afterSalesSafeAggregatesOnly: boolean;
@@ -80,89 +80,43 @@ interface GovernanceLock {
   stageStatuses: Record<string, string>;
 }
 
+interface CommandResult {
+  command: string;
+  status: "PASS" | "FAIL";
+}
+
+interface CurrentTask {
+  taskId: string;
+  stage: string;
+  dependsOn: string[];
+  baselineCommit: string;
+  governanceContractHash: string;
+  requiredDocuments: string[];
+  allowedModifyPaths: string[];
+  forbiddenModifyPaths: string[];
+  requiredCommands: string[];
+  commandResults?: CommandResult[];
+  stopConditions: string[];
+  status: "pending" | "in_progress" | "blocked" | "complete";
+}
+
+const toPosix = (value: string): string => value.split(path.sep).join("/");
+
 const readFile = (relativePath: string): string =>
   fs.readFileSync(path.join(ROOT, relativePath), "utf8");
 
 const fileExists = (relativePath: string): boolean =>
   fs.existsSync(path.join(ROOT, relativePath));
 
-const unique = (values: readonly string[]): boolean =>
-  new Set(values).size === values.length;
+const parseJsonFile = <T>(relativePath: string): T =>
+  JSON.parse(readFile(relativePath)) as T;
 
-const includesAll = (source: string, needles: readonly string[]): boolean =>
-  needles.every((needle) => source.includes(needle));
-
-const parseLock = (): GovernanceLock => {
-  const raw = readFile("docs/project/v0.5-lock.json");
-  return JSON.parse(raw) as GovernanceLock;
-};
-
-const tryGitStatus = (): { available: boolean; onlyAllowed: boolean; changedFiles: string[] } => {
-  try {
-    const stdout = execFileSync("git", ["status", "--short"], {
-      cwd: ROOT,
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-    });
-    const changedFiles = stdout
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .map((line) => line.replace(/^.. /, ""));
-    const onlyAllowed = changedFiles.every((file) =>
-      REQUIRED_FILES.includes(file as (typeof REQUIRED_FILES)[number]),
-    );
-    return { available: true, onlyAllowed, changedFiles };
-  } catch {
-    return { available: false, onlyAllowed: true, changedFiles: [] };
-  }
-};
-
-const listFiles = (relativeDir: string): string[] => {
-  const absoluteDir = path.join(ROOT, relativeDir);
-  if (!fs.existsSync(absoluteDir)) return [];
-
-  const result: string[] = [];
-  const walk = (dir: string) => {
-    fs.readdirSync(dir, { withFileTypes: true }).forEach((entry) => {
-      const absolutePath = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        walk(absolutePath);
-        return;
-      }
-
-      result.push(path.relative(ROOT, absolutePath));
-    });
-  };
-
-  walk(absoluteDir);
-  return result;
-};
-
-const forbiddenBusinessFiles = (): string[] => {
-  const files = [
-    ...listFiles("app"),
-    ...listFiles("components"),
-    ...listFiles("lib/storage"),
-    ...listFiles("lib/tmall/parsers"),
-    ...listFiles("lib/tmall/pipeline"),
-    ...listFiles("lib/tmall/view-models"),
-    ...listFiles("types"),
-    "package.json",
-  ];
-
-  return files.filter((file) =>
-    FORBIDDEN_BUSINESS_PREFIXES.some((prefix) => file.startsWith(prefix)) ||
-    file === "package.json",
-  );
-};
-
-const businessSourcesContainV05GovernanceMarker = (): boolean =>
-  forbiddenBusinessFiles().some((file) => {
-    if (!fs.existsSync(path.join(ROOT, file))) return false;
-    const source = readFile(file);
-    return source.includes("V0.5A_0_PROJECT_GOVERNANCE_AND_ARCHITECTURE_LOCK");
-  });
+const git = (args: string[]): string =>
+  execFileSync("git", args, {
+    cwd: ROOT,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  }).trim();
 
 const runCommand = (command: string, args: string[]): boolean => {
   try {
@@ -177,105 +131,240 @@ const runCommand = (command: string, args: string[]): boolean => {
   }
 };
 
+const unique = (values: readonly string[]): boolean =>
+  new Set(values).size === values.length;
+
+const matchesPathPattern = (file: string, pattern: string): boolean => {
+  const normalizedFile = toPosix(file);
+  const normalizedPattern = toPosix(pattern);
+
+  if (normalizedPattern === normalizedFile) return true;
+  if (normalizedPattern.endsWith("/**")) {
+    return normalizedFile.startsWith(normalizedPattern.slice(0, -3));
+  }
+  if (normalizedPattern.startsWith("**/")) {
+    return (
+      normalizedFile === normalizedPattern.slice(3) ||
+      normalizedFile.endsWith(`/${normalizedPattern.slice(3)}`)
+    );
+  }
+
+  return false;
+};
+
+const pathMatchesAny = (file: string, patterns: readonly string[]): boolean =>
+  patterns.some((pattern) => matchesPathPattern(file, pattern));
+
+const parseGitStatus = (): string[] => {
+  const stdout = execFileSync(
+    "git",
+    ["-c", "core.quotepath=false", "status", "--short", "--untracked-files=all"],
+    {
+      cwd: ROOT,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    },
+  );
+  if (!stdout) return [];
+
+  return stdout
+    .split("\n")
+    .map((line) => line.trimEnd())
+    .filter(Boolean)
+    .flatMap((line) => {
+      const rawPath = line.slice(3);
+      if (rawPath.includes(" -> ")) return rawPath.split(" -> ");
+      return [rawPath];
+    });
+};
+
+const parseNameStatus = (stdout: string): string[] =>
+  stdout
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .flatMap((line) => {
+      const parts = line.split("\t");
+      if (parts.length >= 3) return [parts[1], parts[2]];
+      if (parts.length >= 2) return [parts[1]];
+      return [];
+    });
+
+const changedFilesSinceBaseline = (baselineCommit: string): string[] => {
+  const diff = git([
+    "-c",
+    "core.quotepath=false",
+    "diff",
+    "--name-status",
+    "--find-renames",
+    baselineCommit,
+    "--",
+  ]);
+  const untracked = git(["ls-files", "--others", "--exclude-standard"]);
+  return [
+    ...parseNameStatus(diff),
+    ...untracked.split("\n").map((line) => line.trim()).filter(Boolean),
+  ];
+};
+
+const listInstructionFiles = (): string[] => {
+  const result: string[] = [];
+  const ignoredDirs = new Set([".git", ".next", "node_modules"]);
+
+  const walk = (dir: string) => {
+    fs.readdirSync(dir, { withFileTypes: true }).forEach((entry) => {
+      if (ignoredDirs.has(entry.name)) return;
+      const absolutePath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(absolutePath);
+        return;
+      }
+      if (entry.name === "AGENTS.md" || entry.name === "AGENTS.override.md") {
+        result.push(toPosix(path.relative(ROOT, absolutePath)));
+      }
+    });
+  };
+
+  walk(ROOT);
+  return result.sort();
+};
+
+const listTrackedFiles = (): string[] => {
+  const stdout = git(["ls-files"]);
+  return stdout ? stdout.split("\n").filter(Boolean) : [];
+};
+
+const calculateGovernanceHash = (lock: GovernanceLock): string => {
+  const hash = crypto.createHash("sha256");
+  lock.governanceContractFiles.forEach((file) => {
+    const content = readFile(file).replace(/\r\n/g, "\n").trimEnd();
+    hash.update(`FILE:${file}\n${content}\nEND_FILE\n`);
+  });
+  return hash.digest("hex");
+};
+
+const commandResultsPass = (task: CurrentTask): boolean => {
+  if (task.status !== "complete") return true;
+
+  const results = task.commandResults ?? [];
+  return task.requiredCommands.every((command) =>
+    results.some((result) => result.command === command && result.status === "PASS"),
+  );
+};
+
 const main = () => {
-  const lock = parseLock();
+  const failures: string[] = [];
+  let gitRoot = "";
+
+  try {
+    gitRoot = git(["rev-parse", "--show-toplevel"]);
+  } catch {
+    failures.push("gitRootAvailable");
+  }
+
+  const normalizedRoot = path.resolve(ROOT);
+  const normalizedGitRoot = gitRoot ? path.resolve(gitRoot) : "";
+  const rootIsGitRoot = normalizedRoot === normalizedGitRoot;
+  if (!rootIsGitRoot) failures.push("currentWorkingDirectoryIsGitRoot");
+
+  const lock = parseJsonFile<GovernanceLock>("docs/project/v0.5-lock.json");
+  const task = parseJsonFile<CurrentTask>("docs/project/current-task.json");
   const agents = readFile("AGENTS.md");
-  const northStar = readFile("docs/product/V05_PRODUCT_NORTH_STAR.md");
-  const ia = readFile("docs/product/V05_INFORMATION_ARCHITECTURE.md");
-  const dataContract = readFile("docs/architecture/V05_PLATFORM_STORE_DATA_CONTRACT.md");
-  const migrationContract = readFile("docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md");
-  const designSystem = readFile("docs/design/V05_DESIGN_SYSTEM.md");
-  const referenceMap = readFile("docs/design/V05_REFERENCE_PLATFORM_MAP.md");
-  const roadmap = readFile("docs/roadmap/V05_EXECUTION_SEQUENCE.md");
-  const gates = readFile("docs/quality/V05_ACCEPTANCE_GATES.md");
-  const adr = readFile("docs/decisions/ADR-001-platform-and-store-ownership.md");
-  const combinedDocs = [
-    agents,
-    northStar,
-    ia,
-    dataContract,
-    migrationContract,
-    designSystem,
-    referenceMap,
-    roadmap,
-    gates,
-    adr,
-    JSON.stringify(lock),
-  ].join("\n");
   const sequenceIds = lock.executionSequence.map((stage) => stage.id);
   const stageById = new Map(lock.executionSequence.map((stage) => [stage.id, stage]));
-  const gitStatus = tryGitStatus();
+  const changedFiles = Array.from(
+    new Set([...parseGitStatus(), ...changedFilesSinceBaseline(task.baselineCommit)]),
+  ).sort();
+  const instructionFiles = listInstructionFiles();
+  const trackedFiles = listTrackedFiles();
+  const governanceHash = calculateGovernanceHash(lock);
+  const remotes = git(["remote", "-v"]);
   const lintPass = runCommand("npm", ["run", "lint"]);
   const buildPass = runCommand("npm", ["run", "build"]);
 
   const checks = {
     allFixedDocumentsExist: REQUIRED_FILES.every(fileExists),
-    agentsReferencesRequiredDocs: REQUIRED_FILES
-      .filter((file) => file.startsWith("docs/"))
-      .every((file) => agents.includes(file)),
+    agentsReferencesCurrentTask: agents.includes("docs/project/current-task.json"),
+    agentsRequiresPreflight: agents.includes("PRE-FLIGHT"),
+    agentsBlocksOnPreflightFailure: agents.includes("BLOCKED"),
     executionSequenceComplete:
       REQUIRED_STAGE_SEQUENCE.every((stage) => sequenceIds.includes(stage)) &&
       sequenceIds.length === REQUIRED_STAGE_SEQUENCE.length,
     executionSequenceUnique: unique(sequenceIds),
-    lockJsonParseable: lock.currentVersion === "V0.5A-0" && lock.lockName.length > 0,
+    lockJsonParseable: lock.currentVersion === "V0.5A-0.1" && lock.lockName.length > 0,
     multiPlatformTrue: lock.multiPlatform === true,
     multiStoreTrue: lock.multiStore === true,
     storeOwnershipRequiredTrue: lock.storeOwnershipRequired === true,
     legacyMigrationRequiredTrue: lock.legacyMigrationRequired === true,
+    gitBaselineRequired: lock.gitBaselineRequired === true,
+    currentTaskContractRequired: lock.currentTaskContractRequired === true,
+    governanceContractHashRequired: lock.governanceContractHashRequired === true,
+    serverDatabaseForbidden: lock.serverDatabaseForbidden === true,
+    indexedDbRequiresExplicitAuthorization:
+      lock.indexedDbRequiresExplicitStageAuthorization === true,
+    allowedInstructionFilesOnly:
+      instructionFiles.length === 1 && instructionFiles[0] === "AGENTS.md",
+    noAgentsOverride: !instructionFiles.some((file) => file.endsWith("AGENTS.override.md")),
     afterSalesPrivacyBoundaryExists:
       lock.privacy.afterSalesSafeAggregatesOnly === true &&
-      lock.privacy.forbidSensitiveAfterSalesDetails === true &&
-      combinedDocs.includes("safe aggregates") &&
-      combinedDocs.includes("售后") &&
-      combinedDocs.includes("敏感"),
+      lock.privacy.forbidSensitiveAfterSalesDetails === true,
     forbidClearingLegacyDataExists:
-      combinedDocs.includes("Do not clear legacy data") ||
-      combinedDocs.includes("Legacy single-Tmall data must not be cleared") ||
-      combinedDocs.includes("旧单天猫数据") ||
-      combinedDocs.includes("Clearing old data"),
+      [
+        readFile("AGENTS.md"),
+        readFile("docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md"),
+        JSON.stringify(lock),
+      ].join("\n").includes("clear legacy data") ||
+      readFile("docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md").includes(
+        "must not be cleared",
+      ),
     v05aBeforeV05b: stageById.get("V0.5B")?.dependsOn.includes("V0.5A") ?? false,
     v05bBeforeV05c: stageById.get("V0.5C")?.dependsOn.includes("V0.5B") ?? false,
     noCurrentAiBackendDatabaseImplementation:
-      ["AI", "backend API", "database"].every((item) =>
+      ["AI", "backend API", "server database"].every((item) =>
         lock.currentStageDoesNotImplement.includes(item),
-      ) &&
-      !FORBIDDEN_CURRENT_IMPLEMENTED_FEATURES.some((phrase) => combinedDocs.includes(phrase)),
-    noObviousDocumentConflict:
-      includesAll(dataContract, ["platformCode", "storeId", "ImportBatch", "ImportFile"]) &&
-      includesAll(migrationContract, ["天猫默认店铺", "idempotent", "v1", "v2"]) &&
-      includesAll(northStar, ["多平台", "多个店铺", "当前 V0.5 scope does not include AI"]) &&
-      includesAll(designSystem, ["390px", "horizontal overflow"]) &&
-      includesAll(roadmap, [...REQUIRED_STAGE_SEQUENCE]) &&
-      includesAll(adr, ["platformCode", "storeId", "tmall-default-store"]),
-    noBusinessPageModified:
-      gitStatus.onlyAllowed && !businessSourcesContainV05GovernanceMarker(),
-    noFourSourceBottomLayerModified:
-      gitStatus.onlyAllowed && !businessSourcesContainV05GovernanceMarker(),
-    noTargetDiagnosticsModified:
-      gitStatus.onlyAllowed && !businessSourcesContainV05GovernanceMarker(),
-    noStorageStructureModified:
-      gitStatus.onlyAllowed && !businessSourcesContainV05GovernanceMarker(),
+      ) && !lock.currentStageDoesNotImplement.includes("database implemented"),
+    currentTaskExists: task.taskId.length > 0 && task.stage.length > 0,
+    currentTaskBaselineExists: runCommand("git", [
+      "cat-file",
+      "-e",
+      `${task.baselineCommit}^{commit}`,
+    ]),
+    currentTaskAllowedPathsNonEmpty: task.allowedModifyPaths.length > 0,
+    currentTaskForbiddenPathsNonEmpty: task.forbiddenModifyPaths.length > 0,
+    governanceHashMatchesTask: task.governanceContractHash === governanceHash,
+    commandResultsPass: commandResultsPass(task),
+    changedFilesAreAllowed: changedFiles.every((file) =>
+      pathMatchesAny(file, task.allowedModifyPaths),
+    ),
+    changedFilesDoNotHitForbidden: !changedFiles.some((file) =>
+      pathMatchesAny(file, task.forbiddenModifyPaths),
+    ),
+    sensitiveFilesNotTracked: !trackedFiles.some((file) =>
+      SENSITIVE_TRACKED_PATTERNS.some((pattern) => file === pattern || file.startsWith(pattern)),
+    ),
+    noGitRemote: remotes.length === 0,
     lintPass,
     buildPass,
   };
 
-  const failedChecks = Object.entries(checks)
-    .filter(([, value]) => !value)
-    .map(([key]) => key);
+  Object.entries(checks).forEach(([key, value]) => {
+    if (!value) failures.push(key);
+  });
+
   const output = {
-    status: failedChecks.length === 0 ? "PASS" : "FAIL",
-    failedChecks,
-    gitStatusAvailable: gitStatus.available,
-    gitChangedFiles: gitStatus.changedFiles,
-    stages: sequenceIds,
+    status: failures.length === 0 ? "PASS" : "FAIL",
+    failedChecks: failures,
+    gitRoot,
+    baselineCommit: task.baselineCommit,
+    governanceContractHash: governanceHash,
+    instructionFiles,
+    changedFiles,
+    remotes: remotes ? remotes.split("\n").filter(Boolean) : [],
     checks,
   };
 
   process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
-
-  if (failedChecks.length > 0) {
-    process.exitCode = 1;
-  }
+  if (failures.length > 0) process.exitCode = 1;
 };
 
 main();

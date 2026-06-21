@@ -56,13 +56,16 @@ After-sales raw rows, order identifiers, transaction identifiers, contact detail
 
 1. AI reports or AI advisor.
 2. Backend API.
-3. Database.
+3. Server-side database.
 4. SaaS payment.
 5. Complex permissions.
 6. Platform API integration.
 7. Crawlers.
 8. Automatic platform login.
 9. Replacing legacy data by clearing localStorage.
+10. IndexedDB during V0.5A-0.1.
+
+Browser IndexedDB is not treated as a server database, but it is still a storage architecture change. It may only be introduced by a later task that explicitly authorizes IndexedDB and updates the storage contract. V0.5A-0.1 does not introduce IndexedDB, does not change storage, does not implement migration, and does not modify existing metrics, target, or trend rules.
 
 ## Direction Check For New Requests
 

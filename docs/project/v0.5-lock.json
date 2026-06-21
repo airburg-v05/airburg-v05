@@ -1,13 +1,55 @@
 {
-  "currentVersion": "V0.5A-0",
+  "currentVersion": "V0.5A-0.1",
   "lockName": "PROJECT_GOVERNANCE_AND_ARCHITECTURE_LOCK",
-  "lastContractUpdatedAt": "2026-06-21T00:00:00+08:00",
+  "lastContractUpdatedAt": "2026-06-21T12:00:00+08:00",
+  "governanceEnforcementVersion": "V0.5A-0.1",
+  "currentGovernanceStage": "V0.5A-0.1",
+  "gitBaselineRequired": true,
+  "currentTaskContractRequired": true,
+  "governanceContractHashRequired": true,
+  "serverDatabaseForbidden": true,
+  "indexedDbRequiresExplicitStageAuthorization": true,
   "multiPlatform": true,
   "multiStore": true,
   "storeOwnershipRequired": true,
   "legacyMigrationRequired": true,
-  "currentStageDoesNotImplement": ["AI", "backend API", "database", "platform API", "crawler"],
-  "platforms": ["tmall", "jd", "pdd", "douyin", "youzan"],
+  "currentStageDoesNotImplement": [
+    "AI",
+    "backend API",
+    "server database",
+    "IndexedDB",
+    "platform API",
+    "crawler"
+  ],
+  "allowedInstructionFiles": [
+    "AGENTS.md"
+  ],
+  "forbiddenInstructionFiles": [
+    "AGENTS.override.md",
+    "**/AGENTS.override.md",
+    "**/AGENTS.md"
+  ],
+  "governanceContractFiles": [
+    "AGENTS.md",
+    "docs/product/V05_PRODUCT_NORTH_STAR.md",
+    "docs/product/V05_INFORMATION_ARCHITECTURE.md",
+    "docs/architecture/V05_PLATFORM_STORE_DATA_CONTRACT.md",
+    "docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md",
+    "docs/design/V05_DESIGN_SYSTEM.md",
+    "docs/design/V05_REFERENCE_PLATFORM_MAP.md",
+    "docs/roadmap/V05_EXECUTION_SEQUENCE.md",
+    "docs/quality/V05_ACCEPTANCE_GATES.md",
+    "docs/decisions/ADR-001-platform-and-store-ownership.md",
+    "docs/project/V05_TASK_CONTRACT.md",
+    "docs/project/v0.5-lock.json"
+  ],
+  "platforms": [
+    "tmall",
+    "jd",
+    "pdd",
+    "douyin",
+    "youzan"
+  ],
   "dataOwnershipRequiredFields": [
     "platformCode",
     "storeId",
@@ -38,79 +80,127 @@
     "Do not expand scope beyond the current V0.5 stage.",
     "If contracts conflict, output BLOCKED.",
     "Do not clear legacy data to avoid migration.",
-    "Do not add AI, backend, database, platform API, or crawler work in V0.5A-0."
+    "Do not add AI, backend, server database, platform API, or crawler work in V0.5A-0.1.",
+    "Do not introduce IndexedDB unless a later locked stage explicitly authorizes it.",
+    "Do not modify storage, metrics, targets, trends, or four-source bottom logic in V0.5A-0.1."
   ],
   "executionSequence": [
     {
       "id": "V0.5A",
       "name": "Platform, store, and data ownership model",
-      "dependsOn": ["V0.5A-0"],
+      "dependsOn": [
+        "V0.5A-0"
+      ],
       "status": "pending"
     },
     {
       "id": "V0.5B",
       "name": "Batch import and automatic analysis",
-      "dependsOn": ["V0.5A"],
+      "dependsOn": [
+        "V0.5A"
+      ],
       "status": "pending"
     },
     {
       "id": "V0.5C",
       "name": "Home relayout",
-      "dependsOn": ["V0.5B"],
+      "dependsOn": [
+        "V0.5B"
+      ],
       "status": "pending"
     },
     {
       "id": "V0.5D",
       "name": "Multi-store boards",
-      "dependsOn": ["V0.5C"],
+      "dependsOn": [
+        "V0.5C"
+      ],
       "status": "pending"
     },
     {
       "id": "V0.5E",
       "name": "Series and tracked product custom management",
-      "dependsOn": ["V0.5D"],
+      "dependsOn": [
+        "V0.5D"
+      ],
       "status": "pending"
     },
     {
       "id": "V0.5F",
       "name": "Target allocation and target drawer",
-      "dependsOn": ["V0.5E"],
+      "dependsOn": [
+        "V0.5E"
+      ],
       "status": "pending"
     },
     {
       "id": "V0.5G",
       "name": "Full visual closure and final regression",
-      "dependsOn": ["V0.5F"],
+      "dependsOn": [
+        "V0.5F"
+      ],
       "status": "pending"
     }
   ],
   "forbiddenModifyPaths": [
     "app/**",
     "components/**",
-    "lib/storage/**",
-    "lib/tmall/parsers/**",
-    "lib/tmall/pipeline/**",
-    "lib/tmall/view-models/**",
+    "lib/**",
     "types/**",
     "package.json",
-    "package-lock.json"
+    "package-lock.json",
+    "private-samples/**"
   ],
   "allowedInThisTask": [
     "AGENTS.md",
+    ".gitignore",
     "docs/product/V05_PRODUCT_NORTH_STAR.md",
-    "docs/product/V05_INFORMATION_ARCHITECTURE.md",
-    "docs/architecture/V05_PLATFORM_STORE_DATA_CONTRACT.md",
     "docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md",
-    "docs/design/V05_DESIGN_SYSTEM.md",
-    "docs/design/V05_REFERENCE_PLATFORM_MAP.md",
-    "docs/roadmap/V05_EXECUTION_SEQUENCE.md",
     "docs/quality/V05_ACCEPTANCE_GATES.md",
-    "docs/decisions/ADR-001-platform-and-store-ownership.md",
     "docs/project/v0.5-lock.json",
-    "scripts/private-audit/validate-v05-governance-lock.ts"
+    "docs/project/V05_TASK_CONTRACT.md",
+    "docs/project/current-task.json",
+    "scripts/private-audit/validate-v05-governance-lock.ts",
+    "scripts/private-audit/validate-v05-task-preflight.ts"
+  ],
+  "stageTransitionRules": [
+    {
+      "from": "V0.5A-0",
+      "to": "V0.5A-0.1",
+      "requires": [
+        "git baseline",
+        "current task contract",
+        "governance hash"
+      ]
+    },
+    {
+      "from": "V0.5A-0.1",
+      "to": "V0.5A-1",
+      "requires": [
+        "validate-v05-governance-lock PASS",
+        "validate-v05-task-preflight PASS",
+        "lint PASS",
+        "build PASS"
+      ]
+    },
+    {
+      "from": "V0.5A",
+      "to": "V0.5B",
+      "requires": [
+        "V0.5A PASS"
+      ]
+    },
+    {
+      "from": "V0.5B",
+      "to": "V0.5C",
+      "requires": [
+        "V0.5B PASS"
+      ]
+    }
   ],
   "stageStatuses": {
     "V0.5A-0": "complete",
+    "V0.5A-0.1": "complete",
     "V0.5A": "pending",
     "V0.5B": "pending",
     "V0.5C": "pending",

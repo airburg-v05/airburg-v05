@@ -7,10 +7,16 @@
 
 # production
 /build
+/dist
+/coverage
 
 # misc
 .DS_Store
 *.pem
+*.log
+logs/
+tmp/
+temp/
 
 # debug
 npm-debug.log*
@@ -26,3 +32,9 @@ private-samples/
 *.private.csv
 *.private.xls
 *.private.xlsx
+
+# local browser / analysis exports
+browser-exports/
+local-exports/
+analysis-results/
+*.local.json
