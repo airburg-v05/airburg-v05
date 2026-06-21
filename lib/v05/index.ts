@@ -7,3 +7,4 @@ export * from "./validation/records";
 export * from "./validation/dataset";
 export * from "./repositories/contracts";
 export * from "./repositories/memory-adapter";
+export * from "./migration";
