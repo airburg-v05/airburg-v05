@@ -1,0 +1,52 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5A_5_0_STAGE_AWARE_FREEZE_TRANSITION_GATE_FIX",
+  "stage": "V0.5A-5.0",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5A_5_0_STAGE_AWARE_FREEZE_TRANSITION_GATE_FIX_R1.json",
+  "authorizationHash": "b503195e7a6b42088d4a686edae6b1297576d3f4c804fccf01ec5700e6a78e6a",
+  "authorizationCommit": "b868eb0599c0e4f2d71ca5c245115cef2a559fef",
+  "completionCommit": "9cde31203b913898cc88e941badc2d5c92017d08",
+  "completedAt": "2026-06-22T00:56:11+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-stage-freeze-transition.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-stage-freeze-transition.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-22T00:57:17+08:00"
+}
