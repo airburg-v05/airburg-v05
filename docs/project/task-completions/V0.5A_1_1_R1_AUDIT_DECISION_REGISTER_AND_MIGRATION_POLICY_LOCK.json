@@ -1,0 +1,52 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5A_1_1_R1_AUDIT_DECISION_REGISTER_AND_MIGRATION_POLICY_LOCK",
+  "stage": "V0.5A-1.1-R1",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5A_1_1_R1_AUDIT_DECISION_REGISTER_AND_MIGRATION_POLICY_LOCK.json",
+  "authorizationHash": "28ae353f126778e72a6db5496807724e219b5622572256d7cf717be5c7a6ed4f",
+  "authorizationCommit": "9c9d8c7b0708b310e85c0b5a6cb784a6b7167007",
+  "completionCommit": "3c42403ee3528f2603cfbeaf87d46d057e9549e5",
+  "completedAt": "2026-06-21T14:54:10+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a-migration-decision-register.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a-migration-decision-register.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-21T14:55:16+08:00"
+}
