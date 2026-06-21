@@ -30,7 +30,13 @@ import {
   type SourceDryRunSummary,
   type V2StagingDataset,
 } from "./contracts";
-import { createWebCryptoLegacyValueHasher, hashLegacyValue } from "./hash";
+import {
+  createBusinessDatasetFingerprintPayload,
+  createWebCryptoLegacyValueHasher,
+  createManifestFingerprintPayload,
+  hashLegacyValue,
+  hashStableFingerprintPayload,
+} from "./hash";
 import {
   summarizeIgnoredLegacyKeys,
   summarizeLegacyKeys,
@@ -120,11 +126,16 @@ const emptyResult = (
   hashes: LegacyHashSummary[],
   issues: DryRunIssue[],
   status: DryRunStatus,
+  migrationVersion: string,
+  businessDatasetFingerprint: string | null = null,
+  manifestFingerprint: string | null = null,
 ): LegacyMigrationDryRunResult => ({
   status,
   futureActivationEligible: false,
-  migrationVersion: V2_MIGRATION_VERSION,
+  migrationVersion,
   defaultOwner: DEFAULT_TMAIL_OWNER,
+  businessDatasetFingerprint,
+  manifestFingerprint,
   stagingDataset: null,
   manifestCandidate: null,
   proposedActiveDatasetPointer: null,
@@ -139,23 +150,52 @@ const emptyResult = (
 const mapValidationIssues = (issues: ReturnType<typeof validateV2Dataset>["issues"]): DryRunIssue[] =>
   issues.map(toDryRunIssue);
 
+const isIndependentAdProductReferenceIssue = (issue: DryRunIssue): boolean =>
+  issue.code === "reference_missing" && issue.path.startsWith("adProductFacts[");
+
+const downgradeIndependentAdProductReferenceIssue = (issue: DryRunIssue): DryRunIssue =>
+  createDryRunIssue(
+    "reference_missing",
+    issue.path,
+    "Ad product source fact has no matching business product fact and is kept as an independent source fact candidate.",
+    "warning",
+    issue.details,
+  );
+
 const validateWithMemoryRepository = async (
   stagingDataset: V2StagingDataset,
 ): Promise<DryRunIssue[]> => {
   const issues: DryRunIssue[] = [];
-  const repository = createMemoryV2RepositoryBundle(stagingDataset as V2Dataset);
+  const repository = createMemoryV2RepositoryBundle();
 
-  if (!repository.seedValidation.valid) {
-    issues.push(
-      createDryRunIssue(
-        "memory_validation_failed",
-        "stagingDataset",
-        "Memory repository rejected the staging dataset seed.",
-        "error",
-        { issueCount: repository.seedValidation.issues.length },
-      ),
-    );
-  }
+  const insertResults = await Promise.all([
+    repository.platforms.insertMany(stagingDataset.platforms),
+    repository.stores.insertMany(stagingDataset.stores),
+    repository.importBatches.insertMany(stagingDataset.importBatches),
+    repository.importFiles.insertMany(stagingDataset.importFiles),
+    repository.businessProductFacts.insertMany(stagingDataset.businessProductFacts),
+    repository.adProductFacts.insertMany(stagingDataset.adProductFacts),
+    repository.adPlanFacts.insertMany(stagingDataset.adPlanFacts),
+    repository.afterSalesDailyAggregates.insertMany(stagingDataset.afterSalesDailyAggregates),
+    repository.afterSalesRangeAggregates.insertMany(stagingDataset.afterSalesRangeAggregates),
+    repository.series.insertMany(stagingDataset.series),
+    repository.trackedProducts.insertMany(stagingDataset.trackedProducts),
+    repository.targets.insertMany(stagingDataset.targets),
+  ]);
+
+  insertResults.forEach((result, index) => {
+    if (result.status !== "success") {
+      issues.push(
+        createDryRunIssue(
+          "memory_validation_failed",
+          `stagingDataset.repositoryInsert[${index}]`,
+          "Memory repository rejected a staging record group.",
+          "error",
+          { issueCount: result.issues.length },
+        ),
+      );
+    }
+  });
 
   const exported = repository.exportDataset();
   if (exported.activeDatasetPointer !== null) {
@@ -221,7 +261,7 @@ export const runLegacyStorageV2DryRunMigration = async (
   const snapshot = snapshotValidation.snapshot;
 
   if (!snapshotValidation.valid || !snapshot) {
-    return emptyResult(null, [], snapshotValidation.issues, "migration_failed");
+    return emptyResult(null, [], snapshotValidation.issues, "migration_failed", migrationVersion);
   }
 
   const hasher = input.hasher ?? createWebCryptoLegacyValueHasher();
@@ -234,11 +274,50 @@ export const runLegacyStorageV2DryRunMigration = async (
   }
 
   if (hashIssues.length > 0) {
-    return emptyResult(snapshot, hashes, hashIssues, "migration_failed");
+    return emptyResult(snapshot, hashes, hashIssues, "migration_failed", migrationVersion);
   }
 
+  const businessFingerprintResult = await hashStableFingerprintPayload(
+    createBusinessDatasetFingerprintPayload(hashes),
+    hasher,
+  );
+  const manifestFingerprintResult = await hashStableFingerprintPayload(
+    createManifestFingerprintPayload(hashes),
+    hasher,
+  );
+  const fingerprintIssues = [
+    ...businessFingerprintResult.issues,
+    ...manifestFingerprintResult.issues,
+  ];
+  if (
+    fingerprintIssues.length > 0 ||
+    !businessFingerprintResult.fingerprint ||
+    !manifestFingerprintResult.fingerprint
+  ) {
+    return emptyResult(
+      snapshot,
+      hashes,
+      fingerprintIssues,
+      "migration_failed",
+      migrationVersion,
+      businessFingerprintResult.fingerprint,
+      manifestFingerprintResult.fingerprint,
+    );
+  }
+
+  const businessDatasetFingerprint = businessFingerprintResult.fingerprint;
+  const manifestFingerprint = manifestFingerprintResult.fingerprint;
+
   if (!hasBusinessLegacyValue(snapshot)) {
-    return emptyResult(snapshot, hashes, [], "empty");
+    return emptyResult(
+      snapshot,
+      hashes,
+      [],
+      "empty",
+      migrationVersion,
+      businessDatasetFingerprint,
+      manifestFingerprint,
+    );
   }
 
   const rawAnalysis = snapshot.values[LEGACY_ANALYSIS_KEY];
@@ -254,6 +333,9 @@ export const runLegacyStorageV2DryRunMigration = async (
         ),
       ],
       "blocked",
+      migrationVersion,
+      businessDatasetFingerprint,
+      manifestFingerprint,
     );
   }
 
@@ -270,6 +352,9 @@ export const runLegacyStorageV2DryRunMigration = async (
         ),
       ],
       "migration_failed",
+      migrationVersion,
+      businessDatasetFingerprint,
+      manifestFingerprint,
     );
   }
 
@@ -286,6 +371,9 @@ export const runLegacyStorageV2DryRunMigration = async (
         ),
       ],
       "migration_failed",
+      migrationVersion,
+      businessDatasetFingerprint,
+      manifestFingerprint,
     );
   }
 
@@ -317,13 +405,13 @@ export const runLegacyStorageV2DryRunMigration = async (
     ...target.rejectedRecords,
   ];
 
-  const stagingDatasetId = buildId("legacy_staging_dataset", analysisHash, migrationVersion);
-  const migrationManifestId = buildId("legacy_migration_manifest", analysisHash, migrationVersion);
+  const stagingDatasetId = buildId("legacy_staging_dataset", businessDatasetFingerprint, migrationVersion);
+  const migrationManifestId = buildId("legacy_migration_manifest", manifestFingerprint, migrationVersion);
   const manifestRecord = buildManifestRecord(
     migrationManifestId,
     migrationVersion,
     analysis.importBatch.importBatchId,
-    analysisHash,
+    manifestFingerprint,
     snapshot.capturedAt,
     issues,
   );
@@ -349,13 +437,23 @@ export const runLegacyStorageV2DryRunMigration = async (
   };
 
   const datasetValidation = validateV2Dataset(stagingDataset as V2Dataset);
-  if (!datasetValidation.valid) {
-    const validationIssues = mapValidationIssues(datasetValidation.issues);
+  const validationIssues = mapValidationIssues(datasetValidation.issues);
+  const blockingValidationIssues = validationIssues.filter(
+    (issue) => !isIndependentAdProductReferenceIssue(issue),
+  );
+  const downgradedValidationIssues = validationIssues
+    .filter(isIndependentAdProductReferenceIssue)
+    .map(downgradeIndependentAdProductReferenceIssue);
+  issues.push(...downgradedValidationIssues);
+
+  if (blockingValidationIssues.some((issue) => issue.severity === "error")) {
     return {
       status: "migration_failed",
       futureActivationEligible: false,
       migrationVersion,
       defaultOwner: DEFAULT_TMAIL_OWNER,
+      businessDatasetFingerprint,
+      manifestFingerprint,
       stagingDataset: null,
       manifestCandidate: buildManifestCandidate(
         manifestRecord,
@@ -369,7 +467,7 @@ export const runLegacyStorageV2DryRunMigration = async (
       recordCounts: emptyRecordCounts(),
       rejectedRecords,
       ignoredLegacyKeys: summarizeIgnoredLegacyKeys(snapshot),
-      issues: [...issues, ...validationIssues],
+      issues: [...issues, ...blockingValidationIssues],
     };
   }
 
@@ -380,6 +478,8 @@ export const runLegacyStorageV2DryRunMigration = async (
       futureActivationEligible: false,
       migrationVersion,
       defaultOwner: DEFAULT_TMAIL_OWNER,
+      businessDatasetFingerprint,
+      manifestFingerprint,
       stagingDataset: null,
       manifestCandidate: buildManifestCandidate(
         manifestRecord,
@@ -402,13 +502,16 @@ export const runLegacyStorageV2DryRunMigration = async (
     : analysis.parsedSourceCount === analysis.sourceCount
       ? "ready"
       : "ready_partial";
-  const futureActivationEligible = status === "ready" || status === "ready_partial";
+  const futureActivationEligible = status === "ready";
+  manifestRecord.safeIssueCodes = safeIssueCodes(issues);
 
   return {
     status,
     futureActivationEligible,
     migrationVersion,
     defaultOwner: DEFAULT_TMAIL_OWNER,
+    businessDatasetFingerprint,
+    manifestFingerprint,
     stagingDataset,
     manifestCandidate: buildManifestCandidate(
       manifestRecord,

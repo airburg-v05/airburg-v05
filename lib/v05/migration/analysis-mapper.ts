@@ -38,7 +38,7 @@ interface AnalysisMappingInput {
   analysis: TmallStoredAnalysisResult;
   analysisHash: string;
   capturedAt: string;
-  migrationVersion?: typeof V2_MIGRATION_VERSION;
+  migrationVersion?: string;
 }
 
 const SOURCE_TYPES: V2SourceType[] = [
@@ -66,6 +66,11 @@ const toSourceStatus = (value: unknown): TmallSourceStatus =>
 
 const toDetectedSourceType = (value: unknown): V2SourceType | "unknown" =>
   SOURCE_TYPES.includes(value as V2SourceType) ? (value as V2SourceType) : "unknown";
+
+const isParsedSource = (
+  analysis: TmallStoredAnalysisResult,
+  sourceType: TmallSourceType,
+): boolean => toSourceStatus(analysis.sourceHealth[sourceType]?.status) === "parsed";
 
 const toDateRange = (range: TmallDateRange | undefined): DateRange | null => {
   if (!range) return null;
@@ -201,7 +206,6 @@ const mapBusinessProducts = (
 const mapAdProducts = (
   facts: AdProductDailyFact[],
   importBatchId: string,
-  availableProductIds: Set<string>,
   rejectedRecords: RejectedLegacyRecord[],
 ): OwnedAdProductFact[] => {
   const seen = new Set<string>();
@@ -219,11 +223,6 @@ const mapAdProducts = (
     }
 
     const productId = fact.productId.trim();
-    if (!availableProductIds.has(productId)) {
-      rejectRecord(rejectedRecords, "ad_product_fact", productId, `${path}.productId`, "reference_missing");
-      return;
-    }
-
     const semanticKey = `${fact.date}::${productId}`;
     if (seen.has(semanticKey)) {
       rejectRecord(rejectedRecords, "ad_product_fact", semanticKey, path, "semantic_duplicate");
@@ -352,6 +351,31 @@ const buildSourceSummary = (
     };
   });
 
+const countAfterSalesAggregateRecords = (analysis: TmallStoredAnalysisResult): number => {
+  const aggregates = analysis.afterSalesAggregates;
+  return [
+    aggregates.byApplyDate,
+    aggregates.bySuccessDate,
+    aggregates.byPaymentDate,
+    aggregates.reasonDistribution,
+    aggregates.statusDistribution,
+    aggregates.productSummary,
+    aggregates.unknownStatus,
+  ].reduce((total, records) => total + (Array.isArray(records) ? records.length : 0), 0);
+};
+
+const createSourceStateMismatchIssue = (
+  sourceType: TmallSourceType,
+  recordCount: number,
+): DryRunIssue =>
+  createDryRunIssue(
+    "legacy_source_state_mismatch",
+    `sourceHealth.${sourceType}.status`,
+    "Legacy source health is not parsed, but corresponding safe fact candidates exist.",
+    "error",
+    { sourceType, recordCount },
+  );
+
 export const mapTmallAnalysisToV2 = ({
   analysis,
   analysisHash,
@@ -393,27 +417,52 @@ export const mapTmallAnalysisToV2 = ({
 
   const rejectedRecords: RejectedLegacyRecord[] = [];
   const issues: DryRunIssue[] = [];
+  const rawBusinessProductFacts = Array.isArray(analysis.productDailyFacts) ? analysis.productDailyFacts : [];
+  const rawAdProductFacts = Array.isArray(analysis.adProductDailyFacts) ? analysis.adProductDailyFacts : [];
+  const rawAdPlanFacts = Array.isArray(analysis.adPlanDailyFacts) ? analysis.adPlanDailyFacts : [];
+  const afterSalesRecordCount = countAfterSalesAggregateRecords(analysis);
+
+  if (!isParsedSource(analysis, "business_product") && rawBusinessProductFacts.length > 0) {
+    issues.push(createSourceStateMismatchIssue("business_product", rawBusinessProductFacts.length));
+  }
+  if (!isParsedSource(analysis, "ad_product") && rawAdProductFacts.length > 0) {
+    issues.push(createSourceStateMismatchIssue("ad_product", rawAdProductFacts.length));
+  }
+  if (!isParsedSource(analysis, "ad_plan") && rawAdPlanFacts.length > 0) {
+    issues.push(createSourceStateMismatchIssue("ad_plan", rawAdPlanFacts.length));
+  }
+  if (!isParsedSource(analysis, "after_sales") && afterSalesRecordCount > 0) {
+    issues.push(createSourceStateMismatchIssue("after_sales", afterSalesRecordCount));
+  }
+
   const businessProducts = mapBusinessProducts(
-    Array.isArray(analysis.productDailyFacts) ? analysis.productDailyFacts : [],
+    isParsedSource(analysis, "business_product") ? rawBusinessProductFacts : [],
     importBatchId,
     rejectedRecords,
   );
   const adProductFacts = mapAdProducts(
-    Array.isArray(analysis.adProductDailyFacts) ? analysis.adProductDailyFacts : [],
+    isParsedSource(analysis, "ad_product") ? rawAdProductFacts : [],
     importBatchId,
-    businessProducts.productIds,
     rejectedRecords,
   );
   const adPlanFacts = mapAdPlans(
-    Array.isArray(analysis.adPlanDailyFacts) ? analysis.adPlanDailyFacts : [],
+    isParsedSource(analysis, "ad_plan") ? rawAdPlanFacts : [],
     importBatchId,
     rejectedRecords,
   );
-  const afterSales = mapAfterSalesAggregatesToV2({
-    aggregates: analysis.afterSalesAggregates,
-    dateRange: analysis.dateRanges.after_sales,
-    importBatchId,
-  });
+  const afterSales = isParsedSource(analysis, "after_sales")
+    ? mapAfterSalesAggregatesToV2({
+      aggregates: analysis.afterSalesAggregates,
+      dateRange: analysis.dateRanges.after_sales,
+      importBatchId,
+    })
+    : {
+      dailyAggregates: [],
+      rangeAggregates: [],
+      rejectedRecords: [],
+      issues: [],
+      unmappedSafeAggregateSummary: [],
+    };
 
   issues.push(...afterSales.issues);
   rejectedRecords.push(...afterSales.rejectedRecords);

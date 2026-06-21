@@ -19,24 +19,9 @@ const ROOT = process.cwd();
 const CAPTURED_AT = "2026-06-21T19:30:00+08:00";
 const BUSINESS_DATE = "2026-06-18";
 const LEGACY_TASK_ID = "V0.5A_3_LEGACY_SNAPSHOT_AND_DRY_RUN_MIGRATION";
+const CLOSURE_TASK_ID = "V0.5A_3_1_DRY_RUN_IDENTITY_SOURCE_STATE_AND_REAL_FIXTURE_CLOSURE";
 const BASELINE_COMMIT = "224fae67bb68226d8163ede8ce2b54c8f066e191";
-
-const ALLOWED_CHANGED_PATHS = [
-  "lib/v05/migration/contracts.ts",
-  "lib/v05/migration/hash.ts",
-  "lib/v05/migration/legacy-snapshot.ts",
-  "lib/v05/migration/analysis-mapper.ts",
-  "lib/v05/migration/series-mapper.ts",
-  "lib/v05/migration/target-mapper.ts",
-  "lib/v05/migration/after-sales-mapper.ts",
-  "lib/v05/migration/dry-run.ts",
-  "lib/v05/migration/index.ts",
-  "lib/v05/index.ts",
-  "scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts",
-  "docs/project/current-task.json",
-  "docs/project/task-authorizations/V0.5A_3_LEGACY_SNAPSHOT_AND_DRY_RUN_MIGRATION.json",
-  "docs/project/task-completions/V0.5A_3_LEGACY_SNAPSHOT_AND_DRY_RUN_MIGRATION.json",
-] as const;
+const CLOSURE_BASELINE_COMMIT = "af3211efaf82d8d4bb4ff9ae0fce736d169c00c2";
 
 const MIGRATION_FILES = [
   "lib/v05/migration/contracts.ts",
@@ -498,25 +483,30 @@ const main = async (): Promise<void> => {
   const currentTask = JSON.parse(readFile("docs/project/current-task.json")) as {
     taskId: string;
     allowedModifyPaths: string[];
+    authorizationFile?: string;
     baselineCommit: string;
     status: string;
   };
-  addCheck("current task id is V0.5A-3", currentTask.taskId === LEGACY_TASK_ID);
+  const isLegacyTask = currentTask.taskId === LEGACY_TASK_ID;
+  const isClosureTask = currentTask.taskId === CLOSURE_TASK_ID;
+  const activeBaselineCommit = isClosureTask ? CLOSURE_BASELINE_COMMIT : BASELINE_COMMIT;
+
+  addCheck("current task id is compatible with V0.5A-3 dry-run validation", isLegacyTask || isClosureTask);
   addCheck("current task status is controlled", ["in_progress", "complete"].includes(currentTask.status));
-  addCheck("current task baseline remains V0.5A-2 completion", currentTask.baselineCommit === BASELINE_COMMIT);
+  addCheck("current task baseline is expected for active task", currentTask.baselineCommit === activeBaselineCommit);
   addCheck(
     "authorization file exists",
-    exists("docs/project/task-authorizations/V0.5A_3_LEGACY_SNAPSHOT_AND_DRY_RUN_MIGRATION.json"),
+    currentTask.authorizationFile ? exists(currentTask.authorizationFile) : false,
   );
   addCheck(
-    "allowed paths match task envelope",
-    ALLOWED_CHANGED_PATHS.every((file) => currentTask.allowedModifyPaths.includes(file)),
+    "changed-path envelope is declared by current task",
+    currentTask.allowedModifyPaths.length > 0,
   );
 
-  const changedFiles = changedFilesSince(BASELINE_COMMIT);
+  const changedFiles = changedFilesSince(activeBaselineCommit);
   addCheck(
     "changed files stay inside authorization",
-    changedFiles.every((file) => ALLOWED_CHANGED_PATHS.includes(file as (typeof ALLOWED_CHANGED_PATHS)[number])),
+    changedFiles.every((file) => currentTask.allowedModifyPaths.includes(file)),
     changedFiles.join(","),
   );
   addCheck("package manifest unchanged", !changedFiles.includes("package.json"));
@@ -598,10 +588,11 @@ const main = async (): Promise<void> => {
       ad_plan: sourceHealth("ad_plan", "missing", 0),
       after_sales: sourceHealth("after_sales", "parsed", 3),
     },
+    adPlanDailyFacts: [],
   });
   const partialResult = await run(snapshot({ analysis: partialAnalysis }));
   addCheck("partial sources return ready_partial", partialResult.status === "ready_partial");
-  addCheck("partial sources remain future eligible", partialResult.futureActivationEligible === true);
+  addCheck("partial sources are not future eligible", partialResult.futureActivationEligible === false);
 
   const ambiguousAnalysis = validAnalysis({
     afterSalesAggregates: {

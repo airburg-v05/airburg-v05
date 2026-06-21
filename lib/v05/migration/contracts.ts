@@ -13,7 +13,6 @@ import type {
   StoreRecord,
   TargetRecord,
   V2Dataset,
-  V2_MIGRATION_VERSION,
   V2SourceType,
 } from "../domain/models";
 import type { ValidationIssue, ValidationIssueCode, ValidationSeverity } from "../domain/results";
@@ -48,6 +47,7 @@ export type MigrationOnlyIssueCode =
   | "legacy_parse_failed"
   | "hash_provider_unavailable"
   | "ambiguous_after_sales_range_basis"
+  | "legacy_source_state_mismatch"
   | "ignored_deprecated_preview"
   | "ignored_non_business_session"
   | "memory_validation_failed";
@@ -167,8 +167,10 @@ export interface TargetMappingResult {
 export interface LegacyMigrationDryRunResult {
   status: DryRunStatus;
   futureActivationEligible: boolean;
-  migrationVersion: typeof V2_MIGRATION_VERSION;
+  migrationVersion: string;
   defaultOwner: typeof DEFAULT_TMAIL_OWNER;
+  businessDatasetFingerprint: string | null;
+  manifestFingerprint: string | null;
   stagingDataset: V2StagingDataset | null;
   manifestCandidate: DryRunMigrationManifest | null;
   proposedActiveDatasetPointer: null;
@@ -186,7 +188,7 @@ export interface LegacyValueHasher {
 
 export interface LegacyMigrationDryRunInput {
   snapshot: LegacyStorageSnapshot;
-  migrationVersion?: typeof V2_MIGRATION_VERSION;
+  migrationVersion?: string;
   hasher?: LegacyValueHasher;
 }
 

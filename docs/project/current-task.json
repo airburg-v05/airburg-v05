@@ -1,12 +1,12 @@
 {
-  "taskId": "V0.5A_3_LEGACY_SNAPSHOT_AND_DRY_RUN_MIGRATION",
-  "stage": "V0.5A-3",
+  "taskId": "V0.5A_3_1_DRY_RUN_IDENTITY_SOURCE_STATE_AND_REAL_FIXTURE_CLOSURE",
+  "stage": "V0.5A-3.1",
   "dependsOn": [
-    "V0.5A_2_V2_DOMAIN_REPOSITORY_CONTRACTS_VALIDATORS_AND_MEMORY_ADAPTER"
+    "V0.5A_3_LEGACY_SNAPSHOT_AND_DRY_RUN_MIGRATION"
   ],
-  "baselineCommit": "224fae67bb68226d8163ede8ce2b54c8f066e191",
-  "authorizationFile": "docs/project/task-authorizations/V0.5A_3_LEGACY_SNAPSHOT_AND_DRY_RUN_MIGRATION.json",
-  "authorizationHash": "c06f208bfa5f73994beddffb6016b16876d0d2d6dbebb5e657ccdb1299d82971",
+  "baselineCommit": "af3211efaf82d8d4bb4ff9ae0fce736d169c00c2",
+  "authorizationFile": "docs/project/task-authorizations/V0.5A_3_1_DRY_RUN_IDENTITY_SOURCE_STATE_AND_REAL_FIXTURE_CLOSURE.json",
+  "authorizationHash": "9332e47e56b712aafbdf8b95619d3a795d128793a124adc2d5ae24a7a9434f01",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
   "governanceContractHash": "efba9a1b641890faa112752fefc9d2497716cd465a5d7f74dd4218de7a865605",
   "requiredDocuments": [
@@ -26,32 +26,24 @@
     "docs/decisions/v0.5a-migration-decisions.json",
     "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
     "docs/architecture/v0.5a-storage-v2-contract.json",
-    "docs/project/task-completions/V0.5A_2_V2_DOMAIN_REPOSITORY_CONTRACTS_VALIDATORS_AND_MEMORY_ADAPTER.json",
-    "lib/v05/domain/models.ts",
-    "lib/v05/domain/results.ts",
-    "lib/v05/domain/keys.ts",
-    "lib/v05/domain/legacy.ts",
-    "lib/v05/validation/core.ts",
-    "lib/v05/validation/records.ts",
-    "lib/v05/validation/dataset.ts",
-    "lib/v05/repositories/contracts.ts",
-    "lib/v05/repositories/memory-adapter.ts"
+    "docs/project/task-completions/V0.5A_3_LEGACY_SNAPSHOT_AND_DRY_RUN_MIGRATION.json",
+    "lib/v05/migration/contracts.ts",
+    "lib/v05/migration/hash.ts",
+    "lib/v05/migration/analysis-mapper.ts",
+    "lib/v05/migration/dry-run.ts",
+    "scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts"
   ],
   "allowedModifyPaths": [
     "lib/v05/migration/contracts.ts",
     "lib/v05/migration/hash.ts",
-    "lib/v05/migration/legacy-snapshot.ts",
     "lib/v05/migration/analysis-mapper.ts",
-    "lib/v05/migration/series-mapper.ts",
-    "lib/v05/migration/target-mapper.ts",
-    "lib/v05/migration/after-sales-mapper.ts",
     "lib/v05/migration/dry-run.ts",
-    "lib/v05/migration/index.ts",
-    "lib/v05/index.ts",
     "scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts",
+    "scripts/private-audit/validate-v05a31-dry-run-closure.ts",
+    "lib/v05/migration/index.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5A_3_LEGACY_SNAPSHOT_AND_DRY_RUN_MIGRATION.json",
-    "docs/project/task-completions/V0.5A_3_LEGACY_SNAPSHOT_AND_DRY_RUN_MIGRATION.json"
+    "docs/project/task-authorizations/V0.5A_3_1_DRY_RUN_IDENTITY_SOURCE_STATE_AND_REAL_FIXTURE_CLOSURE.json",
+    "docs/project/task-completions/V0.5A_3_1_DRY_RUN_IDENTITY_SOURCE_STATE_AND_REAL_FIXTURE_CLOSURE.json"
   ],
   "forbiddenModifyPaths": [
     "app/**",
@@ -89,6 +81,7 @@
     "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
     "npx tsx scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts",
+    "npx tsx scripts/private-audit/validate-v05a31-dry-run-closure.ts",
     "npm run lint",
     "npm run build"
   ],
@@ -114,6 +107,10 @@
       "status": "PASS"
     },
     {
+      "command": "npx tsx scripts/private-audit/validate-v05a31-dry-run-closure.ts",
+      "status": "PASS"
+    },
+    {
       "command": "npm run lint",
       "status": "PASS"
     },
@@ -123,12 +120,13 @@
     }
   ],
   "stopConditions": [
-    "V0.5A-2 completion record validation fails.",
+    "V0.5A-3 completion record validation fails.",
     "The dependency source is not task_completion_record.",
     "Decision register files would need modification.",
-    "Existing V2 Domain cannot safely express staging.",
-    "Existing V2 after-sales model cannot unambiguously express legacy safe aggregates.",
-    "Mixed after-sales range data would need to be disguised as one dateBasis.",
+    "Existing V2 Domain cannot safely express corrected dry-run identity or state.",
+    "Source-state mismatch cannot be represented without modifying V2 domain or validation contracts.",
+    "Real fixture validation would require modifying private-samples.",
+    "runTmallFourSourceAnalysis would need modification.",
     "lib/storage would need modification.",
     "lib/tmall would need modification.",
     "A real migration would need to run.",
@@ -137,13 +135,10 @@
     "An active pointer write would be required.",
     "A page or component would need integration.",
     "New dependencies would be required.",
-    "The five legacy keys cannot be preserved.",
-    "After-sales sensitive details cannot be kept out of staging.",
-    "Unsupported legacy target periods cannot be preserved without coercion.",
-    "The working tree contains unexplained out-of-scope changes.",
-    "The validation script can only pass by weakening checks."
+    "The validation script can only pass by weakening checks.",
+    "The working tree contains unexplained out-of-scope changes."
   ],
-  "startedAt": "2026-06-21T19:02:14+08:00",
-  "completedAt": "2026-06-21T19:44:00+08:00",
+  "startedAt": "2026-06-21T19:33:30+08:00",
+  "completedAt": "2026-06-21T19:45:31+08:00",
   "status": "complete"
 }
