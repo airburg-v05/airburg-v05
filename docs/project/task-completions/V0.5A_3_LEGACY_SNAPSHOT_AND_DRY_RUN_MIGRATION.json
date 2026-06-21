@@ -1,0 +1,52 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5A_3_LEGACY_SNAPSHOT_AND_DRY_RUN_MIGRATION",
+  "stage": "V0.5A-3",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5A_3_LEGACY_SNAPSHOT_AND_DRY_RUN_MIGRATION.json",
+  "authorizationHash": "c06f208bfa5f73994beddffb6016b16876d0d2d6dbebb5e657ccdb1299d82971",
+  "authorizationCommit": "c1677dedb77efeca12597f0267adc1ac6b1a6b92",
+  "completionCommit": "5f38645544a475bc3e21e826d4dfe4ae71bb84af",
+  "completedAt": "2026-06-21T19:44:00+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-21T19:47:00+08:00"
+}
