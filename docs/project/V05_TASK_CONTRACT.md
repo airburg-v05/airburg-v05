@@ -83,6 +83,57 @@ Allowed transitions:
 
 `complete` is only valid after all required commands have recorded passing results.
 
+## Immutable Task Completion Records
+
+Major stages such as `V0.5A`, `V0.5B`, and `V0.5C` remain governed by
+`docs/project/v0.5-lock.json` `stageStatuses`.
+
+Concrete tasks and substages such as `V0.5A-1`, `V0.5A-2`, or named task IDs are
+governed by immutable completion records at:
+
+`docs/project/task-completions/<taskId>.json`
+
+A completion record must contain:
+
+1. `recordVersion`
+2. `taskId`
+3. `stage`
+4. `status`
+5. `authorizationFile`
+6. `authorizationHash`
+7. `authorizationCommit`
+8. `completionCommit`
+9. `completedAt`
+10. `requiredCommands`
+11. `commandResults`
+12. `sourceTaskContractPath`
+13. `registeredAt`
+
+Completion record rules:
+
+1. One `taskId` may have only one completion record.
+2. The completion record must be Git-tracked.
+3. The first committed version is immutable.
+4. The working-tree file must match the first committed version exactly.
+5. A record with `blocked`, `pending`, or `in_progress` must never satisfy a dependency.
+6. `completionCommit` must contain the corresponding `current-task.json` in `complete` state.
+7. `completionCommit` must contain PASS results for all required commands.
+8. `authorizationCommit` must be an ancestor of `completionCommit`.
+9. `completionCommit` must be an ancestor of current `HEAD`.
+10. The authorization file must remain hash-matched and unchanged from its authorization commit.
+11. Completion records are governance metadata only; they are not product storage and must not enter V0.5 business data repositories.
+
+## Dependency Resolution
+
+`resolveDependency(dependencyId)` must use this order:
+
+1. If `stageStatuses[dependencyId] === "complete"`, the dependency is satisfied by `stage_status`.
+2. Otherwise, search `docs/project/task-completions` for a record where `record.taskId === dependencyId` or `record.stage === dependencyId`.
+3. At least one matching record must be complete, Git-tracked, immutable, and fully validated.
+4. Missing, modified, forged, blocked, pending, or in-progress records do not satisfy dependencies.
+
+Subtasks must not require a governance lock edit every time they complete. They require a completion record instead.
+
 ## Path Rules
 
 1. `allowedModifyPaths` must not be empty.
@@ -132,3 +183,4 @@ A V0.5 task must stop with `BLOCKED` if:
 9. nested instruction files override the root governance unexpectedly;
 10. the task cannot preserve legacy data;
 11. an authorization file is changed after its authorization commit.
+12. a required task completion record is missing, modified, untracked, or not backed by Git history.

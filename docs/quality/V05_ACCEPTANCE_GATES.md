@@ -17,6 +17,7 @@ Every V0.5 task must pass:
 11. Single-task contract check.
 12. Instruction-file scan.
 13. Immutable task authorization check.
+14. Immutable task completion ledger check when dependencies include concrete V0.5 tasks or substages.
 
 PRE-FLIGHT must pass before edits. If PRE-FLIGHT fails, output `BLOCKED` and do not modify files.
 
@@ -81,3 +82,26 @@ Every V0.5 task must:
 Forbidden paths override allowed paths. A task may not edit its task contract to hide a prior unauthorized modification.
 
 The mutable fields of `current-task.json` are limited to `status`, `commandResults`, `startedAt`, and `completedAt`.
+
+## Task Completion Ledger Gate
+
+Major V0.5 stages continue to use `stageStatuses`.
+
+Concrete tasks and substages use immutable task completion records in:
+
+`docs/project/task-completions`
+
+Fail if:
+
+1. a concrete task dependency has no completion record.
+2. a completion record is not Git-tracked.
+3. a completion record differs from its first committed version.
+4. a completion record points to a missing `completionCommit`.
+5. `completionCommit` is not a HEAD ancestor.
+6. `authorizationCommit` is not an ancestor of `completionCommit`.
+7. `completionCommit` does not contain complete `current-task.json` state.
+8. required commands are missing PASS results.
+9. a record tries to mark `blocked`, `pending`, or `in_progress` as dependency-satisfying.
+10. a completion record includes sensitive files, private samples, environment files, or business data.
+
+Task completion records are governance evidence only. They are not product storage, not localStorage, not IndexedDB, and not part of the user-facing data model.

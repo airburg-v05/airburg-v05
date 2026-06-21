@@ -9,6 +9,7 @@ const MANDATORY_COMMANDS = [
   "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
   "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
   "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+  "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
   "npm run lint",
   "npm run build",
 ] as const;
@@ -86,6 +87,35 @@ interface CurrentTask {
   status: "pending" | "in_progress" | "blocked" | "complete";
 }
 
+interface TaskCompletionRecord {
+  recordVersion: string;
+  taskId: string;
+  stage: string;
+  status: "complete" | "blocked" | "pending" | "in_progress";
+  authorizationFile: string;
+  authorizationHash: string;
+  authorizationCommit: string;
+  completionCommit: string;
+  completedAt: string;
+  requiredCommands: string[];
+  commandResults: CommandResult[];
+  sourceTaskContractPath: "docs/project/current-task.json";
+  registeredAt: string;
+}
+
+interface LoadedCompletionRecord {
+  path: string;
+  record: TaskCompletionRecord;
+}
+
+interface DependencyResolution {
+  dependencyId: string;
+  satisfied: boolean;
+  source: "stage_status" | "task_completion_record" | "missing" | "invalid_task_completion_record";
+  recordPath: string | null;
+  failures: string[];
+}
+
 interface ValidationContext {
   baselineCommitExists: boolean;
   authorizationFileTracked: boolean;
@@ -97,6 +127,7 @@ interface ValidationContext {
   changedFiles: string[];
   instructionFiles: string[];
   trackedFiles: string[];
+  dependencyResolutions: DependencyResolution[];
 }
 
 const toPosix = (value: string): string => value.split(path.sep).join("/");
@@ -274,6 +305,125 @@ const commandResultsPass = (task: CurrentTask): boolean => {
   );
 };
 
+const completionCommandResultsPass = (
+  requiredCommands: readonly string[],
+  commandResults: readonly CommandResult[] | undefined,
+): boolean =>
+  requiredCommands.every((command) =>
+    (commandResults ?? []).some((result) => result.command === command && result.status === "PASS"),
+  );
+
+const findFirstCommitAddingFile = (relativePath: string): string | null => {
+  const stdout = git(["log", "--diff-filter=A", "--format=%H", "--", relativePath]);
+  const commits = stdout.split("\n").map((line) => line.trim()).filter(Boolean);
+  return commits.at(-1) ?? null;
+};
+
+const listCompletionRecords = (): LoadedCompletionRecord[] => {
+  const dir = "docs/project/task-completions";
+  const absoluteDir = path.join(ROOT, dir);
+  if (!fs.existsSync(absoluteDir)) return [];
+  return fs.readdirSync(absoluteDir)
+    .filter((entry) => entry.endsWith(".json"))
+    .sort()
+    .map((entry) => {
+      const recordPath = `${dir}/${entry}`;
+      return { path: recordPath, record: parseJsonFile<TaskCompletionRecord>(recordPath) };
+    });
+};
+
+const validateCompletionRecordForDependency = (
+  loaded: LoadedCompletionRecord,
+): string[] => {
+  const failures: string[] = [];
+  const { path: recordPath, record } = loaded;
+  const firstRecordCommit = findFirstCommitAddingFile(recordPath);
+
+  if (record.status !== "complete") failures.push("recordStatusComplete");
+  if (record.recordVersion !== "v0.5-task-completion-v1") failures.push("recordVersion");
+  if (!commandSucceeds("git", ["ls-files", "--error-unmatch", recordPath])) failures.push("recordGitTracked");
+  if (!firstRecordCommit) {
+    failures.push("recordFirstCommitExists");
+  } else if (readFileAtCommit(firstRecordCommit, recordPath) !== readFile(recordPath)) {
+    failures.push("recordUnchangedFromFirstCommit");
+  }
+  if (!commandSucceeds("git", ["cat-file", "-e", `${record.completionCommit}^{commit}`])) {
+    failures.push("completionCommitExists");
+  } else if (!commandSucceeds("git", ["merge-base", "--is-ancestor", record.completionCommit, "HEAD"])) {
+    failures.push("completionCommitIsHeadAncestor");
+  }
+  if (!commandSucceeds("git", ["cat-file", "-e", `${record.authorizationCommit}^{commit}`])) {
+    failures.push("authorizationCommitExists");
+  } else if (!commandSucceeds("git", ["merge-base", "--is-ancestor", record.authorizationCommit, record.completionCommit])) {
+    failures.push("authorizationCommitIsCompletionAncestor");
+  }
+  if (findFirstCommitAddingFile(record.authorizationFile) !== record.authorizationCommit) {
+    failures.push("authorizationCommitMatchesRecord");
+  }
+
+  try {
+    const authorizationAtCommit = JSON.parse(readFileAtCommit(record.authorizationCommit, record.authorizationFile)) as TaskAuthorization;
+    if (calculateAuthorizationHash(authorizationAtCommit) !== record.authorizationHash) {
+      failures.push("authorizationHashMatchesRecord");
+    }
+  } catch {
+    failures.push("authorizationReadableAtCommit");
+  }
+
+  try {
+    const completionTask = JSON.parse(readFileAtCommit(record.completionCommit, record.sourceTaskContractPath)) as CurrentTask;
+    if (completionTask.status !== "complete") failures.push("completionTaskIsComplete");
+    if (
+      completionTask.taskId !== record.taskId ||
+      completionTask.stage !== record.stage ||
+      completionTask.authorizationFile !== record.authorizationFile ||
+      completionTask.authorizationHash !== record.authorizationHash
+    ) {
+      failures.push("completionTaskMatchesRecord");
+    }
+    if (!completionCommandResultsPass(completionTask.requiredCommands, completionTask.commandResults)) {
+      failures.push("completionTaskCommandResultsPass");
+    }
+    if (!completionCommandResultsPass(record.requiredCommands, record.commandResults)) {
+      failures.push("recordCommandResultsPass");
+    }
+  } catch {
+    failures.push("completionTaskReadable");
+  }
+
+  return failures;
+};
+
+const resolveDependency = (
+  dependencyId: string,
+  lock: GovernanceLock,
+  records: LoadedCompletionRecord[],
+): DependencyResolution => {
+  if (lock.stageStatuses[dependencyId] === "complete") {
+    return { dependencyId, satisfied: true, source: "stage_status", recordPath: null, failures: [] };
+  }
+
+  const candidates = records.filter(({ record }) => record.taskId === dependencyId || record.stage === dependencyId);
+  if (candidates.length === 0) {
+    return { dependencyId, satisfied: false, source: "missing", recordPath: null, failures: ["dependencyRecordMissing"] };
+  }
+
+  for (const candidate of candidates) {
+    const failures = validateCompletionRecordForDependency(candidate);
+    if (failures.length === 0) {
+      return { dependencyId, satisfied: true, source: "task_completion_record", recordPath: candidate.path, failures: [] };
+    }
+  }
+
+  return {
+    dependencyId,
+    satisfied: false,
+    source: "invalid_task_completion_record",
+    recordPath: candidates[0].path,
+    failures: candidates.flatMap(validateCompletionRecordForDependency),
+  };
+};
+
 const trackedFileIsSensitive = (file: string): boolean =>
   SENSITIVE_TRACKED_PATTERNS.some((pattern) => file.startsWith(pattern)) ||
   SENSITIVE_TRACKED_SUFFIXES.some((suffix) => file.endsWith(suffix)) ||
@@ -290,9 +440,7 @@ const validateAuthorizationContract = (
   const failures: string[] = [];
 
   const checks = {
-    dependenciesComplete: task.dependsOn.every(
-      (stage) => lock.stageStatuses[stage] === "complete",
-    ),
+    dependenciesComplete: context.dependencyResolutions.every((resolution) => resolution.satisfied),
     baselineCommitExists: context.baselineCommitExists,
     authorizationFileTracked: context.authorizationFileTracked,
     authorizationCommitExists: context.authorizationCommitExists,
@@ -398,6 +546,15 @@ const buildPureFixtures = () => {
     changedFiles: ["AGENTS.md", "docs/project/current-task.json"],
     instructionFiles: ["AGENTS.md"],
     trackedFiles: ["AGENTS.md"],
+    dependencyResolutions: [
+      {
+        dependencyId: "V0.5A-0.1",
+        satisfied: true,
+        source: "stage_status",
+        recordPath: null,
+        failures: [],
+      },
+    ],
   };
 
   return { authorization, task, lock, context };
@@ -533,6 +690,7 @@ const runPureTests = () => {
 const buildRepositoryContext = (
   task: CurrentTask,
   authorization: TaskAuthorization,
+  lock: GovernanceLock,
 ): ValidationContext & { authorizationCommit: string | null; authorizationHash: string } => {
   const authorizationCommit = findAuthorizationCommit(task.authorizationFile);
   const authorizationAtCommit = authorizationCommit
@@ -542,6 +700,10 @@ const buildRepositoryContext = (
   const authorizationHashAtCommit = authorizationAtCommit
     ? calculateAuthorizationHash(authorizationAtCommit)
     : null;
+  const completionRecords = listCompletionRecords();
+  const dependencyResolutions = task.dependsOn.map((dependencyId) =>
+    resolveDependency(dependencyId, lock, completionRecords),
+  );
 
   return {
     baselineCommitExists: commandSucceeds("git", [
@@ -572,6 +734,7 @@ const buildRepositoryContext = (
     changedFiles: authorizationCommit ? changedFilesSinceCommit(authorizationCommit) : [],
     instructionFiles: listInstructionFiles(),
     trackedFiles: listTrackedFiles(),
+    dependencyResolutions,
     authorizationCommit,
     authorizationHash,
   };
@@ -584,7 +747,7 @@ const main = () => {
   const lock = parseJsonFile<GovernanceLock>("docs/project/v0.5-lock.json");
   const task = parseJsonFile<CurrentTask>("docs/project/current-task.json");
   const authorization = parseJsonFile<TaskAuthorization>(task.authorizationFile);
-  const context = buildRepositoryContext(task, authorization);
+  const context = buildRepositoryContext(task, authorization, lock);
   const repositoryFailures = validateAuthorizationContract(task, authorization, lock, context);
   const status = pureTestsPass && repositoryFailures.length === 0 ? "PASS" : "FAIL";
 
@@ -595,6 +758,7 @@ const main = () => {
     authorizationFile: task.authorizationFile,
     authorizationCommit: context.authorizationCommit,
     authorizationHash: context.authorizationHash,
+    dependencyResolutions: context.dependencyResolutions,
     changedFiles: context.changedFiles,
     instructionFiles: context.instructionFiles,
     sensitiveTrackedFiles: context.trackedFiles.filter(trackedFileIsSensitive),

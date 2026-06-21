@@ -22,6 +22,7 @@ const REQUIRED_FILES = [
   "scripts/private-audit/validate-v05-governance-lock.ts",
   "scripts/private-audit/validate-v05-task-authorization.ts",
   "scripts/private-audit/validate-v05-task-preflight.ts",
+  "scripts/private-audit/validate-v05-task-completion-ledger.ts",
 ] as const;
 
 const REQUIRED_STAGE_SEQUENCE = [
@@ -78,6 +79,12 @@ interface GovernanceLock {
   forbiddenInstructionFiles: string[];
   nestedAgentsForbidden: boolean;
   governanceContractFiles: string[];
+  taskCompletionRecordsRequired?: boolean;
+  taskCompletionDirectory?: string;
+  dependencyResolutionPolicy?: {
+    majorStages: string;
+    tasksAndSubstages: string;
+  };
   currentStageDoesNotImplement: string[];
   privacy: {
     afterSalesSafeAggregatesOnly: boolean;
@@ -275,6 +282,15 @@ const findAuthorizationCommit = (authorizationFile: string): string | null => {
   return commits.at(-1) ?? null;
 };
 
+const listCompletionRecordPaths = (directory: string): string[] => {
+  const absoluteDir = path.join(ROOT, directory);
+  if (!fs.existsSync(absoluteDir)) return [];
+  return fs.readdirSync(absoluteDir)
+    .filter((entry) => entry.endsWith(".json"))
+    .map((entry) => `${directory}/${entry}`)
+    .sort();
+};
+
 const readFileAtCommit = (commit: string, file: string): string =>
   git(["show", `${commit}:${file}`]);
 
@@ -335,11 +351,23 @@ const main = () => {
   const sequenceIds = lock.executionSequence.map((stage) => stage.id);
   const stageById = new Map(lock.executionSequence.map((stage) => [stage.id, stage]));
   const remotes = git(["remote", "-v"]);
+  const completionDirectory = lock.taskCompletionDirectory ?? "docs/project/task-completions";
+  const completionRecordPaths = listCompletionRecordPaths(completionDirectory);
+  const completionRecords = completionRecordPaths.map((recordPath) =>
+    JSON.parse(readFile(recordPath)) as { taskId?: string },
+  );
+  const completionRecordTaskIds = completionRecords
+    .map((record) => record.taskId)
+    .filter((taskId): taskId is string => typeof taskId === "string");
   const lintPass = runCommand("npm", ["run", "lint"]);
   const buildPass = runCommand("npm", ["run", "build"]);
   const authorizationValidatorPass = runCommand("npx", [
     "tsx",
     "scripts/private-audit/validate-v05-task-authorization.ts",
+  ]);
+  const completionLedgerValidatorPass = runCommand("npx", [
+    "tsx",
+    "scripts/private-audit/validate-v05-task-completion-ledger.ts",
   ]);
 
   const checks = {
@@ -353,7 +381,7 @@ const main = () => {
       REQUIRED_STAGE_SEQUENCE.every((stage) => sequenceIds.includes(stage)) &&
       sequenceIds.length === REQUIRED_STAGE_SEQUENCE.length,
     executionSequenceUnique: unique(sequenceIds),
-    lockJsonParseable: lock.currentVersion === "V0.5A-0.2" && lock.lockName.length > 0,
+    lockJsonParseable: lock.currentVersion.length > 0 && lock.lockName.length > 0,
     multiPlatformTrue: lock.multiPlatform === true,
     multiStoreTrue: lock.multiStore === true,
     storeOwnershipRequiredTrue: lock.storeOwnershipRequired === true,
@@ -364,6 +392,31 @@ const main = () => {
     authorizationHashRequired: lock.authorizationHashRequired === true,
     authorizationCommitRequired: lock.authorizationCommitRequired === true,
     governanceContractHashRequired: lock.governanceContractHashRequired === true,
+    taskCompletionRecordsRequired: lock.taskCompletionRecordsRequired === true,
+    taskCompletionDirectoryConfigured: completionDirectory === "docs/project/task-completions",
+    dependencyResolutionPolicyConfigured:
+      lock.dependencyResolutionPolicy?.majorStages === "stageStatuses" &&
+      lock.dependencyResolutionPolicy?.tasksAndSubstages === "immutableTaskCompletionRecords",
+    taskCompletionDirectoryExists: fs.existsSync(path.join(ROOT, completionDirectory)),
+    completionRecordsParseable: completionRecordPaths.every((recordPath) => {
+      try {
+        JSON.parse(readFile(recordPath));
+        return true;
+      } catch {
+        return false;
+      }
+    }),
+    completionTaskIdsUnique: unique(completionRecordTaskIds),
+    completionRecordsUnchanged: completionRecordPaths.every((recordPath) => {
+      const firstCommit = findAuthorizationCommit(recordPath);
+      return firstCommit !== null && readFileAtCommit(firstCommit, recordPath) === readFile(recordPath);
+    }),
+    completionRecordsNoSensitiveFiles: completionRecordPaths.every((recordPath) => {
+      const content = readFile(recordPath);
+      return !["private-samples", ".env", "订单编号", "退款编号", "手机号", "地址"].some((value) =>
+        content.includes(value),
+      );
+    }),
     serverDatabaseForbidden: lock.serverDatabaseForbidden === true,
     indexedDbRequiresExplicitAuthorization:
       lock.indexedDbRequiresExplicitStageAuthorization === true,
@@ -382,6 +435,7 @@ const main = () => {
       ) || readFile("AGENTS.md").includes("clear legacy"),
     v05aBeforeV05b: stageById.get("V0.5B")?.dependsOn.includes("V0.5A") ?? false,
     v05bBeforeV05c: stageById.get("V0.5C")?.dependsOn.includes("V0.5B") ?? false,
+    v05aStillPending: lock.stageStatuses["V0.5A"] === "pending",
     noCurrentAiBackendDatabaseImplementation:
       ["AI", "backend API", "server database"].every((item) =>
         lock.currentStageDoesNotImplement.includes(item),
@@ -424,6 +478,7 @@ const main = () => {
     authorizationFileNotInExecutionChanges: !changedFiles.includes(task.authorizationFile),
     sensitiveFilesNotTracked: !trackedFiles.some(trackedFileIsSensitive),
     authorizationValidatorPass,
+    completionLedgerValidatorPass,
     noGitRemote: remotes.length === 0,
     lintPass,
     buildPass,
@@ -445,6 +500,8 @@ const main = () => {
     currentGovernanceContractHash: governanceHash,
     instructionFiles,
     changedFiles,
+    completionDirectory,
+    completionRecordPaths,
     sensitiveTrackedFiles: trackedFiles.filter(trackedFileIsSensitive),
     remotes: remotes ? remotes.split("\n").filter(Boolean) : [],
     checks,

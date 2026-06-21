@@ -1,15 +1,21 @@
 {
-  "currentVersion": "V0.5A-0.2",
+  "currentVersion": "V0.5A-0.3",
   "lockName": "PROJECT_GOVERNANCE_AND_ARCHITECTURE_LOCK",
-  "lastContractUpdatedAt": "2026-06-21T12:00:00+08:00",
-  "governanceEnforcementVersion": "V0.5A-0.2",
-  "currentGovernanceStage": "V0.5A-0.2",
+  "lastContractUpdatedAt": "2026-06-21T14:14:54+08:00",
+  "governanceEnforcementVersion": "V0.5A-0.3",
+  "currentGovernanceStage": "V0.5A-0.3",
   "gitBaselineRequired": true,
   "currentTaskContractRequired": true,
   "immutableTaskAuthorizationRequired": true,
   "authorizationHashRequired": true,
   "authorizationCommitRequired": true,
   "governanceContractHashRequired": true,
+  "taskCompletionRecordsRequired": true,
+  "taskCompletionDirectory": "docs/project/task-completions",
+  "dependencyResolutionPolicy": {
+    "majorStages": "stageStatuses",
+    "tasksAndSubstages": "immutableTaskCompletionRecords"
+  },
   "serverDatabaseForbidden": true,
   "indexedDbRequiresExplicitStageAuthorization": true,
   "multiPlatform": true,
@@ -86,7 +92,8 @@
     "Do not add AI, backend, server database, platform API, or crawler work in V0.5A-0.1.",
     "Do not introduce IndexedDB unless a later locked stage explicitly authorizes it.",
     "Do not modify storage, metrics, targets, trends, or four-source bottom logic in V0.5A-0.2.",
-    "Do not modify immutable task authorization fields after the authorization commit."
+    "Do not modify immutable task authorization fields after the authorization commit.",
+    "Do not satisfy concrete task dependencies without an immutable Git-verified task completion record."
   ],
   "executionSequence": [
     {
@@ -164,9 +171,11 @@
     "docs/project/v0.5-lock.json",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/current-task.json",
+    "docs/project/task-completions",
     "scripts/private-audit/validate-v05-governance-lock.ts",
     "scripts/private-audit/validate-v05-task-authorization.ts",
-    "scripts/private-audit/validate-v05-task-preflight.ts"
+    "scripts/private-audit/validate-v05-task-preflight.ts",
+    "scripts/private-audit/validate-v05-task-completion-ledger.ts"
   ],
   "stageTransitionRules": [
     {
@@ -189,11 +198,22 @@
     },
     {
       "from": "V0.5A-0.2",
-      "to": "V0.5A-1",
+      "to": "V0.5A-0.3",
+      "requires": [
+        "immutable task completion ledger",
+        "dependency resolver supports stageStatuses and task completion records",
+        "V0.5A-1 completion record registered",
+        "validate-v05-task-completion-ledger PASS"
+      ]
+    },
+    {
+      "from": "V0.5A-0.3",
+      "to": "V0.5A-1.1-retry-or-V0.5A-2",
       "requires": [
         "validate-v05-task-authorization PASS",
         "validate-v05-governance-lock PASS",
         "validate-v05-task-preflight PASS",
+        "validate-v05-task-completion-ledger PASS",
         "lint PASS",
         "build PASS"
       ]
