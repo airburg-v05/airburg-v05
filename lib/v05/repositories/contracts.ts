@@ -4,6 +4,8 @@ import type {
   OwnedAdPlanFact,
   OwnedAdProductFact,
   OwnedAfterSalesDailyAggregate,
+  OwnedAfterSalesDistributionItem,
+  OwnedAfterSalesOperationalSnapshot,
   OwnedAfterSalesRangeAggregate,
   OwnedBusinessProductFact,
   PlatformRecord,
@@ -61,6 +63,16 @@ export interface AfterSalesRangeAggregateRepository
   list(scope: StoreScope): Promise<RepositoryResult<OwnedAfterSalesRangeAggregate[]>>;
 }
 
+export interface AfterSalesOperationalSnapshotRepository
+  extends V2RecordRepository<OwnedAfterSalesOperationalSnapshot> {
+  list(scope: StoreScope): Promise<RepositoryResult<OwnedAfterSalesOperationalSnapshot[]>>;
+}
+
+export interface AfterSalesDistributionRepository
+  extends V2RecordRepository<OwnedAfterSalesDistributionItem> {
+  list(scope: StoreScope): Promise<RepositoryResult<OwnedAfterSalesDistributionItem[]>>;
+}
+
 export interface SeriesRepository extends V2RecordRepository<SeriesRecord> {
   list(scope: StoreScope): Promise<RepositoryResult<SeriesRecord[]>>;
 }
@@ -84,6 +96,8 @@ export interface V2RepositoryBundle {
   adPlanFacts: AdPlanFactRepository;
   afterSalesDailyAggregates: AfterSalesDailyAggregateRepository;
   afterSalesRangeAggregates: AfterSalesRangeAggregateRepository;
+  afterSalesOperationalSnapshots: AfterSalesOperationalSnapshotRepository;
+  afterSalesDistributionItems: AfterSalesDistributionRepository;
   series: SeriesRepository;
   trackedProducts: TrackedProductRepository;
   targets: TargetRepository;

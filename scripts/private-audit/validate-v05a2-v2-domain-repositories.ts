@@ -5,6 +5,8 @@ import {
   V2_SCHEMA_VERSION,
   buildAdPlanFactKey,
   buildAdProductFactKey,
+  buildAfterSalesDistributionItemKey,
+  buildAfterSalesOperationalSnapshotKey,
   buildBusinessProductFactKey,
   buildDeterministicLegacyImportBatchId,
   buildStoreKey,
@@ -17,6 +19,8 @@ import {
   type OwnedAdPlanFact,
   type OwnedAdProductFact,
   type OwnedAfterSalesDailyAggregate,
+  type OwnedAfterSalesDistributionItem,
+  type OwnedAfterSalesOperationalSnapshot,
   type OwnedAfterSalesRangeAggregate,
   type OwnedBusinessProductFact,
   type PlatformRecord,
@@ -30,6 +34,8 @@ import {
   validateImportFileRecord,
   validateOwnedAdProductFact,
   validateOwnedAfterSalesDailyAggregate,
+  validateOwnedAfterSalesDistributionItem,
+  validateOwnedAfterSalesOperationalSnapshot,
   validateOwnedAfterSalesRangeAggregate,
   validateOwnedBusinessProductFact,
   validatePlatformRecord,
@@ -280,6 +286,35 @@ const afterSalesRange = (): OwnedAfterSalesRangeAggregate => ({
   afterSalesApplyCount: 1,
 });
 
+const afterSalesSnapshot = (): OwnedAfterSalesOperationalSnapshot => ({
+  schemaVersion: V2_SCHEMA_VERSION,
+  platformCode: "tmall",
+  storeId: STORE_A.storeId,
+  sourceType: "after_sales",
+  importBatchId: "batch-a",
+  capturedAt: NOW,
+  dateRange: { start: BUSINESS_DATE, end: BUSINESS_DATE },
+  productId: "product-shared",
+  pendingCount: 1,
+  overduePendingCount: 0,
+  customerServiceInterventionCount: 0,
+  avgAfterSalesDurationHours: null,
+});
+
+const afterSalesDistribution = (): OwnedAfterSalesDistributionItem => ({
+  schemaVersion: V2_SCHEMA_VERSION,
+  platformCode: "tmall",
+  storeId: STORE_A.storeId,
+  sourceType: "after_sales",
+  importBatchId: "batch-a",
+  capturedAt: NOW,
+  dateRange: { start: BUSINESS_DATE, end: BUSINESS_DATE },
+  distributionKind: "reason_distribution",
+  safeLabel: "质量相关",
+  count: 1,
+  productId: "product-shared",
+});
+
 const series = (): SeriesRecord => ({
   schemaVersion: V2_SCHEMA_VERSION,
   platformCode: "tmall",
@@ -371,6 +406,8 @@ const baseDataset = (): V2Dataset => ({
   ],
   afterSalesDailyAggregates: [afterSalesDaily()],
   afterSalesRangeAggregates: [afterSalesRange()],
+  afterSalesOperationalSnapshots: [afterSalesSnapshot()],
+  afterSalesDistributionItems: [afterSalesDistribution()],
   series: [series()],
   trackedProducts: [trackedProduct()],
   targets: [
@@ -499,9 +536,19 @@ const run = async () => {
   addCheck("after-sales range invalid dateRange fails", !validateOwnedAfterSalesRangeAggregate({ ...afterSalesRange(), dateRange: { start: "2026-06-20", end: "2026-06-18" } }).valid);
   addCheck("range aggregate entering daily repository fails", hasIssueCode(validateOwnedAfterSalesDailyAggregate(afterSalesRange()), "range_summary_in_daily_repository"));
   addCheck("after-sales sensitive extension field fails", !validateOwnedAfterSalesDailyAggregate({ ...afterSalesDaily(), "订单编号": "SECRET-ORDER-0001" }).valid);
+  addCheck("after-sales operational snapshot validates", validateOwnedAfterSalesOperationalSnapshot(afterSalesSnapshot()).valid);
+  addCheck("after-sales operational snapshot cannot contain businessDate", hasIssueCode(validateOwnedAfterSalesOperationalSnapshot({ ...afterSalesSnapshot(), businessDate: BUSINESS_DATE }), "after_sales_snapshot_invalid"));
+  addCheck("after-sales distribution item validates", validateOwnedAfterSalesDistributionItem(afterSalesDistribution()).valid);
+  addCheck("after-sales unsafe distribution label fails", hasIssueCode(validateOwnedAfterSalesDistributionItem({ ...afterSalesDistribution(), safeLabel: "订单编号" }), "after_sales_distribution_label_unsafe"));
+  addCheck("snapshot entering daily repository fails", !validateOwnedAfterSalesDailyAggregate(afterSalesSnapshot()).valid);
+  addCheck("distribution entering range repository fails", !validateOwnedAfterSalesRangeAggregate(afterSalesDistribution()).valid);
 
   const wrongRepoResult = await bundle.adProductFacts.insert(adPlanFact() as unknown as OwnedAdProductFact);
   addCheck("plan fact cannot enter product ad repository", wrongRepoResult.status === "validation_error");
+  const snapshotWrongRepo = await bundle.afterSalesDailyAggregates.insert(afterSalesSnapshot() as unknown as OwnedAfterSalesDailyAggregate);
+  const distributionWrongRepo = await bundle.afterSalesRangeAggregates.insert(afterSalesDistribution() as unknown as OwnedAfterSalesRangeAggregate);
+  addCheck("daily repository rejects operational snapshot", snapshotWrongRepo.status === "validation_error");
+  addCheck("range repository rejects distribution item", distributionWrongRepo.status === "validation_error");
 
   const legacyBatchA = buildDeterministicLegacyImportBatchId({
     legacyStorageKey: "airburg_tmall_analysis_v2",
@@ -571,6 +618,8 @@ const run = async () => {
   addCheck("business product key is store-scoped", buildBusinessProductFactKey(businessFact(STORE_A.storeId, "same", "batch-a")) !== buildBusinessProductFactKey(businessFact(STORE_B.storeId, "same", "batch-b")));
   addCheck("ad product key is store-scoped", buildAdProductFactKey(adProductFact(STORE_A.storeId, "same", "batch-a")) !== buildAdProductFactKey(adProductFact(STORE_B.storeId, "same", "batch-b")));
   addCheck("ad plan key is store-scoped", buildAdPlanFactKey(adPlanFact(STORE_A.storeId, "same", "batch-a")) !== buildAdPlanFactKey(adPlanFact(STORE_B.storeId, "same", "batch-b")));
+  addCheck("after-sales snapshot key is store-scoped", buildAfterSalesOperationalSnapshotKey(afterSalesSnapshot()) !== buildAfterSalesOperationalSnapshotKey({ ...afterSalesSnapshot(), storeId: STORE_B.storeId }));
+  addCheck("after-sales distribution key includes safe label", buildAfterSalesDistributionItemKey(afterSalesDistribution()) !== buildAfterSalesDistributionItemKey({ ...afterSalesDistribution(), safeLabel: "其他原因" }));
   addCheck("target semantic key uses owner", buildTargetSemanticKey(target({ targetId: "a" })) !== buildTargetSemanticKey(target({ targetId: "b", storeId: STORE_B.storeId })));
 
   addCheck("dataset contains no invalid number", !hasInvalidNumber(dataset));

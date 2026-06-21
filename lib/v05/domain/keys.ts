@@ -2,6 +2,8 @@ import type {
   OwnedAdPlanFact,
   OwnedAdProductFact,
   OwnedAfterSalesDailyAggregate,
+  OwnedAfterSalesDistributionItem,
+  OwnedAfterSalesOperationalSnapshot,
   OwnedAfterSalesRangeAggregate,
   OwnedBusinessProductFact,
   PlatformCode,
@@ -113,6 +115,44 @@ export const buildAfterSalesRangeAggregateKey = (aggregate: Pick<
     aggregate.dateRange.end,
     aggregate.dateBasis,
     aggregate.productId ?? "store",
+  ]);
+
+export const buildAfterSalesOperationalSnapshotKey = (snapshot: Pick<
+  OwnedAfterSalesOperationalSnapshot,
+  "platformCode" | "storeId" | "sourceType" | "importBatchId" | "productId" | "dateRange" | "capturedAt"
+>): string =>
+  composeKey("after_sales_operational_snapshot", [
+    snapshot.platformCode,
+    snapshot.storeId,
+    snapshot.sourceType,
+    snapshot.importBatchId,
+    snapshot.dateRange.start,
+    snapshot.dateRange.end,
+    snapshot.capturedAt,
+    snapshot.productId ?? "store",
+  ]);
+
+export const buildAfterSalesDistributionItemKey = (item: Pick<
+  OwnedAfterSalesDistributionItem,
+  | "platformCode"
+  | "storeId"
+  | "sourceType"
+  | "importBatchId"
+  | "productId"
+  | "dateRange"
+  | "distributionKind"
+  | "safeLabel"
+>): string =>
+  composeKey("after_sales_distribution", [
+    item.platformCode,
+    item.storeId,
+    item.sourceType,
+    item.importBatchId,
+    item.dateRange.start,
+    item.dateRange.end,
+    item.distributionKind,
+    item.productId ?? "store",
+    item.safeLabel,
   ]);
 
 export const buildSeriesKey = (series: Pick<SeriesRecord, "platformCode" | "storeId" | "seriesId">): string =>

@@ -17,6 +17,8 @@ export type ValidationIssueCode =
   | "invalid_date_range"
   | "range_summary_in_daily_repository"
   | "sensitive_detail_forbidden"
+  | "after_sales_snapshot_invalid"
+  | "after_sales_distribution_label_unsafe"
   | "migration_state_invalid";
 
 export interface ValidationIssue {

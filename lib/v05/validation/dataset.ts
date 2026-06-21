@@ -12,6 +12,8 @@ import {
   buildAdPlanFactKey,
   buildAdProductFactKey,
   buildAfterSalesDailyAggregateKey,
+  buildAfterSalesDistributionItemKey,
+  buildAfterSalesOperationalSnapshotKey,
   buildAfterSalesRangeAggregateKey,
   buildBusinessProductFactKey,
   buildImportBatchKey,
@@ -32,6 +34,8 @@ import {
   validateOwnedAdPlanFact,
   validateOwnedAdProductFact,
   validateOwnedAfterSalesDailyAggregate,
+  validateOwnedAfterSalesDistributionItem,
+  validateOwnedAfterSalesOperationalSnapshot,
   validateOwnedAfterSalesRangeAggregate,
   validateOwnedBusinessProductFact,
   validatePlatformRecord,
@@ -117,7 +121,7 @@ const validateOwnerReferences = (
 };
 
 const buildProductIndexes = (
-  businessFacts: OwnedBusinessProductFact[],
+  facts: Array<OwnedBusinessProductFact | OwnedAdProductFact>,
 ): {
   productByOwner: Set<string>;
   productOwnersById: Map<string, Set<string>>;
@@ -133,7 +137,7 @@ const buildProductIndexes = (
     productOwnersById.set(productId, owners);
   };
 
-  businessFacts.forEach((fact) => add(fact, fact.productId));
+  facts.forEach((fact) => add(fact, fact.productId));
 
   return { productByOwner, productOwnersById };
 };
@@ -188,6 +192,8 @@ export const validateV2Dataset = (dataset: V2Dataset): ValidationResult => {
   addRecordValidationIssues(dataset.adPlanFacts, validateOwnedAdPlanFact, "adPlanFacts", issues);
   addRecordValidationIssues(dataset.afterSalesDailyAggregates, validateOwnedAfterSalesDailyAggregate, "afterSalesDailyAggregates", issues);
   addRecordValidationIssues(dataset.afterSalesRangeAggregates, validateOwnedAfterSalesRangeAggregate, "afterSalesRangeAggregates", issues);
+  addRecordValidationIssues(dataset.afterSalesOperationalSnapshots, validateOwnedAfterSalesOperationalSnapshot, "afterSalesOperationalSnapshots", issues);
+  addRecordValidationIssues(dataset.afterSalesDistributionItems, validateOwnedAfterSalesDistributionItem, "afterSalesDistributionItems", issues);
   addRecordValidationIssues(dataset.series, validateSeriesRecord, "series", issues);
   addRecordValidationIssues(dataset.trackedProducts, validateTrackedProductRecord, "trackedProducts", issues);
   addRecordValidationIssues(dataset.targets, validateTargetRecord, "targets", issues);
@@ -235,6 +241,8 @@ export const validateV2Dataset = (dataset: V2Dataset): ValidationResult => {
   addDuplicateKeyIssues(dataset.adPlanFacts, buildAdPlanFactKey, "adPlanFacts", issues);
   addDuplicateKeyIssues(dataset.afterSalesDailyAggregates, buildAfterSalesDailyAggregateKey, "afterSalesDailyAggregates", issues);
   addDuplicateKeyIssues(dataset.afterSalesRangeAggregates, buildAfterSalesRangeAggregateKey, "afterSalesRangeAggregates", issues);
+  addDuplicateKeyIssues(dataset.afterSalesOperationalSnapshots, buildAfterSalesOperationalSnapshotKey, "afterSalesOperationalSnapshots", issues);
+  addDuplicateKeyIssues(dataset.afterSalesDistributionItems, buildAfterSalesDistributionItemKey, "afterSalesDistributionItems", issues);
 
   const validateFacts = (
     records: Array<OwnedBusinessProductFact | OwnedAdProductFact | OwnedAdPlanFact | OwnedAfterSalesDailyAggregate>,
@@ -253,8 +261,17 @@ export const validateV2Dataset = (dataset: V2Dataset): ValidationResult => {
   dataset.afterSalesRangeAggregates.forEach((aggregate, index) => {
     validateOwnerReferences(aggregate, aggregate.importBatchId, `afterSalesRangeAggregates[${index}]`, storeKeys, batchOwners, issues);
   });
+  dataset.afterSalesOperationalSnapshots.forEach((snapshot, index) => {
+    validateOwnerReferences(snapshot, snapshot.importBatchId, `afterSalesOperationalSnapshots[${index}]`, storeKeys, batchOwners, issues);
+  });
+  dataset.afterSalesDistributionItems.forEach((item, index) => {
+    validateOwnerReferences(item, item.importBatchId, `afterSalesDistributionItems[${index}]`, storeKeys, batchOwners, issues);
+  });
 
-  const { productByOwner, productOwnersById } = buildProductIndexes(dataset.businessProductFacts);
+  const { productByOwner, productOwnersById } = buildProductIndexes([
+    ...dataset.businessProductFacts,
+    ...dataset.adProductFacts,
+  ]);
   addDuplicateKeyIssues(dataset.trackedProducts, buildTrackedProductKey, "trackedProducts", issues);
   const trackedProductByOwner = new Set<string>();
   dataset.trackedProducts.forEach((product, index) => {

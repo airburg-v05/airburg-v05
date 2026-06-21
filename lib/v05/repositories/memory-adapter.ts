@@ -4,6 +4,8 @@ import type {
   OwnedAdPlanFact,
   OwnedAdProductFact,
   OwnedAfterSalesDailyAggregate,
+  OwnedAfterSalesDistributionItem,
+  OwnedAfterSalesOperationalSnapshot,
   OwnedAfterSalesRangeAggregate,
   OwnedBusinessProductFact,
   PlatformRecord,
@@ -18,6 +20,8 @@ import {
   buildAdPlanFactKey,
   buildAdProductFactKey,
   buildAfterSalesDailyAggregateKey,
+  buildAfterSalesDistributionItemKey,
+  buildAfterSalesOperationalSnapshotKey,
   buildAfterSalesRangeAggregateKey,
   buildBusinessProductFactKey,
   buildImportBatchKey,
@@ -43,6 +47,8 @@ import {
   validateOwnedAdPlanFact,
   validateOwnedAdProductFact,
   validateOwnedAfterSalesDailyAggregate,
+  validateOwnedAfterSalesDistributionItem,
+  validateOwnedAfterSalesOperationalSnapshot,
   validateOwnedAfterSalesRangeAggregate,
   validateOwnedBusinessProductFact,
   validatePlatformRecord,
@@ -55,6 +61,8 @@ import type {
   AdPlanFactRepository,
   AdProductFactRepository,
   AfterSalesDailyAggregateRepository,
+  AfterSalesDistributionRepository,
+  AfterSalesOperationalSnapshotRepository,
   AfterSalesRangeAggregateRepository,
   BusinessProductFactRepository,
   ImportBatchRepository,
@@ -224,6 +232,14 @@ export const createMemoryV2RepositoryBundle = (seed?: V2Dataset): MemoryV2Reposi
     buildAfterSalesRangeAggregateKey,
     validateOwnedAfterSalesRangeAggregate,
   ) as MemoryScopedRepository<OwnedAfterSalesRangeAggregate> & AfterSalesRangeAggregateRepository;
+  const afterSalesOperationalSnapshots = new MemoryScopedRepository<OwnedAfterSalesOperationalSnapshot>(
+    buildAfterSalesOperationalSnapshotKey,
+    validateOwnedAfterSalesOperationalSnapshot,
+  ) as MemoryScopedRepository<OwnedAfterSalesOperationalSnapshot> & AfterSalesOperationalSnapshotRepository;
+  const afterSalesDistributionItems = new MemoryScopedRepository<OwnedAfterSalesDistributionItem>(
+    buildAfterSalesDistributionItemKey,
+    validateOwnedAfterSalesDistributionItem,
+  ) as MemoryScopedRepository<OwnedAfterSalesDistributionItem> & AfterSalesDistributionRepository;
   const series = new MemoryScopedRepository<SeriesRecord>(
     buildSeriesKey,
     validateSeriesRecord,
@@ -246,6 +262,8 @@ export const createMemoryV2RepositoryBundle = (seed?: V2Dataset): MemoryV2Reposi
     void adPlanFacts.insertMany(seed.adPlanFacts);
     void afterSalesDailyAggregates.insertMany(seed.afterSalesDailyAggregates);
     void afterSalesRangeAggregates.insertMany(seed.afterSalesRangeAggregates);
+    void afterSalesOperationalSnapshots.insertMany(seed.afterSalesOperationalSnapshots);
+    void afterSalesDistributionItems.insertMany(seed.afterSalesDistributionItems);
     void series.insertMany(seed.series);
     void trackedProducts.insertMany(seed.trackedProducts);
     void targets.insertMany(seed.targets);
@@ -261,6 +279,8 @@ export const createMemoryV2RepositoryBundle = (seed?: V2Dataset): MemoryV2Reposi
     adPlanFacts,
     afterSalesDailyAggregates,
     afterSalesRangeAggregates,
+    afterSalesOperationalSnapshots,
+    afterSalesDistributionItems,
     series,
     trackedProducts,
     targets,
@@ -277,6 +297,8 @@ export const createMemoryV2RepositoryBundle = (seed?: V2Dataset): MemoryV2Reposi
       adPlanFacts: adPlanFacts.snapshot(),
       afterSalesDailyAggregates: afterSalesDailyAggregates.snapshot(),
       afterSalesRangeAggregates: afterSalesRangeAggregates.snapshot(),
+      afterSalesOperationalSnapshots: afterSalesOperationalSnapshots.snapshot(),
+      afterSalesDistributionItems: afterSalesDistributionItems.snapshot(),
       series: series.snapshot(),
       trackedProducts: trackedProducts.snapshot(),
       targets: targets.snapshot(),

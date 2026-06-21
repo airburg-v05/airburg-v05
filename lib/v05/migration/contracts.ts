@@ -6,6 +6,8 @@ import type {
   OwnedAdPlanFact,
   OwnedAdProductFact,
   OwnedAfterSalesDailyAggregate,
+  OwnedAfterSalesDistributionItem,
+  OwnedAfterSalesOperationalSnapshot,
   OwnedAfterSalesRangeAggregate,
   OwnedBusinessProductFact,
   PlatformRecord,
@@ -47,6 +49,8 @@ export type MigrationOnlyIssueCode =
   | "legacy_parse_failed"
   | "hash_provider_unavailable"
   | "ambiguous_after_sales_range_basis"
+  | "after_sales_aggregate_unmapped"
+  | "after_sales_count_reconciliation_failed"
   | "legacy_source_state_mismatch"
   | "ignored_deprecated_preview"
   | "ignored_non_business_session"
@@ -100,6 +104,8 @@ export interface DryRunRecordCounts {
   adPlanFacts: number;
   afterSalesDailyAggregates: number;
   afterSalesRangeAggregates: number;
+  afterSalesOperationalSnapshots: number;
+  afterSalesDistributionItems: number;
   series: number;
   trackedProducts: number;
   targets: number;
@@ -141,6 +147,8 @@ export interface AnalysisMappingResult {
   adPlanFacts: OwnedAdPlanFact[];
   afterSalesDailyAggregates: OwnedAfterSalesDailyAggregate[];
   afterSalesRangeAggregates: OwnedAfterSalesRangeAggregate[];
+  afterSalesOperationalSnapshots: OwnedAfterSalesOperationalSnapshot[];
+  afterSalesDistributionItems: OwnedAfterSalesDistributionItem[];
   sourceSummary: SourceDryRunSummary[];
   rejectedRecords: RejectedLegacyRecord[];
   issues: DryRunIssue[];
@@ -235,6 +243,8 @@ export const emptyRecordCounts = (): DryRunRecordCounts => ({
   adPlanFacts: 0,
   afterSalesDailyAggregates: 0,
   afterSalesRangeAggregates: 0,
+  afterSalesOperationalSnapshots: 0,
+  afterSalesDistributionItems: 0,
   series: 0,
   trackedProducts: 0,
   targets: 0,
@@ -255,6 +265,8 @@ export const countStagingDatasetRecords = (dataset: V2StagingDataset | null): Dr
     adPlanFacts: dataset.adPlanFacts.length,
     afterSalesDailyAggregates: dataset.afterSalesDailyAggregates.length,
     afterSalesRangeAggregates: dataset.afterSalesRangeAggregates.length,
+    afterSalesOperationalSnapshots: dataset.afterSalesOperationalSnapshots.length,
+    afterSalesDistributionItems: dataset.afterSalesDistributionItems.length,
     series: dataset.series.length,
     trackedProducts: dataset.trackedProducts.length,
     targets: dataset.targets.length,

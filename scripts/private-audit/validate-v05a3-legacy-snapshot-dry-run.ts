@@ -20,8 +20,10 @@ const CAPTURED_AT = "2026-06-21T19:30:00+08:00";
 const BUSINESS_DATE = "2026-06-18";
 const LEGACY_TASK_ID = "V0.5A_3_LEGACY_SNAPSHOT_AND_DRY_RUN_MIGRATION";
 const CLOSURE_TASK_ID = "V0.5A_3_1_DRY_RUN_IDENTITY_SOURCE_STATE_AND_REAL_FIXTURE_CLOSURE";
+const SAFE_AGGREGATE_TASK_ID = "V0.5A_3_2_AFTER_SALES_SAFE_AGGREGATE_CONTRACT_AND_REAL_FIXTURE_READINESS";
 const BASELINE_COMMIT = "224fae67bb68226d8163ede8ce2b54c8f066e191";
 const CLOSURE_BASELINE_COMMIT = "af3211efaf82d8d4bb4ff9ae0fce736d169c00c2";
+const SAFE_AGGREGATE_BASELINE_COMMIT = "c6c73c3ec62398113ec9574fa5e0dff811c42dba";
 
 const MIGRATION_FILES = [
   "lib/v05/migration/contracts.ts",
@@ -128,6 +130,16 @@ const changedFilesSince = (commit: string): string[] => {
     ),
   ).sort();
 };
+
+const matchesPathPattern = (file: string, pattern: string): boolean => {
+  if (file === pattern) return true;
+  if (pattern.endsWith("/**")) return file.startsWith(pattern.slice(0, -3));
+  if (pattern.startsWith("**/")) return file === pattern.slice(3) || file.endsWith(`/${pattern.slice(3)}`);
+  return false;
+};
+
+const pathMatchesAny = (file: string, patterns: readonly string[]): boolean =>
+  patterns.some((pattern) => matchesPathPattern(file, pattern));
 
 const stableStringify = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -489,9 +501,14 @@ const main = async (): Promise<void> => {
   };
   const isLegacyTask = currentTask.taskId === LEGACY_TASK_ID;
   const isClosureTask = currentTask.taskId === CLOSURE_TASK_ID;
-  const activeBaselineCommit = isClosureTask ? CLOSURE_BASELINE_COMMIT : BASELINE_COMMIT;
+  const isSafeAggregateTask = currentTask.taskId === SAFE_AGGREGATE_TASK_ID;
+  const activeBaselineCommit = isSafeAggregateTask
+    ? SAFE_AGGREGATE_BASELINE_COMMIT
+    : isClosureTask
+      ? CLOSURE_BASELINE_COMMIT
+      : BASELINE_COMMIT;
 
-  addCheck("current task id is compatible with V0.5A-3 dry-run validation", isLegacyTask || isClosureTask);
+  addCheck("current task id is compatible with V0.5A-3 dry-run validation", isLegacyTask || isClosureTask || isSafeAggregateTask);
   addCheck("current task status is controlled", ["in_progress", "complete"].includes(currentTask.status));
   addCheck("current task baseline is expected for active task", currentTask.baselineCommit === activeBaselineCommit);
   addCheck(
@@ -506,7 +523,7 @@ const main = async (): Promise<void> => {
   const changedFiles = changedFilesSince(activeBaselineCommit);
   addCheck(
     "changed files stay inside authorization",
-    changedFiles.every((file) => currentTask.allowedModifyPaths.includes(file)),
+    changedFiles.every((file) => pathMatchesAny(file, currentTask.allowedModifyPaths)),
     changedFiles.join(","),
   );
   addCheck("package manifest unchanged", !changedFiles.includes("package.json"));
@@ -514,9 +531,9 @@ const main = async (): Promise<void> => {
   addCheck("business pages unchanged", !changedFiles.some((file) => file.startsWith("app/") || file.startsWith("components/")));
   addCheck("legacy storage modules unchanged", !changedFiles.some((file) => file.startsWith("lib/storage/")));
   addCheck("tmall analysis modules unchanged", !changedFiles.some((file) => file.startsWith("lib/tmall/")));
-  addCheck("domain contracts unchanged", !changedFiles.some((file) => file.startsWith("lib/v05/domain/")));
-  addCheck("repository contracts unchanged", !changedFiles.some((file) => file.startsWith("lib/v05/repositories/")));
-  addCheck("validation contracts unchanged", !changedFiles.some((file) => file.startsWith("lib/v05/validation/")));
+  addCheck("domain contracts unchanged unless A-3.2 authorized", isSafeAggregateTask || !changedFiles.some((file) => file.startsWith("lib/v05/domain/")));
+  addCheck("repository contracts unchanged unless A-3.2 authorized", isSafeAggregateTask || !changedFiles.some((file) => file.startsWith("lib/v05/repositories/")));
+  addCheck("validation contracts unchanged unless A-3.2 authorized", isSafeAggregateTask || !changedFiles.some((file) => file.startsWith("lib/v05/validation/")));
   addCheck("types unchanged", !changedFiles.some((file) => file.startsWith("types/")));
 
   const baseSnapshot = snapshot();
@@ -594,7 +611,7 @@ const main = async (): Promise<void> => {
   addCheck("partial sources return ready_partial", partialResult.status === "ready_partial");
   addCheck("partial sources are not future eligible", partialResult.futureActivationEligible === false);
 
-  const ambiguousAnalysis = validAnalysis({
+  const safeAfterSalesSummaryAnalysis = validAnalysis({
     afterSalesAggregates: {
       ...(validAnalysis().afterSalesAggregates as Record<string, unknown>),
       productSummary: [
@@ -614,11 +631,12 @@ const main = async (): Promise<void> => {
       statusDistribution: [{ label: "safe status", count: 1 }],
     },
   });
-  const ambiguousResult = await run(snapshot({ analysis: ambiguousAnalysis }));
-  addCheck("ambiguous after-sales blocks activation", ambiguousResult.status === "blocked");
-  addCheck("ambiguous after-sales future activation false", ambiguousResult.futureActivationEligible === false);
-  addCheck("ambiguous issue recorded", hasIssue(ambiguousResult, "ambiguous_after_sales_range_basis"));
-  addCheck("ambiguous safe summary retained", ambiguousResult.sourceSummary.some((source) => source.sourceType === "after_sales" && source.unmappedSafeAggregateSummary.length > 0));
+  const safeAfterSalesSummaryResult = await run(snapshot({ analysis: safeAfterSalesSummaryAnalysis }));
+  addCheck("safe after-sales summary no longer blocks activation", safeAfterSalesSummaryResult.status === "ready");
+  addCheck("safe after-sales summary future activation true", safeAfterSalesSummaryResult.futureActivationEligible === true);
+  addCheck("safe after-sales summary maps operational snapshots", (safeAfterSalesSummaryResult.recordCounts.afterSalesOperationalSnapshots ?? 0) > 0);
+  addCheck("safe after-sales summary maps distributions", (safeAfterSalesSummaryResult.recordCounts.afterSalesDistributionItems ?? 0) > 0);
+  addCheck("ambiguous issue removed for mapped safe summary", !hasIssue(safeAfterSalesSummaryResult, "ambiguous_after_sales_range_basis"));
 
   const unsupportedTargetRaw = JSON.stringify({
     version: "tmall_targets_v1",
@@ -708,14 +726,14 @@ const main = async (): Promise<void> => {
   addCheck("dependent data without analysis has no staging", missingAnalysisResult.stagingDataset === null);
 
   addCheck("ready result remains privacy safe after string scan", !containsSensitiveText(cleanResult));
-  addCheck("blocked result remains privacy safe", !containsSensitiveText(ambiguousResult));
+  addCheck("safe after-sales summary result remains privacy safe", !containsSensitiveText(safeAfterSalesSummaryResult));
   addCheck("failure result remains privacy safe", !containsSensitiveText(corruptedAnalysisResult));
   addCheck("all checked results have finite numbers", ![
     cleanResult,
     emptyResult,
     corruptedAnalysisResult,
     partialResult,
-    ambiguousResult,
+    safeAfterSalesSummaryResult,
     unsupportedTargetResult,
     missingSeriesResult,
     missingTargetResult,
@@ -725,7 +743,7 @@ const main = async (): Promise<void> => {
     emptyResult,
     corruptedAnalysisResult,
     partialResult,
-    ambiguousResult,
+    safeAfterSalesSummaryResult,
     unsupportedTargetResult,
     missingSeriesResult,
     missingTargetResult,
@@ -735,7 +753,7 @@ const main = async (): Promise<void> => {
     storageVersion: "airburg_storage_v2",
     readyStatus: cleanResult.status,
     readyPartialStatus: partialResult.status,
-    blockedStatus: ambiguousResult.status,
+    blockedStatus: safeAfterSalesSummaryResult.status,
     migrationFailedStatus: corruptedAnalysisResult.status,
     futureActivationEligible: cleanResult.futureActivationEligible,
     proposedActiveDatasetPointerIsNull: cleanResult.proposedActiveDatasetPointer === null,

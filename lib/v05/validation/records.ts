@@ -2,6 +2,7 @@ import {
   ALLOWED_PLATFORM_CODES,
   V2_SCHEMA_VERSION,
   type AfterSalesDateBasis,
+  type AfterSalesDistributionKind,
   type EntityStatus,
   type ImportBatchStatus,
   type ImportFileStatus,
@@ -31,6 +32,7 @@ import {
   validateRecordEnvelope,
   validateResultFromIssues,
   validateStringArrayField,
+  forbiddenFieldNames,
   type UnknownRecord,
 } from "./core";
 
@@ -41,6 +43,11 @@ const ENTITY_STATUSES: EntityStatus[] = ["active", "inactive"];
 const BATCH_STATUSES: ImportBatchStatus[] = ["pending", "success", "partial_success", "failed"];
 const FILE_STATUSES: ImportFileStatus[] = ["parsed", "missing", "unknown", "error"];
 const DATE_BASIS: AfterSalesDateBasis[] = ["apply_date", "success_date", "payment_date"];
+const DISTRIBUTION_KINDS: AfterSalesDistributionKind[] = [
+  "reason_distribution",
+  "status_distribution",
+  "unknown_status_distribution",
+];
 const TARGET_SCOPES: TargetScope[] = ["company", "store", "series", "product"];
 const TARGET_PERIODS: TargetPeriodType[] = ["daily", "monthly"];
 const TARGET_DIRECTIONS: TargetDirection[] = ["higher_is_better", "lower_is_better"];
@@ -119,6 +126,49 @@ const validateNullableMetricFields = (
 ): void => fields.forEach((field) => validateNullableNumberField(record, field, path, issues));
 
 const finalize = (issues: ValidationIssue[]): ValidationResult => validateResultFromIssues(issues);
+
+const SAFE_LABEL_MAX_LENGTH = 120;
+const CONTROL_CHARACTER_PATTERN = /[\u0000-\u001f\u007f]/;
+
+const validateSafeLabel = (
+  data: UnknownRecord,
+  key: string,
+  path: string,
+  issues: ValidationIssue[],
+): void => {
+  const value = data[key];
+  if (!isNonEmptyString(value)) {
+    pushIssue(issues, "required_field", `${path}.${key}`, "A non-empty safe label is required.");
+    return;
+  }
+
+  const trimmed = value.trim();
+  if (trimmed.length > SAFE_LABEL_MAX_LENGTH || CONTROL_CHARACTER_PATTERN.test(trimmed)) {
+    pushIssue(issues, "after_sales_distribution_label_unsafe", `${path}.${key}`, "Safe label is too long or contains control characters.");
+  }
+
+  if (forbiddenFieldNames.some((fieldName) => trimmed.includes(fieldName))) {
+    pushIssue(issues, "after_sales_distribution_label_unsafe", `${path}.${key}`, "Safe label contains forbidden after-sales sensitive text.");
+  }
+};
+
+const validateAfterSalesDerivedBase = (
+  data: UnknownRecord,
+  path: string,
+  issues: ValidationIssue[],
+): void => {
+  requireSchemaVersion(data, path, issues);
+  validateOwner(data, path, issues);
+  requireString(data, "importBatchId", path, issues);
+  const sourceType = requireSourceType(data, "sourceType", path, issues);
+  if (sourceType !== null && sourceType !== "after_sales") {
+    pushIssue(issues, "source_type_mismatch", `${path}.sourceType`, "Source type does not match record type.");
+  }
+  if (hasOwn(data, "businessDate")) {
+    pushIssue(issues, "after_sales_snapshot_invalid", `${path}.businessDate`, "After-sales derived aggregate must not contain a business date.");
+  }
+  validateDateRange(data, "dateRange", path, issues);
+};
 
 export const validatePlatformRecord: Validator = (record, path = "platform") => {
   const { issues, record: data } = validateRecordEnvelope(record, path);
@@ -300,20 +350,50 @@ export const validateOwnedAfterSalesRangeAggregate: Validator = (
   const { issues, record: data } = validateRecordEnvelope(record, path);
   if (!data) return finalize(issues);
 
-  requireSchemaVersion(data, path, issues);
-  validateOwner(data, path, issues);
-  requireString(data, "importBatchId", path, issues);
-  const sourceType = requireSourceType(data, "sourceType", path, issues);
-  if (sourceType !== null && sourceType !== "after_sales") {
-    pushIssue(issues, "source_type_mismatch", `${path}.sourceType`, "Source type does not match record type.");
-  }
-  if (hasOwn(data, "businessDate")) {
-    pushIssue(issues, "range_summary_in_daily_repository", `${path}.businessDate`, "Range aggregate must not contain a business date.");
-  }
-  validateDateRange(data, "dateRange", path, issues);
+  validateAfterSalesDerivedBase(data, path, issues);
   requireEnum(data, "dateBasis", DATE_BASIS, path, issues);
   optionalString(data, "productId", path, issues);
   validateNullableMetricFields(data, path, issues, ["refundAmount", "refundOrderCount", "afterSalesApplyCount"]);
+
+  return finalize(issues);
+};
+
+export const validateOwnedAfterSalesOperationalSnapshot: Validator = (
+  record,
+  path = "afterSalesOperationalSnapshot",
+) => {
+  const { issues, record: data } = validateRecordEnvelope(record, path);
+  if (!data) return finalize(issues);
+
+  validateAfterSalesDerivedBase(data, path, issues);
+  requireString(data, "capturedAt", path, issues);
+  optionalString(data, "productId", path, issues);
+  validateNullableMetricFields(data, path, issues, [
+    "pendingCount",
+    "overduePendingCount",
+    "customerServiceInterventionCount",
+    "avgAfterSalesDurationHours",
+  ]);
+
+  return finalize(issues);
+};
+
+export const validateOwnedAfterSalesDistributionItem: Validator = (
+  record,
+  path = "afterSalesDistributionItem",
+) => {
+  const { issues, record: data } = validateRecordEnvelope(record, path);
+  if (!data) return finalize(issues);
+
+  validateAfterSalesDerivedBase(data, path, issues);
+  requireString(data, "capturedAt", path, issues);
+  requireEnum(data, "distributionKind", DISTRIBUTION_KINDS, path, issues);
+  validateSafeLabel(data, "safeLabel", path, issues);
+  const count = data.count;
+  if (typeof count !== "number" || !Number.isInteger(count) || count < 1) {
+    pushIssue(issues, "invalid_type", `${path}.count`, "Distribution count must be a positive integer.");
+  }
+  optionalString(data, "productId", path, issues);
 
   return finalize(issues);
 };
@@ -523,6 +603,8 @@ export const validateV2Record = (record: unknown, kind: string): ValidationResul
     adPlanFact: validateOwnedAdPlanFact,
     afterSalesDailyAggregate: validateOwnedAfterSalesDailyAggregate,
     afterSalesRangeAggregate: validateOwnedAfterSalesRangeAggregate,
+    afterSalesOperationalSnapshot: validateOwnedAfterSalesOperationalSnapshot,
+    afterSalesDistributionItem: validateOwnedAfterSalesDistributionItem,
     series: validateSeriesRecord,
     trackedProduct: validateTrackedProductRecord,
     target: validateTargetRecord,

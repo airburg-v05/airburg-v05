@@ -207,8 +207,9 @@ const mapAdProducts = (
   facts: AdProductDailyFact[],
   importBatchId: string,
   rejectedRecords: RejectedLegacyRecord[],
-): OwnedAdProductFact[] => {
+): { records: OwnedAdProductFact[]; productIds: Set<string> } => {
   const seen = new Set<string>();
+  const productIds = new Set<string>();
   const records: OwnedAdProductFact[] = [];
 
   facts.forEach((fact, index) => {
@@ -229,6 +230,7 @@ const mapAdProducts = (
       return;
     }
     seen.add(semanticKey);
+    productIds.add(productId);
 
     records.push({
       schemaVersion: V2_SCHEMA_VERSION,
@@ -247,7 +249,7 @@ const mapAdProducts = (
     });
   });
 
-  return records;
+  return { records, productIds };
 };
 
 const mapAdPlans = (
@@ -455,10 +457,13 @@ export const mapTmallAnalysisToV2 = ({
       aggregates: analysis.afterSalesAggregates,
       dateRange: analysis.dateRanges.after_sales,
       importBatchId,
+      capturedAt,
     })
     : {
       dailyAggregates: [],
       rangeAggregates: [],
+      operationalSnapshots: [],
+      distributionItems: [],
       rejectedRecords: [],
       issues: [],
       unmappedSafeAggregateSummary: [],
@@ -484,10 +489,12 @@ export const mapTmallAnalysisToV2 = ({
     importBatch,
     importFiles,
     businessProductFacts: businessProducts.records,
-    adProductFacts,
+    adProductFacts: adProductFacts.records,
     adPlanFacts,
     afterSalesDailyAggregates: afterSales.dailyAggregates,
     afterSalesRangeAggregates: afterSales.rangeAggregates,
+    afterSalesOperationalSnapshots: afterSales.operationalSnapshots,
+    afterSalesDistributionItems: afterSales.distributionItems,
     sourceSummary: buildSourceSummary(
       analysis,
       importFiles,
@@ -495,7 +502,10 @@ export const mapTmallAnalysisToV2 = ({
     ),
     rejectedRecords,
     issues,
-    productIds: businessProducts.productIds,
+    productIds: new Set([
+      ...businessProducts.productIds,
+      ...adProductFacts.productIds,
+    ]),
     parsedSourceCount,
     sourceCount: SOURCE_TYPES.length,
   };

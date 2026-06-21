@@ -11,6 +11,10 @@ export type EntityStatus = "active" | "inactive";
 export type ImportBatchStatus = "pending" | "success" | "partial_success" | "failed";
 export type ImportFileStatus = "parsed" | "missing" | "unknown" | "error";
 export type AfterSalesDateBasis = "apply_date" | "success_date" | "payment_date";
+export type AfterSalesDistributionKind =
+  | "reason_distribution"
+  | "status_distribution"
+  | "unknown_status_distribution";
 export type TargetScope = "company" | "store" | "series" | "product";
 export type TargetPeriodType = "daily" | "monthly";
 export type TargetDirection = "higher_is_better" | "lower_is_better";
@@ -158,6 +162,25 @@ export interface OwnedAfterSalesRangeAggregate extends OwnedDerivedAggregateBase
   afterSalesApplyCount: number | null;
 }
 
+export interface OwnedAfterSalesOperationalSnapshot extends OwnedDerivedAggregateBase {
+  schemaVersion: typeof V2_SCHEMA_VERSION;
+  capturedAt: string;
+  productId: string | null;
+  pendingCount: number | null;
+  overduePendingCount: number | null;
+  customerServiceInterventionCount: number | null;
+  avgAfterSalesDurationHours: number | null;
+}
+
+export interface OwnedAfterSalesDistributionItem extends OwnedDerivedAggregateBase {
+  schemaVersion: typeof V2_SCHEMA_VERSION;
+  capturedAt: string;
+  distributionKind: AfterSalesDistributionKind;
+  safeLabel: string;
+  count: number;
+  productId: string | null;
+}
+
 export interface SeriesRecord {
   schemaVersion: typeof V2_SCHEMA_VERSION;
   seriesId: string;
@@ -253,6 +276,8 @@ export interface V2Dataset {
   adPlanFacts: OwnedAdPlanFact[];
   afterSalesDailyAggregates: OwnedAfterSalesDailyAggregate[];
   afterSalesRangeAggregates: OwnedAfterSalesRangeAggregate[];
+  afterSalesOperationalSnapshots: OwnedAfterSalesOperationalSnapshot[];
+  afterSalesDistributionItems: OwnedAfterSalesDistributionItem[];
   series: SeriesRecord[];
   trackedProducts: TrackedProductRecord[];
   targets: TargetRecord[];

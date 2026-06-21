@@ -22,6 +22,8 @@ const BUSINESS_DATE = "2026-06-18";
 const CUSTOM_VERSION = "legacy_tmall_v1_to_storage_v2_v1_closure";
 const TASK_ID = "V0.5A_3_1_DRY_RUN_IDENTITY_SOURCE_STATE_AND_REAL_FIXTURE_CLOSURE";
 const BASELINE_COMMIT = "af3211efaf82d8d4bb4ff9ae0fce736d169c00c2";
+const SAFE_AGGREGATE_TASK_ID = "V0.5A_3_2_AFTER_SALES_SAFE_AGGREGATE_CONTRACT_AND_REAL_FIXTURE_READINESS";
+const SAFE_AGGREGATE_BASELINE_COMMIT = "c6c73c3ec62398113ec9574fa5e0dff811c42dba";
 
 const ALLOWED_CHANGED_PATHS = [
   "lib/v05/migration/contracts.ts",
@@ -88,6 +90,12 @@ interface Check {
   details?: string;
 }
 
+interface CurrentTask {
+  taskId: string;
+  baselineCommit: string;
+  allowedModifyPaths: string[];
+}
+
 const checks: Check[] = [];
 
 const addCheck = (name: string, pass: boolean, details?: string): void => {
@@ -96,6 +104,14 @@ const addCheck = (name: string, pass: boolean, details?: string): void => {
 
 const readFile = (relativePath: string): string =>
   fs.readFileSync(path.join(ROOT, relativePath), "utf8");
+
+const readCurrentTask = (): CurrentTask | null => {
+  try {
+    return JSON.parse(readFile("docs/project/current-task.json")) as CurrentTask;
+  } catch {
+    return null;
+  }
+};
 
 const createFile = (relativePath: string): File => {
   const absolutePath = path.join(ROOT, relativePath);
@@ -121,6 +137,16 @@ const changedFilesSince = (commit: string): string[] => {
     ),
   ).sort();
 };
+
+const matchesPathPattern = (file: string, pattern: string): boolean => {
+  if (file === pattern) return true;
+  if (pattern.endsWith("/**")) return file.startsWith(pattern.slice(0, -3));
+  if (pattern.startsWith("**/")) return file === pattern.slice(3) || file.endsWith(`/${pattern.slice(3)}`);
+  return false;
+};
+
+const pathMatchesAny = (file: string, patterns: readonly string[]): boolean =>
+  patterns.some((pattern) => matchesPathPattern(file, pattern));
 
 const stableStringify = (value: unknown): string => {
   if (Array.isArray(value)) return `[${value.map(stableStringify).join(",")}]`;
@@ -402,7 +428,12 @@ const visibleSourceTypes = (result: LegacyMigrationDryRunResult): string[] => {
     dataset.businessProductFacts.length ? "business_product" : null,
     dataset.adProductFacts.length ? "ad_product" : null,
     dataset.adPlanFacts.length ? "ad_plan" : null,
-    dataset.afterSalesDailyAggregates.length || dataset.afterSalesRangeAggregates.length ? "after_sales" : null,
+    dataset.afterSalesDailyAggregates.length ||
+      dataset.afterSalesRangeAggregates.length ||
+      dataset.afterSalesOperationalSnapshots.length ||
+      dataset.afterSalesDistributionItems.length
+      ? "after_sales"
+      : null,
   ].filter((item): item is string => item !== null);
 };
 
@@ -412,18 +443,35 @@ const main = async (): Promise<void> => {
     addCheck(`migration source excludes ${token}`, !migrationSource.includes(token));
   });
 
-  const changedFiles = changedFilesSince(BASELINE_COMMIT);
+  const currentTask = readCurrentTask();
+  const isSafeAggregateTask = currentTask?.taskId === SAFE_AGGREGATE_TASK_ID;
+  const activeBaseline = isSafeAggregateTask
+    ? currentTask?.baselineCommit ?? SAFE_AGGREGATE_BASELINE_COMMIT
+    : BASELINE_COMMIT;
+  const allowedChangedPaths = isSafeAggregateTask
+    ? currentTask?.allowedModifyPaths ?? []
+    : [...ALLOWED_CHANGED_PATHS];
+  const changedFiles = changedFilesSince(activeBaseline);
   addCheck(
     "changed files stay inside authorization",
-    changedFiles.every((file) => ALLOWED_CHANGED_PATHS.includes(file as (typeof ALLOWED_CHANGED_PATHS)[number])),
+    changedFiles.every((file) => pathMatchesAny(file, allowedChangedPaths)),
     changedFiles.join(","),
   );
   addCheck("private samples unchanged", !changedFiles.some((file) => file.startsWith("private-samples/")));
   addCheck("storage modules unchanged", !changedFiles.some((file) => file.startsWith("lib/storage/")));
   addCheck("tmall modules unchanged", !changedFiles.some((file) => file.startsWith("lib/tmall/")));
-  addCheck("domain modules unchanged", !changedFiles.some((file) => file.startsWith("lib/v05/domain/")));
-  addCheck("repository modules unchanged", !changedFiles.some((file) => file.startsWith("lib/v05/repositories/")));
-  addCheck("validation modules unchanged", !changedFiles.some((file) => file.startsWith("lib/v05/validation/")));
+  addCheck(
+    "domain modules unchanged unless A-3.2 safe aggregate task is active",
+    isSafeAggregateTask || !changedFiles.some((file) => file.startsWith("lib/v05/domain/")),
+  );
+  addCheck(
+    "repository modules unchanged unless A-3.2 safe aggregate task is active",
+    isSafeAggregateTask || !changedFiles.some((file) => file.startsWith("lib/v05/repositories/")),
+  );
+  addCheck(
+    "validation modules unchanged unless A-3.2 safe aggregate task is active",
+    isSafeAggregateTask || !changedFiles.some((file) => file.startsWith("lib/v05/validation/")),
+  );
 
   const baseSnapshot = snapshot();
   const baseBefore = stableStringify(baseSnapshot);
@@ -542,7 +590,10 @@ const main = async (): Promise<void> => {
   }));
   addCheck("ad-only product fact is retained", adOnly.stagingDataset?.adProductFacts.length === 1);
   addCheck("ad-only result has no business facts", adOnly.stagingDataset?.businessProductFacts.length === 0);
-  addCheck("ad-only join warning is safe", adOnly.issues.some((issue) => issue.code === "reference_missing" && issue.severity === "warning"));
+  addCheck(
+    "ad-only product identity is accepted without an error",
+    !adOnly.issues.some((issue) => issue.code === "reference_missing" && issue.severity === "error"),
+  );
   addCheck("ad-only is partial and not eligible", adOnly.status === "ready_partial" && adOnly.futureActivationEligible === false);
 
   const emptyCustom = await dryRun(snapshot({ analysisRaw: null, seriesRaw: null, targetsRaw: null }), "custom_empty_version");
