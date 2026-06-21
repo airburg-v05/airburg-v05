@@ -1,0 +1,729 @@
+{
+  "decisionRegisterVersion": "v0.5a-migration-decisions-v1",
+  "sourceAuditCommit": "e35359690a44b34c80e7149c7f835ad64b04744c",
+  "sourceFiles": [
+    "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+    "docs/audits/v0.5a-legacy-data-inventory.json",
+    "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+    "docs/architecture/v0.5a-storage-v2-contract.json",
+    "docs/decisions/ADR-002-storage-v2-persistence-and-migration.md"
+  ],
+  "status": "approved_for_v0.5a_2",
+  "decisions": [
+    {
+      "id": "MDR-001",
+      "category": "ownership",
+      "title": "Core facts must become store-owned V2 facts before multi-store usage",
+      "sourceEvidence": [
+        {
+          "file": "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+          "sectionOrJsonPath": "sections 5, 11, 16"
+        },
+        {
+          "file": "docs/audits/v0.5a-legacy-data-inventory.json",
+          "sectionOrJsonPath": "$.riskSummary[0]"
+        }
+      ],
+      "riskLevel": "critical",
+      "decisionType": "technical_default",
+      "decision": "V0.5A-2 may define repository interfaces, owned V2 domain types, validators, pure functions, and memory test adapters that require platformCode, storeId, businessDate, sourceType, and importBatchId on all imported facts. Multi-store UI, real migration, and persistent V2 activation remain forbidden until later stages.",
+      "rationale": "Legacy facts currently use implicit Tmall ownership and date/product identifiers. Store-owned validation is required before any multi-store or batch-import work can safely proceed.",
+      "implementationStage": "V0.5A-2",
+      "validationRequirement": "Validators must fail any business, ad product, ad plan, or after-sales aggregate fact missing required ownership fields.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-002",
+      "category": "ownership",
+      "title": "Legacy data owner is the default Tmall store",
+      "sourceEvidence": [
+        {
+          "file": "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+          "sectionOrJsonPath": "section 2"
+        },
+        {
+          "file": "docs/audits/v0.5a-legacy-data-inventory.json",
+          "sectionOrJsonPath": "$.defaultMigrationOwner"
+        }
+      ],
+      "riskLevel": "high",
+      "decisionType": "technical_default",
+      "decision": "All legacy Tmall business data maps to platformCode=tmall, storeId=tmall-default-store, storeName=天猫默认店铺. Creation must be idempotent.",
+      "rationale": "The legacy workspace is single-Tmall and has no user-facing multi-store selector. A deterministic default owner preserves meaning without inventing a new store.",
+      "implementationStage": "V0.5A-2 validators, V0.5A-3 dry-run migration, V0.5A-4 activation",
+      "validationRequirement": "Default store validators must require exact platformCode, storeId, and storeName values and prove repeated creation does not duplicate records.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-003",
+      "category": "storage",
+      "title": "airburg_tmall_analysis_v2 migrates to owned aggregate facts",
+      "sourceEvidence": [
+        {
+          "file": "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+          "sectionOrJsonPath": "sections 5, 12, 17"
+        },
+        {
+          "file": "docs/architecture/v0.5a-storage-v2-contract.json",
+          "sectionOrJsonPath": "$.legacyMigrationMapping.airburg_tmall_analysis_v2"
+        }
+      ],
+      "riskLevel": "critical",
+      "decisionType": "technical_default",
+      "decision": "The legacy four-source result is preserved under its original key and later migrated into PlatformRecord, StoreRecord, ImportBatchRecord, ImportFileRecord, owned fact records, safe after-sales aggregates, and MigrationManifest. This task performs no migration.",
+      "rationale": "The result is the core analysis source but currently lacks store ownership and import batch identity.",
+      "implementationStage": "V0.5A-2 through V0.5A-4",
+      "validationRequirement": "V0.5A-2 validators must reject unowned facts; later dry-run must reconcile staged counts without deleting airburg_tmall_analysis_v2.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-004",
+      "category": "series",
+      "title": "Legacy series bind to the default Tmall store without changing IDs",
+      "sourceEvidence": [
+        {
+          "file": "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+          "sectionOrJsonPath": "sections 6, 13, 16"
+        },
+        {
+          "file": "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+          "sectionOrJsonPath": "section 10"
+        }
+      ],
+      "riskLevel": "high",
+      "decisionType": "technical_default",
+      "decision": "airburg_tmall_series_groups_v1 remains intact. Each legacy group becomes a SeriesRecord under platformCode=tmall and storeId=tmall-default-store, preserving id as seriesId and productIds as membership only.",
+      "rationale": "Series are user-created configuration. Renaming or regenerating IDs would break existing target and board references.",
+      "implementationStage": "V0.5A-2 validators, V0.5A-3 dry-run migration",
+      "validationRequirement": "Series validators must require platformCode + storeId + seriesId and must not create default series for all products.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-005",
+      "category": "target",
+      "title": "Legacy targets keep V0.4C meaning and gain store ownership",
+      "sourceEvidence": [
+        {
+          "file": "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+          "sectionOrJsonPath": "sections 7, 13, 16"
+        },
+        {
+          "file": "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+          "sectionOrJsonPath": "section 11"
+        }
+      ],
+      "riskLevel": "high",
+      "decisionType": "technical_default",
+      "decision": "airburg_tmall_targets_v1 remains intact. Store targets stay store scope and are not upgraded to company scope. Product and series targets bind to the default store. Missing productId or seriesId entity targets cannot enter active V2 records and must be rejected or marked migration_failed; targets are not silently deleted.",
+      "rationale": "Changing target scope would alter business meaning. Missing entity identity cannot be guessed safely.",
+      "implementationStage": "V0.5A-2 validators, V0.5A-3 dry-run migration",
+      "validationRequirement": "Target validators must require scope-specific identity fields and preserve V0.4C completion rate semantics.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-006",
+      "category": "target",
+      "title": "Target period values must be preserved without lossy rewriting",
+      "sourceEvidence": [
+        {
+          "file": "docs/audits/v0.5a-legacy-data-inventory.json",
+          "sectionOrJsonPath": "$.storageItems[2].currentShape"
+        },
+        {
+          "file": "docs/decisions/ADR-002-storage-v2-persistence-and-migration.md",
+          "sectionOrJsonPath": "Decision Drivers"
+        }
+      ],
+      "riskLevel": "high",
+      "decisionType": "contract_gap",
+      "decision": "Existing, valid legacy periodType and periodValue must be preserved. Validators may flag unsupported period types as contract_gap, but must not rewrite weekly or other legacy periods into daily or monthly.",
+      "rationale": "Target period meaning affects completion rates. Lossy conversion would change business interpretation.",
+      "implementationStage": "V0.5A-2 validators; contract/ADR review before real migration if unsupported period types are found",
+      "validationRequirement": "A validator test must prove unsupported but valid legacy period values are rejected or flagged, not coerced.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-007",
+      "category": "storage",
+      "title": "airburg:last-analysis is deprecated preview storage, not business repository input",
+      "sourceEvidence": [
+        {
+          "file": "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+          "sectionOrJsonPath": "section 8"
+        },
+        {
+          "file": "docs/audits/v0.5a-legacy-data-inventory.json",
+          "sectionOrJsonPath": "$.storageItems[3]"
+        },
+        {
+          "file": "docs/decisions/ADR-002-storage-v2-persistence-and-migration.md",
+          "sectionOrJsonPath": "Open Questions"
+        }
+      ],
+      "riskLevel": "medium",
+      "decisionType": "technical_default",
+      "decision": "airburg:last-analysis is marked as deprecated legacy preview artifact. The original key is preserved, not auto-cleared, and it does not enter the V2 business repository. previewRows, file names, headers, raw preview content, and early ranking/anomaly structures must not be copied into V2 facts.",
+      "rationale": "This key may include prototype preview data and file metadata that are outside the current four-source safe aggregate model.",
+      "implementationStage": "V0.5A-3 migration manifest dry-run",
+      "validationRequirement": "Migration manifest validation must include a legacyIgnoredOrArchived entry and prove no previewRows or file names are copied.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-008",
+      "category": "persistence",
+      "title": "airburg:demo-session is not business analytics data",
+      "sourceEvidence": [
+        {
+          "file": "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+          "sectionOrJsonPath": "section 8"
+        },
+        {
+          "file": "docs/audits/v0.5a-legacy-data-inventory.json",
+          "sectionOrJsonPath": "$.storageItems[4]"
+        }
+      ],
+      "riskLevel": "low",
+      "decisionType": "technical_default",
+      "decision": "airburg:demo-session is a non-business demo session key. It is not migrated into V2 business repositories and is not auto-cleared by data migration.",
+      "rationale": "Session state does not define store ownership or analytical facts.",
+      "implementationStage": "V0.5A-3 migration manifest dry-run",
+      "validationRequirement": "Migration dry-run must report this key as non-business ignored state and leave it untouched.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-009",
+      "category": "persistence",
+      "title": "Legacy importBatchId must be deterministic",
+      "sourceEvidence": [
+        {
+          "file": "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+          "sectionOrJsonPath": "section 12"
+        },
+        {
+          "file": "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+          "sectionOrJsonPath": "section 13"
+        },
+        {
+          "file": "docs/decisions/ADR-002-storage-v2-persistence-and-migration.md",
+          "sectionOrJsonPath": "Open Questions"
+        }
+      ],
+      "riskLevel": "high",
+      "decisionType": "technical_default",
+      "decision": "Generate legacy importBatchId from legacy storage key, stable legacy value hash, and migrationVersion. Identical input must always produce the same ID. Use this deterministic strategy instead of user-visible file names or current time.",
+      "rationale": "Legacy data lacks import batch records. Deterministic IDs are required for idempotence and repeatable validation.",
+      "implementationStage": "V0.5A-2 pure function contract, V0.5A-3 dry-run migration",
+      "validationRequirement": "Pure tests must prove identical key/value/version inputs produce identical IDs and changed value hash changes the ID.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-010",
+      "category": "date",
+      "title": "Missing fact dates must not use the current date",
+      "sourceEvidence": [
+        {
+          "file": "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+          "sectionOrJsonPath": "sections 9, 12"
+        },
+        {
+          "file": "docs/architecture/v0.5a-storage-v2-contract.json",
+          "sectionOrJsonPath": "$.requiredOwnershipFields"
+        }
+      ],
+      "riskLevel": "high",
+      "decisionType": "technical_default",
+      "decision": "Legacy date maps to businessDate for business and promotion facts. If a record lacks a valid date, it must be rejected or mark migration_failed; it must never default to the current date.",
+      "rationale": "Using the current date would create false operational facts and distort daily performance.",
+      "implementationStage": "V0.5A-2 validators, V0.5A-3 dry-run migration",
+      "validationRequirement": "Validators must fail missing or invalid businessDate and test that current date fallback is forbidden.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-011",
+      "category": "date",
+      "title": "After-sales date basis must remain explicit",
+      "sourceEvidence": [
+        {
+          "file": "docs/architecture/v0.5a-storage-v2-contract.json",
+          "sectionOrJsonPath": "$.records.OwnedAfterSalesAggregate.allowedAggregateKinds"
+        },
+        {
+          "file": "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+          "sectionOrJsonPath": "section 14"
+        }
+      ],
+      "riskLevel": "high",
+      "decisionType": "technical_default",
+      "decision": "After-sales day aggregates must record dateBasis as apply_date, success_date, or payment_date. File-range after-sales summaries must be derived aggregates with dateRange and must not masquerade as a single businessDate ordinary fact.",
+      "rationale": "Apply date, refund success date, and payment date answer different operational questions. Collapsing them changes the meaning of after-sales metrics.",
+      "implementationStage": "V0.5A-2 validators, V0.5A-3 dry-run migration",
+      "validationRequirement": "After-sales aggregate validators must enforce allowed date basis and reject range summaries inserted into ordinary daily fact tables.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-012",
+      "category": "privacy",
+      "title": "After-sales raw rows and sensitive details are never migrated",
+      "sourceEvidence": [
+        {
+          "file": "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+          "sectionOrJsonPath": "section 14"
+        },
+        {
+          "file": "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+          "sectionOrJsonPath": "section 16"
+        },
+        {
+          "file": "docs/decisions/ADR-002-storage-v2-persistence-and-migration.md",
+          "sectionOrJsonPath": "Privacy Boundary"
+        }
+      ],
+      "riskLevel": "high",
+      "decisionType": "technical_default",
+      "decision": "V2 business repositories may persist only after-sales safe aggregates. Raw rows, preview rows, file contents, file names, identifiers, contacts, addresses, logistics details, user explanations, seller notes, operators, and subaccounts are forbidden.",
+      "rationale": "The existing parser reads sensitive details only transiently and stores aggregate outputs. V2 must not weaken that boundary.",
+      "implementationStage": "V0.5A-2 validators and all later migration stages",
+      "validationRequirement": "Privacy tests must fail any V2 record or manifest containing forbidden after-sales detail fields or values.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-013",
+      "category": "identity",
+      "title": "Entity IDs are store-scoped, not globally unique",
+      "sourceEvidence": [
+        {
+          "file": "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+          "sectionOrJsonPath": "sections 6, 11, 16"
+        },
+        {
+          "file": "docs/architecture/v0.5a-storage-v2-contract.json",
+          "sectionOrJsonPath": "$.compositeUniqueness"
+        }
+      ],
+      "riskLevel": "critical",
+      "decisionType": "technical_default",
+      "decision": "productId, planId, seriesId, targetId, and tracked product identity must be resolved with platformCode + storeId + entityId. No entity ID may be treated as cross-store global identity.",
+      "rationale": "Different stores can share platform product or plan IDs. Global interpretation would merge separate business records.",
+      "implementationStage": "V0.5A-2 validators and repository interfaces",
+      "validationRequirement": "Composite key tests must prove identical entityId values in different stores remain isolated.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-014",
+      "category": "persistence",
+      "title": "Corrupted or partial migration states must not activate",
+      "sourceEvidence": [
+        {
+          "file": "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+          "sectionOrJsonPath": "section 15"
+        },
+        {
+          "file": "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+          "sectionOrJsonPath": "sections 7, 12"
+        }
+      ],
+      "riskLevel": "high",
+      "decisionType": "technical_default",
+      "decision": "Corrupted analysis or target storage stops before activation. Corrupted series storage blocks active migration when series integrity is required. Partial four-source data may stage only parsed sources with explicit missing/error source states.",
+      "rationale": "Partial activation could make pages read incomplete ownership data as if it were valid.",
+      "implementationStage": "V0.5A-2 repository result states, V0.5A-3 dry-run migration",
+      "validationRequirement": "State tests must cover empty, valid, corrupted, partial, and migration_failed without deleting legacy keys.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-015",
+      "category": "persistence",
+      "title": "Active dataset pointer changes only after full validation",
+      "sourceEvidence": [
+        {
+          "file": "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+          "sectionOrJsonPath": "sections 6, 7, 8"
+        },
+        {
+          "file": "docs/architecture/v0.5a-storage-v2-contract.json",
+          "sectionOrJsonPath": "$.records.ActiveDatasetPointer"
+        }
+      ],
+      "riskLevel": "high",
+      "decisionType": "technical_default",
+      "decision": "Prepare and staging phases must not update the active pointer. migration_failed must not partially activate. Corrupted staging must never overwrite the last valid active dataset.",
+      "rationale": "Users must either see the old valid dataset or a fully validated new dataset, never an in-between state.",
+      "implementationStage": "V0.5A-3 dry-run, V0.5A-4 activation",
+      "validationRequirement": "Activation tests must prove pointer remains unchanged until all staged records pass validation and readback.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-016",
+      "category": "persistence",
+      "title": "V0.5A-2 is interface and validator only",
+      "sourceEvidence": [
+        {
+          "file": "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+          "sectionOrJsonPath": "section 17"
+        },
+        {
+          "file": "docs/decisions/ADR-002-storage-v2-persistence-and-migration.md",
+          "sectionOrJsonPath": "Proposed Decision"
+        }
+      ],
+      "riskLevel": "high",
+      "decisionType": "technical_default",
+      "decision": "V0.5A-2 may add repository interfaces, V2 domain types, validators, pure functions, private validation scripts, and memory test adapters only. It must not write localStorage V2, introduce IndexedDB, write active pointers, run real migration, or modify pages.",
+      "rationale": "The audit and ADR require repository boundaries before persistence changes.",
+      "implementationStage": "V0.5A-2",
+      "validationRequirement": "V0.5A-2 authorization and validators must fail if app/components pages, persistence adapters, IndexedDB, or active pointer writes are introduced.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-017",
+      "category": "persistence",
+      "title": "Page-level storage reads are a later repository integration risk",
+      "sourceEvidence": [
+        {
+          "file": "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+          "sectionOrJsonPath": "sections 9, 10, 16"
+        },
+        {
+          "file": "docs/decisions/ADR-002-storage-v2-persistence-and-migration.md",
+          "sectionOrJsonPath": "Page Boundary"
+        }
+      ],
+      "riskLevel": "medium",
+      "decisionType": "technical_default",
+      "decision": "Current page-level localStorage reads remain unchanged in this decision task. V0.5A-2 defines repositories; later authorized stages move page reads behind repositories.",
+      "rationale": "Changing pages now would violate the task boundary and risk destabilizing V0.4E.",
+      "implementationStage": "V0.5A-2 repository contracts, V0.5A-5 page integration",
+      "validationRequirement": "Future page integration tasks must prove pages do not parse V2 storage directly.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-018",
+      "category": "identity",
+      "title": "Series and tracked products remain user-selected focus objects",
+      "sourceEvidence": [
+        {
+          "file": "docs/architecture/v0.5a-storage-v2-contract.json",
+          "sectionOrJsonPath": "$.records.SeriesRecord.rules and $.records.TrackedProductRecord.rules"
+        },
+        {
+          "file": "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+          "sectionOrJsonPath": "section 10"
+        }
+      ],
+      "riskLevel": "medium",
+      "decisionType": "technical_default",
+      "decision": "Migration must not create default series for all products and must not treat all imported products as tracked products.",
+      "rationale": "V0.5 product direction requires focus objects to be user-created or user-selected.",
+      "implementationStage": "V0.5A-2 validators, V0.5E focus object management",
+      "validationRequirement": "Validators and future migration dry-run must prove no automatic all-product series or tracked-product dump is created.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-019",
+      "category": "storage",
+      "title": "Plan promotion facts stay separate from product promotion facts",
+      "sourceEvidence": [
+        {
+          "file": "docs/audits/v0.5a-legacy-data-inventory.json",
+          "sectionOrJsonPath": "$.entityMappings[1], $.entityMappings[2]"
+        },
+        {
+          "file": "docs/architecture/v0.5a-storage-v2-contract.json",
+          "sectionOrJsonPath": "$.records.OwnedAdProductFact.rules and $.records.OwnedAdPlanFact.rules"
+        }
+      ],
+      "riskLevel": "high",
+      "decisionType": "technical_default",
+      "decision": "Plan promotion data must not fill missing single-product promotion facts. Product ad facts and plan ad facts stay separate V2 record families.",
+      "rationale": "Plan-level data and product-level data have different granularity and cannot be safely merged.",
+      "implementationStage": "V0.5A-2 validators, V0.5A-3 dry-run migration",
+      "validationRequirement": "Tests must fail any migration or repository query that uses plan data to backfill product ad facts.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-020",
+      "category": "storage",
+      "title": "Legacy keys are preserved and never cleared by migration",
+      "sourceEvidence": [
+        {
+          "file": "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+          "sectionOrJsonPath": "sections 6, 7, 8"
+        },
+        {
+          "file": "docs/architecture/v0.5a-storage-v2-contract.json",
+          "sectionOrJsonPath": "$.globalRules.legacyKeysMustBePreserved"
+        }
+      ],
+      "riskLevel": "high",
+      "decisionType": "technical_default",
+      "decision": "airburg_tmall_analysis_v2, airburg_tmall_series_groups_v1, airburg_tmall_targets_v1, airburg:last-analysis, and airburg:demo-session remain in place. Migration must not auto-delete any legacy key.",
+      "rationale": "Preserving keys is the rollback and safety mechanism for local-first migration.",
+      "implementationStage": "All V0.5A migration stages",
+      "validationRequirement": "Migration tests must prove old keys remain unchanged across prepare, failed, activated, and rollback states.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-021",
+      "category": "privacy",
+      "title": "ImportFileRecord must not persist file names or raw previews",
+      "sourceEvidence": [
+        {
+          "file": "docs/architecture/v0.5a-storage-v2-contract.json",
+          "sectionOrJsonPath": "$.records.ImportFileRecord.forbiddenFields"
+        },
+        {
+          "file": "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+          "sectionOrJsonPath": "section 16"
+        }
+      ],
+      "riskLevel": "medium",
+      "decisionType": "technical_default",
+      "decision": "Persisted ImportFileRecord may store safe source type, row count, header row number, date range, and status only. It must not store fileName, rawRows, previewRows, file contents, or after-sales sensitive values.",
+      "rationale": "File metadata and previews can expose customer or operational details and are unnecessary for V2 ownership validation.",
+      "implementationStage": "V0.5A-2 validators, V0.5B import flow",
+      "validationRequirement": "Import file validators must reject forbidden fields.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-022",
+      "category": "target",
+      "title": "Legacy store target is not a company target",
+      "sourceEvidence": [
+        {
+          "file": "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+          "sectionOrJsonPath": "section 11"
+        },
+        {
+          "file": "docs/architecture/v0.5a-storage-v2-contract.json",
+          "sectionOrJsonPath": "$.records.TargetRecord.rules"
+        }
+      ],
+      "riskLevel": "high",
+      "decisionType": "technical_default",
+      "decision": "Legacy store-scope targets remain store targets attached to the default Tmall store. Company-level target allocation is a later stage and must not be inferred from legacy store goals.",
+      "rationale": "Auto-upgrading store targets into company targets would change the target hierarchy and completion semantics.",
+      "implementationStage": "V0.5A-2 validators, V0.5F target allocation",
+      "validationRequirement": "Target migration tests must prove no company-scope target is created from legacy store-scope targets.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-023",
+      "category": "persistence",
+      "title": "First V2 adapter choice does not block V0.5A-2",
+      "sourceEvidence": [
+        {
+          "file": "docs/decisions/ADR-002-storage-v2-persistence-and-migration.md",
+          "sectionOrJsonPath": "Options Considered and Open Questions"
+        },
+        {
+          "file": "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+          "sectionOrJsonPath": "section 17"
+        }
+      ],
+      "riskLevel": "medium",
+      "decisionType": "technical_default",
+      "decision": "V0.5A-2 uses repository interfaces, validators, pure functions, and memory test adapters only. Split localStorage and IndexedDB adapter choice remains deferred and does not block A-2.",
+      "rationale": "The ADR recommends repository interfaces first and explicitly forbids IndexedDB in the current stage.",
+      "implementationStage": "V0.5A-2",
+      "validationRequirement": "A-2 validation must prove no persistence adapter, localStorage V2 write, IndexedDB, or page integration is introduced.",
+      "blocksV05A2": false,
+      "approved": true
+    },
+    {
+      "id": "MDR-024",
+      "category": "storage",
+      "title": "Source health and row counts are safe metadata, not raw data",
+      "sourceEvidence": [
+        {
+          "file": "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+          "sectionOrJsonPath": "section 12"
+        },
+        {
+          "file": "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+          "sectionOrJsonPath": "section 5"
+        }
+      ],
+      "riskLevel": "medium",
+      "decisionType": "technical_default",
+      "decision": "Source-level ImportFileRecord entries may be created from safe source health, source status, row counts, header row number, and date ranges. File names, raw rows, and raw content remain forbidden.",
+      "rationale": "Import traceability needs source status and counts but not sensitive file details.",
+      "implementationStage": "V0.5A-2 validators, V0.5A-3 dry-run migration",
+      "validationRequirement": "ImportFileRecord validation must accept safe metadata and reject forbidden raw fields.",
+      "blocksV05A2": false,
+      "approved": true
+    }
+  ],
+  "migrationBlockers": [],
+  "resolvedMigrationBlockers": [
+    {
+      "sourceItem": "No active V2 repository contract is implemented yet.",
+      "resolvedByDecisionId": "MDR-016",
+      "blocksV05A2": false
+    },
+    {
+      "sourceItem": "No migration manifest or active dataset pointer exists yet.",
+      "resolvedByDecisionId": "MDR-015",
+      "blocksV05A2": false
+    },
+    {
+      "sourceItem": "Legacy facts lack importBatchId, so a synthetic migration import batch is required.",
+      "resolvedByDecisionId": "MDR-009",
+      "blocksV05A2": false
+    },
+    {
+      "sourceItem": "Target and series records lack storeId, so default store binding must be idempotent.",
+      "resolvedByDecisionId": "MDR-002",
+      "blocksV05A2": false
+    },
+    {
+      "sourceItem": "Page-level localStorage reads remain in several pages and must be replaced by repositories in later locked tasks.",
+      "resolvedByDecisionId": "MDR-017",
+      "blocksV05A2": false
+    }
+  ],
+  "unresolvedDecisions": [],
+  "riskSummary": {
+    "critical": 3,
+    "high": 14,
+    "medium": 6,
+    "low": 1
+  },
+  "legacyKeyPolicies": [
+    {
+      "storageKey": "airburg_tmall_analysis_v2",
+      "policy": "preserve_original_key_and_migrate_to_default_tmall_store_owned_records_later",
+      "entersV2BusinessRepository": true,
+      "copyRawRows": false,
+      "autoClear": false,
+      "decisionId": "MDR-003"
+    },
+    {
+      "storageKey": "airburg_tmall_series_groups_v1",
+      "policy": "preserve_original_key_and_bind_series_to_default_tmall_store_later",
+      "entersV2BusinessRepository": true,
+      "copyRawRows": false,
+      "autoClear": false,
+      "decisionId": "MDR-004"
+    },
+    {
+      "storageKey": "airburg_tmall_targets_v1",
+      "policy": "preserve_original_key_and_bind_targets_to_default_tmall_store_later_without_scope_upgrade",
+      "entersV2BusinessRepository": true,
+      "copyRawRows": false,
+      "autoClear": false,
+      "decisionId": "MDR-005"
+    },
+    {
+      "storageKey": "airburg:last-analysis",
+      "policy": "deprecated_legacy_preview_artifact_ignore_or_archive_in_manifest_only",
+      "entersV2BusinessRepository": false,
+      "copyRawRows": false,
+      "autoClear": false,
+      "decisionId": "MDR-007"
+    },
+    {
+      "storageKey": "airburg:demo-session",
+      "policy": "non_business_demo_session_leave_untouched",
+      "entersV2BusinessRepository": false,
+      "copyRawRows": false,
+      "autoClear": false,
+      "decisionId": "MDR-008"
+    }
+  ],
+  "defaultStorePolicy": {
+    "platformCode": "tmall",
+    "storeId": "tmall-default-store",
+    "storeName": "天猫默认店铺",
+    "idempotent": true,
+    "decisionId": "MDR-002"
+  },
+  "afterSalesDatePolicy": {
+    "allowedDateBasis": [
+      "apply_date",
+      "success_date",
+      "payment_date"
+    ],
+    "rangeSummaryAsDerivedAggregate": true,
+    "rangeSummaryMustNotMasqueradeAsSingleBusinessDate": true,
+    "rawRowsForbidden": true,
+    "decisionIds": [
+      "MDR-011",
+      "MDR-012"
+    ]
+  },
+  "targetPeriodPolicy": {
+    "preserveExistingPeriodType": true,
+    "doNotCoerceUnsupportedPeriodType": true,
+    "contractGapDecisionId": "MDR-006"
+  },
+  "persistencePolicy": {
+    "v05a2Allowed": [
+      "repository interfaces",
+      "V2 domain types",
+      "validators",
+      "pure functions",
+      "memory test adapter",
+      "private validation scripts"
+    ],
+    "v05a2Forbidden": [
+      "localStorage V2 writes",
+      "IndexedDB",
+      "active pointer writes",
+      "real migration",
+      "page integration"
+    ],
+    "decisionIds": [
+      "MDR-016",
+      "MDR-023"
+    ]
+  },
+  "legacyImportBatchIdPolicy": {
+    "deterministic": true,
+    "inputParts": [
+      "legacy storage key",
+      "legacy value hash",
+      "migration version"
+    ],
+    "decisionId": "MDR-009"
+  },
+  "v05a2EntryCriteria": {
+    "migrationBlockersEmpty": true,
+    "unresolvedDecisionsEmpty": true,
+    "criticalRisksHaveDisposition": true,
+    "highRisksHaveImplementationStage": true,
+    "highRisksHaveValidationRequirement": true,
+    "fiveLegacyKeyPoliciesDefined": true,
+    "defaultStoreMappingDefined": true,
+    "targetPeriodLosslessPolicyDefined": true,
+    "afterSalesDateSemanticsDefined": true,
+    "afterSalesRawRowsForbidden": true,
+    "persistenceExcludedFromV05A2": true,
+    "activePointerSafetyDefined": true,
+    "v05aStillPending": true,
+    "fixedGovernanceFilesUnmodified": true,
+    "auditInputsUnmodified": true
+  },
+  "v05a2EntryAllowed": true
+}
