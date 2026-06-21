@@ -1,0 +1,550 @@
+{
+  "auditVersion": "v0.5a-legacy-data-ownership-audit-v1",
+  "taskId": "V0.5A_1_LEGACY_DATA_OWNERSHIP_AUDIT_AND_STORAGE_V2_MIGRATION_DESIGN",
+  "auditedAt": "2026-06-21T13:55:00+08:00",
+  "scope": {
+    "purpose": "Inventory legacy single-Tmall browser storage before V0.5 multi-platform and multi-store migration design.",
+    "readOnlyAudit": true,
+    "migrationExecuted": false,
+    "businessCodeModified": false,
+    "privateSamplesRead": false
+  },
+  "defaultMigrationOwner": {
+    "platformCode": "tmall",
+    "storeId": "tmall-default-store",
+    "storeName": "天猫默认店铺"
+  },
+  "requiredV2OwnershipFields": [
+    "platformCode",
+    "storeId",
+    "businessDate",
+    "sourceType",
+    "importBatchId"
+  ],
+  "storageItems": [
+    {
+      "storageKey": "airburg_tmall_analysis_v2",
+      "schemaVersion": "tmall_four_source_v1",
+      "entityType": "TmallStoredAnalysisResult",
+      "definedIn": [
+        "lib/storage/tmall-analysis-storage.ts:9",
+        "types/tmall.ts:187"
+      ],
+      "writers": [
+        "lib/storage/tmall-analysis-storage.ts:17",
+        "app/(workspace)/upload/page.tsx:265"
+      ],
+      "readers": [
+        "lib/storage/tmall-analysis-storage.ts:37",
+        "lib/storage/use-tmall-analysis-result.ts:24",
+        "app/(workspace)/upload/page.tsx:102",
+        "app/(workspace)/home/page.tsx",
+        "app/(workspace)/store-board/page.tsx",
+        "app/(workspace)/product-board/page.tsx",
+        "app/(workspace)/series-board/page.tsx",
+        "app/(workspace)/raw-data/page.tsx",
+        "app/(workspace)/targets/page.tsx"
+      ],
+      "clearers": [
+        "lib/storage/tmall-analysis-storage.ts:49",
+        "app/(workspace)/upload/page.tsx:297"
+      ],
+      "eventNames": [
+        "airburg-tmall-storage-change"
+      ],
+      "validator": "lib/storage/tmall-analysis-validator.ts::parseTmallStoredAnalysisResult",
+      "currentShape": "Single Tmall aggregate result with version, analysisTimestamp, sourceHealth, dateRanges, productDailyFacts, adProductDailyFacts, adPlanDailyFacts, afterSalesAggregates, joinQuality, optional reconciliation, and dataQualityWarnings.",
+      "containsPlatformCode": false,
+      "containsStoreId": false,
+      "containsBusinessDate": false,
+      "containsSourceType": true,
+      "containsImportBatchId": false,
+      "containsSensitiveAfterSalesDetail": false,
+      "migrationRequired": true,
+      "migrationRisk": "high",
+      "notes": [
+        "Facts contain legacy platform literal platform='tmall' but not V0.5 platformCode.",
+        "Facts use date, not businessDate.",
+        "sourceType exists in sourceHealth but not on every owned fact record.",
+        "Stored result intentionally excludes raw rows and previewRows.",
+        "After-sales storage is aggregate-only, but reason/status distributions still require privacy-safe rendering."
+      ]
+    },
+    {
+      "storageKey": "airburg_tmall_series_groups_v1",
+      "schemaVersion": "tmall_series_groups_v1",
+      "entityType": "TmallSeriesGroupStorage",
+      "definedIn": [
+        "lib/storage/tmall-series-storage.ts:10",
+        "lib/storage/tmall-series-storage.ts:22"
+      ],
+      "writers": [
+        "lib/storage/tmall-series-storage.ts:101",
+        "app/(workspace)/series-board/page.tsx:153"
+      ],
+      "readers": [
+        "lib/storage/tmall-series-storage.ts:93",
+        "app/(workspace)/home/page.tsx",
+        "app/(workspace)/store-board/page.tsx",
+        "app/(workspace)/product-board/page.tsx",
+        "app/(workspace)/series-board/page.tsx",
+        "app/(workspace)/targets/page.tsx"
+      ],
+      "clearers": [
+        "lib/storage/tmall-series-storage.ts:111",
+        "app/(workspace)/series-board/page.tsx:209"
+      ],
+      "eventNames": [
+        "airburg-tmall-series-storage-change"
+      ],
+      "validator": "lib/storage/tmall-series-storage.ts::parseTmallSeriesGroupStorage",
+      "currentShape": "Envelope version plus groups array. Each group has id, name, optional description, productIds, createdAt, updatedAt.",
+      "containsPlatformCode": false,
+      "containsStoreId": false,
+      "containsBusinessDate": false,
+      "containsSourceType": false,
+      "containsImportBatchId": false,
+      "containsSensitiveAfterSalesDetail": false,
+      "migrationRequired": true,
+      "migrationRisk": "medium",
+      "notes": [
+        "Series groups are implicit single-Tmall-store groups.",
+        "Groups store productIds only; names are user-facing and must not become cross-store identifiers.",
+        "Migration must bind every group to tmall-default-store without duplicating ids."
+      ]
+    },
+    {
+      "storageKey": "airburg_tmall_targets_v1",
+      "schemaVersion": "tmall_targets_v1",
+      "entityType": "TmallTargetStorage",
+      "definedIn": [
+        "types/tmall-targets.ts:40",
+        "lib/storage/tmall-target-storage.ts:28"
+      ],
+      "writers": [
+        "lib/storage/tmall-target-storage.ts:175",
+        "app/(workspace)/targets/page.tsx:135",
+        "app/(workspace)/targets/page.tsx:145",
+        "app/(workspace)/targets/page.tsx:160"
+      ],
+      "readers": [
+        "lib/storage/tmall-target-storage.ts:167",
+        "app/(workspace)/home/page.tsx",
+        "app/(workspace)/store-board/page.tsx",
+        "app/(workspace)/product-board/page.tsx",
+        "app/(workspace)/series-board/page.tsx",
+        "app/(workspace)/targets/page.tsx"
+      ],
+      "clearers": [
+        "lib/storage/tmall-target-storage.ts:185",
+        "app/(workspace)/targets/page.tsx:119"
+      ],
+      "eventNames": [
+        "airburg-tmall-target-storage-change"
+      ],
+      "validator": "lib/storage/tmall-target-storage.ts::parseTmallTargetStorage",
+      "currentShape": "Envelope version plus targets array. Target has id, name, scope, periodType, periodValue, metricKey, targetValue, direction, status, optional productId, optional seriesId, createdAt, updatedAt.",
+      "containsPlatformCode": false,
+      "containsStoreId": false,
+      "containsBusinessDate": false,
+      "containsSourceType": false,
+      "containsImportBatchId": false,
+      "containsSensitiveAfterSalesDetail": false,
+      "migrationRequired": true,
+      "migrationRisk": "high",
+      "notes": [
+        "Store targets are implicit single Tmall store targets.",
+        "Product targets are productId-scoped but not store-owned.",
+        "Series targets are seriesId-scoped but the series itself is not store-owned.",
+        "V2 must keep target completion rules unchanged while adding ownership."
+      ]
+    },
+    {
+      "storageKey": "airburg:last-analysis",
+      "schemaVersion": "none",
+      "entityType": "AnalysisResult",
+      "definedIn": [
+        "lib/storage/analysis-storage.ts:3",
+        "lib/analysis/run-analysis.ts:15"
+      ],
+      "writers": [
+        "lib/storage/analysis-storage.ts:17"
+      ],
+      "readers": [
+        "lib/storage/analysis-storage.ts:23",
+        "lib/storage/use-local-storage.ts:34"
+      ],
+      "clearers": [
+        "lib/storage/analysis-storage.ts:34"
+      ],
+      "eventNames": [
+        "airburg-storage-change"
+      ],
+      "validator": "none; JSON.parse with type assertion",
+      "currentShape": "Early single-file analysis result with file metadata, headers, previewRows, field mapping, field quality, totals, ranking, and anomalies.",
+      "containsPlatformCode": false,
+      "containsStoreId": false,
+      "containsBusinessDate": false,
+      "containsSourceType": false,
+      "containsImportBatchId": false,
+      "containsSensitiveAfterSalesDetail": false,
+      "migrationRequired": true,
+      "migrationRisk": "medium",
+      "notes": [
+        "Prototype storage may include previewRows and file.name.",
+        "No current workspace page writes this key, but legacy browsers may still hold it.",
+        "V2 migration should archive or ignore with an explicit legacy-unowned state rather than deleting silently."
+      ]
+    },
+    {
+      "storageKey": "airburg:demo-session",
+      "schemaVersion": "none",
+      "entityType": "DemoSession",
+      "definedIn": [
+        "lib/storage/analysis-storage.ts:4"
+      ],
+      "writers": [
+        "lib/storage/analysis-storage.ts:40",
+        "app/login/page.tsx:27"
+      ],
+      "readers": [
+        "lib/storage/analysis-storage.ts:50",
+        "lib/storage/use-local-storage.ts:46",
+        "components/layout/app-shell.tsx:107"
+      ],
+      "clearers": [
+        "lib/storage/analysis-storage.ts:61",
+        "components/layout/app-shell.tsx:114"
+      ],
+      "eventNames": [
+        "airburg-storage-change"
+      ],
+      "validator": "none; JSON.parse with type assertion",
+      "currentShape": "Demo login session with account and loggedInAt.",
+      "containsPlatformCode": false,
+      "containsStoreId": false,
+      "containsBusinessDate": false,
+      "containsSourceType": false,
+      "containsImportBatchId": false,
+      "containsSensitiveAfterSalesDetail": false,
+      "migrationRequired": false,
+      "migrationRisk": "low",
+      "notes": [
+        "Application session key, not analytical business storage.",
+        "V0.5 ownership migration should not clear it.",
+        "Future auth work must treat account as user/session state, not store ownership."
+      ]
+    }
+  ],
+  "entityMappings": [
+    {
+      "legacyEntity": "ProductDailyFact",
+      "legacyLocation": "types/tmall.ts:34",
+      "v2Entity": "OwnedBusinessProductFact",
+      "legacyPrimaryKey": [
+        "date",
+        "productId"
+      ],
+      "v2CompositeKey": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "productId",
+        "importBatchId"
+      ],
+      "ownershipGap": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "importBatchId"
+      ],
+      "migrationAction": "Rename date to businessDate, map platform literal to platformCode, attach tmall-default-store, sourceType=business_product, importBatchId from migration batch."
+    },
+    {
+      "legacyEntity": "AdProductDailyFact",
+      "legacyLocation": "types/tmall.ts:57",
+      "v2Entity": "OwnedAdProductFact",
+      "legacyPrimaryKey": [
+        "date",
+        "productId"
+      ],
+      "v2CompositeKey": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "productId",
+        "importBatchId"
+      ],
+      "ownershipGap": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "importBatchId"
+      ],
+      "migrationAction": "Attach tmall-default-store and sourceType=ad_product. Do not use plan promotion data to fill missing product promotion facts."
+    },
+    {
+      "legacyEntity": "AdPlanDailyFact",
+      "legacyLocation": "types/tmall.ts:82",
+      "v2Entity": "OwnedAdPlanFact",
+      "legacyPrimaryKey": [
+        "date",
+        "planId"
+      ],
+      "v2CompositeKey": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "planId",
+        "importBatchId"
+      ],
+      "ownershipGap": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "importBatchId"
+      ],
+      "migrationAction": "Attach tmall-default-store and sourceType=ad_plan. Keep plan facts separate from product facts."
+    },
+    {
+      "legacyEntity": "AfterSalesAggregates",
+      "legacyLocation": "types/tmall.ts:144",
+      "v2Entity": "OwnedAfterSalesAggregate",
+      "legacyPrimaryKey": [
+        "aggregateKind",
+        "date",
+        "productId when productSummary"
+      ],
+      "v2CompositeKey": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "aggregateKind",
+        "optional productId",
+        "importBatchId"
+      ],
+      "ownershipGap": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "importBatchId"
+      ],
+      "migrationAction": "Attach ownership to safe aggregates only. Never reconstruct or persist raw after-sales rows."
+    },
+    {
+      "legacyEntity": "TmallSeriesGroup",
+      "legacyLocation": "lib/storage/tmall-series-storage.ts:1",
+      "v2Entity": "SeriesRecord",
+      "legacyPrimaryKey": [
+        "id"
+      ],
+      "v2CompositeKey": [
+        "platformCode",
+        "storeId",
+        "seriesId"
+      ],
+      "ownershipGap": [
+        "platformCode",
+        "storeId"
+      ],
+      "migrationAction": "Preserve id as seriesId and bind to tmall-default-store."
+    },
+    {
+      "legacyEntity": "TmallTargetDefinition",
+      "legacyLocation": "types/tmall-targets.ts:19",
+      "v2Entity": "TargetRecord",
+      "legacyPrimaryKey": [
+        "id"
+      ],
+      "v2CompositeKey": [
+        "platformCode",
+        "storeId",
+        "targetId"
+      ],
+      "ownershipGap": [
+        "platformCode",
+        "storeId"
+      ],
+      "migrationAction": "Preserve id and all V0.4C completion rules; bind store targets to default store, product targets by productId, series targets by seriesId."
+    }
+  ],
+  "pageStorageAccess": [
+    {
+      "page": "/upload",
+      "file": "app/(workspace)/upload/page.tsx",
+      "storageKeys": [
+        "airburg_tmall_analysis_v2"
+      ],
+      "access": [
+        "read",
+        "write",
+        "clear"
+      ],
+      "notes": [
+        "Source File objects remain transient and are not restored from storage."
+      ]
+    },
+    {
+      "page": "/home",
+      "file": "app/(workspace)/home/page.tsx",
+      "storageKeys": [
+        "airburg_tmall_analysis_v2",
+        "airburg_tmall_series_groups_v1",
+        "airburg_tmall_targets_v1"
+      ],
+      "access": [
+        "read"
+      ],
+      "notes": [
+        "Reads target and series raw localStorage through useSyncExternalStore."
+      ]
+    },
+    {
+      "page": "/targets",
+      "file": "app/(workspace)/targets/page.tsx",
+      "storageKeys": [
+        "airburg_tmall_analysis_v2",
+        "airburg_tmall_series_groups_v1",
+        "airburg_tmall_targets_v1"
+      ],
+      "access": [
+        "read",
+        "write",
+        "clear targets"
+      ],
+      "notes": [
+        "Creates and mutates legacy target definitions without store ownership."
+      ]
+    },
+    {
+      "page": "/series-board",
+      "file": "app/(workspace)/series-board/page.tsx",
+      "storageKeys": [
+        "airburg_tmall_analysis_v2",
+        "airburg_tmall_series_groups_v1",
+        "airburg_tmall_targets_v1"
+      ],
+      "access": [
+        "read",
+        "write series",
+        "clear series"
+      ],
+      "notes": [
+        "Creates and mutates legacy series groups without store ownership."
+      ]
+    },
+    {
+      "page": "/store-board",
+      "file": "app/(workspace)/store-board/page.tsx",
+      "storageKeys": [
+        "airburg_tmall_analysis_v2",
+        "airburg_tmall_series_groups_v1",
+        "airburg_tmall_targets_v1"
+      ],
+      "access": [
+        "read"
+      ],
+      "notes": [
+        "Store board currently means implicit single Tmall store."
+      ]
+    },
+    {
+      "page": "/product-board",
+      "file": "app/(workspace)/product-board/page.tsx",
+      "storageKeys": [
+        "airburg_tmall_analysis_v2",
+        "airburg_tmall_series_groups_v1",
+        "airburg_tmall_targets_v1"
+      ],
+      "access": [
+        "read"
+      ],
+      "notes": [
+        "Product board currently filters productId inside implicit single Tmall store."
+      ]
+    },
+    {
+      "page": "/raw-data",
+      "file": "app/(workspace)/raw-data/page.tsx",
+      "storageKeys": [
+        "airburg_tmall_analysis_v2"
+      ],
+      "access": [
+        "read"
+      ],
+      "notes": [
+        "Reads safe aggregate analysis only through useTmallAnalysisResult."
+      ]
+    },
+    {
+      "page": "/login",
+      "file": "app/login/page.tsx",
+      "storageKeys": [
+        "airburg:demo-session"
+      ],
+      "access": [
+        "write"
+      ],
+      "notes": [
+        "Demo session only."
+      ]
+    }
+  ],
+  "riskSummary": [
+    {
+      "riskId": "RISK-001",
+      "level": "critical",
+      "title": "Core facts are not store-owned.",
+      "evidence": "types/tmall.ts:34",
+      "migrationHandling": "Do not enable multi-store views until every fact is rewritten or read through an ownership-enforcing repository."
+    },
+    {
+      "riskId": "RISK-002",
+      "level": "high",
+      "title": "Targets have implicit store scope.",
+      "evidence": "types/tmall-targets.ts:19",
+      "migrationHandling": "Bind store/product/series targets to tmall-default-store before V0.5 target allocation."
+    },
+    {
+      "riskId": "RISK-003",
+      "level": "high",
+      "title": "Series groups are implicit single-store groups.",
+      "evidence": "lib/storage/tmall-series-storage.ts:1",
+      "migrationHandling": "Bind every series record to platformCode/storeId and keep productIds as membership only."
+    },
+    {
+      "riskId": "RISK-004",
+      "level": "medium",
+      "title": "Prototype analysis storage may contain preview rows and file names.",
+      "evidence": "lib/analysis/run-analysis.ts:15",
+      "migrationHandling": "Archive or ignore explicitly; do not merge into owned V2 facts."
+    },
+    {
+      "riskId": "RISK-005",
+      "level": "low",
+      "title": "Demo session is unrelated to business ownership.",
+      "evidence": "lib/storage/analysis-storage.ts:40",
+      "migrationHandling": "Leave untouched in V0.5 data migration."
+    }
+  ],
+  "migrationBlockers": [
+    "No active V2 repository contract is implemented yet.",
+    "No migration manifest or active dataset pointer exists yet.",
+    "Legacy facts lack importBatchId, so a synthetic migration import batch is required.",
+    "Target and series records lack storeId, so default store binding must be idempotent.",
+    "Page-level localStorage reads remain in several pages and must be replaced by repositories in later locked tasks."
+  ],
+  "decisionsRequiredBeforeImplementation": [
+    "Choose exact V2 persistence adapter after repository interfaces are locked.",
+    "Choose whether prototype airburg:last-analysis is archived under a legacy-unowned area or ignored with a manifest note.",
+    "Choose if default migrated import batch uses one batch for all three business/promotion source groups or one batch per source."
+  ]
+}

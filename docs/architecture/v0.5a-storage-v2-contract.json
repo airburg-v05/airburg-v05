@@ -1,0 +1,571 @@
+{
+  "contractVersion": "v0.5a-storage-v2-contract-v1",
+  "schemaVersion": "airburg_storage_v2",
+  "migrationVersion": "legacy_tmall_v1_to_storage_v2_v1",
+  "status": "design_only",
+  "implemented": false,
+  "defaultLegacyStore": {
+    "platformCode": "tmall",
+    "storeId": "tmall-default-store",
+    "storeName": "天猫默认店铺"
+  },
+  "requiredOwnershipFields": [
+    "platformCode",
+    "storeId",
+    "businessDate",
+    "sourceType",
+    "importBatchId"
+  ],
+  "globalRules": {
+    "allImportedDataMustHavePlatformAndStore": true,
+    "missingDataIsNotZero": true,
+    "zeroMeansMeasuredZero": true,
+    "nullMeansNotAvailableOrNotComparable": true,
+    "parseFailureIsNotMissingData": true,
+    "migrationFailureDoesNotActivateDataset": true,
+    "afterSalesRawRowsForbidden": true,
+    "legacyKeysMustBePreserved": true,
+    "pagesMustUseRepositories": true,
+    "indexedDbRequiresLaterAuthorization": true
+  },
+  "states": {
+    "repositoryResult": [
+      "loading",
+      "empty",
+      "valid",
+      "corrupted",
+      "migration_failed"
+    ],
+    "dataAvailability": [
+      "no_data",
+      "measured_zero",
+      "parsed",
+      "missing_source",
+      "parse_failed",
+      "not_comparable",
+      "migration_failed"
+    ],
+    "activeDatasetPointer": [
+      "none",
+      "legacy_readonly",
+      "v2_staged",
+      "v2_active",
+      "migration_failed"
+    ]
+  },
+  "records": {
+    "PlatformRecord": {
+      "primaryKey": [
+        "platformCode"
+      ],
+      "requiredFields": [
+        "schemaVersion",
+        "platformCode",
+        "platformName",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ],
+      "allowedPlatformCodes": [
+        "tmall",
+        "jd",
+        "pdd",
+        "douyin",
+        "youzan"
+      ],
+      "notes": [
+        "Platform is a catalog record, not a fact owner by itself.",
+        "Tmall legacy migration must create platformCode=tmall if it does not exist."
+      ]
+    },
+    "StoreRecord": {
+      "primaryKey": [
+        "platformCode",
+        "storeId"
+      ],
+      "requiredFields": [
+        "schemaVersion",
+        "platformCode",
+        "storeId",
+        "storeName",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ],
+      "rules": [
+        "storeId must be unique within one platformCode.",
+        "The same display storeName must not be used as a primary identifier.",
+        "Legacy migration must create tmall-default-store once and reuse it on repeated migration."
+      ]
+    },
+    "ImportBatchRecord": {
+      "primaryKey": [
+        "importBatchId"
+      ],
+      "requiredFields": [
+        "schemaVersion",
+        "importBatchId",
+        "platformCode",
+        "storeId",
+        "sourceTypes",
+        "status",
+        "startedAt",
+        "completedAt",
+        "analysisTimestamp"
+      ],
+      "statusValues": [
+        "staged",
+        "parsed",
+        "validated",
+        "aggregated",
+        "active",
+        "failed",
+        "rolled_back"
+      ],
+      "rules": [
+        "An import batch belongs to exactly one platformCode and one storeId.",
+        "Batch activation must be atomic from page-read perspective.",
+        "A failed batch must not become the active dataset pointer."
+      ]
+    },
+    "ImportFileRecord": {
+      "primaryKey": [
+        "importBatchId",
+        "sourceType",
+        "fileId"
+      ],
+      "requiredFields": [
+        "schemaVersion",
+        "importBatchId",
+        "platformCode",
+        "storeId",
+        "sourceType",
+        "fileId",
+        "detectedSourceType",
+        "status",
+        "rowCount",
+        "headerRowNumber",
+        "dateRange"
+      ],
+      "forbiddenFields": [
+        "fileName",
+        "rawRows",
+        "previewRows",
+        "afterSalesSensitiveValues"
+      ],
+      "statusValues": [
+        "parsed",
+        "missing",
+        "unknown",
+        "error"
+      ],
+      "rules": [
+        "V0.5 upload may hold File objects during import, but persisted ImportFileRecord must not store raw file content.",
+        "If filename is needed later, it requires a separate privacy review; current V2 contract forbids it."
+      ]
+    },
+    "OwnedBusinessProductFact": {
+      "sourceType": "business_product",
+      "primaryKey": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "productId",
+        "importBatchId"
+      ],
+      "requiredFields": [
+        "schemaVersion",
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "importBatchId",
+        "productId",
+        "productName",
+        "visitors",
+        "pageViews",
+        "paidBuyers",
+        "gmv",
+        "refundSuccessAmount",
+        "gsv",
+        "conversionRate",
+        "avgOrderValue",
+        "hasAdData"
+      ],
+      "nullRules": [
+        "conversionRate is null when visitors are missing or zero.",
+        "avgOrderValue is null when paidBuyers are missing or zero.",
+        "null is displayed as -- and never coerced to 0."
+      ]
+    },
+    "OwnedAdProductFact": {
+      "sourceType": "ad_product",
+      "primaryKey": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "productId",
+        "importBatchId"
+      ],
+      "requiredFields": [
+        "schemaVersion",
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "importBatchId",
+        "productId",
+        "adSpend",
+        "impressions",
+        "clicks",
+        "adTransactionAmount",
+        "roi",
+        "hasAdData"
+      ],
+      "rules": [
+        "Only product promotion source data can create this fact.",
+        "Plan promotion data must not fill missing single-product promotion facts.",
+        "No ad data is null/not available, not 0 spend or 0 ROI."
+      ]
+    },
+    "OwnedAdPlanFact": {
+      "sourceType": "ad_plan",
+      "primaryKey": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "planId",
+        "importBatchId"
+      ],
+      "requiredFields": [
+        "schemaVersion",
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "importBatchId",
+        "planId",
+        "planName",
+        "sceneId",
+        "sceneName",
+        "adSpend",
+        "clicks",
+        "transactionAmount",
+        "roi"
+      ],
+      "rules": [
+        "Plan facts remain store-level promotion facts.",
+        "Plan facts can support store promotion trend and reconciliation but must not be added to product facts."
+      ]
+    },
+    "OwnedAfterSalesAggregate": {
+      "sourceType": "after_sales",
+      "primaryKey": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "aggregateKind",
+        "aggregateId",
+        "importBatchId"
+      ],
+      "requiredFields": [
+        "schemaVersion",
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "importBatchId",
+        "aggregateKind",
+        "metrics"
+      ],
+      "allowedAggregateKinds": [
+        "apply_date",
+        "success_date",
+        "payment_date",
+        "reason_distribution",
+        "status_distribution",
+        "product_summary"
+      ],
+      "forbiddenFields": [
+        "orderId",
+        "refundId",
+        "alipayTransactionId",
+        "phone",
+        "address",
+        "receiverName",
+        "logisticsNumber",
+        "logisticsInfo",
+        "buyerRefundExplanation",
+        "sellerRemark",
+        "operator",
+        "subAccount",
+        "rawRows",
+        "previewRows"
+      ],
+      "rules": [
+        "Only safe aggregate values may be persisted.",
+        "Original after-sales row identifiers and contact details must never enter V2 records.",
+        "Reason/status labels must be treated as aggregate labels and rendered through privacy-safe views."
+      ]
+    },
+    "SeriesRecord": {
+      "primaryKey": [
+        "platformCode",
+        "storeId",
+        "seriesId"
+      ],
+      "requiredFields": [
+        "schemaVersion",
+        "platformCode",
+        "storeId",
+        "seriesId",
+        "name",
+        "productIds",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ],
+      "rules": [
+        "Series is user-created and must not default-list every product.",
+        "Series membership stores productIds only, not product names as identifiers.",
+        "Migrated legacy series keep their id as seriesId."
+      ]
+    },
+    "TrackedProductRecord": {
+      "primaryKey": [
+        "platformCode",
+        "storeId",
+        "productId"
+      ],
+      "requiredFields": [
+        "schemaVersion",
+        "platformCode",
+        "storeId",
+        "productId",
+        "status",
+        "addedAt",
+        "updatedAt"
+      ],
+      "rules": [
+        "Tracked products are user-added focus products.",
+        "The system must not treat all products as tracked products by default."
+      ]
+    },
+    "TargetRecord": {
+      "primaryKey": [
+        "platformCode",
+        "storeId",
+        "targetId"
+      ],
+      "requiredFields": [
+        "schemaVersion",
+        "platformCode",
+        "storeId",
+        "targetId",
+        "scope",
+        "periodType",
+        "periodValue",
+        "metricKey",
+        "targetValue",
+        "direction",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ],
+      "scopeIdentityRules": {
+        "company": [
+          "platformCode optional only in later company-level tasks",
+          "storeId optional only in later company-level tasks"
+        ],
+        "store": [
+          "platformCode",
+          "storeId"
+        ],
+        "series": [
+          "platformCode",
+          "storeId",
+          "seriesId"
+        ],
+        "product": [
+          "platformCode",
+          "storeId",
+          "productId"
+        ]
+      },
+      "rules": [
+        "V0.4C completion rate semantics must remain unchanged.",
+        "V0.5 company target allocation is a later stage and must not be inferred from legacy store targets."
+      ]
+    },
+    "MigrationManifest": {
+      "primaryKey": [
+        "migrationId"
+      ],
+      "requiredFields": [
+        "schemaVersion",
+        "migrationVersion",
+        "migrationId",
+        "status",
+        "startedAt",
+        "completedAt",
+        "legacySnapshots",
+        "defaultStore",
+        "stagedRecordCounts",
+        "validationResults",
+        "activeDatasetPointerBefore",
+        "activeDatasetPointerAfter"
+      ],
+      "statusValues": [
+        "prepared",
+        "activated",
+        "failed",
+        "rolled_back"
+      ],
+      "rules": [
+        "Manifest must record legacy key hashes before activation.",
+        "Manifest must not contain sensitive raw after-sales values.",
+        "Manifest must prove idempotence by stable migrated ids."
+      ]
+    },
+    "RepositoryResult": {
+      "requiredFields": [
+        "status",
+        "data",
+        "errorCode",
+        "notices"
+      ],
+      "statusValues": [
+        "loading",
+        "empty",
+        "valid",
+        "corrupted",
+        "migration_failed"
+      ],
+      "rules": [
+        "Pages must branch on status and not parse storage directly.",
+        "corrupted does not auto-delete stored data.",
+        "migration_failed does not switch active pointer."
+      ]
+    },
+    "ActiveDatasetPointer": {
+      "primaryKey": [
+        "pointerKey"
+      ],
+      "requiredFields": [
+        "schemaVersion",
+        "pointerKey",
+        "activeDatasetId",
+        "activeMigrationId",
+        "platformCode",
+        "storeId",
+        "updatedAt"
+      ],
+      "rules": [
+        "Prepare phase must not update activeDatasetId.",
+        "Activate phase updates pointer only after all V2 validation passes.",
+        "Rollback restores the previous pointer without deleting legacy keys."
+      ]
+    }
+  },
+  "compositeUniqueness": [
+    {
+      "record": "OwnedBusinessProductFact",
+      "fields": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "productId",
+        "importBatchId"
+      ]
+    },
+    {
+      "record": "OwnedAdProductFact",
+      "fields": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "productId",
+        "importBatchId"
+      ]
+    },
+    {
+      "record": "OwnedAdPlanFact",
+      "fields": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "planId",
+        "importBatchId"
+      ]
+    },
+    {
+      "record": "OwnedAfterSalesAggregate",
+      "fields": [
+        "platformCode",
+        "storeId",
+        "businessDate",
+        "sourceType",
+        "aggregateKind",
+        "aggregateId",
+        "importBatchId"
+      ]
+    },
+    {
+      "record": "SeriesRecord",
+      "fields": [
+        "platformCode",
+        "storeId",
+        "seriesId"
+      ]
+    },
+    {
+      "record": "TargetRecord",
+      "fields": [
+        "platformCode",
+        "storeId",
+        "targetId"
+      ]
+    }
+  ],
+  "legacyMigrationMapping": {
+    "airburg_tmall_analysis_v2": [
+      "PlatformRecord",
+      "StoreRecord",
+      "ImportBatchRecord",
+      "ImportFileRecord",
+      "OwnedBusinessProductFact",
+      "OwnedAdProductFact",
+      "OwnedAdPlanFact",
+      "OwnedAfterSalesAggregate",
+      "MigrationManifest"
+    ],
+    "airburg_tmall_series_groups_v1": [
+      "SeriesRecord",
+      "MigrationManifest"
+    ],
+    "airburg_tmall_targets_v1": [
+      "TargetRecord",
+      "MigrationManifest"
+    ],
+    "airburg:last-analysis": [
+      "MigrationManifest legacyIgnoredOrArchived entry"
+    ],
+    "airburg:demo-session": [
+      "No V2 business migration"
+    ]
+  },
+  "forbiddenDuringV05A1": [
+    "Do not implement this contract.",
+    "Do not write V2 storage.",
+    "Do not run a real migration.",
+    "Do not modify app, components, lib, types, or package files.",
+    "Do not introduce IndexedDB before a later locked authorization."
+  ]
+}

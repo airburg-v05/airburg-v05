@@ -1,14 +1,14 @@
 {
-  "taskId": "V0.5A_0_2_IMMUTABLE_TASK_AUTHORIZATION_SEAL",
-  "stage": "V0.5A-0.2",
+  "taskId": "V0.5A_1_LEGACY_DATA_OWNERSHIP_AUDIT_AND_STORAGE_V2_MIGRATION_DESIGN",
+  "stage": "V0.5A-1",
   "dependsOn": [
-    "V0.5A-0.1"
+    "V0.5A-0.2"
   ],
-  "baselineCommit": "ce386704a981604770f0ee7eadc6d0eddec1519e",
-  "authorizationFile": "docs/project/task-authorizations/V0.5A_0_2_IMMUTABLE_TASK_AUTHORIZATION_SEAL.json",
-  "authorizationHash": "dc6c0d273f8468b54a8495569ee34fd4911f44957265a0ca8897b92685961ad0",
+  "baselineCommit": "ae8f79bfff58738b9eb265173adf4a2a07916324",
+  "authorizationFile": "docs/project/task-authorizations/V0.5A_1_LEGACY_DATA_OWNERSHIP_AUDIT_AND_STORAGE_V2_MIGRATION_DESIGN.json",
+  "authorizationHash": "ae7cb74429994cb49f8573974ace790fa63d4d463605295dc030d52b39b0c945",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
-  "governanceContractHash": "a7ee800da05e5d563c2dd9780c44d939e11d0d184a25675d4c497c18d8d1c764",
+  "governanceContractHash": "22ab8ae6985e8156c42b457d9d60d016626f4a93c500e738a4b70a44d9297f2a",
   "requiredDocuments": [
     "AGENTS.md",
     "docs/product/V05_PRODUCT_NORTH_STAR.md",
@@ -24,15 +24,14 @@
     "docs/project/v0.5-lock.json"
   ],
   "allowedModifyPaths": [
-    "AGENTS.md",
-    ".gitignore",
-    "docs/quality/V05_ACCEPTANCE_GATES.md",
-    "docs/project/V05_TASK_CONTRACT.md",
+    "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+    "docs/audits/v0.5a-legacy-data-inventory.json",
+    "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+    "docs/architecture/v0.5a-storage-v2-contract.json",
+    "docs/decisions/ADR-002-storage-v2-persistence-and-migration.md",
     "docs/project/current-task.json",
-    "docs/project/v0.5-lock.json",
-    "scripts/private-audit/validate-v05-governance-lock.ts",
-    "scripts/private-audit/validate-v05-task-authorization.ts",
-    "scripts/private-audit/validate-v05-task-preflight.ts"
+    "docs/project/task-authorizations/V0.5A_1_LEGACY_DATA_OWNERSHIP_AUDIT_AND_STORAGE_V2_MIGRATION_DESIGN.json",
+    "scripts/private-audit/validate-v05a-legacy-data-ownership-audit.ts"
   ],
   "forbiddenModifyPaths": [
     "app/**",
@@ -41,12 +40,19 @@
     "types/**",
     "package.json",
     "package-lock.json",
-    "private-samples/**"
+    "private-samples/**",
+    "docs/product/**",
+    "docs/design/**",
+    "docs/roadmap/**",
+    "docs/quality/**",
+    "docs/project/v0.5-lock.json",
+    "docs/decisions/ADR-001-platform-and-store-ownership.md"
   ],
   "requiredCommands": [
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
-    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
     "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a-legacy-data-ownership-audit.ts",
     "npm run lint",
     "npm run build"
   ],
@@ -56,11 +62,15 @@
       "status": "PASS"
     },
     {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
       "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05a-legacy-data-ownership-audit.ts",
       "status": "PASS"
     },
     {
@@ -73,15 +83,16 @@
     }
   ],
   "stopConditions": [
-    "Cannot determine the first commit that added the authorization file.",
-    "Authorization commit is not an ancestor of HEAD.",
-    "Current task has unexplained business file modifications.",
-    "Authorization contract conflicts with governance contract.",
+    "A required governance document is missing or conflicts.",
+    "Authorization validation fails.",
+    "A legacy storage key cannot be safely inventoried.",
+    "A legacy entity cannot be mapped without loss.",
+    "After-sales sensitive rows are found in business-facing storage.",
     "A forbidden business file must be modified.",
-    "Cannot prevent current-task self-escalation.",
-    "Destructive authorization tests would pollute the repository worktree."
+    "Real migration would be required to finish the audit.",
+    "The audit cannot preserve all legacy storage keys."
   ],
-  "startedAt": "2026-06-21T13:19:49+08:00",
-  "completedAt": "2026-06-21T13:28:22+08:00",
+  "startedAt": "2026-06-21T13:37:14+08:00",
+  "completedAt": "2026-06-21T13:50:54+08:00",
   "status": "complete"
 }
