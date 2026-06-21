@@ -1,0 +1,57 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5A_3_1_DRY_RUN_IDENTITY_SOURCE_STATE_AND_REAL_FIXTURE_CLOSURE",
+  "stage": "V0.5A-3.1",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5A_3_1_DRY_RUN_IDENTITY_SOURCE_STATE_AND_REAL_FIXTURE_CLOSURE.json",
+  "authorizationHash": "9332e47e56b712aafbdf8b95619d3a795d128793a124adc2d5ae24a7a9434f01",
+  "authorizationCommit": "a17e9f5809efd327e5fd3dad439ac3ebeecc2106",
+  "completionCommit": "c2009957ddc5f9ac625dab30fd32994b1fdc3e75",
+  "completedAt": "2026-06-21T19:45:31+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts",
+    "npx tsx scripts/private-audit/validate-v05a31-dry-run-closure.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a31-dry-run-closure.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-21T19:46:30+08:00"
+}
