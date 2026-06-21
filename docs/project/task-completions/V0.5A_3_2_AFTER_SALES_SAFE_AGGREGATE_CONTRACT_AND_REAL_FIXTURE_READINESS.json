@@ -1,0 +1,67 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5A_3_2_AFTER_SALES_SAFE_AGGREGATE_CONTRACT_AND_REAL_FIXTURE_READINESS",
+  "stage": "V0.5A-3.2",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5A_3_2_AFTER_SALES_SAFE_AGGREGATE_CONTRACT_AND_REAL_FIXTURE_READINESS.json",
+  "authorizationHash": "4a9a725c46f16908048f738977ea634679eef3f9b2810efd6e3a09dc37ab0a20",
+  "authorizationCommit": "cd4e61d092e941a0280d1acbcc0ca2703131318c",
+  "completionCommit": "37c57b3ccc643becf74769d73dc261a124fe617f",
+  "completedAt": "2026-06-21T20:18:31+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a2-v2-domain-repositories.ts",
+    "npx tsx scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts",
+    "npx tsx scripts/private-audit/validate-v05a31-dry-run-closure.ts",
+    "npx tsx scripts/private-audit/validate-v05a32-after-sales-safe-aggregate-readiness.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a2-v2-domain-repositories.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a3-legacy-snapshot-dry-run.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a31-dry-run-closure.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a32-after-sales-safe-aggregate-readiness.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-21T20:20:10+08:00"
+}
