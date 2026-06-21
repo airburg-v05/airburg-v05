@@ -122,10 +122,14 @@ export interface V2PersistenceInspection {
 export interface V2PersistenceStore {
   prepareDataset(prepared: PreparedV2Dataset, failurePoint?: V2PersistenceFailurePoint): Promise<V2PersistenceResult<V2DatasetMetadata>>;
   readDataset(datasetId: string, failurePoint?: V2PersistenceFailurePoint): Promise<V2PersistenceResult<V2ReadBackValidationData>>;
+  loadDataset(datasetId: string): Promise<V2Dataset | null>;
+  loadActiveDataset(): Promise<V2Dataset | null>;
   markDatasetValidated(datasetId: string, validatedAt: string): Promise<V2PersistenceResult<V2DatasetMetadata>>;
   markDatasetFailed(datasetId: string, failedAt: string): Promise<V2PersistenceResult<V2DatasetMetadata>>;
   getDatasetMetadata(datasetId: string): Promise<V2DatasetMetadata | null>;
   getActivePointer(): Promise<ActiveDatasetPointer | null>;
+  listDatasetMetadata(): Promise<V2DatasetMetadata[]>;
+  listActivationJournal(): Promise<ActivationJournalRecord[]>;
   activateDataset(params: {
     datasetId: string;
     expectedCurrentDatasetId: string | null;

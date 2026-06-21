@@ -103,6 +103,17 @@ export class MemoryTransactionalV2PersistenceStore implements V2PersistenceStore
     };
   }
 
+  async loadDataset(datasetId: string): Promise<V2Dataset | null> {
+    const dataset = this.state.datasets.get(datasetId);
+    return dataset ? clonePersistenceValue(dataset) : null;
+  }
+
+  async loadActiveDataset(): Promise<V2Dataset | null> {
+    const datasetId = this.state.pointer?.datasetId;
+    if (!datasetId) return null;
+    return this.loadDataset(datasetId);
+  }
+
   async markDatasetValidated(datasetId: string, validatedAt: string): Promise<V2PersistenceResult<V2DatasetMetadata>> {
     const metadata = this.state.metadata.get(datasetId);
     if (!metadata) return failed("datasetMetadata", "Dataset metadata is missing.");
@@ -126,6 +137,18 @@ export class MemoryTransactionalV2PersistenceStore implements V2PersistenceStore
 
   async getActivePointer(): Promise<ActiveDatasetPointer | null> {
     return this.state.pointer ? clonePersistenceValue(this.state.pointer) : null;
+  }
+
+  async listDatasetMetadata(): Promise<V2DatasetMetadata[]> {
+    return [...this.state.metadata.values()]
+      .map((item) => clonePersistenceValue(item))
+      .sort((left, right) => left.datasetId.localeCompare(right.datasetId));
+  }
+
+  async listActivationJournal(): Promise<ActivationJournalRecord[]> {
+    return [...this.state.journals.values()]
+      .map((item) => clonePersistenceValue(item))
+      .sort((left, right) => left.createdAt.localeCompare(right.createdAt) || left.journalId.localeCompare(right.journalId));
   }
 
   async activateDataset({

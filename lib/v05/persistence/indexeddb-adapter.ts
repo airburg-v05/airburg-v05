@@ -46,6 +46,11 @@ export interface OpenIndexedDbV2PersistenceStoreOptions {
   indexedDBFactory?: IDBFactory;
 }
 
+export interface IndexedDbV2SchemaInspection {
+  objectStoreNames: string[];
+  indexesByStoreName: Record<string, string[]>;
+}
+
 const issue = (path: string, message: string) =>
   createIssue("migration_state_invalid", path, message);
 
@@ -155,6 +160,18 @@ export class IndexedDbV2PersistenceStore implements V2PersistenceStore {
     this.db.close();
   }
 
+  inspectSchema(): IndexedDbV2SchemaInspection {
+    const indexesByStoreName: Record<string, string[]> = {};
+    const transaction = this.db.transaction([...V2_OBJECT_STORE_NAMES], "readonly");
+    V2_OBJECT_STORE_NAMES.forEach((storeName) => {
+      indexesByStoreName[storeName] = Array.from(transaction.objectStore(storeName).indexNames).sort();
+    });
+    return {
+      objectStoreNames: Array.from(this.db.objectStoreNames).sort(),
+      indexesByStoreName,
+    };
+  }
+
   async prepareDataset(
     prepared: PreparedV2Dataset,
     failurePoint?: V2PersistenceFailurePoint,
@@ -244,6 +261,17 @@ export class IndexedDbV2PersistenceStore implements V2PersistenceStore {
     };
   }
 
+  async loadDataset(datasetId: string): Promise<V2Dataset | null> {
+    const readBack = await this.readDataset(datasetId);
+    return readBack.data?.dataset ? clonePersistenceValue(readBack.data.dataset) : null;
+  }
+
+  async loadActiveDataset(): Promise<V2Dataset | null> {
+    const pointer = await this.getActivePointer();
+    if (!pointer?.datasetId) return null;
+    return this.loadDataset(pointer.datasetId);
+  }
+
   async markDatasetValidated(datasetId: string, validatedAt: string): Promise<V2PersistenceResult<V2DatasetMetadata>> {
     const metadata = await this.getDatasetMetadata(datasetId);
     if (!metadata) return failed("datasetMetadata", "Dataset metadata is missing.");
@@ -278,6 +306,24 @@ export class IndexedDbV2PersistenceStore implements V2PersistenceStore {
     const pointer = await getMetadataValue<ActiveDatasetPointer>(transaction.objectStore("metadata"), V2_ACTIVE_POINTER_KEY);
     await transactionDone(transaction);
     return pointer;
+  }
+
+  async listDatasetMetadata(): Promise<V2DatasetMetadata[]> {
+    const transaction = this.db.transaction("datasetMetadata", "readonly");
+    const metadata = await getAll<V2DatasetMetadata>(transaction.objectStore("datasetMetadata"));
+    await transactionDone(transaction);
+    return metadata
+      .map((item) => clonePersistenceValue(item))
+      .sort((left, right) => left.datasetId.localeCompare(right.datasetId));
+  }
+
+  async listActivationJournal(): Promise<ActivationJournalRecord[]> {
+    const transaction = this.db.transaction("activationJournal", "readonly");
+    const journal = await getAll<ActivationJournalRecord>(transaction.objectStore("activationJournal"));
+    await transactionDone(transaction);
+    return journal
+      .map((item) => clonePersistenceValue(item))
+      .sort((left, right) => left.createdAt.localeCompare(right.createdAt) || left.journalId.localeCompare(right.journalId));
   }
 
   async activateDataset({

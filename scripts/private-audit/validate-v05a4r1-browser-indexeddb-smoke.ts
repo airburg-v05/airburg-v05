@@ -15,6 +15,12 @@ import {
   V2_RECORD_ENVELOPE_VERSION,
 } from "../../lib/v05";
 
+// V0.5A-4-R1 note:
+// This script is an IndexedDB capability/schema smoke. It intentionally uses a
+// tiny in-page IndexedDB scenario and is not a production Adapter integration
+// test. The production Adapter browser integration closure lives in
+// validate-v05a41-real-adapter-browser-integration.ts.
+
 const TASK_ID = "V0.5A_4_R1_INDEXEDDB_V2_PERSISTENCE_AND_ATOMIC_DEFAULT_STORE_ACTIVATION_ENGINE";
 const ROOT = process.cwd();
 
