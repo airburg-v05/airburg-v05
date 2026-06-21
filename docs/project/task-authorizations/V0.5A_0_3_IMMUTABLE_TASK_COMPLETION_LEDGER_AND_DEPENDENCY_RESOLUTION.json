@@ -1,0 +1,77 @@
+{
+  "taskId": "V0.5A_0_3_IMMUTABLE_TASK_COMPLETION_LEDGER_AND_DEPENDENCY_RESOLUTION",
+  "stage": "V0.5A-0.3",
+  "dependsOn": [
+    "V0.5A-0.2"
+  ],
+  "governanceContractHash": "22ab8ae6985e8156c42b457d9d60d016626f4a93c500e738a4b70a44d9297f2a",
+  "requiredDocuments": [
+    "AGENTS.md",
+    "docs/product/V05_PRODUCT_NORTH_STAR.md",
+    "docs/product/V05_INFORMATION_ARCHITECTURE.md",
+    "docs/architecture/V05_PLATFORM_STORE_DATA_CONTRACT.md",
+    "docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md",
+    "docs/design/V05_DESIGN_SYSTEM.md",
+    "docs/design/V05_REFERENCE_PLATFORM_MAP.md",
+    "docs/roadmap/V05_EXECUTION_SEQUENCE.md",
+    "docs/quality/V05_ACCEPTANCE_GATES.md",
+    "docs/decisions/ADR-001-platform-and-store-ownership.md",
+    "docs/project/V05_TASK_CONTRACT.md",
+    "docs/project/v0.5-lock.json"
+  ],
+  "allowedModifyPaths": [
+    "docs/project/task-authorizations/V0.5A_0_3_IMMUTABLE_TASK_COMPLETION_LEDGER_AND_DEPENDENCY_RESOLUTION.json",
+    "docs/project/task-completions/V0.5A_1_LEGACY_DATA_OWNERSHIP_AUDIT_AND_STORAGE_V2_MIGRATION_DESIGN.json",
+    "docs/project/task-completions/V0.5A_0_3_IMMUTABLE_TASK_COMPLETION_LEDGER_AND_DEPENDENCY_RESOLUTION.json",
+    "docs/project/current-task.json",
+    "docs/project/V05_TASK_CONTRACT.md",
+    "docs/project/v0.5-lock.json",
+    "docs/quality/V05_ACCEPTANCE_GATES.md",
+    "scripts/private-audit/validate-v05-task-authorization.ts",
+    "scripts/private-audit/validate-v05-task-preflight.ts",
+    "scripts/private-audit/validate-v05-governance-lock.ts",
+    "scripts/private-audit/validate-v05-task-completion-ledger.ts"
+  ],
+  "forbiddenModifyPaths": [
+    "app/**",
+    "components/**",
+    "lib/**",
+    "types/**",
+    "package.json",
+    "package-lock.json",
+    "private-samples/**",
+    "docs/product/**",
+    "docs/design/**",
+    "docs/roadmap/**",
+    "docs/architecture/V05_PLATFORM_STORE_DATA_CONTRACT.md",
+    "docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md",
+    "docs/audits/**",
+    "docs/decisions/ADR-001-platform-and-store-ownership.md",
+    "docs/decisions/ADR-002-storage-v2-persistence-and-migration.md",
+    "docs/project/task-authorizations/V0.5A_1_1_AUDIT_DECISION_REGISTER_AND_MIGRATION_POLICY_LOCK.json",
+    "scripts/private-audit/validate-v05a-legacy-data-ownership-audit.ts"
+  ],
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "stopConditions": [
+    "V0.5A-1 completion cannot be proven from Git history.",
+    "The V0.5A-1 completion commit does not exist.",
+    "The V0.5A-1 completion commit current-task is not complete.",
+    "V0.5A-1 required commands are not all PASS.",
+    "The V0.5A-1 authorization file or commit cannot be verified.",
+    "Business code would need modification.",
+    "V0.5A-1 audit outputs would need modification.",
+    "Forged completion records cannot be rejected.",
+    "Ledger destructive tests would pollute the real worktree.",
+    "The existing blocked V0.5A-1.1 history would need rewriting.",
+    "Governance hash update cannot be safely completed."
+  ],
+  "authorizedAt": "2026-06-21T14:14:18+08:00",
+  "contractVersion": "v0.5-task-authorization-v1"
+}
