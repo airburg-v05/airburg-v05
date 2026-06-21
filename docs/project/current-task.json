@@ -1,12 +1,12 @@
 {
-  "taskId": "V0.5A_1_LEGACY_DATA_OWNERSHIP_AUDIT_AND_STORAGE_V2_MIGRATION_DESIGN",
-  "stage": "V0.5A-1",
+  "taskId": "V0.5A_1_1_AUDIT_DECISION_REGISTER_AND_MIGRATION_POLICY_LOCK",
+  "stage": "V0.5A-1.1",
   "dependsOn": [
-    "V0.5A-0.2"
+    "V0.5A-1"
   ],
-  "baselineCommit": "ae8f79bfff58738b9eb265173adf4a2a07916324",
-  "authorizationFile": "docs/project/task-authorizations/V0.5A_1_LEGACY_DATA_OWNERSHIP_AUDIT_AND_STORAGE_V2_MIGRATION_DESIGN.json",
-  "authorizationHash": "ae7cb74429994cb49f8573974ace790fa63d4d463605295dc030d52b39b0c945",
+  "baselineCommit": "e35359690a44b34c80e7149c7f835ad64b04744c",
+  "authorizationFile": "docs/project/task-authorizations/V0.5A_1_1_AUDIT_DECISION_REGISTER_AND_MIGRATION_POLICY_LOCK.json",
+  "authorizationHash": "bd4c67ac27c625e993bfd38e002e44a726ab215fc1d5b0ada2f5774952b56260",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
   "governanceContractHash": "22ab8ae6985e8156c42b457d9d60d016626f4a93c500e738a4b70a44d9297f2a",
   "requiredDocuments": [
@@ -21,17 +21,19 @@
     "docs/quality/V05_ACCEPTANCE_GATES.md",
     "docs/decisions/ADR-001-platform-and-store-ownership.md",
     "docs/project/V05_TASK_CONTRACT.md",
-    "docs/project/v0.5-lock.json"
-  ],
-  "allowedModifyPaths": [
+    "docs/project/v0.5-lock.json",
     "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
     "docs/audits/v0.5a-legacy-data-inventory.json",
     "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
     "docs/architecture/v0.5a-storage-v2-contract.json",
-    "docs/decisions/ADR-002-storage-v2-persistence-and-migration.md",
+    "docs/decisions/ADR-002-storage-v2-persistence-and-migration.md"
+  ],
+  "allowedModifyPaths": [
+    "docs/decisions/V05A_MIGRATION_DECISION_REGISTER.md",
+    "docs/decisions/v0.5a-migration-decisions.json",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5A_1_LEGACY_DATA_OWNERSHIP_AUDIT_AND_STORAGE_V2_MIGRATION_DESIGN.json",
-    "scripts/private-audit/validate-v05a-legacy-data-ownership-audit.ts"
+    "docs/project/task-authorizations/V0.5A_1_1_AUDIT_DECISION_REGISTER_AND_MIGRATION_POLICY_LOCK.json",
+    "scripts/private-audit/validate-v05a-migration-decision-register.ts"
   ],
   "forbiddenModifyPaths": [
     "app/**",
@@ -45,54 +47,52 @@
     "docs/design/**",
     "docs/roadmap/**",
     "docs/quality/**",
+    "docs/architecture/V05_PLATFORM_STORE_DATA_CONTRACT.md",
+    "docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md",
+    "docs/architecture/V05A_STORAGE_V2_MIGRATION_DESIGN.md",
+    "docs/architecture/v0.5a-storage-v2-contract.json",
+    "docs/audits/V05A_LEGACY_DATA_OWNERSHIP_AUDIT.md",
+    "docs/audits/v0.5a-legacy-data-inventory.json",
+    "docs/decisions/ADR-001-platform-and-store-ownership.md",
+    "docs/decisions/ADR-002-storage-v2-persistence-and-migration.md",
     "docs/project/v0.5-lock.json",
-    "docs/decisions/ADR-001-platform-and-store-ownership.md"
+    "scripts/private-audit/validate-v05a-legacy-data-ownership-audit.ts"
   ],
   "requiredCommands": [
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
     "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
-    "npx tsx scripts/private-audit/validate-v05a-legacy-data-ownership-audit.ts",
+    "npx tsx scripts/private-audit/validate-v05a-migration-decision-register.ts",
     "npm run lint",
     "npm run build"
   ],
   "commandResults": [
     {
       "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05a-legacy-data-ownership-audit.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npm run lint",
-      "status": "PASS"
-    },
-    {
-      "command": "npm run build",
-      "status": "PASS"
+      "status": "FAIL"
     }
   ],
   "stopConditions": [
-    "A required governance document is missing or conflicts.",
-    "Authorization validation fails.",
-    "A legacy storage key cannot be safely inventoried.",
-    "A legacy entity cannot be mapped without loss.",
-    "After-sales sensitive rows are found in business-facing storage.",
-    "A forbidden business file must be modified.",
-    "Real migration would be required to finish the audit.",
-    "The audit cannot preserve all legacy storage keys."
+    "V0.5A-1 is not complete.",
+    "Any V0.5A-1 audit input file is missing.",
+    "The source audit commit cannot be determined.",
+    "V0.5A-1 deliverables materially conflict.",
+    "A migration blocker is discovered but cannot be recorded.",
+    "A business decision remains unresolved.",
+    "A fixed governance document would need modification.",
+    "Business code would need modification.",
+    "Legacy key preservation cannot be guaranteed.",
+    "After-sales sensitive details cannot be guaranteed excluded."
   ],
-  "startedAt": "2026-06-21T13:37:14+08:00",
-  "completedAt": "2026-06-21T13:50:54+08:00",
-  "status": "complete"
+  "startedAt": "2026-06-21T14:00:23+08:00",
+  "completedAt": "2026-06-21T14:02:17+08:00",
+  "status": "blocked"
 }
