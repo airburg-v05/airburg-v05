@@ -1,0 +1,62 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5A_4_R1_INDEXEDDB_V2_PERSISTENCE_AND_ATOMIC_DEFAULT_STORE_ACTIVATION_ENGINE",
+  "stage": "V0.5A-4-R1",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5A_4_R1_INDEXEDDB_V2_PERSISTENCE_AND_ATOMIC_DEFAULT_STORE_ACTIVATION_ENGINE.json",
+  "authorizationHash": "7e268f66c79c33ab6ef3bc7c92093e49b61888bb393122d568f243b8315b752f",
+  "authorizationCommit": "e1cbcbcba579d0da84f776dd7ff40adf530d6618",
+  "completionCommit": "fc849bf3c57cbde373903a4b5ba08fa272be046a",
+  "completedAt": "2026-06-21T21:49:21+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "npx tsx scripts/private-audit/validate-v05a4r1-indexeddb-atomic-activation.ts",
+    "npx tsx scripts/private-audit/validate-v05a4r1-browser-indexeddb-smoke.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a4r1-indexeddb-atomic-activation.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a4r1-browser-indexeddb-smoke.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-21T21:50:04+08:00"
+}
