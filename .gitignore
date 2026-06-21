@@ -17,6 +17,15 @@
 logs/
 tmp/
 temp/
+.codex/
+playwright-report/
+test-results/
+*.har
+*.webm
+*.mp4
+chrome-profile/
+browser-profile/
+browser-profiles/
 
 # debug
 npm-debug.log*

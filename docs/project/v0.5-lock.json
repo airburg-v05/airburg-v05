@@ -1,11 +1,14 @@
 {
-  "currentVersion": "V0.5A-0.1",
+  "currentVersion": "V0.5A-0.2",
   "lockName": "PROJECT_GOVERNANCE_AND_ARCHITECTURE_LOCK",
   "lastContractUpdatedAt": "2026-06-21T12:00:00+08:00",
-  "governanceEnforcementVersion": "V0.5A-0.1",
-  "currentGovernanceStage": "V0.5A-0.1",
+  "governanceEnforcementVersion": "V0.5A-0.2",
+  "currentGovernanceStage": "V0.5A-0.2",
   "gitBaselineRequired": true,
   "currentTaskContractRequired": true,
+  "immutableTaskAuthorizationRequired": true,
+  "authorizationHashRequired": true,
+  "authorizationCommitRequired": true,
   "governanceContractHashRequired": true,
   "serverDatabaseForbidden": true,
   "indexedDbRequiresExplicitStageAuthorization": true,
@@ -26,9 +29,9 @@
   ],
   "forbiddenInstructionFiles": [
     "AGENTS.override.md",
-    "**/AGENTS.override.md",
-    "**/AGENTS.md"
+    "**/AGENTS.override.md"
   ],
+  "nestedAgentsForbidden": true,
   "governanceContractFiles": [
     "AGENTS.md",
     "docs/product/V05_PRODUCT_NORTH_STAR.md",
@@ -82,7 +85,8 @@
     "Do not clear legacy data to avoid migration.",
     "Do not add AI, backend, server database, platform API, or crawler work in V0.5A-0.1.",
     "Do not introduce IndexedDB unless a later locked stage explicitly authorizes it.",
-    "Do not modify storage, metrics, targets, trends, or four-source bottom logic in V0.5A-0.1."
+    "Do not modify storage, metrics, targets, trends, or four-source bottom logic in V0.5A-0.2.",
+    "Do not modify immutable task authorization fields after the authorization commit."
   ],
   "executionSequence": [
     {
@@ -161,6 +165,7 @@
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/current-task.json",
     "scripts/private-audit/validate-v05-governance-lock.ts",
+    "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts"
   ],
   "stageTransitionRules": [
@@ -175,8 +180,18 @@
     },
     {
       "from": "V0.5A-0.1",
+      "to": "V0.5A-0.2",
+      "requires": [
+        "immutable task authorization file",
+        "authorization hash",
+        "authorization commit"
+      ]
+    },
+    {
+      "from": "V0.5A-0.2",
       "to": "V0.5A-1",
       "requires": [
+        "validate-v05-task-authorization PASS",
         "validate-v05-governance-lock PASS",
         "validate-v05-task-preflight PASS",
         "lint PASS",
@@ -201,6 +216,7 @@
   "stageStatuses": {
     "V0.5A-0": "complete",
     "V0.5A-0.1": "complete",
+    "V0.5A-0.2": "complete",
     "V0.5A": "pending",
     "V0.5B": "pending",
     "V0.5C": "pending",

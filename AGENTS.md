@@ -14,6 +14,7 @@ Before any V0.5 task, Codex must read:
 10. `docs/project/v0.5-lock.json`
 11. `docs/project/V05_TASK_CONTRACT.md`
 12. `docs/project/current-task.json`
+13. the `authorizationFile` named inside `docs/project/current-task.json`
 
 Before edits, Codex must complete PRE-FLIGHT:
 
@@ -21,6 +22,7 @@ Before edits, Codex must complete PRE-FLIGHT:
 2. confirm current task, baseline commit, governance hash, allowed paths, and forbidden paths;
 3. scan for `AGENTS.md` and `AGENTS.override.md`;
 4. output `BLOCKED` if PRE-FLIGHT fails.
+5. confirm the task authorization file is Git-tracked, hash-matched, and unchanged from its authorization commit.
 
 Rules:
 
@@ -33,3 +35,5 @@ Rules:
 7. Current V0.5 work must not add AI, backend, database, platform API, or crawler features unless a later locked document explicitly changes that boundary.
 8. Forbidden paths override allowed paths.
 9. Do not modify `current-task.json` to hide an out-of-scope change.
+10. Do not modify immutable task fields after authorization. Only `status`, `commandResults`, `startedAt`, and `completedAt` may change during execution.
+11. Only root `AGENTS.md` is allowed. Nested `AGENTS.md` and all `AGENTS.override.md` files are forbidden unless a later lock explicitly changes this rule.

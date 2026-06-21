@@ -16,6 +16,7 @@ Every V0.5 task must pass:
 10. Git baseline check.
 11. Single-task contract check.
 12. Instruction-file scan.
+13. Immutable task authorization check.
 
 PRE-FLIGHT must pass before edits. If PRE-FLIGHT fails, output `BLOCKED` and do not modify files.
 
@@ -69,10 +70,14 @@ Every V0.5 task must:
 1. run from the Git root;
 2. read `docs/project/current-task.json`;
 3. verify the baseline commit exists;
-4. verify the governance contract hash;
-5. compare all changes after the baseline commit with `allowedModifyPaths`;
-6. fail if any changed path matches `forbiddenModifyPaths`;
-7. fail if nested `AGENTS.md` or any `AGENTS.override.md` exists without explicit lock authorization;
-8. fail if private samples, env files, build output, or logs are tracked by Git.
+4. verify the task authorization file exists, is Git-tracked, and is unchanged from its authorization commit;
+5. verify the authorization hash using stable sorted JSON;
+6. verify the governance contract hash recorded in `current-task.json` matches the immutable authorization file;
+7. compare all changes after the authorization commit with `allowedModifyPaths`;
+8. fail if any changed path matches `forbiddenModifyPaths`;
+9. fail if nested `AGENTS.md` or any `AGENTS.override.md` exists without explicit lock authorization;
+10. fail if private samples, env files, build output, logs, browser profiles, HAR files, or test reports are tracked by Git.
 
 Forbidden paths override allowed paths. A task may not edit its task contract to hide a prior unauthorized modification.
+
+The mutable fields of `current-task.json` are limited to `status`, `commandResults`, `startedAt`, and `completedAt`.

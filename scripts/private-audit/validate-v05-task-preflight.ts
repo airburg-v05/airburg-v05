@@ -17,7 +17,27 @@ interface GovernanceLock {
   governanceContractFiles: string[];
   executionSequence: LockStage[];
   allowedInstructionFiles: string[];
+  nestedAgentsForbidden: boolean;
   stageStatuses: Record<string, string>;
+}
+
+interface CommandResult {
+  command: string;
+  status: "PASS" | "FAIL";
+}
+
+interface TaskAuthorization {
+  taskId: string;
+  stage: string;
+  dependsOn: string[];
+  governanceContractHash: string;
+  requiredDocuments: string[];
+  allowedModifyPaths: string[];
+  forbiddenModifyPaths: string[];
+  requiredCommands: string[];
+  stopConditions: string[];
+  authorizedAt: string;
+  contractVersion: string;
 }
 
 interface CurrentTask {
@@ -25,14 +45,28 @@ interface CurrentTask {
   stage: string;
   dependsOn: string[];
   baselineCommit: string;
+  authorizationFile: string;
+  authorizationHash: string;
+  authorizedContractVersion: string;
   governanceContractHash: string;
   requiredDocuments: string[];
   allowedModifyPaths: string[];
   forbiddenModifyPaths: string[];
   requiredCommands: string[];
+  commandResults?: CommandResult[];
   stopConditions: string[];
+  startedAt: string;
+  completedAt: string | null;
   status: "pending" | "in_progress" | "blocked" | "complete";
 }
+
+const MANDATORY_COMMANDS = [
+  "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+  "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+  "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+  "npm run lint",
+  "npm run build",
+] as const;
 
 const toPosix = (value: string): string => value.split(path.sep).join("/");
 
@@ -61,6 +95,36 @@ const commandSucceeds = (command: string, args: string[]): boolean => {
   }
 };
 
+const stableStringify = (value: unknown): string => {
+  if (Array.isArray(value)) {
+    return `[${value.map(stableStringify).join(",")}]`;
+  }
+
+  if (value !== null && typeof value === "object") {
+    return `{${Object.keys(value)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${stableStringify((value as Record<string, unknown>)[key])}`)
+      .join(",")}}`;
+  }
+
+  return JSON.stringify(value);
+};
+
+const sha256 = (value: string): string =>
+  crypto.createHash("sha256").update(value).digest("hex");
+
+const calculateAuthorizationHash = (authorization: TaskAuthorization): string =>
+  sha256(stableStringify(authorization));
+
+const calculateGovernanceHash = (lock: GovernanceLock): string => {
+  const hash = crypto.createHash("sha256");
+  lock.governanceContractFiles.forEach((file) => {
+    const content = readFile(file).replace(/\r\n/g, "\n").trimEnd();
+    hash.update(`FILE:${file}\n${content}\nEND_FILE\n`);
+  });
+  return hash.digest("hex");
+};
+
 const matchesPathPattern = (file: string, pattern: string): boolean => {
   const normalizedFile = toPosix(file);
   const normalizedPattern = toPosix(pattern);
@@ -82,6 +146,20 @@ const matchesPathPattern = (file: string, pattern: string): boolean => {
 const pathMatchesAny = (file: string, patterns: readonly string[]): boolean =>
   patterns.some((pattern) => matchesPathPattern(file, pattern));
 
+const patternsOverlap = (allowed: readonly string[], forbidden: readonly string[]): boolean =>
+  allowed.some((allowedPattern) =>
+    forbidden.some((forbiddenPattern) => {
+      if (allowedPattern === forbiddenPattern) return true;
+      if (forbiddenPattern.endsWith("/**")) {
+        return allowedPattern.startsWith(forbiddenPattern.slice(0, -3));
+      }
+      if (allowedPattern.endsWith("/**")) {
+        return forbiddenPattern.startsWith(allowedPattern.slice(0, -3));
+      }
+      return false;
+    }),
+  );
+
 const parseNameStatus = (stdout: string): string[] =>
   stdout
     .split("\n")
@@ -94,14 +172,14 @@ const parseNameStatus = (stdout: string): string[] =>
       return [];
     });
 
-const changedFilesSinceBaseline = (baselineCommit: string): string[] => {
+const changedFilesSinceCommit = (commit: string): string[] => {
   const diff = git([
     "-c",
     "core.quotepath=false",
     "diff",
     "--name-status",
     "--find-renames",
-    baselineCommit,
+    commit,
     "--",
   ]);
   const untracked = git(["ls-files", "--others", "--exclude-standard"]);
@@ -135,17 +213,42 @@ const listInstructionFiles = (): string[] => {
   return result.sort();
 };
 
-const calculateGovernanceHash = (lock: GovernanceLock): string => {
-  const hash = crypto.createHash("sha256");
-  lock.governanceContractFiles.forEach((file) => {
-    const content = readFile(file).replace(/\r\n/g, "\n").trimEnd();
-    hash.update(`FILE:${file}\n${content}\nEND_FILE\n`);
-  });
-  return hash.digest("hex");
+const findAuthorizationCommit = (authorizationFile: string): string | null => {
+  const stdout = git(["log", "--diff-filter=A", "--format=%H", "--", authorizationFile]);
+  const commits = stdout.split("\n").map((line) => line.trim()).filter(Boolean);
+  return commits.at(-1) ?? null;
 };
+
+const readFileAtCommit = (commit: string, file: string): string =>
+  git(["show", `${commit}:${file}`]);
 
 const stageBelongsToSequence = (stage: string, lock: GovernanceLock): boolean =>
   lock.executionSequence.some((item) => stage === item.id || stage.startsWith(`${item.id}-`));
+
+const arraysEqual = (left: readonly string[], right: readonly string[]): boolean =>
+  stableStringify(left) === stableStringify(right);
+
+const authorizationMatchesTask = (
+  task: CurrentTask,
+  authorization: TaskAuthorization,
+): boolean =>
+  task.taskId === authorization.taskId &&
+  task.stage === authorization.stage &&
+  arraysEqual(task.dependsOn, authorization.dependsOn) &&
+  task.governanceContractHash === authorization.governanceContractHash &&
+  arraysEqual(task.requiredDocuments, authorization.requiredDocuments) &&
+  arraysEqual(task.allowedModifyPaths, authorization.allowedModifyPaths) &&
+  arraysEqual(task.forbiddenModifyPaths, authorization.forbiddenModifyPaths) &&
+  arraysEqual(task.requiredCommands, authorization.requiredCommands) &&
+  arraysEqual(task.stopConditions, authorization.stopConditions);
+
+const commandResultsPass = (task: CurrentTask): boolean => {
+  if (task.status !== "complete") return true;
+  const results = task.commandResults ?? [];
+  return task.requiredCommands.every((command) =>
+    results.some((result) => result.command === command && result.status === "PASS"),
+  );
+};
 
 const main = () => {
   const failures: string[] = [];
@@ -166,15 +269,20 @@ const main = () => {
 
   const lock = parseJsonFile<GovernanceLock>("docs/project/v0.5-lock.json");
   const task = parseJsonFile<CurrentTask>("docs/project/current-task.json");
+  const authorization = parseJsonFile<TaskAuthorization>(task.authorizationFile);
+  const authorizationHash = calculateAuthorizationHash(authorization);
   const governanceHash = calculateGovernanceHash(lock);
+  const authorizationCommit = findAuthorizationCommit(task.authorizationFile);
+  const changedFiles = authorizationCommit ? changedFilesSinceCommit(authorizationCommit) : [];
   const instructionFiles = listInstructionFiles();
-  const changedFiles = task.baselineCommit
-    ? changedFilesSinceBaseline(task.baselineCommit)
-    : [];
+  const authorizationAtCommit = authorizationCommit
+    ? JSON.parse(readFileAtCommit(authorizationCommit, task.authorizationFile)) as TaskAuthorization
+    : null;
 
   const checks = {
     lockJsonReadable: lock.currentVersion.length > 0,
     currentTaskJsonReadable: task.taskId.length > 0,
+    authorizationFileReadable: authorization.taskId.length > 0,
     dependenciesComplete: task.dependsOn.every(
       (stage) => lock.stageStatuses[stage] === "complete",
     ),
@@ -183,18 +291,59 @@ const main = () => {
     baselineCommitExists:
       task.baselineCommit.length > 0 &&
       commandSucceeds("git", ["cat-file", "-e", `${task.baselineCommit}^{commit}`]),
+    authorizationFileTracked: commandSucceeds("git", [
+      "ls-files",
+      "--error-unmatch",
+      task.authorizationFile,
+    ]),
+    authorizationCommitExists: authorizationCommit !== null,
+    authorizationCommitIsHeadAncestor:
+      authorizationCommit !== null &&
+      commandSucceeds("git", ["merge-base", "--is-ancestor", authorizationCommit, "HEAD"]),
+    baselineCommitIsAuthorizationAncestor:
+      authorizationCommit !== null &&
+      commandSucceeds("git", ["merge-base", "--is-ancestor", task.baselineCommit, authorizationCommit]),
+    authorizationCommitContainsOnlyAuthorizationFile:
+      authorizationCommit !== null &&
+      git(["show", "--name-only", "--format=", authorizationCommit])
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .every((file) => file === task.authorizationFile),
+    authorizationFileUnchanged:
+      authorizationAtCommit !== null &&
+      calculateAuthorizationHash(authorizationAtCommit) === authorizationHash,
+    authorizationHashMatches: task.authorizationHash === authorizationHash,
+    authorizedContractVersionMatches:
+      task.authorizedContractVersion === authorization.contractVersion,
+    authorizationMatchesCurrentTask: authorizationMatchesTask(task, authorization),
+    requiredDocumentsIncludeAgents: task.requiredDocuments.includes("AGENTS.md"),
+    requiredDocumentsIncludeGovernanceFiles: lock.governanceContractFiles.every((file) =>
+      task.requiredDocuments.includes(file),
+    ),
+    mandatoryCommandsPresent: MANDATORY_COMMANDS.every((command) =>
+      task.requiredCommands.includes(command),
+    ),
+    commandResultsPass: commandResultsPass(task),
     allowedModifyPathsNonEmpty: task.allowedModifyPaths.length > 0,
     forbiddenModifyPathsNonEmpty: task.forbiddenModifyPaths.length > 0,
+    allowedForbiddenDoNotOverlap: !patternsOverlap(
+      task.allowedModifyPaths,
+      task.forbiddenModifyPaths,
+    ),
     changedFilesWithinAllowed: changedFiles.every((file) =>
       pathMatchesAny(file, task.allowedModifyPaths),
     ),
     changedFilesAvoidForbidden: !changedFiles.some((file) =>
       pathMatchesAny(file, task.forbiddenModifyPaths),
     ),
-    governanceHashMatches: task.governanceContractHash === governanceHash,
+    authorizationFileNotInExecutionChanges: !changedFiles.includes(task.authorizationFile),
     instructionFilesAllowed:
       instructionFiles.length === lock.allowedInstructionFiles.length &&
       instructionFiles.every((file) => lock.allowedInstructionFiles.includes(file)),
+    nestedAgentsForbidden:
+      lock.nestedAgentsForbidden === true &&
+      !instructionFiles.some((file) => file !== "AGENTS.md" && file.endsWith("AGENTS.md")),
     noInstructionOverride: !instructionFiles.some((file) => file.endsWith("AGENTS.override.md")),
   };
 
@@ -211,7 +360,11 @@ const main = () => {
     taskId: task.taskId,
     stage: task.stage,
     baselineCommit: task.baselineCommit,
-    governanceContractHash: governanceHash,
+    authorizationFile: task.authorizationFile,
+    authorizationCommit,
+    authorizationHash,
+    authorizationGovernanceContractHash: authorization.governanceContractHash,
+    currentGovernanceContractHash: governanceHash,
     changedFiles,
     instructionFiles,
     checks,

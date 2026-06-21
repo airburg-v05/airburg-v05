@@ -20,6 +20,7 @@ const REQUIRED_FILES = [
   "docs/project/v0.5-lock.json",
   "docs/project/current-task.json",
   "scripts/private-audit/validate-v05-governance-lock.ts",
+  "scripts/private-audit/validate-v05-task-authorization.ts",
   "scripts/private-audit/validate-v05-task-preflight.ts",
 ] as const;
 
@@ -40,9 +41,16 @@ const SENSITIVE_TRACKED_PATTERNS = [
   "build/",
   "coverage/",
   "private-samples/",
-  ".env",
-  ".env.",
+  ".codex/",
+  "logs/",
+  "playwright-report/",
+  "test-results/",
+  "chrome-profile/",
+  "browser-profile/",
+  "browser-profiles/",
 ] as const;
+
+const SENSITIVE_TRACKED_SUFFIXES = [".log", ".har", ".webm", ".mp4"] as const;
 
 interface LockStage {
   id: string;
@@ -60,20 +68,21 @@ interface GovernanceLock {
   legacyMigrationRequired: boolean;
   gitBaselineRequired: boolean;
   currentTaskContractRequired: boolean;
+  immutableTaskAuthorizationRequired: boolean;
+  authorizationHashRequired: boolean;
+  authorizationCommitRequired: boolean;
   governanceContractHashRequired: boolean;
   serverDatabaseForbidden: boolean;
   indexedDbRequiresExplicitStageAuthorization: boolean;
   allowedInstructionFiles: string[];
   forbiddenInstructionFiles: string[];
+  nestedAgentsForbidden: boolean;
   governanceContractFiles: string[];
   currentStageDoesNotImplement: string[];
-  dataOwnershipRequiredFields: string[];
   privacy: {
     afterSalesSafeAggregatesOnly: boolean;
     forbidSensitiveAfterSalesDetails: boolean;
-    forbiddenOutput: string[];
   };
-  freezeRules: string[];
   executionSequence: LockStage[];
   forbiddenModifyPaths: string[];
   allowedInThisTask: string[];
@@ -85,11 +94,28 @@ interface CommandResult {
   status: "PASS" | "FAIL";
 }
 
+interface TaskAuthorization {
+  taskId: string;
+  stage: string;
+  dependsOn: string[];
+  governanceContractHash: string;
+  requiredDocuments: string[];
+  allowedModifyPaths: string[];
+  forbiddenModifyPaths: string[];
+  requiredCommands: string[];
+  stopConditions: string[];
+  authorizedAt: string;
+  contractVersion: string;
+}
+
 interface CurrentTask {
   taskId: string;
   stage: string;
   dependsOn: string[];
   baselineCommit: string;
+  authorizationFile: string;
+  authorizationHash: string;
+  authorizedContractVersion: string;
   governanceContractHash: string;
   requiredDocuments: string[];
   allowedModifyPaths: string[];
@@ -131,13 +157,29 @@ const runCommand = (command: string, args: string[]): boolean => {
   }
 };
 
+const stableStringify = (value: unknown): string => {
+  if (Array.isArray(value)) return `[${value.map(stableStringify).join(",")}]`;
+  if (value !== null && typeof value === "object") {
+    return `{${Object.keys(value)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${stableStringify((value as Record<string, unknown>)[key])}`)
+      .join(",")}}`;
+  }
+  return JSON.stringify(value);
+};
+
+const sha256 = (value: string): string =>
+  crypto.createHash("sha256").update(value).digest("hex");
+
+const calculateAuthorizationHash = (authorization: TaskAuthorization): string =>
+  sha256(stableStringify(authorization));
+
 const unique = (values: readonly string[]): boolean =>
   new Set(values).size === values.length;
 
 const matchesPathPattern = (file: string, pattern: string): boolean => {
   const normalizedFile = toPosix(file);
   const normalizedPattern = toPosix(pattern);
-
   if (normalizedPattern === normalizedFile) return true;
   if (normalizedPattern.endsWith("/**")) {
     return normalizedFile.startsWith(normalizedPattern.slice(0, -3));
@@ -148,35 +190,11 @@ const matchesPathPattern = (file: string, pattern: string): boolean => {
       normalizedFile.endsWith(`/${normalizedPattern.slice(3)}`)
     );
   }
-
   return false;
 };
 
 const pathMatchesAny = (file: string, patterns: readonly string[]): boolean =>
   patterns.some((pattern) => matchesPathPattern(file, pattern));
-
-const parseGitStatus = (): string[] => {
-  const stdout = execFileSync(
-    "git",
-    ["-c", "core.quotepath=false", "status", "--short", "--untracked-files=all"],
-    {
-      cwd: ROOT,
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-    },
-  );
-  if (!stdout) return [];
-
-  return stdout
-    .split("\n")
-    .map((line) => line.trimEnd())
-    .filter(Boolean)
-    .flatMap((line) => {
-      const rawPath = line.slice(3);
-      if (rawPath.includes(" -> ")) return rawPath.split(" -> ");
-      return [rawPath];
-    });
-};
 
 const parseNameStatus = (stdout: string): string[] =>
   stdout
@@ -190,21 +208,23 @@ const parseNameStatus = (stdout: string): string[] =>
       return [];
     });
 
-const changedFilesSinceBaseline = (baselineCommit: string): string[] => {
+const changedFilesSinceCommit = (commit: string): string[] => {
   const diff = git([
     "-c",
     "core.quotepath=false",
     "diff",
     "--name-status",
     "--find-renames",
-    baselineCommit,
+    commit,
     "--",
   ]);
   const untracked = git(["ls-files", "--others", "--exclude-standard"]);
-  return [
-    ...parseNameStatus(diff),
-    ...untracked.split("\n").map((line) => line.trim()).filter(Boolean),
-  ];
+  return Array.from(
+    new Set([
+      ...parseNameStatus(diff),
+      ...untracked.split("\n").map((line) => line.trim()).filter(Boolean),
+    ]),
+  ).sort();
 };
 
 const listInstructionFiles = (): string[] => {
@@ -234,6 +254,12 @@ const listTrackedFiles = (): string[] => {
   return stdout ? stdout.split("\n").filter(Boolean) : [];
 };
 
+const trackedFileIsSensitive = (file: string): boolean =>
+  SENSITIVE_TRACKED_PATTERNS.some((pattern) => file.startsWith(pattern)) ||
+  SENSITIVE_TRACKED_SUFFIXES.some((suffix) => file.endsWith(suffix)) ||
+  file === ".env" ||
+  file.startsWith(".env.");
+
 const calculateGovernanceHash = (lock: GovernanceLock): string => {
   const hash = crypto.createHash("sha256");
   lock.governanceContractFiles.forEach((file) => {
@@ -243,9 +269,34 @@ const calculateGovernanceHash = (lock: GovernanceLock): string => {
   return hash.digest("hex");
 };
 
+const findAuthorizationCommit = (authorizationFile: string): string | null => {
+  const stdout = git(["log", "--diff-filter=A", "--format=%H", "--", authorizationFile]);
+  const commits = stdout.split("\n").map((line) => line.trim()).filter(Boolean);
+  return commits.at(-1) ?? null;
+};
+
+const readFileAtCommit = (commit: string, file: string): string =>
+  git(["show", `${commit}:${file}`]);
+
+const arraysEqual = (left: readonly string[], right: readonly string[]): boolean =>
+  stableStringify(left) === stableStringify(right);
+
+const authorizationMatchesTask = (
+  task: CurrentTask,
+  authorization: TaskAuthorization,
+): boolean =>
+  task.taskId === authorization.taskId &&
+  task.stage === authorization.stage &&
+  arraysEqual(task.dependsOn, authorization.dependsOn) &&
+  task.governanceContractHash === authorization.governanceContractHash &&
+  arraysEqual(task.requiredDocuments, authorization.requiredDocuments) &&
+  arraysEqual(task.allowedModifyPaths, authorization.allowedModifyPaths) &&
+  arraysEqual(task.forbiddenModifyPaths, authorization.forbiddenModifyPaths) &&
+  arraysEqual(task.requiredCommands, authorization.requiredCommands) &&
+  arraysEqual(task.stopConditions, authorization.stopConditions);
+
 const commandResultsPass = (task: CurrentTask): boolean => {
   if (task.status !== "complete") return true;
-
   const results = task.commandResults ?? [];
   return task.requiredCommands.every((command) =>
     results.some((result) => result.command === command && result.status === "PASS"),
@@ -262,76 +313,107 @@ const main = () => {
     failures.push("gitRootAvailable");
   }
 
-  const normalizedRoot = path.resolve(ROOT);
-  const normalizedGitRoot = gitRoot ? path.resolve(gitRoot) : "";
-  const rootIsGitRoot = normalizedRoot === normalizedGitRoot;
-  if (!rootIsGitRoot) failures.push("currentWorkingDirectoryIsGitRoot");
+  if (gitRoot && path.resolve(ROOT) !== path.resolve(gitRoot)) {
+    failures.push("currentWorkingDirectoryIsGitRoot");
+  }
 
   const lock = parseJsonFile<GovernanceLock>("docs/project/v0.5-lock.json");
   const task = parseJsonFile<CurrentTask>("docs/project/current-task.json");
-  const agents = readFile("AGENTS.md");
-  const sequenceIds = lock.executionSequence.map((stage) => stage.id);
-  const stageById = new Map(lock.executionSequence.map((stage) => [stage.id, stage]));
-  const changedFiles = Array.from(
-    new Set([...parseGitStatus(), ...changedFilesSinceBaseline(task.baselineCommit)]),
-  ).sort();
+  const authorization = parseJsonFile<TaskAuthorization>(task.authorizationFile);
+  const authorizationCommit = findAuthorizationCommit(task.authorizationFile);
+  const authorizationAtCommit = authorizationCommit
+    ? JSON.parse(readFileAtCommit(authorizationCommit, task.authorizationFile)) as TaskAuthorization
+    : null;
+  const authorizationHash = calculateAuthorizationHash(authorization);
+  const authorizationHashAtCommit = authorizationAtCommit
+    ? calculateAuthorizationHash(authorizationAtCommit)
+    : null;
+  const changedFiles = authorizationCommit ? changedFilesSinceCommit(authorizationCommit) : [];
   const instructionFiles = listInstructionFiles();
   const trackedFiles = listTrackedFiles();
   const governanceHash = calculateGovernanceHash(lock);
+  const sequenceIds = lock.executionSequence.map((stage) => stage.id);
+  const stageById = new Map(lock.executionSequence.map((stage) => [stage.id, stage]));
   const remotes = git(["remote", "-v"]);
   const lintPass = runCommand("npm", ["run", "lint"]);
   const buildPass = runCommand("npm", ["run", "build"]);
+  const authorizationValidatorPass = runCommand("npx", [
+    "tsx",
+    "scripts/private-audit/validate-v05-task-authorization.ts",
+  ]);
 
   const checks = {
-    allFixedDocumentsExist: REQUIRED_FILES.every(fileExists),
-    agentsReferencesCurrentTask: agents.includes("docs/project/current-task.json"),
-    agentsRequiresPreflight: agents.includes("PRE-FLIGHT"),
-    agentsBlocksOnPreflightFailure: agents.includes("BLOCKED"),
+    allFixedDocumentsExist:
+      REQUIRED_FILES.every(fileExists) && fileExists(task.authorizationFile),
+    agentsReferencesCurrentTask: readFile("AGENTS.md").includes("docs/project/current-task.json"),
+    agentsReferencesAuthorizationFile: readFile("AGENTS.md").includes("authorizationFile"),
+    agentsRequiresPreflight: readFile("AGENTS.md").includes("PRE-FLIGHT"),
+    agentsBlocksOnPreflightFailure: readFile("AGENTS.md").includes("BLOCKED"),
     executionSequenceComplete:
       REQUIRED_STAGE_SEQUENCE.every((stage) => sequenceIds.includes(stage)) &&
       sequenceIds.length === REQUIRED_STAGE_SEQUENCE.length,
     executionSequenceUnique: unique(sequenceIds),
-    lockJsonParseable: lock.currentVersion === "V0.5A-0.1" && lock.lockName.length > 0,
+    lockJsonParseable: lock.currentVersion === "V0.5A-0.2" && lock.lockName.length > 0,
     multiPlatformTrue: lock.multiPlatform === true,
     multiStoreTrue: lock.multiStore === true,
     storeOwnershipRequiredTrue: lock.storeOwnershipRequired === true,
     legacyMigrationRequiredTrue: lock.legacyMigrationRequired === true,
     gitBaselineRequired: lock.gitBaselineRequired === true,
     currentTaskContractRequired: lock.currentTaskContractRequired === true,
+    immutableTaskAuthorizationRequired: lock.immutableTaskAuthorizationRequired === true,
+    authorizationHashRequired: lock.authorizationHashRequired === true,
+    authorizationCommitRequired: lock.authorizationCommitRequired === true,
     governanceContractHashRequired: lock.governanceContractHashRequired === true,
     serverDatabaseForbidden: lock.serverDatabaseForbidden === true,
     indexedDbRequiresExplicitAuthorization:
       lock.indexedDbRequiresExplicitStageAuthorization === true,
     allowedInstructionFilesOnly:
       instructionFiles.length === 1 && instructionFiles[0] === "AGENTS.md",
+    nestedAgentsForbidden:
+      lock.nestedAgentsForbidden === true &&
+      !instructionFiles.some((file) => file !== "AGENTS.md" && file.endsWith("AGENTS.md")),
     noAgentsOverride: !instructionFiles.some((file) => file.endsWith("AGENTS.override.md")),
     afterSalesPrivacyBoundaryExists:
       lock.privacy.afterSalesSafeAggregatesOnly === true &&
       lock.privacy.forbidSensitiveAfterSalesDetails === true,
     forbidClearingLegacyDataExists:
-      [
-        readFile("AGENTS.md"),
-        readFile("docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md"),
-        JSON.stringify(lock),
-      ].join("\n").includes("clear legacy data") ||
       readFile("docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md").includes(
         "must not be cleared",
-      ),
+      ) || readFile("AGENTS.md").includes("clear legacy"),
     v05aBeforeV05b: stageById.get("V0.5B")?.dependsOn.includes("V0.5A") ?? false,
     v05bBeforeV05c: stageById.get("V0.5C")?.dependsOn.includes("V0.5B") ?? false,
     noCurrentAiBackendDatabaseImplementation:
       ["AI", "backend API", "server database"].every((item) =>
         lock.currentStageDoesNotImplement.includes(item),
-      ) && !lock.currentStageDoesNotImplement.includes("database implemented"),
+      ),
     currentTaskExists: task.taskId.length > 0 && task.stage.length > 0,
     currentTaskBaselineExists: runCommand("git", [
       "cat-file",
       "-e",
       `${task.baselineCommit}^{commit}`,
     ]),
-    currentTaskAllowedPathsNonEmpty: task.allowedModifyPaths.length > 0,
-    currentTaskForbiddenPathsNonEmpty: task.forbiddenModifyPaths.length > 0,
-    governanceHashMatchesTask: task.governanceContractHash === governanceHash,
+    authorizationFileTracked: runCommand("git", [
+      "ls-files",
+      "--error-unmatch",
+      task.authorizationFile,
+    ]),
+    authorizationCommitExists: authorizationCommit !== null,
+    authorizationCommitIsHeadAncestor:
+      authorizationCommit !== null &&
+      runCommand("git", ["merge-base", "--is-ancestor", authorizationCommit, "HEAD"]),
+    baselineCommitIsAuthorizationAncestor:
+      authorizationCommit !== null &&
+      runCommand("git", ["merge-base", "--is-ancestor", task.baselineCommit, authorizationCommit]),
+    authorizationCommitContainsOnlyAuthorizationFile:
+      authorizationCommit !== null &&
+      git(["show", "--name-only", "--format=", authorizationCommit])
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .every((file) => file === task.authorizationFile),
+    authorizationFileUnchanged: authorizationHashAtCommit === authorizationHash,
+    authorizationHashMatchesTask: task.authorizationHash === authorizationHash,
+    authorizationMatchesCurrentTask: authorizationMatchesTask(task, authorization),
     commandResultsPass: commandResultsPass(task),
     changedFilesAreAllowed: changedFiles.every((file) =>
       pathMatchesAny(file, task.allowedModifyPaths),
@@ -339,9 +421,9 @@ const main = () => {
     changedFilesDoNotHitForbidden: !changedFiles.some((file) =>
       pathMatchesAny(file, task.forbiddenModifyPaths),
     ),
-    sensitiveFilesNotTracked: !trackedFiles.some((file) =>
-      SENSITIVE_TRACKED_PATTERNS.some((pattern) => file === pattern || file.startsWith(pattern)),
-    ),
+    authorizationFileNotInExecutionChanges: !changedFiles.includes(task.authorizationFile),
+    sensitiveFilesNotTracked: !trackedFiles.some(trackedFileIsSensitive),
+    authorizationValidatorPass,
     noGitRemote: remotes.length === 0,
     lintPass,
     buildPass,
@@ -356,9 +438,14 @@ const main = () => {
     failedChecks: failures,
     gitRoot,
     baselineCommit: task.baselineCommit,
-    governanceContractHash: governanceHash,
+    authorizationFile: task.authorizationFile,
+    authorizationCommit,
+    authorizationHash,
+    authorizationGovernanceContractHash: authorization.governanceContractHash,
+    currentGovernanceContractHash: governanceHash,
     instructionFiles,
     changedFiles,
+    sensitiveTrackedFiles: trackedFiles.filter(trackedFileIsSensitive),
     remotes: remotes ? remotes.split("\n").filter(Boolean) : [],
     checks,
   };

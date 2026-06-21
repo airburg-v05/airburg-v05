@@ -1,10 +1,13 @@
 {
-  "taskId": "V0.5A_0_1_GOVERNANCE_ENFORCEMENT_HARDENING",
-  "stage": "V0.5A-0.1",
+  "taskId": "V0.5A_0_2_IMMUTABLE_TASK_AUTHORIZATION_SEAL",
+  "stage": "V0.5A-0.2",
   "dependsOn": [
-    "V0.5A-0"
+    "V0.5A-0.1"
   ],
-  "baselineCommit": "73292bdb4586276b290f76ebdd01213da621196e",
+  "baselineCommit": "ce386704a981604770f0ee7eadc6d0eddec1519e",
+  "authorizationFile": "docs/project/task-authorizations/V0.5A_0_2_IMMUTABLE_TASK_AUTHORIZATION_SEAL.json",
+  "authorizationHash": "dc6c0d273f8468b54a8495569ee34fd4911f44957265a0ca8897b92685961ad0",
+  "authorizedContractVersion": "v0.5-task-authorization-v1",
   "governanceContractHash": "a7ee800da05e5d563c2dd9780c44d939e11d0d184a25675d4c497c18d8d1c764",
   "requiredDocuments": [
     "AGENTS.md",
@@ -23,13 +26,12 @@
   "allowedModifyPaths": [
     "AGENTS.md",
     ".gitignore",
-    "docs/product/V05_PRODUCT_NORTH_STAR.md",
-    "docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md",
     "docs/quality/V05_ACCEPTANCE_GATES.md",
-    "docs/project/v0.5-lock.json",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/current-task.json",
+    "docs/project/v0.5-lock.json",
     "scripts/private-audit/validate-v05-governance-lock.ts",
+    "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts"
   ],
   "forbiddenModifyPaths": [
@@ -42,12 +44,17 @@
     "private-samples/**"
   ],
   "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
     "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
     "npm run lint",
     "npm run build"
   ],
   "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
     {
       "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
       "status": "PASS"
@@ -66,14 +73,15 @@
     }
   ],
   "stopConditions": [
-    "Cannot confirm project root or Git root.",
-    "Initializing Git would overwrite existing history.",
-    "Unknown Git remote exists.",
-    "Private samples are tracked by Git.",
+    "Cannot determine the first commit that added the authorization file.",
+    "Authorization commit is not an ancestor of HEAD.",
+    "Current task has unexplained business file modifications.",
+    "Authorization contract conflicts with governance contract.",
     "A forbidden business file must be modified.",
-    "Governance documents conflict.",
-    "Modification scope cannot be verified.",
-    "V0.5A cannot preserve legacy data."
+    "Cannot prevent current-task self-escalation.",
+    "Destructive authorization tests would pollute the repository worktree."
   ],
+  "startedAt": "2026-06-21T13:19:49+08:00",
+  "completedAt": "2026-06-21T13:28:22+08:00",
   "status": "complete"
 }
