@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { validateMajorStageTransition } from "./lib/v05-stage-freeze-policy";
 
 const ROOT = process.cwd();
 
@@ -347,6 +348,10 @@ const main = () => {
   const authorizationHashAtCommit = authorizationAtCommit
     ? calculateAuthorizationHash(authorizationAtCommit)
     : null;
+  let baselineLock: GovernanceLock | null = null;
+  try {
+    baselineLock = JSON.parse(readFileAtCommit(task.baselineCommit, "docs/project/v0.5-lock.json")) as GovernanceLock;
+  } catch {}
   const changedFiles = authorizationCommit ? changedFilesSinceCommit(authorizationCommit) : [];
   const instructionFiles = listInstructionFiles();
   const trackedFiles = listTrackedFiles();
@@ -372,6 +377,26 @@ const main = () => {
     "tsx",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
   ]);
+  const immutableAuthorizationValid =
+    authorizationCommit !== null &&
+    authorizationHashAtCommit === authorizationHash &&
+    task.authorizationHash === authorizationHash &&
+    authorizationMatchesTask(task, authorization);
+  const stageTransitionDetails = Object.fromEntries(
+    REQUIRED_STAGE_SEQUENCE.map((stageId) => [
+      stageId,
+      validateMajorStageTransition({
+        majorStageId: stageId,
+        baselineStageStatus: baselineLock?.stageStatuses?.[stageId] ?? null,
+        currentStageStatus: lock.stageStatuses?.[stageId] ?? null,
+        currentTask: task,
+        immutableAuthorizationValid,
+      }),
+    ]),
+  );
+  const majorStageTransitionsValid = Object.values(stageTransitionDetails).every(
+    (transition) => transition.transitionValid,
+  );
 
   const checks = {
     allFixedDocumentsExist:
@@ -440,7 +465,8 @@ const main = () => {
       ) || readFile("AGENTS.md").includes("clear legacy"),
     v05aBeforeV05b: stageById.get("V0.5B")?.dependsOn.includes("V0.5A") ?? false,
     v05bBeforeV05c: stageById.get("V0.5C")?.dependsOn.includes("V0.5B") ?? false,
-    v05aStillPending: lock.stageStatuses["V0.5A"] === "pending",
+    baselineLockReadable: baselineLock !== null,
+    majorStageTransitionsValid,
     noCurrentAiBackendDatabaseImplementation:
       ["AI", "backend API", "server database"].every((item) =>
         lock.currentStageDoesNotImplement.includes(item),
@@ -503,6 +529,7 @@ const main = () => {
     authorizationHash,
     authorizationGovernanceContractHash: authorization.governanceContractHash,
     currentGovernanceContractHash: governanceHash,
+    stageTransitionDetails,
     instructionFiles,
     changedFiles,
     completionDirectory,
