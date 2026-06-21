@@ -1,0 +1,92 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5B_3_DATA_QUALITY_AND_SAFE_REIMPORT_CENTER",
+  "stage": "V0.5B-3",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5B_3_DATA_QUALITY_AND_SAFE_REIMPORT_CENTER.json",
+  "authorizationHash": "fd6d4d3c3efe06ae43b08aa87ede87c30860b2ab50ea91e1c992f0a676399538",
+  "authorizationCommit": "a591aa9492336dd2b87f0b0ecf5123d2342d1416",
+  "completionCommit": "ab699e105e15a77971491c025aad33e336c7f4aa",
+  "completedAt": "2026-06-22T07:11:27+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+    "npx tsx scripts/private-audit/validate-v05b1-platform-store-batch-import.ts",
+    "npx tsx scripts/private-audit/validate-v05b1-upload-page-ui.ts",
+    "npx tsx scripts/private-audit/validate-v05b2-import-history-data.ts",
+    "npx tsx scripts/private-audit/validate-v05b2-import-history-ui.ts",
+    "npx tsx scripts/private-audit/validate-v05b3-data-quality.ts",
+    "npx tsx scripts/private-audit/validate-v05b3-safe-reimport-ui.ts",
+    "npm run lint",
+    "npm run build",
+    "Chrome full browser acceptance"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05b1-platform-store-batch-import.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05b1-upload-page-ui.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05b2-import-history-data.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05b2-import-history-ui.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05b3-data-quality.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05b3-safe-reimport-ui.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    },
+    {
+      "command": "Chrome full browser acceptance",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-22T07:13:00+08:00"
+}
