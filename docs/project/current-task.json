@@ -63,7 +63,32 @@
     "npm run lint",
     "npm run build"
   ],
-  "commandResults": [],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
   "stopConditions": [
     "V0.5A-1 completion cannot be proven from Git history.",
     "The V0.5A-1 completion commit does not exist.",
@@ -78,6 +103,6 @@
     "Governance hash update cannot be safely completed."
   ],
   "startedAt": "2026-06-21T14:14:54+08:00",
-  "completedAt": null,
-  "status": "in_progress"
+  "completedAt": "2026-06-21T14:27:58+08:00",
+  "status": "complete"
 }

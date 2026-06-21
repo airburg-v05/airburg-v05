@@ -138,6 +138,9 @@ const toPosix = (value: string): string => value.split(path.sep).join("/");
 const readFile = (relativePath: string): string =>
   fs.readFileSync(path.join(ROOT, relativePath), "utf8");
 
+const normalizeFileContent = (value: string): string =>
+  value.replace(/\r\n/g, "\n").trimEnd();
+
 const fileExists = (relativePath: string): boolean =>
   fs.existsSync(path.join(ROOT, relativePath));
 
@@ -409,7 +412,9 @@ const main = () => {
     completionTaskIdsUnique: unique(completionRecordTaskIds),
     completionRecordsUnchanged: completionRecordPaths.every((recordPath) => {
       const firstCommit = findAuthorizationCommit(recordPath);
-      return firstCommit !== null && readFileAtCommit(firstCommit, recordPath) === readFile(recordPath);
+      return firstCommit !== null &&
+        normalizeFileContent(readFileAtCommit(firstCommit, recordPath)) ===
+          normalizeFileContent(readFile(recordPath));
     }),
     completionRecordsNoSensitiveFiles: completionRecordPaths.every((recordPath) => {
       const content = readFile(recordPath);

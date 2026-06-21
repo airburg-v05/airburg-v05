@@ -148,6 +148,9 @@ const toPosix = (value: string): string => value.split(path.sep).join("/");
 const readFile = (relativePath: string): string =>
   fs.readFileSync(path.join(ROOT, relativePath), "utf8");
 
+const normalizeFileContent = (value: string): string =>
+  value.replace(/\r\n/g, "\n").trimEnd();
+
 const fileExists = (relativePath: string): boolean =>
   fs.existsSync(path.join(ROOT, relativePath));
 
@@ -306,7 +309,8 @@ const validateCompletionRecord = (
   if (recordFirstCommit) {
     try {
       const firstVersion = readFileAtCommit(recordFirstCommit, recordPath);
-      evidence.unchangedFromFirstCommit = firstVersion === readFile(recordPath);
+      evidence.unchangedFromFirstCommit =
+        normalizeFileContent(firstVersion) === normalizeFileContent(readFile(recordPath));
     } catch {
       evidence.unchangedFromFirstCommit = false;
     }

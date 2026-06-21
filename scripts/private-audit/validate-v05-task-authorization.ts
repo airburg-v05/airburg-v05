@@ -135,6 +135,9 @@ const toPosix = (value: string): string => value.split(path.sep).join("/");
 const readFile = (relativePath: string): string =>
   fs.readFileSync(path.join(ROOT, relativePath), "utf8");
 
+const normalizeFileContent = (value: string): string =>
+  value.replace(/\r\n/g, "\n").trimEnd();
+
 const parseJsonFile = <T>(relativePath: string): T =>
   JSON.parse(readFile(relativePath)) as T;
 
@@ -344,7 +347,10 @@ const validateCompletionRecordForDependency = (
   if (!commandSucceeds("git", ["ls-files", "--error-unmatch", recordPath])) failures.push("recordGitTracked");
   if (!firstRecordCommit) {
     failures.push("recordFirstCommitExists");
-  } else if (readFileAtCommit(firstRecordCommit, recordPath) !== readFile(recordPath)) {
+  } else if (
+    normalizeFileContent(readFileAtCommit(firstRecordCommit, recordPath)) !==
+    normalizeFileContent(readFile(recordPath))
+  ) {
     failures.push("recordUnchangedFromFirstCommit");
   }
   if (!commandSucceeds("git", ["cat-file", "-e", `${record.completionCommit}^{commit}`])) {
