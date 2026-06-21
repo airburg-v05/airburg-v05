@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { loadV05DataQuality } from "@/lib/v05/data-quality/browser-runtime";
 import {
-  dataQualityBatchReimportHref,
-  dataQualityReimportHref,
-} from "@/lib/v05/data-quality/build-quality";
+  dataCenterHref,
+  dataCenterReimportHref,
+  dataCenterStoreKey,
+  parseDataCenterSearchParams,
+} from "@/lib/v05/data-center";
 import type {
   DataQualityFilters,
   DataQualityLoadResult,
@@ -53,13 +56,32 @@ const setFilter = <TKey extends keyof DataQualityFilters>(
   [key]: value,
 });
 
-const EmptyState = ({ title, description }: { title: string; description: string }) => (
+const buildInitialFilters = (params: URLSearchParams): DataQualityFilters => {
+  const context = parseDataCenterSearchParams(params);
+  return {
+    ...DEFAULT_DATA_QUALITY_FILTERS,
+    platformCode: context.platformCode ?? DEFAULT_DATA_QUALITY_FILTERS.platformCode,
+    storeKey: dataCenterStoreKey(context),
+    importBatchId: context.batchId ?? DEFAULT_DATA_QUALITY_FILTERS.importBatchId,
+    searchTerm: "",
+  };
+};
+
+const EmptyState = ({
+  title,
+  description,
+  actionHref = "/upload",
+}: {
+  title: string;
+  description: string;
+  actionHref?: string;
+}) => (
   <section className="panel p-6">
     <div className="max-w-2xl">
       <p className="text-sm font-semibold text-slate-950">{title}</p>
       <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
       <Link
-        href="/upload"
+        href={actionHref}
         className="mt-4 inline-flex rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
       >
         返回数据导入
@@ -226,7 +248,11 @@ const IssueRow = ({ issue }: { issue: V2DataQualityIssue }) => (
     </div>
     <div className="flex items-start justify-start lg:justify-end">
       <Link
-        href={dataQualityReimportHref(issue)}
+        href={dataCenterReimportHref({
+          platformCode: issue.platformCode,
+          storeId: issue.storeId,
+          batchId: issue.importBatchId,
+        })}
         className="inline-flex rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
       >
         重新导入
@@ -259,12 +285,28 @@ const SummaryCard = ({ summary }: { summary: V2DataQualitySummary }) => (
           <p>问题：{summary.issues.length}</p>
         </div>
       </div>
-      <Link
-        href={dataQualityBatchReimportHref(summary)}
-        className="inline-flex w-fit rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
-      >
-        重新导入
-      </Link>
+      <div className="flex flex-wrap gap-2">
+        <Link
+          href={dataCenterHref("history", {
+            platformCode: summary.platformCode,
+            storeId: summary.storeId,
+            batchId: summary.importBatchId,
+          })}
+          className="inline-flex w-fit rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50"
+        >
+          查看导入记录
+        </Link>
+        <Link
+          href={dataCenterReimportHref({
+            platformCode: summary.platformCode,
+            storeId: summary.storeId,
+            batchId: summary.importBatchId,
+          })}
+          className="inline-flex w-fit rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
+        >
+          重新导入
+        </Link>
+      </div>
     </div>
     <div className="p-4">
       <SourcePills summary={summary} />
@@ -311,8 +353,14 @@ const QualityList = ({ result }: { result: NonNullable<DataQualityLoadResult["vi
   </section>
 );
 
-export function DataQualityClient() {
-  const [filters, setFilters] = useState<DataQualityFilters>(DEFAULT_DATA_QUALITY_FILTERS);
+function DataQualityClientInner({
+  initialFilters,
+  dataCenterContext,
+}: {
+  initialFilters: DataQualityFilters;
+  dataCenterContext: ReturnType<typeof parseDataCenterSearchParams>;
+}) {
+  const [filters, setFilters] = useState<DataQualityFilters>(initialFilters);
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [result, setResult] = useState<DataQualityLoadResult["viewModel"]>(null);
   const [message, setMessage] = useState("");
@@ -345,19 +393,19 @@ export function DataQualityClient() {
   }, [result]);
 
   if (loadState === "loading") {
-    return <EmptyState title="正在读取数据质量状态" description="系统正在读取本地 V2 安全元数据。" />;
+    return <EmptyState title="正在读取数据质量状态" description="系统正在读取本地安全状态。" actionHref={dataCenterHref("upload", dataCenterContext)} />;
   }
 
   if (loadState === "empty") {
-    return <EmptyState title="暂无 V2 导入批次" description={message || "请先返回数据导入页完成一次批量导入。"} />;
+    return <EmptyState title="暂无导入批次" description={message || "请先返回数据导入页完成一次批量导入。"} actionHref={dataCenterHref("upload", dataCenterContext)} />;
   }
 
   if (loadState === "corrupted") {
-    return <EmptyState title="本地数据状态不可安全读取" description={message || "请保留当前数据，并返回上传页重新导入四源文件。"} />;
+    return <EmptyState title="本地数据状态不可安全读取" description={message || "请保留当前数据，并返回上传页重新导入四源文件。"} actionHref={dataCenterHref("upload", dataCenterContext)} />;
   }
 
   if (loadState === "error" || !result) {
-    return <EmptyState title="读取失败" description={message || "请刷新页面后重试。"} />;
+    return <EmptyState title="读取失败" description={message || "请刷新页面后重试。"} actionHref={dataCenterHref("upload", dataCenterContext)} />;
   }
 
   return (
@@ -386,13 +434,13 @@ export function DataQualityClient() {
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
-              href="/upload"
+              href={dataCenterHref("upload", dataCenterContext)}
               className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50"
             >
               返回数据导入
             </Link>
             <Link
-              href="/upload/history"
+              href={dataCenterHref("history", dataCenterContext)}
               className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50"
             >
               查看导入记录
@@ -404,5 +452,26 @@ export function DataQualityClient() {
       <FilterBar filters={filters} result={result} onChange={setFilters} />
       <QualityList result={result} />
     </div>
+  );
+}
+
+export function DataQualityClient() {
+  const searchParams = useSearchParams();
+  const searchKey = searchParams.toString();
+  const dataCenterContext = useMemo(
+    () => parseDataCenterSearchParams(new URLSearchParams(searchKey)),
+    [searchKey],
+  );
+  const initialFilters = useMemo(
+    () => buildInitialFilters(new URLSearchParams(searchKey)),
+    [searchKey],
+  );
+
+  return (
+    <DataQualityClientInner
+      key={searchKey}
+      initialFilters={initialFilters}
+      dataCenterContext={dataCenterContext}
+    />
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { StoreRecord } from "@/lib/v05/domain/models";
 import {
@@ -17,12 +18,17 @@ import {
   type V05ImportStoreInput,
 } from "@/lib/v05/import";
 import type { ReimportContext } from "@/lib/v05/data-quality";
+import {
+  dataCenterHref,
+  type DataCenterContextQuery,
+} from "@/lib/v05/data-center";
 import { saveTmallAnalysisResult } from "@/lib/storage/tmall-analysis-storage";
 import type { TmallSourceType } from "@/types/tmall";
 
 interface TmallBatchImportWorkbenchProps {
   idFactory?: () => string;
   reimportContext?: ReimportContext | null;
+  initialContext?: DataCenterContextQuery | null;
 }
 
 type MessageTone = "success" | "error" | "info";
@@ -82,12 +88,15 @@ const sourceStatusLabel = (sourceType: TmallSourceType, detection: V05BatchDetec
 export function TmallBatchImportWorkbench({
   idFactory = createBrowserStoreId,
   reimportContext = null,
+  initialContext = null,
 }: TmallBatchImportWorkbenchProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [stores, setStores] = useState<StoreRecord[]>([]);
   const [activeDatasetId, setActiveDatasetId] = useState<string | null>(null);
   const [selectedPlatform, setSelectedPlatform] = useState<V05ImportPlatformOption>(V05_IMPORT_PLATFORM_OPTIONS[0]!);
-  const [selectedStoreId, setSelectedStoreId] = useState(reimportContext?.storeId ?? "tmall-default-store");
+  const [selectedStoreId, setSelectedStoreId] = useState(
+    reimportContext?.storeId ?? initialContext?.storeId ?? "tmall-default-store",
+  );
   const [pendingStore, setPendingStore] = useState<V05ImportStoreInput | null>(null);
   const [newStoreName, setNewStoreName] = useState("");
   const [detection, setDetection] = useState<V05BatchDetectionResult>(emptyDetection);
@@ -107,7 +116,7 @@ export function TmallBatchImportWorkbench({
         setSelectedStoreId(context.stores[0]?.storeId ?? "tmall-default-store");
       }
     } catch {
-      setMessage({ tone: "error", text: "读取本地 V2 店铺状态失败，请刷新页面后重试。" });
+      setMessage({ tone: "error", text: "读取本地店铺状态失败，请刷新页面后重试。" });
     } finally {
       setIsLoadingContext(false);
     }
@@ -120,20 +129,22 @@ export function TmallBatchImportWorkbench({
         if (cancelled) return;
         setStores(context.stores);
         setActiveDatasetId(context.activeDatasetId);
-        if (reimportContext?.platformCode) {
+        const contextPlatformCode = reimportContext?.platformCode ?? initialContext?.platformCode;
+        if (contextPlatformCode) {
           const nextPlatform = V05_IMPORT_PLATFORM_OPTIONS.find(
-            (platform) => platform.platformCode === reimportContext.platformCode,
+            (platform) => platform.platformCode === contextPlatformCode,
           );
           if (nextPlatform) setSelectedPlatform(nextPlatform);
         }
+        const contextStoreId = reimportContext?.storeId ?? initialContext?.storeId;
         setSelectedStoreId((currentStoreId) =>
-          context.stores.some((store) => store.storeId === (reimportContext?.storeId ?? currentStoreId))
-            ? reimportContext?.storeId ?? currentStoreId
+          context.stores.some((store) => store.storeId === (contextStoreId ?? currentStoreId))
+            ? contextStoreId ?? currentStoreId
             : context.stores[0]?.storeId ?? "tmall-default-store",
         );
       })
       .catch(() => {
-        if (!cancelled) setMessage({ tone: "error", text: "读取本地 V2 店铺状态失败，请刷新页面后重试。" });
+        if (!cancelled) setMessage({ tone: "error", text: "读取本地店铺状态失败，请刷新页面后重试。" });
       })
       .finally(() => {
         if (!cancelled) setIsLoadingContext(false);
@@ -141,7 +152,7 @@ export function TmallBatchImportWorkbench({
     return () => {
       cancelled = true;
     };
-  }, [reimportContext]);
+  }, [reimportContext, initialContext]);
 
   const availableStores = useMemo(() => {
     if (!pendingStore) return stores;
@@ -271,7 +282,7 @@ export function TmallBatchImportWorkbench({
             </p>
           </div>
           <div className="text-xs text-slate-400">
-            Active V2：{activeDatasetId ? "已存在" : "暂无"}
+            当前数据集：{activeDatasetId ? "已存在" : "暂无"}
           </div>
         </div>
 
@@ -326,7 +337,7 @@ export function TmallBatchImportWorkbench({
                 ))}
               </select>
               <p className="mt-2 text-xs leading-5 text-slate-400">
-                新店铺会在导入成功后进入 V2，本地旧天猫数据不会被清空。
+                新店铺会在导入成功后进入本地数据区，旧天猫数据不会被清空。
               </p>
             </div>
 
@@ -484,7 +495,7 @@ export function TmallBatchImportWorkbench({
           <div>
             <p className="text-sm font-semibold text-slate-950">导入操作与结果</p>
             <p className="mt-1 text-sm leading-6 text-slate-500">
-              点击一次导入后，将自动完成解析、聚合、V2 staging、readback 和激活。
+              点击一次导入后，将自动完成解析、聚合、安全校验和本地保存。
             </p>
           </div>
           <button
@@ -510,33 +521,59 @@ export function TmallBatchImportWorkbench({
         ) : null}
 
         {result ? (
-          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
-              <p className="text-xs text-slate-400">导入状态</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">{result.status}</p>
+          <div className="mt-5 space-y-4">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
+                <p className="text-xs text-slate-400">导入状态</p>
+                <p className="mt-1 text-sm font-semibold text-slate-900">{result.status}</p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
+                <p className="text-xs text-slate-400">店铺</p>
+                <p className="mt-1 truncate text-sm font-semibold text-slate-900" title={result.storeName}>
+                  {result.storeName}
+                </p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
+                <p className="text-xs text-slate-400">事实记录</p>
+                <p className="mt-1 text-sm font-semibold text-slate-900">
+                  {formatCount(
+                    result.recordCounts.businessProductFacts +
+                      result.recordCounts.adProductFacts +
+                      result.recordCounts.adPlanFacts,
+                  )}
+                </p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
+                <p className="text-xs text-slate-400">历史兼容</p>
+                <p className="mt-1 text-sm font-semibold text-slate-900">
+                  {result.legacyCompatibilitySaved ? "已同步默认店铺" : "未写入旧 key"}
+                </p>
+              </div>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
-              <p className="text-xs text-slate-400">店铺</p>
-              <p className="mt-1 truncate text-sm font-semibold text-slate-900" title={result.storeName}>
-                {result.storeName}
-              </p>
-            </div>
-            <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
-              <p className="text-xs text-slate-400">事实记录</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">
-                {formatCount(
-                  result.recordCounts.businessProductFacts +
-                    result.recordCounts.adProductFacts +
-                    result.recordCounts.adPlanFacts,
-                )}
-              </p>
-            </div>
-            <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
-              <p className="text-xs text-slate-400">Legacy 兼容</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">
-                {result.legacyCompatibilitySaved ? "已同步默认店铺" : "未写入旧 key"}
-              </p>
-            </div>
+            {result.importBatchId ? (
+              <div className="flex flex-wrap gap-2">
+                <Link
+                  href={dataCenterHref("history", {
+                    platformCode: result.platformCode,
+                    storeId: result.storeId,
+                    batchId: result.importBatchId,
+                  })}
+                  className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50"
+                >
+                  查看导入记录
+                </Link>
+                <Link
+                  href={dataCenterHref("quality", {
+                    platformCode: result.platformCode,
+                    storeId: result.storeId,
+                    batchId: result.importBatchId,
+                  })}
+                  className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
+                >
+                  查看数据质量
+                </Link>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </section>

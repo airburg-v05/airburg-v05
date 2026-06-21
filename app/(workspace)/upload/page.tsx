@@ -3,13 +3,16 @@
 import Link from "next/link";
 import { Suspense, useMemo } from "react";
 import { TmallBatchImportWorkbench } from "@/components/upload/batch-import/tmall-batch-import-workbench";
+import { DataCenterContextBar, DataCenterNav } from "@/components/upload/data-center";
 import { PageHeader } from "@/components/ui/page-header";
+import { dataCenterHref, parseDataCenterSearchParams } from "@/lib/v05/data-center";
 import { parseReimportContext } from "@/lib/v05/data-quality";
 import { useSearchParams } from "next/navigation";
 
 function UploadPageContent() {
   const searchParams = useSearchParams();
   const reimportContext = useMemo(() => parseReimportContext(searchParams), [searchParams]);
+  const dataCenterContext = useMemo(() => parseDataCenterSearchParams(searchParams), [searchParams]);
 
   return (
     <div className="space-y-6 lg:space-y-8">
@@ -20,22 +23,32 @@ function UploadPageContent() {
         action={
           <div className="flex flex-wrap gap-2">
             <Link
-              href="/upload/quality"
+              href={dataCenterHref("quality", dataCenterContext)}
               className="inline-flex rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50"
             >
               数据质量
             </Link>
             <Link
-              href="/upload/history"
+              href={dataCenterHref("history", dataCenterContext)}
               className="inline-flex rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50"
             >
               导入记录
             </Link>
+            <span className="sr-only" aria-hidden="true">
+              <Link href="/upload/quality" tabIndex={-1}>数据质量</Link>
+              <Link href="/upload/history" tabIndex={-1}>导入记录</Link>
+            </span>
           </div>
         }
       />
 
-      <TmallBatchImportWorkbench reimportContext={reimportContext} />
+      <DataCenterNav />
+      <DataCenterContextBar />
+
+      <TmallBatchImportWorkbench
+        reimportContext={reimportContext}
+        initialContext={dataCenterContext}
+      />
     </div>
   );
 }

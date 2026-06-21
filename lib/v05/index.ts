@@ -9,3 +9,4 @@ export * from "./repositories/contracts";
 export * from "./repositories/memory-adapter";
 export * from "./migration";
 export * from "./persistence";
+export * from "./data-center";
