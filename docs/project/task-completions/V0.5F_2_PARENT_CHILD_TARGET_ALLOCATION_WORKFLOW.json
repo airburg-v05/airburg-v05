@@ -1,0 +1,67 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5F_2_PARENT_CHILD_TARGET_ALLOCATION_WORKFLOW",
+  "stage": "V0.5F-2",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5F_2_PARENT_CHILD_TARGET_ALLOCATION_WORKFLOW.json",
+  "authorizationHash": "63c441453f7cb3441973ff58a5285dc62fc9e336de711617fccaebd3ab8f4598",
+  "authorizationCommit": "0daf6c27869c5d95e152fa8208e0e39bd594beed",
+  "completionCommit": "bee3bc50fdd35fed83a2df10921332e87f9670cf",
+  "completedAt": "2026-06-23T03:04:28+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+    "npx tsx scripts/private-audit/validate-v05f2-target-allocation-data.ts",
+    "npx tsx scripts/private-audit/validate-v05f2-target-allocation-ui.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05f2-target-allocation-data.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05f2-target-allocation-ui.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-23T03:04:56+08:00"
+}
