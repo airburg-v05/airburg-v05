@@ -2,7 +2,10 @@ import { execFileSync } from "node:child_process";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { validateMajorStageTransition } from "./lib/v05-stage-freeze-policy";
+import {
+  validateMajorStageSequenceForCurrentTask,
+  validateMajorStageTransition,
+} from "./lib/v05-stage-freeze-policy";
 
 const ROOT = process.cwd();
 
@@ -394,9 +397,18 @@ const main = () => {
       }),
     ]),
   );
+  const majorStageSequenceValidation = validateMajorStageSequenceForCurrentTask({
+    orderedMajorStageIds: REQUIRED_STAGE_SEQUENCE,
+    stageStatuses: lock.stageStatuses,
+    currentTask: task,
+    immutableAuthorizationValid,
+  });
+  const executionSequenceMatchesStageStatuses = lock.executionSequence.every(
+    (stage) => lock.stageStatuses?.[stage.id] === stage.status,
+  );
   const majorStageTransitionsValid = Object.values(stageTransitionDetails).every(
     (transition) => transition.transitionValid,
-  );
+  ) && majorStageSequenceValidation.sequenceValid;
 
   const checks = {
     allFixedDocumentsExist:
@@ -409,6 +421,7 @@ const main = () => {
       REQUIRED_STAGE_SEQUENCE.every((stage) => sequenceIds.includes(stage)) &&
       sequenceIds.length === REQUIRED_STAGE_SEQUENCE.length,
     executionSequenceUnique: unique(sequenceIds),
+    executionSequenceMatchesStageStatuses,
     lockJsonParseable: lock.currentVersion.length > 0 && lock.lockName.length > 0,
     multiPlatformTrue: lock.multiPlatform === true,
     multiStoreTrue: lock.multiStore === true,
@@ -530,6 +543,7 @@ const main = () => {
     authorizationGovernanceContractHash: authorization.governanceContractHash,
     currentGovernanceContractHash: governanceHash,
     stageTransitionDetails,
+    majorStageSequenceValidation,
     instructionFiles,
     changedFiles,
     completionDirectory,

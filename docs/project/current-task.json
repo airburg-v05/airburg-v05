@@ -1,10 +1,10 @@
 {
-  "taskId": "V0.5C_3_FINAL_REGRESSION_AND_STAGE_FREEZE",
-  "stage": "V0.5C-3",
+  "taskId": "V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE",
+  "stage": "V0.5C-3.1",
   "dependsOn": [
     "V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE"
   ],
-  "governanceContractHash": "0ed2ad02cf4bc24ead51ed6796b9801ae725ba6fdf1b92e3ad830f5c86d634c8",
+  "governanceContractHash": "1ab7817a47efa3704e45823665a84c102cc5c4004a6e19f20c1ca39a81fb3c30",
   "requiredDocuments": [
     "AGENTS.md",
     "docs/product/V05_PRODUCT_NORTH_STAR.md",
@@ -20,23 +20,22 @@
     "docs/project/v0.5-lock.json",
     "docs/project/task-completions/V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT.json",
     "docs/project/task-completions/V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE.json",
-    "docs/project/task-authorizations/V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT.json",
-    "docs/project/task-authorizations/V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE.json",
+    "docs/project/task-completions/V0.5C_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-authorizations/V0.5C_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
-    "scripts/private-audit/validate-v05-governance-lock.ts",
-    "scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-    "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
+    "scripts/private-audit/validate-v05-governance-lock.ts"
   ],
   "allowedModifyPaths": [
+    "scripts/private-audit/lib/v05-stage-freeze-policy.ts",
+    "scripts/private-audit/validate-v05-governance-lock.ts",
+    "scripts/private-audit/validate-v05-major-stage-freeze-scope.ts",
+    "scripts/private-audit/validate-v05c3-post-registration-closure.ts",
     "docs/releases/v0.5c-home-command-center-freeze.md",
-    "docs/project/v0.5-lock.json",
-    "scripts/private-audit/validate-v05c-final-browser-runtime.ts",
-    "scripts/private-audit/validate-v05c-final-regression-and-freeze.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5C_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5C_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
+    "docs/project/task-authorizations/V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE.json",
+    "docs/project/task-completions/V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE.json"
   ],
   "forbiddenModifyPaths": [
     "app/**",
@@ -46,46 +45,44 @@
     "package.json",
     "package-lock.json",
     "private-samples/**",
+    "docs/releases/v0.5a-platform-store-data-foundation-freeze.md",
+    "docs/releases/v0.5b-data-center-freeze.md",
+    "docs/project/task-authorizations/V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT.json",
+    "docs/project/task-authorizations/V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE.json",
+    "docs/project/task-authorizations/V0.5C_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-completions/V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT.json",
+    "docs/project/task-completions/V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE.json",
+    "docs/project/task-completions/V0.5C_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "scripts/private-audit/validate-v05c-final-browser-runtime.ts",
+    "scripts/private-audit/validate-v05c-final-regression-and-freeze.ts",
     "docs/product/**",
     "docs/design/**",
     "docs/roadmap/**",
     "docs/quality/**",
     "docs/architecture/**",
-    "docs/decisions/**",
-    "docs/releases/v0.5a-platform-store-data-foundation-freeze.md",
-    "docs/releases/v0.5b-data-center-freeze.md",
-    "docs/project/task-authorizations/V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT.json",
-    "docs/project/task-authorizations/V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE.json",
-    "docs/project/task-completions/V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT.json",
-    "docs/project/task-completions/V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE.json",
-    "scripts/private-audit/validate-v05c1-home-command-center-data.ts",
-    "scripts/private-audit/validate-v05c1-home-command-center-ui.ts",
-    "scripts/private-audit/validate-v05c2-home-runtime-and-drilldown.ts",
-    "scripts/private-audit/validate-v05c2-home-visual-usability.ts"
+    "docs/decisions/**"
   ],
   "requiredCommands": [
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
     "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-major-stage-freeze-scope.ts",
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
-    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "npx tsx scripts/private-audit/validate-v05c-final-browser-runtime.ts",
-    "npx tsx scripts/private-audit/validate-v05c-final-regression-and-freeze.ts",
+    "npx tsx scripts/private-audit/validate-v05c3-post-registration-closure.ts",
     "npm run lint",
     "npm run build"
   ],
   "stopConditions": [
     "V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE dependency is not satisfied by an immutable completion record.",
-    "C1 or C2 completion record is FAIL or BLOCKED.",
-    "PRE-FLIGHT does not pass before editing freeze files.",
-    "Final Chrome runtime discovers a real homepage, metric, drilldown, fallback, privacy, accessibility, or mobile defect.",
-    "Fixing any discovered defect would require modifying business code, pages, V0.5A/V0.5B frozen files, C1/C2 historical scripts, package files, or private samples.",
-    "V0.5C cannot legally transition from pending to complete while V0.5D remains pending."
+    "C3 authorization, implementation commit, completion record commit, or completion record evidence is missing or modified.",
+    "PRE-FLIGHT does not pass before editing governance scripts.",
+    "Fixing the issue would require modifying homepage, business code, V0.5A/B freeze code, C1/C2/C3 historical records, package files, private samples, or fixed product/architecture/design contracts.",
+    "The current lock cannot remain V0.5A/B/C complete and V0.5D-G pending after the scope fix.",
+    "Major stage freeze scope cannot be validated with pure destructive tests."
   ],
-  "baselineCommit": "9bc4010db5b555fe8693eac7cb7e77777c43ae69",
-  "authorizationFile": "docs/project/task-authorizations/V0.5C_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-  "authorizationHash": "936fd20a6995e13514d9796644f84cfbb5e782af654cb71cf5e8519441d47df8",
+  "baselineCommit": "e74d12ee517e875c82a9152ffb87d93cbdc21f3a",
+  "authorizationFile": "docs/project/task-authorizations/V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE.json",
+  "authorizationHash": "137ffbcc594f276c554865cde31743b541ed257c67f9e1987f23120c45d13413",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
   "commandResults": [
     {
@@ -101,23 +98,15 @@
       "status": "PASS"
     },
     {
+      "command": "npx tsx scripts/private-audit/validate-v05-major-stage-freeze-scope.ts",
+      "status": "PASS"
+    },
+    {
       "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05c-final-browser-runtime.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05c-final-regression-and-freeze.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05c3-post-registration-closure.ts",
       "status": "PASS"
     },
     {
@@ -129,7 +118,7 @@
       "status": "PASS"
     }
   ],
-  "startedAt": "2026-06-22T14:06:00+08:00",
-  "completedAt": "2026-06-22T18:28:00+08:00",
+  "startedAt": "2026-06-22T18:41:00+08:00",
+  "completedAt": "2026-06-22T18:46:00+08:00",
   "status": "complete"
 }
