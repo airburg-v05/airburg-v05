@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import type {
   StoreBoardMetricKey,
   StoreBoardPeriod,
@@ -23,6 +24,14 @@ const PERIOD_OPTIONS: Array<{ key: StoreBoardPeriod; label: string }> = [
   { key: "week", label: "周" },
   { key: "month", label: "月" },
   { key: "custom", label: "自定义" },
+];
+
+type FocusTabKey = "products" | "series" | "ad_after_sales";
+
+const FOCUS_TABS: Array<{ key: FocusTabKey; label: string }> = [
+  { key: "products", label: "商品表现" },
+  { key: "series", label: "系列进度" },
+  { key: "ad_after_sales", label: "推广与售后" },
 ];
 
 interface StoreBoardCommandCenterProps {
@@ -61,6 +70,20 @@ function StoreContextBar({
   onStoreHrefChange,
 }: Omit<StoreBoardCommandCenterProps, "selectedTrendMetric" | "onTrendMetricChange">) {
   const context = viewModel.storeContext;
+  const platformOptions = context
+    ? Array.from(
+        new Map(
+          context.availableStores.map((store) => [
+            store.platformCode,
+            {
+              platformCode: store.platformCode,
+              label: store.label.split(" · ")[0] ?? store.platformCode,
+              href: store.href,
+            },
+          ]),
+        ).values(),
+      )
+    : [];
   return (
     <section className="panel p-4" aria-label="店铺经营范围控制">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
@@ -93,6 +116,26 @@ function StoreContextBar({
           </div>
 
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <label className="min-w-0 text-sm">
+              <span className="mb-1 block text-xs font-semibold text-slate-500">平台</span>
+              <select
+                id="store-board-platform-select"
+                className="form-input"
+                value={context?.platformCode ?? ""}
+                onChange={(event) => {
+                  const selected = platformOptions.find((platform) => platform.platformCode === event.target.value);
+                  if (selected) onStoreHrefChange(selected.href);
+                }}
+              >
+                {platformOptions.length === 0 ? <option value="">暂无平台</option> : null}
+                {platformOptions.map((platform) => (
+                  <option key={platform.platformCode} value={platform.platformCode}>
+                    {platform.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
             <label className="min-w-0 text-sm">
               <span className="mb-1 block text-xs font-semibold text-slate-500">经营日期</span>
               <select
@@ -129,7 +172,7 @@ function StoreContextBar({
               </select>
             </label>
 
-            <div className="min-w-0 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600 xl:col-span-2">
+            <div className="min-w-0 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600 md:col-span-2 xl:col-span-1">
               <p className="text-xs font-semibold text-slate-500">数据覆盖</p>
               <p className="mt-1 leading-5">{viewModel.dateRange.coverageText}</p>
             </div>
@@ -347,11 +390,114 @@ function StoreMainTrend({
   );
 }
 
+function LegacyDrilldownActions({
+  viewModel,
+  kind,
+}: {
+  viewModel: StoreBoardViewModel;
+  kind: "product" | "series";
+}) {
+  const context = viewModel.storeContext;
+  if (!context) return null;
+  const isProduct = kind === "product";
+  const legacyHref = isProduct
+    ? `/product-board?${new URLSearchParams({ platform: context.platformCode, storeId: context.storeId }).toString()}`
+    : `/series-board?${new URLSearchParams({ platform: context.platformCode, storeId: context.storeId }).toString()}`;
+  const disabledDescriptionId = `store-board-${kind}-disabled-note`;
+
+  if (context.isDefaultLegacyStore) {
+    return (
+      <Link href={legacyHref} className="secondary-button shrink-0 justify-center">
+        {isProduct ? "查看商品看板" : "查看系列看板"}
+      </Link>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <button
+        type="button"
+        disabled
+        aria-describedby={disabledDescriptionId}
+        className="secondary-button cursor-not-allowed justify-center opacity-60"
+      >
+        {isProduct ? "商品看板待升级" : "系列看板待升级"}
+      </button>
+      <Link href={context.historyHref} className="secondary-button justify-center">
+        查看该店铺导入记录
+      </Link>
+      <p id={disabledDescriptionId} className="sr-only">
+        非默认店铺的{isProduct ? "商品" : "系列"}下钻将在后续阶段升级，当前不会进入旧单店页面。
+      </p>
+    </div>
+  );
+}
+
+function StoreTargetSummary({ viewModel }: { viewModel: StoreBoardViewModel }) {
+  return (
+    <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-slate-900">店铺目标进度</p>
+          <p className="mt-1 text-xs text-slate-500">只展示当前店铺可匹配当前周期的只读目标。</p>
+        </div>
+        {viewModel.targetProgress.length === 0 ? (
+          <span className="w-fit rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500 ring-1 ring-slate-200">
+            当前周期暂无目标
+          </span>
+        ) : (
+          <Link href="/targets" className="secondary-button shrink-0 justify-center">
+            目标设置
+          </Link>
+        )}
+      </div>
+      {viewModel.targetProgress.length > 0 ? (
+        <div className="mt-4 grid gap-3 lg:grid-cols-2">
+          {viewModel.targetProgress.slice(0, 4).map((target) => (
+            <article key={target.targetId} className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-slate-900">{target.label}</p>
+                  <p className="mt-1 text-xs text-slate-500">{target.metricLabel}</p>
+                </div>
+                <span className="shrink-0 rounded-full bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
+                  {target.statusLabel}
+                </span>
+              </div>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
+                <div
+                  className="h-full rounded-full bg-blue-600"
+                  style={{ width: `${Math.min(100, Math.max(0, (target.progressRate ?? 0) * 100))}%` }}
+                />
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-500">
+                <div>
+                  <p>实际</p>
+                  <p className="mt-1 font-semibold text-slate-900">
+                    {formatTargetMetricValue(target.metricKey, target.actualValue)}
+                  </p>
+                </div>
+                <div>
+                  <p>目标</p>
+                  <p className="mt-1 font-semibold text-slate-900">
+                    {formatTargetMetricValue(target.metricKey, target.targetValue)}
+                  </p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function StoreFocusSection({ viewModel }: { viewModel: StoreBoardViewModel }) {
+  const [activeTab, setActiveTab] = useState<FocusTabKey>("products");
   return (
     <SectionCard
       title="店铺表现与优先入口"
-      description="仅展示当前店铺的目标、系列、商品、推广和售后安全聚合。"
+      description="通过运营关注 Tabs 查看当前店铺的商品、系列、推广和售后安全聚合。"
       action={
         viewModel.storeContext ? (
           <Link href={viewModel.storeContext.historyHref} className="secondary-button justify-center">
@@ -360,141 +506,150 @@ function StoreFocusSection({ viewModel }: { viewModel: StoreBoardViewModel }) {
         ) : null
       }
     >
-      <div className="grid gap-4 xl:grid-cols-2">
-        <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-semibold text-slate-900">店铺目标进度</p>
-              <p className="mt-1 text-xs text-slate-500">只展示当前店铺可匹配当前周期的目标。</p>
-            </div>
-            {viewModel.targetProgress.length === 0 ? (
-              <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500 ring-1 ring-slate-200">
-                当前周期暂无目标
-              </span>
-            ) : null}
-          </div>
-          {viewModel.targetProgress.length > 0 ? (
-            <div className="mt-4 space-y-3">
-              {viewModel.targetProgress.map((target) => (
-                <article key={target.targetId} className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-slate-900">{target.label}</p>
-                      <p className="mt-1 text-xs text-slate-500">{target.metricLabel}</p>
-                    </div>
-                    <span className="shrink-0 rounded-full bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
-                      {target.statusLabel}
-                    </span>
-                  </div>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-                    <div
-                      className="h-full rounded-full bg-blue-600"
-                      style={{ width: `${Math.min(100, Math.max(0, (target.progressRate ?? 0) * 100))}%` }}
-                    />
-                  </div>
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-500">
-                    <div>
-                      <p>实际</p>
-                      <p className="mt-1 font-semibold text-slate-900">
-                        {formatTargetMetricValue(target.metricKey, target.actualValue)}
-                      </p>
-                    </div>
-                    <div>
-                      <p>目标</p>
-                      <p className="mt-1 font-semibold text-slate-900">
-                        {formatTargetMetricValue(target.metricKey, target.targetValue)}
-                      </p>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : null}
+      <div className="space-y-4">
+        <StoreTargetSummary viewModel={viewModel} />
+
+        <div className="flex max-w-full gap-2 overflow-x-auto pb-1" role="tablist" aria-label="店铺运营关注">
+          {FOCUS_TABS.map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`min-h-10 shrink-0 rounded-full px-4 text-sm font-semibold transition ${
+                activeTab === tab.key
+                  ? "bg-blue-600 text-white"
+                  : "border border-slate-200 bg-white text-slate-600 hover:border-blue-200 hover:text-blue-700"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
-        <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <p className="text-sm font-semibold text-slate-900">推广与售后</p>
-          <p className="mt-1 text-xs text-slate-500">推广使用计划推广口径；售后只展示安全聚合。</p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
-              <p className="text-xs font-semibold text-slate-500">推广花费</p>
-              <p className="mt-2 text-lg font-semibold text-slate-950">{formatMoney(viewModel.adSummary.adSpend)}</p>
-              <p className="mt-1 text-xs text-slate-500">ROI {formatRoi(viewModel.adSummary.adRoi)}</p>
+        {activeTab === "products" ? (
+          <div role="tabpanel" className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-slate-900">商品 TOP5</p>
+                <p className="mt-1 text-xs text-slate-500">当前店铺 GMV TOP5，不展示全量商品。</p>
+              </div>
+              <LegacyDrilldownActions viewModel={viewModel} kind="product" />
             </div>
-            <div className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
-              <p className="text-xs font-semibold text-slate-500">售后安全聚合</p>
-              <p className="mt-2 text-lg font-semibold text-slate-950">{formatMoney(viewModel.afterSalesSummary.refundAmount)}</p>
-              <p className="mt-1 text-xs text-slate-500">
-                退款单 {formatInteger(viewModel.afterSalesSummary.refundOrderCount)}
+            {viewModel.productTop.length === 0 ? (
+              <p className="mt-4 rounded-xl bg-white p-4 text-sm text-slate-500 ring-1 ring-slate-100">
+                当前范围暂无商品排行。
               </p>
+            ) : (
+              <div className="mt-4 space-y-3">
+                {viewModel.productTop.map((product, index) => (
+                  <article key={product.productId} className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="break-words text-sm font-semibold text-slate-900">
+                          {index + 1}. {product.productName}
+                        </p>
+                        <p className="mt-1 truncate text-xs text-slate-400">{product.productId}</p>
+                      </div>
+                      <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                        TOP
+                      </span>
+                    </div>
+                    <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-500 sm:grid-cols-4">
+                      <span>GMV {formatMoney(product.gmv)}</span>
+                      <span>访客 {formatInteger(product.visitors)}</span>
+                      <span>转化 {formatPercent(product.conversionRate)}</span>
+                      <span>推广 {product.hasAdData ? formatMoney(product.adSpend) : "--"}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : null}
+
+        {activeTab === "series" ? (
+          <div role="tabpanel" className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-slate-900">系列进度</p>
+                <p className="mt-1 text-xs text-slate-500">只展示当前店铺已创建的系列，最多 5 个。</p>
+              </div>
+              <LegacyDrilldownActions viewModel={viewModel} kind="series" />
+            </div>
+            {viewModel.seriesProgress.length === 0 ? (
+              <p className="mt-4 rounded-xl bg-white p-4 text-sm text-slate-500 ring-1 ring-slate-100">
+                当前店铺暂无系列，或当前范围没有系列经营数据。
+              </p>
+            ) : (
+              <div className="mt-4 space-y-3">
+                {viewModel.seriesProgress.map((series) => (
+                  <article key={series.seriesId} className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="break-words text-sm font-semibold text-slate-900">{series.name}</p>
+                        <p className="mt-1 text-xs text-slate-500">{series.productCount} 个商品</p>
+                      </div>
+                      <span className="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700">
+                        {formatPercent(series.targetProgressRate)}
+                      </span>
+                    </div>
+                    <div className="mt-3 grid grid-cols-3 gap-2 text-xs text-slate-500">
+                      <span>GMV {formatMoney(series.gmv)}</span>
+                      <span>访客 {formatInteger(series.visitors)}</span>
+                      <span>转化 {formatPercent(series.conversionRate)}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : null}
+
+        {activeTab === "ad_after_sales" ? (
+          <div role="tabpanel" className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-slate-900">推广与售后</p>
+                <p className="mt-1 text-xs text-slate-500">推广使用计划推广口径；售后只展示安全聚合。</p>
+              </div>
+              <Link href={viewModel.dataStatus.qualityHref} className="secondary-button shrink-0 justify-center">
+                查看数据质量
+              </Link>
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
+                <p className="text-xs font-semibold text-slate-500">推广花费</p>
+                <p className="mt-2 text-lg font-semibold text-slate-950">{formatMoney(viewModel.adSummary.adSpend)}</p>
+                <p className="mt-1 text-xs text-slate-500">ROI {formatRoi(viewModel.adSummary.adRoi)}</p>
+              </div>
+              <div className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
+                <p className="text-xs font-semibold text-slate-500">推广计划数</p>
+                <p className="mt-2 text-lg font-semibold text-slate-950">
+                  {viewModel.adSummary.hasAdData ? formatInteger(viewModel.adSummary.planCount) : "--"}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">缺失推广不按 0 计算</p>
+              </div>
+              <div className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
+                <p className="text-xs font-semibold text-slate-500">成功退款金额</p>
+                <p className="mt-2 text-lg font-semibold text-slate-950">
+                  {formatMoney(viewModel.afterSalesSummary.refundAmount)}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  退款单 {formatInteger(viewModel.afterSalesSummary.refundOrderCount)}
+                </p>
+              </div>
+              <div className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
+                <p className="text-xs font-semibold text-slate-500">售后快照</p>
+                <p className="mt-2 text-lg font-semibold text-slate-950">
+                  {formatInteger(viewModel.afterSalesSummary.pendingCount)}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">待处理安全计数</p>
+              </div>
             </div>
           </div>
-        </div>
-
-        <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <p className="text-sm font-semibold text-slate-900">系列进度</p>
-          <p className="mt-1 text-xs text-slate-500">只展示当前店铺已创建的系列。</p>
-          {viewModel.seriesProgress.length === 0 ? (
-            <p className="mt-4 rounded-xl bg-white p-4 text-sm text-slate-500 ring-1 ring-slate-100">
-              当前店铺暂无系列，或当前范围没有系列经营数据。
-            </p>
-          ) : (
-            <div className="mt-4 space-y-3">
-              {viewModel.seriesProgress.map((series) => (
-                <article key={series.seriesId} className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="break-words text-sm font-semibold text-slate-900">{series.name}</p>
-                      <p className="mt-1 text-xs text-slate-500">{series.productCount} 个商品</p>
-                    </div>
-                    <span className="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700">
-                      {formatPercent(series.targetProgressRate)}
-                    </span>
-                  </div>
-                  <div className="mt-3 grid grid-cols-3 gap-2 text-xs text-slate-500">
-                    <span>GMV {formatMoney(series.gmv)}</span>
-                    <span>访客 {formatInteger(series.visitors)}</span>
-                    <span>转化 {formatPercent(series.conversionRate)}</span>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <p className="text-sm font-semibold text-slate-900">商品 TOP5</p>
-          <p className="mt-1 text-xs text-slate-500">按当前范围 GMV 排序。</p>
-          {viewModel.productTop.length === 0 ? (
-            <p className="mt-4 rounded-xl bg-white p-4 text-sm text-slate-500 ring-1 ring-slate-100">
-              当前范围暂无商品排行。
-            </p>
-          ) : (
-            <div className="mt-4 space-y-3">
-              {viewModel.productTop.map((product, index) => (
-                <article key={product.productId} className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="break-words text-sm font-semibold text-slate-900">
-                        {index + 1}. {product.productName}
-                      </p>
-                      <p className="mt-1 break-all text-xs text-slate-400">{product.productId}</p>
-                    </div>
-                    <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
-                      TOP
-                    </span>
-                  </div>
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-500 sm:grid-cols-4">
-                    <span>GMV {formatMoney(product.gmv)}</span>
-                    <span>访客 {formatInteger(product.visitors)}</span>
-                    <span>转化 {formatPercent(product.conversionRate)}</span>
-                    <span>推广 {product.hasAdData ? formatMoney(product.adSpend) : "--"}</span>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </div>
+        ) : null}
       </div>
 
       <div className="mt-4 rounded-xl border border-slate-100 bg-white p-4">

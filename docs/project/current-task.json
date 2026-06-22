@@ -1,8 +1,8 @@
 {
-  "taskId": "V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT",
-  "stage": "V0.5D-1",
+  "taskId": "V0.5D_2_STORE_BOARD_VISUAL_RUNTIME_AND_DRILLDOWN_CLOSURE",
+  "stage": "V0.5D-2",
   "dependsOn": [
-    "V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE"
+    "V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT"
   ],
   "governanceContractHash": "1ab7817a47efa3704e45823665a84c102cc5c4004a6e19f20c1ca39a81fb3c30",
   "requiredDocuments": [
@@ -18,14 +18,15 @@
     "docs/decisions/ADR-001-platform-and-store-ownership.md",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
-    "docs/project/task-completions/V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE.json",
-    "docs/releases/v0.5c-home-command-center-freeze.md",
+    "docs/project/task-completions/V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
     "scripts/private-audit/validate-v05-governance-lock.ts",
     "scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-    "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
+    "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+    "scripts/private-audit/validate-v05d1-store-board-data.ts",
+    "scripts/private-audit/validate-v05d1-store-board-ui.ts"
   ],
   "allowedModifyPaths": [
     "app/(workspace)/store-board/page.tsx",
@@ -33,14 +34,11 @@
     "lib/v05/store-board/**",
     "lib/v05/index.ts",
     "components/home/v05/home-store-performance.tsx",
-    "lib/v05/home-command-center/contracts.ts",
-    "lib/v05/home-command-center/store-ranking.ts",
-    "lib/v05/home-command-center/build-view-model.ts",
-    "scripts/private-audit/validate-v05d1-store-board-data.ts",
-    "scripts/private-audit/validate-v05d1-store-board-ui.ts",
+    "scripts/private-audit/validate-v05d2-store-board-runtime.ts",
+    "scripts/private-audit/validate-v05d2-store-board-visual-usability.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT.json",
-    "docs/project/task-completions/V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT.json"
+    "docs/project/task-authorizations/V0.5D_2_STORE_BOARD_VISUAL_RUNTIME_AND_DRILLDOWN_CLOSURE.json",
+    "docs/project/task-completions/V0.5D_2_STORE_BOARD_VISUAL_RUNTIME_AND_DRILLDOWN_CLOSURE.json"
   ],
   "forbiddenModifyPaths": [
     "app/(workspace)/upload/**",
@@ -86,21 +84,23 @@
     "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
     "npx tsx scripts/private-audit/validate-v05d1-store-board-data.ts",
     "npx tsx scripts/private-audit/validate-v05d1-store-board-ui.ts",
+    "npx tsx scripts/private-audit/validate-v05d2-store-board-runtime.ts",
+    "npx tsx scripts/private-audit/validate-v05d2-store-board-visual-usability.ts",
     "npm run lint",
     "npm run build"
   ],
   "stopConditions": [
-    "V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE dependency is not satisfied by an immutable completion record.",
-    "V0.5A, V0.5B, or V0.5C is not complete, or V0.5D is not pending.",
+    "V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
+    "D1 authorization is modified, D1 completion commit is not a HEAD ancestor, or D1 Store Board files have unauthorized changes.",
     "PRE-FLIGHT does not pass before implementation edits.",
-    "Implementing Store Board requires modifying V0.5A/B/C frozen data rules, domain, persistence, import, migration, validation, storage, tmall parser, package files, private samples, or non-store-board workspace pages.",
-    "The existing public V2 API cannot support safe store-board reads without direct IndexedDB access from the page.",
+    "Store Board closure requires changing D1 metric, target, trend, promotion, or multi-store isolation rules.",
+    "Store Board closure requires modifying upload, series, product, targets, raw-data, import, persistence, domain, migration, storage, tmall parser, package files, or private samples.",
     "A non-default store would need to read default legacy data to render.",
-    "Real Chrome store isolation, privacy, mobile, lint, or build validation fails."
+    "Real Chrome store switching, drilldown, accessibility, privacy, mobile, lint, or build validation fails."
   ],
-  "baselineCommit": "b8f948284954dec2e882f3dce068bd1d3c5f89de",
-  "authorizationFile": "docs/project/task-authorizations/V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT.json",
-  "authorizationHash": "a712a874720b9eb95925280f90e0752e22d4bb804a69cc4b365187b9eae99adf",
+  "baselineCommit": "7ed9a3b2e4c8f27be3c278ffd4539b7e92c6e53f",
+  "authorizationFile": "docs/project/task-authorizations/V0.5D_2_STORE_BOARD_VISUAL_RUNTIME_AND_DRILLDOWN_CLOSURE.json",
+  "authorizationHash": "cd2f44ce66d360c448ba36f0bb91f59652c95f97364521dd2aada5d39624c371",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
   "commandResults": [
     {
@@ -136,6 +136,14 @@
       "status": "PASS"
     },
     {
+      "command": "npx tsx scripts/private-audit/validate-v05d2-store-board-runtime.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05d2-store-board-visual-usability.ts",
+      "status": "PASS"
+    },
+    {
       "command": "npm run lint",
       "status": "PASS"
     },
@@ -144,7 +152,7 @@
       "status": "PASS"
     }
   ],
-  "startedAt": "2026-06-22T19:05:00+08:00",
-  "completedAt": "2026-06-22T19:24:07+08:00",
+  "startedAt": "2026-06-22T19:41:00+08:00",
+  "completedAt": "2026-06-22T20:03:00+08:00",
   "status": "complete"
 }
