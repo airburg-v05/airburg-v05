@@ -1,0 +1,52 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5D_3_1_FREEZE_METADATA_CONSISTENCY_CLOSURE",
+  "stage": "V0.5D-3.1",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5D_3_1_FREEZE_METADATA_CONSISTENCY_CLOSURE_R1.json",
+  "authorizationHash": "7975139a91b878ed98429e4931a63658075a8a891a83a377beeae978db7188db",
+  "authorizationCommit": "4a14d7bdfe25999dff5e27561f615c38e9f20ab0",
+  "completionCommit": "ef711a63403599eb118551a2a0e6e7bf36312385",
+  "completedAt": "2026-06-22T20:43:00+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05d31-freeze-metadata-consistency.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05d31-freeze-metadata-consistency.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-22T20:44:00+08:00"
+}
