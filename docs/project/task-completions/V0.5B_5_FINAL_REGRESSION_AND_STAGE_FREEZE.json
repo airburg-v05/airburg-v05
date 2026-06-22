@@ -1,0 +1,67 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE",
+  "stage": "V0.5B-5",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "authorizationHash": "13fdb32d33cb6a3d0a92b9ead5df9b13f3010a98bcd3f33844ec22242e94eb76",
+  "authorizationCommit": "7e49f3f3dfab9f5e72304005b49a397ed3fc985f",
+  "completionCommit": "f947c4222cda5f6b3b82260bdeae66401ddf8982",
+  "completedAt": "2026-06-22T08:31:00+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+    "npx tsx scripts/private-audit/validate-v05b-final-browser-runtime.ts",
+    "npx tsx scripts/private-audit/validate-v05b-final-regression-and-freeze.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05b-final-browser-runtime.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05b-final-regression-and-freeze.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-22T08:40:48+08:00"
+}
