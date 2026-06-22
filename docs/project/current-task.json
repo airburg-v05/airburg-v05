@@ -149,6 +149,6 @@
   "authorizationCommit": "ee1cfb3c5a1201dc0749e357f9228c878e74d974",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
   "startedAt": "2026-06-23T02:20:01+08:00",
-  "completedAt": null,
-  "status": "in_progress"
+  "completedAt": "2026-06-23T02:46:15+08:00",
+  "status": "complete"
 }
