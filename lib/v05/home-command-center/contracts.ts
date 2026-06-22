@@ -90,6 +90,9 @@ export interface HomeCommandCenterStorePerformance {
   platformLabel: string;
   storeId: string;
   storeName: string;
+  canOpenStoreBoard: boolean;
+  storeBoardHref: string | null;
+  historyHref: string;
   gmv: number | null;
   gsv: number | null;
   contributionRate: number | null;

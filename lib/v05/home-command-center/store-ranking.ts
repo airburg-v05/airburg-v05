@@ -24,8 +24,33 @@ const PLATFORM_LABELS: Record<PlatformCode, string> = {
 const storeKey = (store: Pick<StoreRecord, "platformCode" | "storeId">): string =>
   `${store.platformCode}:${store.storeId}`;
 
+const DEFAULT_TMAIL_STORE_ID = "tmall-default-store";
+
 export const platformLabel = (platformCode: PlatformCode): string =>
   PLATFORM_LABELS[platformCode] ?? platformCode;
+
+const storeBoardHref = (store: Pick<StoreRecord, "platformCode" | "storeId">): string | null =>
+  store.platformCode === "tmall" && store.storeId === DEFAULT_TMAIL_STORE_ID
+    ? `/store-board?platform=tmall&storeId=${DEFAULT_TMAIL_STORE_ID}`
+    : null;
+
+const latestBatchIdForStore = (dataset: V2Dataset, store: Pick<StoreRecord, "platformCode" | "storeId">): string | null =>
+  dataset.importBatches
+    .filter((batch) => batch.platformCode === store.platformCode && batch.storeId === store.storeId)
+    .sort((left, right) =>
+      (right.importCompletedAt ?? right.updatedAt).localeCompare(left.importCompletedAt ?? left.updatedAt) ||
+      right.importBatchId.localeCompare(left.importBatchId),
+    )[0]?.importBatchId ?? null;
+
+const historyHref = (dataset: V2Dataset, store: Pick<StoreRecord, "platformCode" | "storeId">): string => {
+  const params = new URLSearchParams({
+    platform: store.platformCode,
+    storeId: store.storeId,
+  });
+  const batchId = latestBatchIdForStore(dataset, store);
+  if (batchId) params.set("batchId", batchId);
+  return `/upload/history?${params.toString()}`;
+};
 
 export const buildStoreOptions = (
   stores: StoreRecord[],
@@ -139,6 +164,9 @@ export const buildStorePerformance = ({
         platformLabel: platformLabel(store.platformCode),
         storeId: store.storeId,
         storeName: storeLabel(store),
+        canOpenStoreBoard: storeBoardHref(store) !== null,
+        storeBoardHref: storeBoardHref(store),
+        historyHref: historyHref(dataset, store),
         gmv: metrics.hasBusinessData ? metrics.gmv : null,
         gsv: metrics.hasBusinessData ? metrics.gsv : null,
         contributionRate: metrics.hasBusinessData ? safeDivide(metrics.gmv, totalGmv) : null,
@@ -148,7 +176,7 @@ export const buildStorePerformance = ({
         adSpend: metrics.adSpend,
         adRoi: metrics.adRoi,
         targetProgressRate: targetProgress?.progressRate ?? null,
-        href: `/store-board?platform=${encodeURIComponent(store.platformCode)}&storeId=${encodeURIComponent(store.storeId)}`,
+        href: storeBoardHref(store) ?? historyHref(dataset, store),
       };
     })
     .sort((a, b) => {

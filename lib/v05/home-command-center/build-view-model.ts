@@ -42,7 +42,7 @@ const TREND_METRIC_OPTIONS: Array<{ key: HomeCommandCenterMetricKey; label: stri
   { key: "adSpend", label: "推广花费" },
 ];
 
-const DEFAULT_STORE_ID = "tmall:default-tmall-store";
+const DEFAULT_STORE_ID = "tmall:tmall-default-store";
 
 const storeKey = (store: Pick<StoreRecord, "platformCode" | "storeId">): string =>
   `${store.platformCode}:${store.storeId}`;
@@ -321,8 +321,11 @@ export const buildLegacyHomeCommandCenterViewModel = ({
         key: DEFAULT_STORE_ID,
         platformCode: "tmall",
         platformLabel: platformLabel("tmall"),
-        storeId: "default-tmall-store",
+        storeId: "tmall-default-store",
         storeName: "天猫默认店铺",
+        canOpenStoreBoard: true,
+        storeBoardHref: "/store-board?platform=tmall&storeId=tmall-default-store",
+        historyHref: "/upload/history?platform=tmall&storeId=tmall-default-store",
         gmv: storeGmv,
         gsv: aggregate.hasBusinessData ? aggregate.gsv : null,
         contributionRate: storeGmv === null ? null : 1,
@@ -332,7 +335,7 @@ export const buildLegacyHomeCommandCenterViewModel = ({
         adSpend: aggregate.adSpend,
         adRoi: aggregate.adRoi,
         targetProgressRate: targetProgress[0]?.progressRate ?? null,
-        href: "/store-board?platform=tmall&storeId=default-tmall-store",
+        href: "/store-board?platform=tmall&storeId=tmall-default-store",
       },
     ],
     dataStatus: {

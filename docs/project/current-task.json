@@ -1,13 +1,9 @@
 {
-  "taskId": "V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT",
-  "stage": "V0.5C-1",
+  "taskId": "V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE",
+  "stage": "V0.5C-2",
   "dependsOn": [
-    "V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE"
+    "V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT"
   ],
-  "baselineCommit": "5ff3302242cc2da276b696666f77ef587faec915",
-  "authorizationFile": "docs/project/task-authorizations/V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT.json",
-  "authorizationHash": "c8999f3460bc0541d745a61e752e8e9f13b47364bc8ce7c61e553b6638bdbc73",
-  "authorizedContractVersion": "v0.5-task-authorization-v1",
   "governanceContractHash": "0ed2ad02cf4bc24ead51ed6796b9801ae725ba6fdf1b92e3ad830f5c86d634c8",
   "requiredDocuments": [
     "AGENTS.md",
@@ -22,26 +18,25 @@
     "docs/decisions/ADR-001-platform-and-store-ownership.md",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
-    "docs/releases/v0.5b-data-center-freeze.md",
-    "docs/project/task-completions/V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5B_5_1_FREEZE_METADATA_CONSISTENCY_CLOSURE.json",
+    "docs/project/task-completions/V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
     "scripts/private-audit/validate-v05-governance-lock.ts",
     "scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-    "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
+    "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+    "scripts/private-audit/validate-v05c1-home-command-center-data.ts",
+    "scripts/private-audit/validate-v05c1-home-command-center-ui.ts"
   ],
   "allowedModifyPaths": [
     "app/(workspace)/home/page.tsx",
     "components/home/v05/**",
     "lib/v05/home-command-center/**",
-    "lib/v05/index.ts",
-    "scripts/private-audit/validate-v05c1-home-command-center-data.ts",
-    "scripts/private-audit/validate-v05c1-home-command-center-ui.ts",
+    "scripts/private-audit/validate-v05c2-home-runtime-and-drilldown.ts",
+    "scripts/private-audit/validate-v05c2-home-visual-usability.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT.json",
-    "docs/project/task-completions/V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT.json"
+    "docs/project/task-authorizations/V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE.json",
+    "docs/project/task-completions/V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE.json"
   ],
   "forbiddenModifyPaths": [
     "app/(workspace)/upload/**",
@@ -81,7 +76,9 @@
     "scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
     "scripts/private-audit/validate-v05b-final-browser-runtime.ts",
-    "scripts/private-audit/validate-v05b-final-regression-and-freeze.ts"
+    "scripts/private-audit/validate-v05b-final-regression-and-freeze.ts",
+    "scripts/private-audit/validate-v05c1-home-command-center-data.ts",
+    "scripts/private-audit/validate-v05c1-home-command-center-ui.ts"
   ],
   "requiredCommands": [
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
@@ -92,9 +89,24 @@
     "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
     "npx tsx scripts/private-audit/validate-v05c1-home-command-center-data.ts",
     "npx tsx scripts/private-audit/validate-v05c1-home-command-center-ui.ts",
+    "npx tsx scripts/private-audit/validate-v05c2-home-runtime-and-drilldown.ts",
+    "npx tsx scripts/private-audit/validate-v05c2-home-visual-usability.ts",
     "npm run lint",
     "npm run build"
   ],
+  "stopConditions": [
+    "V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT dependency is not satisfied by an immutable completion record.",
+    "C1 completion record status is FAIL or BLOCKED.",
+    "PRE-FLIGHT does not pass before editing home files.",
+    "Fixing C2 would require modifying store-board, upload/data-center, other workspace pages, V0.5A/B frozen code, import, persistence, domain, migration, storage, tmall, types, package files, or private samples.",
+    "A bottom-layer metric or persistence defect is discovered that cannot be fixed within allowed C2 paths.",
+    "Default store V2 and legacy metrics cannot reconcile within known tolerance.",
+    "Real Chrome, screenshot, accessibility, privacy, 390px, lint, or build validation fails."
+  ],
+  "baselineCommit": "4dac2ffda45dbf3d05bba0252a076d5b5febb2e8",
+  "authorizationFile": "docs/project/task-authorizations/V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE.json",
+  "authorizationHash": "43aa30cd17188a28bf4cf5af72267cf019f314fe7faf79d1a6d7b46f647abeed",
+  "authorizedContractVersion": "v0.5-task-authorization-v1",
   "commandResults": [
     {
       "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
@@ -129,6 +141,14 @@
       "status": "PASS"
     },
     {
+      "command": "npx tsx scripts/private-audit/validate-v05c2-home-runtime-and-drilldown.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05c2-home-visual-usability.ts",
+      "status": "PASS"
+    },
+    {
       "command": "npm run lint",
       "status": "PASS"
     },
@@ -137,18 +157,7 @@
       "status": "PASS"
     }
   ],
-  "stopConditions": [
-    "V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE dependency is not satisfied by an immutable completion record.",
-    "V0.5A is not complete, V0.5B is not complete, or V0.5C is not pending.",
-    "PRE-FLIGHT does not pass before editing home files.",
-    "The homepage cannot read active V2 data through public V2 persistence or repository APIs.",
-    "The homepage implementation would require direct indexedDB.open or object store access.",
-    "The implementation would require modifying V0.5A or V0.5B frozen code, import, history, quality, persistence, repositories, validation, migration, tmall, storage, other workspace pages, package files, or private samples.",
-    "Legacy fallback cannot be implemented without writing V2 or mutating legacy storage.",
-    "Legacy and default-store V2 metrics cannot be reconciled within known rounding tolerance.",
-    "Privacy, numeric safety, 390px, lint, build, or Chrome validation fails."
-  ],
-  "startedAt": "2026-06-22T10:24:03+08:00",
-  "completedAt": "2026-06-22T12:45:00+08:00",
+  "startedAt": "2026-06-22T13:06:00+08:00",
+  "completedAt": "2026-06-22T13:55:00+08:00",
   "status": "complete"
 }
