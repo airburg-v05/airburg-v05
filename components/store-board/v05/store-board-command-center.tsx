@@ -405,7 +405,7 @@ function LegacyDrilldownActions({
     : `/series-board?${new URLSearchParams({ platform: context.platformCode, storeId: context.storeId }).toString()}`;
   const disabledDescriptionId = `store-board-${kind}-disabled-note`;
 
-  if (context.isDefaultLegacyStore) {
+  if (context.isDefaultLegacyStore || !isProduct) {
     return (
       <Link href={legacyHref} className="secondary-button shrink-0 justify-center">
         {isProduct ? "查看商品看板" : "查看系列看板"}
