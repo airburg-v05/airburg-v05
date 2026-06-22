@@ -23,27 +23,30 @@ interface NavigationItem {
   label: string;
   href: string;
   icon: ComponentType<IconProps>;
-  stage?: string;
 }
 
 const navigation: NavigationItem[] = [
-  { label: "首页", href: "/home", icon: HomeIcon },
-  { label: "宝贝看板", href: "/product-board", icon: ProductIcon, stage: "数据版" },
-  { label: "系列看板", href: "/series-board", icon: LayersIcon, stage: "数据版" },
-  { label: "店铺看板", href: "/store-board", icon: StoreIcon, stage: "数据版" },
-  { label: "目标管理", href: "/targets", icon: StoreIcon, stage: "基础版" },
-  { label: "数据上传", href: "/upload", icon: UploadIcon },
-  { label: "原始数据", href: "/raw-data", icon: TableIcon },
+  { label: "经营首页", href: "/home", icon: HomeIcon },
+  { label: "数据中心", href: "/upload", icon: UploadIcon },
+  { label: "店铺看板", href: "/store-board", icon: StoreIcon },
+  { label: "系列看板", href: "/series-board", icon: LayersIcon },
+  { label: "宝贝看板", href: "/product-board", icon: ProductIcon },
+  { label: "目标管理", href: "/targets", icon: StoreIcon },
+  { label: "安全数据", href: "/raw-data", icon: TableIcon },
 ];
 
 const pageNames: Record<string, string> = {
-  "/home": "经营概览",
-  "/product-board": "宝贝看板",
-  "/series-board": "系列看板",
+  "/home": "经营首页",
+  "/upload": "数据中心",
+  "/upload/history": "导入记录",
+  "/upload/quality": "数据质量",
   "/store-board": "店铺看板",
+  "/product-board": "宝贝看板",
+  "/product-board/tracked": "重点商品管理",
+  "/series-board": "系列看板",
+  "/series-board/manage": "系列管理",
   "/targets": "目标管理",
-  "/upload": "数据上传",
-  "/raw-data": "原始数据",
+  "/raw-data": "安全数据",
 };
 
 interface AppShellProps {
@@ -66,7 +69,7 @@ function Brand() {
 
 function Navigation({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
   return (
-    <nav className="space-y-1.5">
+    <nav aria-label="主导航" className="space-y-1.5">
       {navigation.map((item) => {
         const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
         const Icon = item.icon;
@@ -76,6 +79,7 @@ function Navigation({ pathname, onNavigate }: { pathname: string; onNavigate?: (
             key={item.href}
             href={item.href}
             onClick={onNavigate}
+            aria-current={active ? "page" : undefined}
             className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
               active
                 ? "bg-blue-600 text-white shadow-sm shadow-blue-600/20"
@@ -83,16 +87,7 @@ function Navigation({ pathname, onNavigate }: { pathname: string; onNavigate?: (
             }`}
           >
             <Icon className="h-5 w-5 shrink-0" />
-            <span className="flex-1">{item.label}</span>
-            {item.stage ? (
-              <span
-                className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                  active ? "bg-white/15 text-blue-50" : "bg-slate-700 text-slate-300"
-                }`}
-              >
-                {item.stage}
-              </span>
-            ) : null}
+            <span className="min-w-0 flex-1 truncate">{item.label}</span>
           </Link>
         );
       })}
@@ -139,8 +134,8 @@ export function AppShell({ children }: AppShellProps) {
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs text-slate-400">当前平台</p>
-              <p className="mt-1 text-sm font-semibold text-white">天猫 · V1</p>
+              <p className="text-xs text-slate-400">当前工作区</p>
+              <p className="mt-1 text-sm font-semibold text-white">本地经营数据</p>
             </div>
             <span className="rounded-lg bg-orange-500/15 px-2 py-1 text-xs font-semibold text-orange-300">TM</span>
           </div>
@@ -190,7 +185,7 @@ export function AppShell({ children }: AppShellProps) {
                 <p className="truncate text-sm font-semibold text-slate-900">
                   {pageNames[pathname] ?? "电商数据分析平台"}
                 </p>
-                <p className="truncate text-xs text-slate-500">天猫测试店铺 · 本地分析模式</p>
+                <p className="truncate text-xs text-slate-500">多平台多店铺经营工作台</p>
               </div>
             </div>
 
@@ -214,7 +209,7 @@ export function AppShell({ children }: AppShellProps) {
         </header>
 
         <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-          <div className="mx-auto w-full max-w-[1500px]">{children}</div>
+          <div className="mx-auto w-full max-w-[1440px]">{children}</div>
         </main>
       </div>
     </div>

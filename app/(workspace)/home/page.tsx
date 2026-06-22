@@ -108,7 +108,7 @@ export default function HomePage() {
     <div className="space-y-6">
       <PageHeader
         eyebrow="经营命令中心"
-        title="首页"
+        title="经营首页"
         description="用一个页面查看经营范围、核心指标、主趋势和店铺优先入口。"
         action={<StatusPill tone={viewModel.statusTone === "amber" ? "warning" : "info"}>{viewModel.statusLabel}</StatusPill>}
       />

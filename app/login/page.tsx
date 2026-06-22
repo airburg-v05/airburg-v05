@@ -44,7 +44,7 @@ export default function LoginPage() {
 
         <div className="relative z-10 max-w-2xl py-16">
           <span className="inline-flex rounded-full border border-blue-400/20 bg-blue-400/10 px-3 py-1 text-xs font-semibold text-blue-200">
-            天猫平台 · 第一阶段
+            多平台经营数据
           </span>
           <h1 className="mt-6 text-4xl font-semibold leading-tight tracking-tight text-white xl:text-5xl">
             把分散的店铺数据，
@@ -52,7 +52,7 @@ export default function LoginPage() {
             变成每天可用的经营判断。
           </h1>
           <p className="mt-6 max-w-xl text-base leading-7 text-slate-300">
-            从本地表格上传开始，逐步沉淀统一字段、指标口径、商品看板和 AI 运营诊断能力。
+            从本地表格上传开始，逐步沉淀统一字段、指标口径、商品看板和经营目标协同。
           </p>
 
           <div className="mt-10 space-y-4">
@@ -76,7 +76,7 @@ export default function LoginPage() {
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
             <LayersIcon className="h-6 w-6 text-cyan-300" />
             <p className="mt-3 text-sm font-semibold text-white">面向长期扩展</p>
-            <p className="mt-1 text-xs leading-5 text-slate-400">后续可继续扩展多店铺、多平台和多 AI 顾问。</p>
+            <p className="mt-1 text-xs leading-5 text-slate-400">后续可继续扩展多店铺、多平台和多角色协作。</p>
           </div>
         </div>
       </section>
@@ -142,7 +142,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <p className="mt-6 text-center text-xs text-slate-400">Airburg Data · 天猫数据分析 V1</p>
+          <p className="mt-6 text-center text-xs text-slate-400">Airburg Data · 本地经营工作台</p>
         </div>
       </section>
     </main>
