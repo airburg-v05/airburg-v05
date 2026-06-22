@@ -1,8 +1,8 @@
 {
-  "taskId": "V0.5D_2_STORE_BOARD_VISUAL_RUNTIME_AND_DRILLDOWN_CLOSURE",
-  "stage": "V0.5D-2",
+  "taskId": "V0.5D_3_FINAL_REGRESSION_AND_STAGE_FREEZE",
+  "stage": "V0.5D-3",
   "dependsOn": [
-    "V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT"
+    "V0.5D_2_STORE_BOARD_VISUAL_RUNTIME_AND_DRILLDOWN_CLOSURE"
   ],
   "governanceContractHash": "1ab7817a47efa3704e45823665a84c102cc5c4004a6e19f20c1ca39a81fb3c30",
   "requiredDocuments": [
@@ -19,6 +19,7 @@
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
     "docs/project/task-completions/V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT.json",
+    "docs/project/task-completions/V0.5D_2_STORE_BOARD_VISUAL_RUNTIME_AND_DRILLDOWN_CLOSURE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
@@ -26,54 +27,40 @@
     "scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
     "scripts/private-audit/validate-v05d1-store-board-data.ts",
-    "scripts/private-audit/validate-v05d1-store-board-ui.ts"
+    "scripts/private-audit/validate-v05d1-store-board-ui.ts",
+    "scripts/private-audit/validate-v05d2-store-board-runtime.ts",
+    "scripts/private-audit/validate-v05d2-store-board-visual-usability.ts"
   ],
   "allowedModifyPaths": [
-    "app/(workspace)/store-board/page.tsx",
-    "components/store-board/v05/**",
-    "lib/v05/store-board/**",
-    "lib/v05/index.ts",
-    "components/home/v05/home-store-performance.tsx",
-    "scripts/private-audit/validate-v05d2-store-board-runtime.ts",
-    "scripts/private-audit/validate-v05d2-store-board-visual-usability.ts",
+    "docs/releases/v0.5d-multi-store-board-freeze.md",
+    "docs/project/v0.5-lock.json",
+    "scripts/private-audit/validate-v05d-final-browser-runtime.ts",
+    "scripts/private-audit/validate-v05d-final-regression-and-freeze.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5D_2_STORE_BOARD_VISUAL_RUNTIME_AND_DRILLDOWN_CLOSURE.json",
-    "docs/project/task-completions/V0.5D_2_STORE_BOARD_VISUAL_RUNTIME_AND_DRILLDOWN_CLOSURE.json"
+    "docs/project/task-authorizations/V0.5D_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-completions/V0.5D_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
   ],
   "forbiddenModifyPaths": [
-    "app/(workspace)/upload/**",
-    "app/(workspace)/home/page.tsx",
-    "app/(workspace)/series-board/**",
-    "app/(workspace)/product-board/**",
-    "app/(workspace)/targets/**",
-    "app/(workspace)/raw-data/**",
-    "components/upload/**",
-    "components/series-board/**",
-    "components/product-board/**",
-    "lib/v05/import/**",
-    "lib/v05/import-history/**",
-    "lib/v05/data-quality/**",
-    "lib/v05/data-center/**",
-    "lib/v05/domain/**",
-    "lib/v05/validation/**",
-    "lib/v05/repositories/**",
-    "lib/v05/migration/**",
-    "lib/v05/persistence/**",
-    "lib/storage/**",
-    "lib/tmall/**",
+    "app/**",
+    "components/**",
+    "lib/**",
     "types/**",
     "package.json",
     "package-lock.json",
     "private-samples/**",
-    "docs/releases/v0.5a-platform-store-data-foundation-freeze.md",
-    "docs/releases/v0.5b-data-center-freeze.md",
-    "docs/releases/v0.5c-home-command-center-freeze.md",
     "docs/product/**",
     "docs/design/**",
     "docs/roadmap/**",
     "docs/quality/**",
     "docs/architecture/**",
-    "docs/decisions/**"
+    "docs/decisions/**",
+    "docs/releases/v0.5a-platform-store-data-foundation-freeze.md",
+    "docs/releases/v0.5b-data-center-freeze.md",
+    "docs/releases/v0.5c-home-command-center-freeze.md",
+    "docs/project/task-authorizations/V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT.json",
+    "docs/project/task-authorizations/V0.5D_2_STORE_BOARD_VISUAL_RUNTIME_AND_DRILLDOWN_CLOSURE.json",
+    "docs/project/task-completions/V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT.json",
+    "docs/project/task-completions/V0.5D_2_STORE_BOARD_VISUAL_RUNTIME_AND_DRILLDOWN_CLOSURE.json"
   ],
   "requiredCommands": [
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
@@ -82,25 +69,23 @@
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
     "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "npx tsx scripts/private-audit/validate-v05d1-store-board-data.ts",
-    "npx tsx scripts/private-audit/validate-v05d1-store-board-ui.ts",
-    "npx tsx scripts/private-audit/validate-v05d2-store-board-runtime.ts",
-    "npx tsx scripts/private-audit/validate-v05d2-store-board-visual-usability.ts",
+    "npx tsx scripts/private-audit/validate-v05d-final-browser-runtime.ts",
+    "npx tsx scripts/private-audit/validate-v05d-final-regression-and-freeze.ts",
     "npm run lint",
     "npm run build"
   ],
   "stopConditions": [
-    "V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
-    "D1 authorization is modified, D1 completion commit is not a HEAD ancestor, or D1 Store Board files have unauthorized changes.",
-    "PRE-FLIGHT does not pass before implementation edits.",
-    "Store Board closure requires changing D1 metric, target, trend, promotion, or multi-store isolation rules.",
-    "Store Board closure requires modifying upload, series, product, targets, raw-data, import, persistence, domain, migration, storage, tmall parser, package files, or private samples.",
-    "A non-default store would need to read default legacy data to render.",
-    "Real Chrome store switching, drilldown, accessibility, privacy, mobile, lint, or build validation fails."
+    "V0.5D_2_STORE_BOARD_VISUAL_RUNTIME_AND_DRILLDOWN_CLOSURE dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
+    "D1 or D2 authorization/completion records are modified or no longer immutable.",
+    "D1 or D2 completion commits are not HEAD ancestors.",
+    "PRE-FLIGHT does not pass before freeze edits.",
+    "Final Store Board regression finds a real product, store isolation, metric, target, trend, privacy, accessibility, mobile, or Chrome runtime defect.",
+    "Final freeze requires modifying business code, page code, domain code, persistence code, parser code, package files, private samples, or frozen V0.5A/B/C artifacts."
   ],
-  "baselineCommit": "7ed9a3b2e4c8f27be3c278ffd4539b7e92c6e53f",
-  "authorizationFile": "docs/project/task-authorizations/V0.5D_2_STORE_BOARD_VISUAL_RUNTIME_AND_DRILLDOWN_CLOSURE.json",
-  "authorizationHash": "cd2f44ce66d360c448ba36f0bb91f59652c95f97364521dd2aada5d39624c371",
+  "baselineCommit": "afc4297d24ba7ead6d7454d287169abf89395450",
+  "authorizationFile": "docs/project/task-authorizations/V0.5D_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "authorizationHash": "e8edca4f4332ae9b463020083d490791277909211b9afefaa80c61248c0c02f7",
+  "authorizationCommit": "d4e1277d7a165b3ab301cbf85bfdb43f241c2617",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
   "commandResults": [
     {
@@ -128,19 +113,11 @@
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05d1-store-board-data.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05d-final-browser-runtime.ts",
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05d1-store-board-ui.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05d2-store-board-runtime.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05d2-store-board-visual-usability.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05d-final-regression-and-freeze.ts",
       "status": "PASS"
     },
     {
@@ -152,7 +129,7 @@
       "status": "PASS"
     }
   ],
-  "startedAt": "2026-06-22T19:41:00+08:00",
-  "completedAt": "2026-06-22T20:03:00+08:00",
+  "startedAt": "2026-06-22T20:04:13+08:00",
+  "completedAt": "2026-06-22T20:20:00+08:00",
   "status": "complete"
 }

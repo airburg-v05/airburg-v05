@@ -125,7 +125,7 @@
       "dependsOn": [
         "V0.5C"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "V0.5E",
@@ -239,7 +239,7 @@
     "V0.5A": "complete",
     "V0.5B": "complete",
     "V0.5C": "complete",
-    "V0.5D": "pending",
+    "V0.5D": "complete",
     "V0.5E": "pending",
     "V0.5F": "pending",
     "V0.5G": "pending"
@@ -253,6 +253,9 @@
   "v05cCompletedAt": "2026-06-22T14:50:00+08:00",
   "v05cFreezeDocument": "docs/releases/v0.5c-home-command-center-freeze.md",
   "v05cFinalCompletionRecord": "docs/project/task-completions/V0.5C_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-  "nextStage": "V0.5D",
-  "nextTask": "V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT"
+  "v05dCompletedAt": "2026-06-22T20:20:00+08:00",
+  "v05dFreezeDocument": "docs/releases/v0.5d-multi-store-board-freeze.md",
+  "v05dFinalCompletionRecord": "docs/project/task-completions/V0.5D_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "nextStage": "V0.5E",
+  "nextTask": "V0.5E_1_STORE_SCOPED_SERIES_AND_TRACKED_PRODUCT_MANAGEMENT"
 }
