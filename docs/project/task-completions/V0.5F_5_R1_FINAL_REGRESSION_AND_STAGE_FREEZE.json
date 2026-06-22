@@ -1,0 +1,69 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5F_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE",
+  "stage": "V0.5F-5-R1",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5F_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "authorizationHash": "6229e66521ce3e16026fb87ee923b7e8f64abb4b7aeebc0c63cf0af052d2185d",
+  "authorizationCommit": "fb2d43ba44e716e772fc94e7561bfbfec9792bba",
+  "completionCommit": "10f7365ddd0526ecddc635beb961e7808631f298",
+  "completedAt": "2026-06-23T06:32:50+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+    "npx tsx scripts/private-audit/validate-v05f-final-browser-runtime.ts",
+    "npx tsx scripts/private-audit/validate-v05f-final-regression-and-freeze.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05f-final-browser-runtime.ts",
+      "status": "PASS",
+      "screenshotManifestPath": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v05f5r1-screenshots-cXrEJx/manifest.json"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05f-final-regression-and-freeze.ts",
+      "status": "PASS",
+      "screenshotManifestPath": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v05f5r1-screenshots-zrl9al/manifest.json"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-23T06:34:00+08:00"
+}
