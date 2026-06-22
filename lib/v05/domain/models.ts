@@ -209,6 +209,7 @@ export interface TargetRecord {
   schemaVersion: typeof V2_SCHEMA_VERSION;
   targetId: string;
   scope: TargetScope;
+  parentTargetId?: string | null;
   platformCode?: PlatformCode;
   storeId?: string;
   seriesId?: string;

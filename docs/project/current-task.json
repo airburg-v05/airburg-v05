@@ -1,10 +1,10 @@
 {
-  "taskId": "V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE",
-  "stage": "V0.5E-4",
+  "taskId": "V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS",
+  "stage": "V0.5F-0",
   "dependsOn": [
-    "V0.5E_3_STORE_SCOPED_TRACKED_PRODUCT_BOARD_RELAYOUT"
+    "V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE"
   ],
-  "governanceContractHash": "7e23a0e70eb9b1202bed569de98ee2fc867c042cd84684aad38b19771709c634",
+  "governanceContractHash": "a7099a6dc7aca9029412460946f41f34fefd7d89d45aa88da323c3f32e472e7c",
   "requiredDocuments": [
     "AGENTS.md",
     "docs/product/V05_PRODUCT_NORTH_STAR.md",
@@ -18,9 +18,7 @@
     "docs/decisions/ADR-001-platform-and-store-ownership.md",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
-    "docs/project/task-completions/V0.5E_1_STORE_SCOPED_SERIES_AND_TRACKED_PRODUCT_MANAGEMENT.json",
-    "docs/project/task-completions/V0.5E_2_STORE_SCOPED_USER_DEFINED_SERIES_BOARD_RELAYOUT.json",
-    "docs/project/task-completions/V0.5E_3_STORE_SCOPED_TRACKED_PRODUCT_BOARD_RELAYOUT.json",
+    "docs/project/task-completions/V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
@@ -29,19 +27,37 @@
     "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
   ],
   "allowedModifyPaths": [
-    "docs/releases/v0.5e-series-tracked-product-focus-freeze.md",
-    "docs/project/v0.5-lock.json",
-    "scripts/private-audit/validate-v05e-final-browser-runtime.ts",
-    "scripts/private-audit/validate-v05e-final-regression-and-freeze.ts",
+    "docs/decisions/ADR-005-explicit-target-parent-hierarchy.md",
+    "docs/architecture/V05F_TARGET_HIERARCHY_CONTRACT.md",
+    "docs/architecture/v0.5f-target-hierarchy-contract.json",
+    "lib/v05/target-hierarchy/**",
+    "lib/v05/domain/models.ts",
+    "lib/v05/domain/keys.ts",
+    "lib/v05/validation/records.ts",
+    "lib/v05/validation/dataset.ts",
+    "lib/v05/repositories/contracts.ts",
+    "lib/v05/repositories/memory-adapter.ts",
+    "lib/v05/persistence/**",
+    "lib/v05/index.ts",
+    "scripts/private-audit/validate-v05f0-target-hierarchy-contract.ts",
+    "scripts/private-audit/validate-v05f0-target-hierarchy-persistence.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
+    "docs/project/task-authorizations/V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS.json",
+    "docs/project/task-completions/V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS.json"
   ],
   "forbiddenModifyPaths": [
     "app/**",
     "components/**",
-    "lib/**",
-    "types/**",
+    "lib/v05/import/**",
+    "lib/v05/focus-management/**",
+    "lib/v05/home-command-center/**",
+    "lib/v05/store-board/**",
+    "lib/v05/series-board/**",
+    "lib/v05/product-board/**",
+    "lib/storage/**",
+    "lib/tmall/**",
+    "types/tmall.ts",
+    "types/tmall-targets.ts",
     "package.json",
     "package-lock.json",
     "private-samples/**",
@@ -49,18 +65,9 @@
     "docs/releases/v0.5b-data-center-freeze.md",
     "docs/releases/v0.5c-home-command-center-freeze.md",
     "docs/releases/v0.5d-multi-store-board-freeze.md",
-    "docs/product/**",
-    "docs/design/**",
-    "docs/roadmap/**",
-    "docs/quality/**",
-    "docs/architecture/**",
-    "docs/decisions/**",
-    "scripts/private-audit/validate-v05e1-series-tracked-product-data.ts",
-    "scripts/private-audit/validate-v05e1-series-tracked-product-ui.ts",
-    "scripts/private-audit/validate-v05e2-series-board-data.ts",
-    "scripts/private-audit/validate-v05e2-series-board-ui.ts",
-    "scripts/private-audit/validate-v05e3-tracked-product-board-data.ts",
-    "scripts/private-audit/validate-v05e3-tracked-product-board-ui.ts"
+    "docs/releases/v0.5e-series-tracked-product-focus-freeze.md",
+    "docs/project/task-completions/V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-authorizations/V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
   ],
   "requiredCommands": [
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
@@ -69,23 +76,28 @@
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
     "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "npx tsx scripts/private-audit/validate-v05e-final-browser-runtime.ts",
-    "npx tsx scripts/private-audit/validate-v05e-final-regression-and-freeze.ts",
+    "npx tsx scripts/private-audit/validate-v05f0-target-hierarchy-contract.ts",
+    "npx tsx scripts/private-audit/validate-v05f0-target-hierarchy-persistence.ts",
     "npm run lint",
     "npm run build"
   ],
   "stopConditions": [
-    "V0.5E_3_STORE_SCOPED_TRACKED_PRODUCT_BOARD_RELAYOUT dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
-    "V0.5A, V0.5B, V0.5C, or V0.5D is not complete, or V0.5E/V0.5F is not pending before freeze.",
-    "The final regression finds a real V0.5E business defect requiring changes outside the freeze-task allowlist.",
-    "Completing this task would require modifying business pages, components, lib code, four-source parsing, storage structures, package files, private samples, or V0.5A-D frozen code.",
-    "V0.5E cannot legally transition from pending to complete while V0.5F remains pending under the governance lock."
+    "V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
+    "V0.5A, V0.5B, V0.5C, V0.5D, or V0.5E is not complete, or V0.5F is not pending.",
+    "The original V0.5F_1 BLOCKED history would need to be rewritten.",
+    "Completing this task would require modifying app pages, components, target UI, four-source parsing, business view models, package files, private samples, or fixed governance documents.",
+    "The target hierarchy cannot be represented with TargetRecord.parentTargetId without adding a new IndexedDB object store or increasing databaseVersion.",
+    "Existing persistence drops parentTargetId and cannot be minimally fixed within authorized persistence files.",
+    "The implementation would need to infer parent-child target relationships from scope, name, metricKey, period, or targetValue."
   ],
-  "baselineCommit": "9d7607481150df5cbd589f957c2a5cca065dbe69",
-  "authorizationFile": "docs/project/task-authorizations/V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-  "authorizationHash": "bd1007dedd13133d25cd849159674da3ed126ee4bdd4f3e7bd89e719cf71ff98",
-  "authorizationCommit": "60bd4742dc8d3790e9907083b60013e737070931",
+  "baselineCommit": "f260b5b0643a33e9efc306ef6118e94a00a2a6ce",
+  "authorizationFile": "docs/project/task-authorizations/V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS.json",
+  "authorizationHash": "fedb31c4dd58a7c8dd761ae8de4c6b69bbcfda47ddccec6ec03fdf3cf15171cc",
+  "authorizationCommit": "013ed8d3b3680887abeb41a8c3f3286401faa39b",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
+  "startedAt": "2026-06-23T01:57:10+08:00",
+  "completedAt": "2026-06-23T02:15:53+08:00",
+  "status": "complete",
   "commandResults": [
     {
       "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
@@ -112,11 +124,11 @@
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05e-final-browser-runtime.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05f0-target-hierarchy-contract.ts",
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05e-final-regression-and-freeze.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05f0-target-hierarchy-persistence.ts",
       "status": "PASS"
     },
     {
@@ -127,8 +139,5 @@
       "command": "npm run build",
       "status": "PASS"
     }
-  ],
-  "startedAt": "2026-06-23T01:06:22+08:00",
-  "completedAt": "2026-06-23T01:26:20+08:00",
-  "status": "complete"
+  ]
 }

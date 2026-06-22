@@ -433,15 +433,15 @@ export const validateTrackedProductRecord: Validator = (
   return finalize(issues);
 };
 
-const validateTargetScopeFields = (data: UnknownRecord, path: string, issues: ValidationIssue[]): void => {
+const validateTargetScopeFields = (data: UnknownRecord, path: string, issues: ValidationIssue[]): TargetScope | null => {
   const scope = requireEnum(data, "scope", TARGET_SCOPES, path, issues);
-  if (scope === null) return;
+  if (scope === null) return null;
 
   if (scope === "company") {
     if (hasOwn(data, "storeId") || hasOwn(data, "platformCode") || hasOwn(data, "seriesId") || hasOwn(data, "productId")) {
       pushIssue(issues, "scope_mismatch", `${path}.scope`, "Company target must not contain store, series, or product owner fields.");
     }
-    return;
+    return scope;
   }
 
   requirePlatformCode(data, "platformCode", path, issues);
@@ -451,7 +451,7 @@ const validateTargetScopeFields = (data: UnknownRecord, path: string, issues: Va
     if (hasOwn(data, "seriesId") || hasOwn(data, "productId")) {
       pushIssue(issues, "scope_mismatch", `${path}.scope`, "Store target must not contain series or product fields.");
     }
-    return;
+    return scope;
   }
 
   if (scope === "series") {
@@ -459,13 +459,14 @@ const validateTargetScopeFields = (data: UnknownRecord, path: string, issues: Va
     if (hasOwn(data, "productId")) {
       pushIssue(issues, "scope_mismatch", `${path}.productId`, "Series target must not contain product field.");
     }
-    return;
+    return scope;
   }
 
   requireString(data, "productId", path, issues);
   if (hasOwn(data, "seriesId")) {
     pushIssue(issues, "scope_mismatch", `${path}.seriesId`, "Product target must not contain series field.");
   }
+  return scope;
 };
 
 export const validateTargetRecord: Validator = (record, path = "target") => {
@@ -474,7 +475,11 @@ export const validateTargetRecord: Validator = (record, path = "target") => {
 
   requireSchemaVersion(data, path, issues);
   requireString(data, "targetId", path, issues);
-  validateTargetScopeFields(data, path, issues);
+  const scope = validateTargetScopeFields(data, path, issues);
+  const parentTargetId = optionalString(data, "parentTargetId", path, issues);
+  if (scope === "company" && parentTargetId) {
+    pushIssue(issues, "scope_mismatch", `${path}.parentTargetId`, "Company target parentTargetId must be null or omitted.");
+  }
   requireEnum(data, "periodType", TARGET_PERIODS, path, issues);
   requireString(data, "periodValue", path, issues);
   requireString(data, "metricKey", path, issues);

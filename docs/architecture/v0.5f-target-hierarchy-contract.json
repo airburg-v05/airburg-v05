@@ -1,0 +1,74 @@
+{
+  "contractVersion": "v0.5f-target-hierarchy-v1",
+  "status": "active",
+  "recordField": {
+    "record": "TargetRecord",
+    "field": "parentTargetId",
+    "type": "string | null | undefined",
+    "missingEqualsNull": true
+  },
+  "hierarchy": [
+    {
+      "parentScope": "company",
+      "childScope": "store"
+    },
+    {
+      "parentScope": "store",
+      "childScope": "series"
+    },
+    {
+      "parentScope": "series",
+      "childScope": "product"
+    }
+  ],
+  "forbiddenInference": [
+    "scope",
+    "name",
+    "metricKey",
+    "period",
+    "targetValue"
+  ],
+  "requiredParentChildMatchFields": [
+    "metricKey",
+    "periodType",
+    "periodValue",
+    "direction"
+  ],
+  "metricAllocationPolicy": {
+    "sum": [
+      "gmv",
+      "gsv",
+      "visitors",
+      "paidBuyers",
+      "adSpend",
+      "refundAmount",
+      "refundSuccessAmount",
+      "refundOrderCount",
+      "refundApplyCount",
+      "refundSuccessCount",
+      "afterSalesApplyCount"
+    ],
+    "none": [
+      "conversionRate",
+      "avgOrderValue",
+      "refundRate",
+      "adRoi",
+      "roi",
+      "clickRate",
+      "adSpendRate",
+      "adSpendRateAfterRefund",
+      "unknown"
+    ]
+  },
+  "statusCompatibility": {
+    "active": "counts in active allocation",
+    "paused": "retains relation but does not count in active allocation",
+    "deleted": "soft tombstone; does not count and cannot be active parent for active or paused children"
+  },
+  "persistence": {
+    "objectStore": "targets",
+    "addObjectStore": false,
+    "databaseVersionChange": false,
+    "legacyTargetKeyUnchanged": true
+  }
+}

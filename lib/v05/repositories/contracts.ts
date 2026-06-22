@@ -84,6 +84,7 @@ export interface TrackedProductRepository extends V2RecordRepository<TrackedProd
 export interface TargetRepository extends V2RecordRepository<TargetRecord> {
   listCompany(): Promise<RepositoryResult<TargetRecord[]>>;
   list(scope: StoreScope): Promise<RepositoryResult<TargetRecord[]>>;
+  listChildren(parentTargetId: string): Promise<RepositoryResult<TargetRecord[]>>;
 }
 
 export interface V2RepositoryBundle {

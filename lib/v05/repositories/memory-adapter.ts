@@ -194,6 +194,11 @@ class MemoryTargetRepository
     );
     return records.length ? repositorySuccess(records) : repositoryEmpty();
   }
+
+  async listChildren(parentTargetId: string): Promise<RepositoryResult<TargetRecord[]>> {
+    const records = this.listAll().filter((record) => record.parentTargetId === parentTargetId);
+    return records.length ? repositorySuccess(records) : repositoryEmpty();
+  }
 }
 
 export interface MemoryV2RepositoryBundle extends V2RepositoryBundle {

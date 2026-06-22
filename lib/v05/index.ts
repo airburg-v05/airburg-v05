@@ -9,6 +9,7 @@ export * from "./repositories/contracts";
 export * from "./repositories/memory-adapter";
 export * from "./migration";
 export * from "./persistence";
+export * as targetHierarchy from "./target-hierarchy";
 export * from "./data-center";
 export * from "./home-command-center";
 export * as focusManagement from "./focus-management";

@@ -25,6 +25,7 @@ import {
   buildTrackedProductKey,
 } from "../domain/keys";
 import type { ValidationIssue, ValidationResult } from "../domain/results";
+import { validateTargetHierarchyRelationships } from "../target-hierarchy/hierarchy-validation";
 import { pushIssue, validateResultFromIssues } from "./core";
 import {
   validateActiveDatasetPointer,
@@ -327,6 +328,10 @@ export const validateV2Dataset = (dataset: V2Dataset): ValidationResult => {
       }
     }
   });
+  issues.push(...validateTargetHierarchyRelationships({
+    targets: dataset.targets,
+    series: dataset.series,
+  }));
 
   dataset.adProductFacts.forEach((fact, index) => {
     validateProductReference(fact, fact.productId, `adProductFacts[${index}].productId`, productByOwner, productOwnersById, issues);
