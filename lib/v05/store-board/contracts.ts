@@ -12,6 +12,7 @@ import type {
   HomeCommandCenterPeriod,
   HomeCommandCenterStatusTone,
 } from "../home-command-center";
+import type { TargetContextAllocationStatus, TargetContextTone } from "../target-context";
 
 export type StoreBoardDataMode =
   | "v2_valid"
@@ -97,6 +98,9 @@ export interface StoreBoardTargetProgress {
   periodType: TargetPeriodType;
   statusLabel: string;
   tone: StoreBoardStatusTone;
+  allocationStatus: TargetContextAllocationStatus;
+  allocationStatusLabel: string;
+  allocationTone: TargetContextTone;
 }
 
 export interface StoreBoardProductRankItem {

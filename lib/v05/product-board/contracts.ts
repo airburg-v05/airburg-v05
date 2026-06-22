@@ -11,6 +11,7 @@ import type {
   HomeCommandCenterPeriod,
   HomeCommandCenterStatusTone,
 } from "../home-command-center";
+import type { TargetContextAllocationStatus, TargetContextTone } from "../target-context";
 import type { TmallStoredAnalysisResult } from "../../../types/tmall";
 
 export type ProductBoardDataMode =
@@ -103,6 +104,9 @@ export interface ProductBoardTargetProgress {
   periodType: TargetPeriodType;
   statusLabel: string;
   tone: ProductBoardStatusTone;
+  allocationStatus: TargetContextAllocationStatus;
+  allocationStatusLabel: string;
+  allocationTone: TargetContextTone;
 }
 
 export interface ProductBoardDateRangeState {

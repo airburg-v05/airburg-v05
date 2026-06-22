@@ -17,6 +17,8 @@ import {
 import { metricValueOfPoint } from "@/lib/v05/home-command-center";
 import { SectionCard } from "@/components/ui/section-card";
 import { StatusPill } from "@/components/ui/status-pill";
+import { CompactTargetSummary } from "@/components/target-context/compact-target-summary";
+import { targetSettingsHref } from "@/lib/v05/target-context";
 import { ProductBoardSafeState } from "./product-board-safe-state";
 
 const PERIOD_OPTIONS: Array<{ key: ProductBoardPeriod; label: string }> = [
@@ -271,72 +273,49 @@ function ProductMetricGrid({ viewModel }: { viewModel: ProductBoardViewModel }) 
 
 function ProductIdentityAndTargets({ viewModel }: { viewModel: ProductBoardViewModel }) {
   const identity = viewModel.selectedTrackedProduct;
+  const context = viewModel.storeContext;
+  const settingsHref = context
+    ? targetSettingsHref({
+      scope: "product",
+      platformCode: context.platformCode,
+      storeId: context.storeId,
+      productId: identity.productId,
+    })
+    : "/targets?scope=product";
+
   return (
-    <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div className="min-w-0">
-          <p className="break-words text-sm font-semibold text-slate-900">{identity.displayName ?? "未选择重点商品"}</p>
-          <p className="mt-1 truncate text-xs text-slate-500">{identity.productId ?? "--"}</p>
-          <p className="mt-2 text-xs text-slate-500">只展示当前重点商品可匹配当前周期的只读目标。</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            <StatusPill tone={identity.dataStatus === "business" ? "success" : identity.dataStatus === "ad_only" ? "info" : "neutral"}>
-              {identity.dataStatus === "business"
-                ? "有经营数据"
-                : identity.dataStatus === "ad_only"
-                  ? "仅推广数据"
-                  : "暂无当前范围数据"}
-            </StatusPill>
-            <StatusPill tone="info">用户主动添加</StatusPill>
+    <div className="space-y-4">
+      <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div className="min-w-0">
+            <p className="break-words text-sm font-semibold text-slate-900">{identity.displayName ?? "未选择重点商品"}</p>
+            <p className="mt-1 truncate text-xs text-slate-500">{identity.productId ?? "--"}</p>
+            <p className="mt-2 text-xs text-slate-500">只展示当前重点商品可匹配当前周期的只读目标。</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <StatusPill tone={identity.dataStatus === "business" ? "success" : identity.dataStatus === "ad_only" ? "info" : "neutral"}>
+                {identity.dataStatus === "business"
+                  ? "有经营数据"
+                  : identity.dataStatus === "ad_only"
+                    ? "仅推广数据"
+                    : "暂无当前范围数据"}
+              </StatusPill>
+              <StatusPill tone="info">用户主动添加</StatusPill>
+            </div>
           </div>
-        </div>
-        {viewModel.targetProgress.length === 0 ? (
-          <span className="w-fit rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500 ring-1 ring-slate-200">
-            当前周期暂无商品目标
-          </span>
-        ) : (
-          <Link href="/targets" className="secondary-button shrink-0 justify-center">
+          <Link href={settingsHref} className="secondary-button shrink-0 justify-center">
             目标设置
           </Link>
-        )}
+        </div>
       </div>
 
-      {viewModel.targetProgress.length > 0 ? (
-        <div className="mt-4 grid gap-3 lg:grid-cols-2">
-          {viewModel.targetProgress.map((target) => (
-            <article key={target.targetId} className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-slate-900">{target.label}</p>
-                  <p className="mt-1 text-xs text-slate-500">{target.metricLabel}</p>
-                </div>
-                <span className="shrink-0 rounded-full bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
-                  {target.statusLabel}
-                </span>
-              </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-                <div
-                  className="h-full rounded-full bg-blue-600"
-                  style={{ width: `${Math.min(100, Math.max(0, (target.progressRate ?? 0) * 100))}%` }}
-                />
-              </div>
-              <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-500">
-                <div>
-                  <p>实际</p>
-                  <p className="mt-1 font-semibold text-slate-900">
-                    {formatProductTargetMetricValue(target.metricKey, target.actualValue)}
-                  </p>
-                </div>
-                <div>
-                  <p>目标</p>
-                  <p className="mt-1 font-semibold text-slate-900">
-                    {formatProductTargetMetricValue(target.metricKey, target.targetValue)}
-                  </p>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      ) : null}
+      <CompactTargetSummary
+        title="商品目标进度"
+        description="只展示当前 storeId + productId 可匹配当前周期的 product 目标。"
+        emptyLabel="当前周期暂无商品目标"
+        settingsHref={settingsHref}
+        targets={viewModel.targetProgress}
+        formatValue={formatProductTargetMetricValue}
+      />
     </div>
   );
 }

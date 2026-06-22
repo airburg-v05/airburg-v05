@@ -1,4 +1,5 @@
 import type { PlatformCode, TargetDirection, TargetPeriodType } from "../domain/models";
+import type { TargetContextAllocationStatus, TargetContextTone } from "../target-context";
 import type { TmallStoredAnalysisStatus } from "../../storage/tmall-analysis-validator";
 
 export type HomeCommandCenterDataMode =
@@ -82,6 +83,9 @@ export interface HomeCommandCenterTargetProgress {
   periodType: TargetPeriodType;
   statusLabel: string;
   tone: HomeCommandCenterStatusTone;
+  allocationStatus: TargetContextAllocationStatus;
+  allocationStatusLabel: string;
+  allocationTone: TargetContextTone;
 }
 
 export interface HomeCommandCenterStorePerformance {

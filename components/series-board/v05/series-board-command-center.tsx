@@ -16,6 +16,8 @@ import {
 import { metricValueOfPoint } from "@/lib/v05/home-command-center";
 import { SectionCard } from "@/components/ui/section-card";
 import { StatusPill } from "@/components/ui/status-pill";
+import { CompactTargetSummary } from "@/components/target-context/compact-target-summary";
+import { targetSettingsHref } from "@/lib/v05/target-context";
 import { SeriesBoardSafeState } from "./series-board-safe-state";
 
 const PERIOD_OPTIONS: Array<{ key: SeriesBoardPeriod; label: string }> = [
@@ -261,62 +263,25 @@ function SeriesMetricGrid({ viewModel }: { viewModel: SeriesBoardViewModel }) {
 }
 
 function SeriesTargetSummary({ viewModel }: { viewModel: SeriesBoardViewModel }) {
-  return (
-    <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-900">系列目标进度</p>
-          <p className="mt-1 text-xs text-slate-500">只展示当前系列可匹配当前周期的只读目标。</p>
-        </div>
-        {viewModel.targetProgress.length === 0 ? (
-          <span className="w-fit rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500 ring-1 ring-slate-200">
-            当前周期暂无系列目标
-          </span>
-        ) : (
-          <Link href="/targets" className="secondary-button shrink-0 justify-center">
-            目标设置
-          </Link>
-        )}
-      </div>
+  const context = viewModel.storeContext;
+  const settingsHref = context
+    ? targetSettingsHref({
+      scope: "series",
+      platformCode: context.platformCode,
+      storeId: context.storeId,
+      seriesId: viewModel.selectedSeriesId,
+    })
+    : "/targets?scope=series";
 
-      {viewModel.targetProgress.length > 0 ? (
-        <div className="mt-4 grid gap-3 lg:grid-cols-2">
-          {viewModel.targetProgress.map((target) => (
-            <article key={target.targetId} className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-slate-900">{target.label}</p>
-                  <p className="mt-1 text-xs text-slate-500">{target.metricLabel}</p>
-                </div>
-                <span className="shrink-0 rounded-full bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
-                  {target.statusLabel}
-                </span>
-              </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-                <div
-                  className="h-full rounded-full bg-blue-600"
-                  style={{ width: `${Math.min(100, Math.max(0, (target.progressRate ?? 0) * 100))}%` }}
-                />
-              </div>
-              <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-500">
-                <div>
-                  <p>实际</p>
-                  <p className="mt-1 font-semibold text-slate-900">
-                    {formatSeriesTargetMetricValue(target.metricKey, target.actualValue)}
-                  </p>
-                </div>
-                <div>
-                  <p>目标</p>
-                  <p className="mt-1 font-semibold text-slate-900">
-                    {formatSeriesTargetMetricValue(target.metricKey, target.targetValue)}
-                  </p>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      ) : null}
-    </div>
+  return (
+    <CompactTargetSummary
+      title="系列目标进度"
+      description="只展示当前 storeId + seriesId 可匹配当前周期的 series 目标。"
+      emptyLabel="当前周期暂无系列目标"
+      settingsHref={settingsHref}
+      targets={viewModel.targetProgress}
+      formatValue={formatSeriesTargetMetricValue}
+    />
   );
 }
 

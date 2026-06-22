@@ -18,6 +18,10 @@ import {
   formatRoi,
   safeDivide,
 } from "../home-command-center";
+import {
+  buildTargetContextAllocationView,
+  standaloneTargetAllocationView,
+} from "../target-context";
 import type {
   StoreBoardDateRangeState,
   StoreBoardPeriod,
@@ -126,6 +130,7 @@ const toProgress = ({
   targetValue,
   direction,
   periodType,
+  allocationView,
 }: {
   targetId: string;
   label: string;
@@ -134,6 +139,7 @@ const toProgress = ({
   targetValue: number;
   direction: TargetDirection;
   periodType: TargetPeriodType;
+  allocationView: ReturnType<typeof buildTargetContextAllocationView> | ReturnType<typeof standaloneTargetAllocationView>;
 }): StoreBoardTargetProgress => {
   const progress = progressFor({ actualValue, targetValue, direction });
   return {
@@ -149,6 +155,9 @@ const toProgress = ({
     gapValue: progress.gapValue,
     statusLabel: progress.statusLabel,
     tone: progress.tone,
+    allocationStatus: allocationView.allocationStatus,
+    allocationStatusLabel: allocationView.allocationStatusLabel,
+    allocationTone: allocationView.allocationTone,
   };
 };
 
@@ -186,6 +195,7 @@ export const buildV2StoreTargetProgress = ({
         targetValue: target.targetValue,
         direction: target.direction,
         periodType: target.periodType,
+        allocationView: buildTargetContextAllocationView({ target, targets }),
       }),
     )
     .sort((left, right) => {
@@ -227,6 +237,7 @@ export const buildLegacyStoreTargetProgress = ({
         targetValue: target.targetValue,
         direction: target.direction,
         periodType: target.periodType,
+        allocationView: standaloneTargetAllocationView(),
       }),
     )
     .sort((left, right) => {

@@ -6,6 +6,7 @@ import {
   formatRoi,
   safeDivide,
 } from "../home-command-center";
+import { buildTargetContextAllocationView } from "../target-context";
 import type {
   ProductBoardDateRangeState,
   ProductBoardPeriod,
@@ -108,6 +109,7 @@ const toProgress = ({
   targetValue,
   direction,
   periodType,
+  allocationView,
 }: {
   targetId: string;
   label: string;
@@ -116,6 +118,7 @@ const toProgress = ({
   targetValue: number;
   direction: TargetDirection;
   periodType: TargetPeriodType;
+  allocationView: ReturnType<typeof buildTargetContextAllocationView>;
 }): ProductBoardTargetProgress => {
   const progress = progressFor({ actualValue, targetValue, direction });
   return {
@@ -131,6 +134,9 @@ const toProgress = ({
     gapValue: progress.gapValue,
     statusLabel: progress.statusLabel,
     tone: progress.tone,
+    allocationStatus: allocationView.allocationStatus,
+    allocationStatusLabel: allocationView.allocationStatusLabel,
+    allocationTone: allocationView.allocationTone,
   };
 };
 
@@ -167,6 +173,7 @@ export const buildV2ProductTargetProgress = ({
         targetValue: target.targetValue,
         direction: target.direction,
         periodType: target.periodType,
+        allocationView: buildTargetContextAllocationView({ target, targets }),
       }),
     )
     .sort((left, right) => {

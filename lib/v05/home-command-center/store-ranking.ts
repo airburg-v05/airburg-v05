@@ -152,6 +152,7 @@ export const buildStorePerformance = ({
         range,
         selectedPlatform: store.platformCode,
         selectedStore: currentStoreFilter,
+        targetScope: "store",
       })[0] ?? null;
 
       return {

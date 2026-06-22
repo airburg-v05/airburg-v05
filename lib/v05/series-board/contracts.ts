@@ -10,6 +10,7 @@ import type {
   HomeCommandCenterPeriod,
   HomeCommandCenterStatusTone,
 } from "../home-command-center";
+import type { TargetContextAllocationStatus, TargetContextTone } from "../target-context";
 import type { TmallStoredAnalysisResult } from "../../../types/tmall";
 import type { TmallTargetDefinition } from "../../../types/tmall-targets";
 import type { TmallSeriesGroup } from "../../storage/tmall-series-storage";
@@ -115,6 +116,9 @@ export interface SeriesBoardTargetProgress {
   periodType: TargetPeriodType;
   statusLabel: string;
   tone: SeriesBoardStatusTone;
+  allocationStatus: TargetContextAllocationStatus;
+  allocationStatusLabel: string;
+  allocationTone: TargetContextTone;
 }
 
 export interface SeriesBoardDateRangeState {

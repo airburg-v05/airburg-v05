@@ -17,6 +17,8 @@ import {
 import { metricValueOfPoint } from "@/lib/v05/home-command-center";
 import { SectionCard } from "@/components/ui/section-card";
 import { StatusPill } from "@/components/ui/status-pill";
+import { CompactTargetSummary } from "@/components/target-context/compact-target-summary";
+import { targetSettingsHref } from "@/lib/v05/target-context";
 import { StoreBoardSafeState } from "./store-board-safe-state";
 
 const PERIOD_OPTIONS: Array<{ key: StoreBoardPeriod; label: string }> = [
@@ -213,7 +215,18 @@ function StoreContextBar({
         </div>
 
         <div className="flex shrink-0 flex-col gap-2 sm:flex-row xl:flex-col">
-          <Link href="/targets" className="primary-button justify-center">
+          <Link
+            href={
+              context
+                ? targetSettingsHref({
+                  scope: "store",
+                  platformCode: context.platformCode,
+                  storeId: context.storeId,
+                })
+                : "/targets?scope=store"
+            }
+            className="primary-button justify-center"
+          >
             目标设置
           </Link>
           <Link href="/upload" className="secondary-button justify-center">
@@ -434,61 +447,24 @@ function LegacyDrilldownActions({
 }
 
 function StoreTargetSummary({ viewModel }: { viewModel: StoreBoardViewModel }) {
+  const context = viewModel.storeContext;
+  const settingsHref = context
+    ? targetSettingsHref({
+      scope: "store",
+      platformCode: context.platformCode,
+      storeId: context.storeId,
+    })
+    : "/targets?scope=store";
+
   return (
-    <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-900">店铺目标进度</p>
-          <p className="mt-1 text-xs text-slate-500">只展示当前店铺可匹配当前周期的只读目标。</p>
-        </div>
-        {viewModel.targetProgress.length === 0 ? (
-          <span className="w-fit rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500 ring-1 ring-slate-200">
-            当前周期暂无目标
-          </span>
-        ) : (
-          <Link href="/targets" className="secondary-button shrink-0 justify-center">
-            目标设置
-          </Link>
-        )}
-      </div>
-      {viewModel.targetProgress.length > 0 ? (
-        <div className="mt-4 grid gap-3 lg:grid-cols-2">
-          {viewModel.targetProgress.slice(0, 4).map((target) => (
-            <article key={target.targetId} className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-slate-900">{target.label}</p>
-                  <p className="mt-1 text-xs text-slate-500">{target.metricLabel}</p>
-                </div>
-                <span className="shrink-0 rounded-full bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
-                  {target.statusLabel}
-                </span>
-              </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-                <div
-                  className="h-full rounded-full bg-blue-600"
-                  style={{ width: `${Math.min(100, Math.max(0, (target.progressRate ?? 0) * 100))}%` }}
-                />
-              </div>
-              <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-500">
-                <div>
-                  <p>实际</p>
-                  <p className="mt-1 font-semibold text-slate-900">
-                    {formatTargetMetricValue(target.metricKey, target.actualValue)}
-                  </p>
-                </div>
-                <div>
-                  <p>目标</p>
-                  <p className="mt-1 font-semibold text-slate-900">
-                    {formatTargetMetricValue(target.metricKey, target.targetValue)}
-                  </p>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      ) : null}
-    </div>
+    <CompactTargetSummary
+      title="店铺目标进度"
+      description="只展示当前 platformCode + storeId 可匹配当前周期的 store 目标。"
+      emptyLabel="当前周期暂无店铺目标"
+      settingsHref={settingsHref}
+      targets={viewModel.targetProgress}
+      formatValue={formatTargetMetricValue}
+    />
   );
 }
 

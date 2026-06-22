@@ -149,7 +149,7 @@ export function HomeContextBar({
         </div>
 
         <div className="flex shrink-0 flex-col gap-2 sm:flex-row xl:flex-col">
-          <Link href="/targets" className="primary-button justify-center">
+          <Link href="/targets?scope=company" className="primary-button justify-center">
             目标设置
           </Link>
           <Link href="/upload" className="secondary-button justify-center">

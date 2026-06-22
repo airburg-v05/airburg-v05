@@ -10,6 +10,7 @@ export * from "./repositories/memory-adapter";
 export * from "./migration";
 export * from "./persistence";
 export * as targetHierarchy from "./target-hierarchy";
+export * as targetContext from "./target-context";
 export * from "./data-center";
 export * from "./home-command-center";
 export * as focusManagement from "./focus-management";

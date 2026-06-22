@@ -13,6 +13,7 @@ import {
   formatTargetMetricValue,
 } from "@/lib/v05/home-command-center";
 import { SectionCard } from "@/components/ui/section-card";
+import { CompactTargetSummary } from "@/components/target-context/compact-target-summary";
 
 interface HomeMainTrendProps {
   viewModel: HomeCommandCenterViewModel;
@@ -202,58 +203,14 @@ export function HomeMainTrend({
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold text-slate-900">目标进度</p>
-              <p className="mt-1 text-xs text-slate-500">
-                仅展示与当前周期安全匹配的公司或店铺目标。
-              </p>
-            </div>
-            {viewModel.targetProgress.length === 0 ? (
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500">
-                当前周期暂无目标
-              </span>
-            ) : null}
-          </div>
-          {viewModel.targetProgress.length > 0 ? (
-            <div className="mt-4 grid gap-3 lg:grid-cols-3">
-              {viewModel.targetProgress.map((target) => (
-                <article key={target.targetId} className="min-w-0 rounded-xl bg-slate-50 p-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-slate-900">{target.label}</p>
-                      <p className="mt-1 text-xs text-slate-500">{target.scopeLabel}</p>
-                    </div>
-                    <span className="shrink-0 rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
-                      {target.statusLabel}
-                    </span>
-                  </div>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-white">
-                    <div
-                      className="h-full rounded-full bg-blue-600"
-                      style={{ width: `${Math.min(100, Math.max(0, (target.progressRate ?? 0) * 100))}%` }}
-                    />
-                  </div>
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-500">
-                    <div>
-                      <p>实际</p>
-                      <p className="mt-1 font-semibold text-slate-900">
-                        {formatTargetMetricValue(target.metricKey, target.actualValue)}
-                      </p>
-                    </div>
-                    <div>
-                      <p>目标</p>
-                      <p className="mt-1 font-semibold text-slate-900">
-                        {formatTargetMetricValue(target.metricKey, target.targetValue)}
-                      </p>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : null}
-        </div>
+        <CompactTargetSummary
+          title="公司目标进度"
+          description="仅展示 company scope 且与当前周期安全匹配的目标；周和自定义范围不折算目标。"
+          emptyLabel="当前周期暂无公司目标"
+          settingsHref="/targets?scope=company"
+          targets={viewModel.targetProgress}
+          formatValue={formatTargetMetricValue}
+        />
       </div>
     </SectionCard>
   );

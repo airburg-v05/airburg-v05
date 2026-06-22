@@ -219,6 +219,7 @@ export const buildHomeCommandCenterViewModel = ({
     range: dateRange,
     selectedPlatform: normalizedPlatform,
     selectedStore: normalizedStore,
+    targetScope: "company",
   });
 
   return {
@@ -258,12 +259,12 @@ export const buildHomeCommandCenterViewModel = ({
       qualityHref: "/upload/quality",
     },
     primaryActions: [
-      { label: "目标设置", href: "/targets", tone: "blue" },
+      { label: "目标设置", href: "/targets?scope=company", tone: "blue" },
       { label: "数据导入", href: "/upload", tone: "slate" },
     ],
     notices: [
       dateRange.coverageText,
-      targetProgress.length === 0 ? "当前周期暂无目标。" : "目标进度仅展示可安全匹配当前周期的目标。",
+      targetProgress.length === 0 ? "当前周期暂无公司目标。" : "目标进度仅展示可安全匹配当前周期的公司目标。",
     ],
     isEmpty: businessFacts.length === 0,
   };
@@ -347,13 +348,13 @@ export const buildLegacyHomeCommandCenterViewModel = ({
       qualityHref: "/upload/quality",
     },
     primaryActions: [
-      { label: "目标设置", href: "/targets", tone: "blue" },
+      { label: "目标设置", href: "/targets?scope=company", tone: "blue" },
       { label: "数据导入", href: "/upload", tone: "slate" },
     ],
     notices: [
       "当前显示旧版单店数据，完成新数据导入后可查看多店铺汇总。",
       dateRange.coverageText,
-      targetProgress.length === 0 ? "当前周期暂无目标。" : "目标进度仅展示可安全匹配当前周期的目标。",
+      targetProgress.length === 0 ? "当前周期暂无公司目标。" : "目标进度仅展示可安全匹配当前周期的公司目标。",
     ],
     isEmpty: productFacts.length === 0,
   };

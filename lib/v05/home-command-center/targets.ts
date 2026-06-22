@@ -10,11 +10,9 @@ import type {
   HomeCommandCenterPeriod,
   HomeCommandCenterTargetProgress,
 } from "./contracts";
+import { buildTargetContextAllocationView } from "../target-context";
 import {
-  aggregateLegacyMetrics,
   aggregateV2Metrics,
-  filterLegacyAdPlanFacts,
-  filterLegacyBusinessFacts,
   formatInteger,
   formatMoney,
   formatPercent,
@@ -135,6 +133,7 @@ const toTargetProgress = ({
   targetValue,
   direction,
   periodType,
+  allocationView,
 }: {
   targetId: string;
   label: string;
@@ -144,6 +143,7 @@ const toTargetProgress = ({
   targetValue: number;
   direction: TargetDirection;
   periodType: "daily" | "monthly";
+  allocationView: ReturnType<typeof buildTargetContextAllocationView>;
 }): HomeCommandCenterTargetProgress => {
   const progress = progressFor({ actualValue, targetValue, direction });
   return {
@@ -160,6 +160,9 @@ const toTargetProgress = ({
     periodType,
     statusLabel: progress.statusLabel,
     tone: progress.tone,
+    allocationStatus: allocationView.allocationStatus,
+    allocationStatusLabel: allocationView.allocationStatusLabel,
+    allocationTone: allocationView.allocationTone,
   };
 };
 
@@ -171,6 +174,7 @@ export const buildV2TargetProgress = ({
   range,
   selectedPlatform,
   selectedStore,
+  targetScope = "company_and_store",
 }: {
   targets: TargetRecord[];
   businessFacts: OwnedBusinessProductFact[];
@@ -179,13 +183,18 @@ export const buildV2TargetProgress = ({
   range: HomeCommandCenterDateRangeState;
   selectedPlatform: string;
   selectedStore: string;
+  targetScope?: "company" | "store" | "company_and_store";
 }): HomeCommandCenterTargetProgress[] =>
   targets
     .filter((target) => target.status === "active")
-    .filter((target) => target.scope === "company" || target.scope === "store")
+    .filter((target) => {
+      if (targetScope === "company") return target.scope === "company";
+      if (targetScope === "store") return target.scope === "store";
+      return target.scope === "company" || target.scope === "store";
+    })
     .filter((target) => targetMatchesPeriod(target, selectedPeriod, range))
     .filter((target) => {
-      if (target.scope === "company") return selectedStore === "all";
+      if (target.scope === "company") return selectedPlatform === "all" && selectedStore === "all";
       if (target.scope === "store") {
         const storeKey = `${target.platformCode}:${target.storeId}`;
         if (selectedPlatform !== "all" && target.platformCode !== selectedPlatform) return false;
@@ -214,6 +223,7 @@ export const buildV2TargetProgress = ({
         targetValue: target.targetValue,
         direction: target.direction,
         periodType: target.periodType,
+        allocationView: buildTargetContextAllocationView({ target, targets }),
       });
     })
     .sort((a, b) => {
@@ -225,43 +235,21 @@ export const buildV2TargetProgress = ({
     .slice(0, 3);
 
 export const buildLegacyTargetProgress = ({
-  targets,
-  analysis,
-  selectedPeriod,
-  range,
+  targets: _targets,
+  analysis: _analysis,
+  selectedPeriod: _selectedPeriod,
+  range: _range,
 }: {
   targets: TmallTargetDefinition[];
   analysis: TmallStoredAnalysisResult;
   selectedPeriod: HomeCommandCenterPeriod;
   range: HomeCommandCenterDateRangeState;
 }): HomeCommandCenterTargetProgress[] => {
-  const productFacts = filterLegacyBusinessFacts({ analysis, range });
-  const adPlanFacts = filterLegacyAdPlanFacts({ analysis, range });
-  const metrics = aggregateLegacyMetrics({ productFacts, adPlanFacts });
-
-  return targets
-    .filter((target) => target.status === "active")
-    .filter((target) => target.scope === "store")
-    .filter((target) => targetMatchesPeriod(target, selectedPeriod, range))
-    .map((target) =>
-      toTargetProgress({
-        targetId: target.id,
-        label: target.name.trim() || `店铺目标 · ${METRIC_LABELS[target.metricKey] ?? target.metricKey}`,
-        scope: target.scope,
-        metricKey: target.metricKey,
-        actualValue: metricActual(target.metricKey, metrics),
-        targetValue: target.targetValue,
-        direction: target.direction,
-        periodType: target.periodType,
-      }),
-    )
-    .sort((a, b) => {
-      const left = a.progressRate ?? Number.POSITIVE_INFINITY;
-      const right = b.progressRate ?? Number.POSITIVE_INFINITY;
-      if (left !== right) return left - right;
-      return a.label.localeCompare(b.label, "zh-CN");
-    })
-    .slice(0, 3);
+  void _targets;
+  void _analysis;
+  void _selectedPeriod;
+  void _range;
+  return [];
 };
 
 export const formatTargetMetricValue = formatTargetValue;
