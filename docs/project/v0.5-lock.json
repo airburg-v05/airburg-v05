@@ -141,7 +141,7 @@
       "dependsOn": [
         "V0.5E"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "V0.5G",
@@ -241,7 +241,7 @@
     "V0.5C": "complete",
     "V0.5D": "complete",
     "V0.5E": "complete",
-    "V0.5F": "pending",
+    "V0.5F": "complete",
     "V0.5G": "pending"
   },
   "v05aCompletedAt": "2026-06-22T02:12:00+08:00",
@@ -259,6 +259,9 @@
   "v05eCompletedAt": "2026-06-23T01:13:29+08:00",
   "v05eFreezeDocument": "docs/releases/v0.5e-series-tracked-product-focus-freeze.md",
   "v05eFinalCompletionRecord": "docs/project/task-completions/V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-  "nextStage": "V0.5F",
-  "nextTask": "V0.5F_1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER"
+  "v05fCompletedAt": "2026-06-23T06:26:31+08:00",
+  "v05fFreezeDocument": "docs/releases/v0.5f-target-allocation-freeze.md",
+  "v05fFinalCompletionRecord": "docs/project/task-completions/V0.5F_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "nextStage": "V0.5G",
+  "nextTask": "V0.5G_1_CROSS_PAGE_VISUAL_SYSTEM_AND_NAVIGATION_CLOSURE"
 }

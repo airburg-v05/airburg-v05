@@ -1,6 +1,6 @@
 {
-  "taskId": "V0.5F_5_FINAL_REGRESSION_AND_STAGE_FREEZE",
-  "stage": "V0.5F-5",
+  "taskId": "V0.5F_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE",
+  "stage": "V0.5F-5-R1",
   "dependsOn": [
     "V0.5F_4_TARGET_RUNTIME_VISUAL_AND_CONFLICT_CLOSURE"
   ],
@@ -36,10 +36,11 @@
   "allowedModifyPaths": [
     "docs/releases/v0.5f-target-allocation-freeze.md",
     "docs/project/v0.5-lock.json",
+    "scripts/private-audit/validate-v05f-final-browser-runtime.ts",
+    "scripts/private-audit/validate-v05f-final-regression-and-freeze.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5F_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5F_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "scripts/private-audit/validate-v05f5-target-stage-freeze.ts"
+    "docs/project/task-authorizations/V0.5F_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-completions/V0.5F_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
   ],
   "forbiddenModifyPaths": [
     "app/**",
@@ -49,24 +50,28 @@
     "package.json",
     "package-lock.json",
     "private-samples/**",
-    "docs/product/**",
-    "docs/design/**",
-    "docs/roadmap/**",
-    "docs/quality/**",
-    "docs/architecture/**",
-    "docs/decisions/**",
+    "docs/project/task-authorizations/V0.5F_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "docs/project/task-completions/V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS.json",
     "docs/project/task-completions/V0.5F_1_R1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER.json",
     "docs/project/task-completions/V0.5F_2_PARENT_CHILD_TARGET_ALLOCATION_WORKFLOW.json",
     "docs/project/task-completions/V0.5F_3_TARGET_CONTEXT_AND_BOARD_INTEGRATION.json",
     "docs/project/task-completions/V0.5F_4_TARGET_RUNTIME_VISUAL_AND_CONFLICT_CLOSURE.json",
-    "scripts/private-audit/validate-v05f0-target-hierarchy-readiness.ts",
-    "scripts/private-audit/validate-v05f1-target-management-data.ts",
-    "scripts/private-audit/validate-v05f1-target-management-ui.ts",
-    "scripts/private-audit/validate-v05f2-target-allocation-workflow.ts",
-    "scripts/private-audit/validate-v05f3-target-context-board-integration.ts",
+    "scripts/private-audit/validate-v05f0-target-hierarchy-contract.ts",
+    "scripts/private-audit/validate-v05f0-target-hierarchy-persistence.ts",
+    "scripts/private-audit/validate-v05f1r1-target-management-data.ts",
+    "scripts/private-audit/validate-v05f1r1-target-management-ui.ts",
+    "scripts/private-audit/validate-v05f2-target-allocation-data.ts",
+    "scripts/private-audit/validate-v05f2-target-allocation-ui.ts",
+    "scripts/private-audit/validate-v05f3-target-context-board-integration-data.ts",
+    "scripts/private-audit/validate-v05f3-target-context-board-integration-ui.ts",
     "scripts/private-audit/validate-v05f4-target-runtime-visual-conflict.ts",
-    "scripts/private-audit/validate-v05f4-target-accessibility-screenshots.ts"
+    "scripts/private-audit/validate-v05f4-target-accessibility-screenshots.ts",
+    "docs/product/**",
+    "docs/design/**",
+    "docs/roadmap/**",
+    "docs/quality/**",
+    "docs/architecture/**",
+    "docs/decisions/**"
   ],
   "requiredCommands": [
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
@@ -75,27 +80,27 @@
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
     "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "npx tsx scripts/private-audit/validate-v05f4-target-runtime-visual-conflict.ts",
-    "npx tsx scripts/private-audit/validate-v05f4-target-accessibility-screenshots.ts",
-    "npx tsx scripts/private-audit/validate-v05f5-target-stage-freeze.ts",
+    "npx tsx scripts/private-audit/validate-v05f-final-browser-runtime.ts",
+    "npx tsx scripts/private-audit/validate-v05f-final-regression-and-freeze.ts",
     "npm run lint",
     "npm run build"
   ],
   "stopConditions": [
     "V0.5F_4_TARGET_RUNTIME_VISUAL_AND_CONFLICT_CLOSURE dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
-    "Any V0.5F F0/F1-R1/F2/F3/F4 completion record is missing, modified, untracked, not complete, or missing PASS requiredCommands.",
+    "Any V0.5F F0/F1-R1/F2/F3/F4 completion record is missing, modified, untracked, not complete, or missing historical requiredCommands PASS.",
+    "Old V0.5F_5_FINAL_REGRESSION_AND_STAGE_FREEZE BLOCKED authorization or blocked current-task commit would need to be modified, overwritten, amended, or represented as PASS.",
     "Final regression reveals a target business defect, ownership leak, invalid allocation, legacy compatibility failure, privacy leak, invalid number, mobile overflow, or failed Chrome evidence.",
-    "The freeze would require modifying business pages, target formulas, persistence, import, domain, repositories, four-source parsing, storage structures, package files, or dependencies.",
+    "The freeze would require modifying business pages, target formulas, persistence, import, domain, repositories, four-source parsing, storage structures, package files, dependencies, or F0-F4 historical task-scoped scripts.",
     "V0.5F cannot be marked complete while keeping V0.5G pending and nextTask set to V0.5G_1_CROSS_PAGE_VISUAL_SYSTEM_AND_NAVIGATION_CLOSURE."
   ],
-  "baselineCommit": "b45c2feabf625eb96082cc5cb25e7d5e32a96dfd",
-  "authorizationFile": "docs/project/task-authorizations/V0.5F_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-  "authorizationHash": "f3ca274e82c215f709e5dfdebb80fad8ebea8acda97434c6e20075156b1f2c2d",
-  "authorizationCommit": "0803d73",
+  "baselineCommit": "841822bf16edf7d3050d0d017a388eb542a0f1a4",
+  "authorizationFile": "docs/project/task-authorizations/V0.5F_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "authorizationHash": "6229e66521ce3e16026fb87ee923b7e8f64abb4b7aeebc0c63cf0af052d2185d",
+  "authorizationCommit": "fb2d43b",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
-  "startedAt": "2026-06-23T04:26:03+08:00",
-  "completedAt": null,
-  "status": "blocked",
+  "startedAt": "2026-06-23T06:16:17+08:00",
+  "completedAt": "2026-06-23T06:32:50+08:00",
+  "status": "complete",
   "commandResults": [
     {
       "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
@@ -114,9 +119,30 @@
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05f4-target-runtime-visual-conflict.ts",
-      "status": "FAIL",
-      "failureReason": "F4 validation script is task-scoped and requires current-task.taskId to be V0.5F_4_TARGET_RUNTIME_VISUAL_AND_CONFLICT_CLOSURE, but current task is V0.5F_5_FINAL_REGRESSION_AND_STAGE_FREEZE."
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05f-final-browser-runtime.ts",
+      "status": "PASS",
+      "screenshotManifestPath": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v05f5r1-screenshots-cXrEJx/manifest.json"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05f-final-regression-and-freeze.ts",
+      "status": "PASS",
+      "screenshotManifestPath": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v05f5r1-screenshots-zrl9al/manifest.json"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
     }
   ]
 }
