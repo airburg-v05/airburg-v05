@@ -1,0 +1,68 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5G_1_CROSS_PAGE_VISUAL_SYSTEM_AND_NAVIGATION_CLOSURE",
+  "stage": "V0.5G-1",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5G_1_CROSS_PAGE_VISUAL_SYSTEM_AND_NAVIGATION_CLOSURE.json",
+  "authorizationHash": "952084efb5e2317f782c55c112a9cc4a0bdc74149253126dd8deae32cc5e2603",
+  "authorizationCommit": "882c9bc65aa6b38194bd9cd3a6139108ca8cd6bd",
+  "completionCommit": "f8fe90f57ed83113128e35591ad746cd9932325a",
+  "completedAt": "2026-06-23T07:05:39+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+    "npx tsx scripts/private-audit/validate-v05g1-cross-page-visual-system.ts",
+    "npx tsx scripts/private-audit/validate-v05g1-navigation-runtime.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05g1-cross-page-visual-system.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05g1-navigation-runtime.ts",
+      "status": "PASS",
+      "screenshotManifestPath": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v05g1-screenshots-L4dQzj/manifest.json"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-23T07:06:36+08:00"
+}
