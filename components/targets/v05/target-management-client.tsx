@@ -233,7 +233,7 @@ function TargetRows({
   onToggleStatus: (target: TargetRecord) => void;
 }) {
   return (
-    <SectionCard title="目标列表" description="按 scope、归属和周期展示当前 active V2 dataset 中的目标。">
+    <SectionCard title="目标列表" description="按层级、归属和周期展示当前多店铺数据中的目标。">
       <div className="overflow-x-auto">
         <table className="data-table min-w-[1100px]">
           <thead>
@@ -750,7 +750,7 @@ function AllocationDrawer({
                 <p className="font-semibold text-slate-900">{formatNumber(row.allocationSummary?.parentTargetValue ?? drawer.target.targetValue)}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-500">allocationStatus</p>
+                <p className="text-xs text-slate-500">分配状态</p>
                 <StatusPill tone={toneForAllocation(row.allocationSummary?.allocationStatus ?? "none")}>
                   {allocationLabel(row.allocationSummary?.allocationStatus ?? "none")}
                 </StatusPill>
@@ -920,7 +920,7 @@ function TargetManagementPageInner() {
   const runSave = async (mutation: TargetDatasetMutation, onSuccess?: () => void) => {
     const expectedCurrentDatasetId = loadResult.viewModel.expectedCurrentDatasetId;
     if (!expectedCurrentDatasetId) {
-      setFeedback({ tone: "danger", message: "当前没有可写入的 active 数据。" });
+      setFeedback({ tone: "danger", message: "当前没有可写入的多店铺数据。" });
       return;
     }
     setSaving(true);
@@ -987,7 +987,7 @@ function TargetManagementPageInner() {
         eyebrow="TARGET CENTER"
         title="目标管理"
         description="按公司、店铺、系列和商品四级维护目标。父子关系必须显式选择，本页不自动生成或分配目标。"
-        action={<StatusPill tone={loadResult.status === "valid" ? "info" : "neutral"}>{loading ? "读取中" : loadResult.status === "valid" ? "V2 数据" : "待处理"}</StatusPill>}
+        action={<StatusPill tone={loadResult.status === "valid" ? "info" : "neutral"}>{loading ? "读取中" : loadResult.status === "valid" ? "多店铺数据" : "待处理"}</StatusPill>}
       />
 
       {feedback ? (
@@ -1004,7 +1004,7 @@ function TargetManagementPageInner() {
         </div>
       ) : null}
 
-      {loading ? <SafeState title="正在读取目标数据" description="正在从 active V2 dataset 加载目标管理上下文。" actions={[]} /> : null}
+      {loading ? <SafeState title="正在读取目标数据" description="正在加载目标管理上下文。" actions={[]} /> : null}
 
       {safeState ? <SafeState title={safeState.title} description={safeState.description} actions={safeState.actions} /> : null}
 

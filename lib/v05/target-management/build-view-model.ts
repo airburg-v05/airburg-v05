@@ -142,7 +142,7 @@ export const buildTargetManagementViewModel = ({
     rawTargets: [...dataset.targets].sort((left, right) => rowSortKey(left).localeCompare(rowSortKey(right), "zh-CN")),
     rawSeries: [...dataset.series],
     metricOptions: TARGET_METRIC_OPTIONS,
-    notices: rows.length === 0 ? ["当前 active V2 数据中还没有目标。"] : [],
+    notices: rows.length === 0 ? ["当前多店铺数据中还没有目标。"] : [],
     primaryActions: [
       { label: "数据导入", href: "/upload" },
       { label: "首页", href: "/home" },

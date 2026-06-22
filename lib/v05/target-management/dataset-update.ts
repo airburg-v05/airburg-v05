@@ -182,13 +182,13 @@ export const saveTargetDatasetMutation = async ({
 }): Promise<TargetSaveResult> => {
   const pointer = await store.getActivePointer();
   const currentDatasetId = pointer?.datasetId ?? null;
-  if (!currentDatasetId) return targetError("empty", "当前没有 active 多店铺数据，请先完成数据导入。");
+  if (!currentDatasetId) return targetError("empty", "当前没有可用的多店铺数据，请先完成数据导入。");
   if (currentDatasetId !== expectedCurrentDatasetId) {
     return targetError("conflict", "当前数据已被其他操作更新，请刷新后重试。", ["active_dataset_conflict"]);
   }
 
   const activeDataset = await store.loadDataset(currentDatasetId);
-  if (!activeDataset) return targetError("empty", "当前 active 数据不可读取，请先检查数据质量。");
+  if (!activeDataset) return targetError("empty", "当前多店铺数据不可读取，请先检查数据质量。");
   const currentMetadata = await store.getDatasetMetadata(currentDatasetId);
   const workingDataset = cloneTargetValue(activeDataset);
   const result = mutation({ dataset: workingDataset, now });
@@ -206,7 +206,7 @@ export const saveTargetDatasetMutation = async ({
 
   const write = await store.prepareDataset(prepared);
   if (write.status !== "prepared") {
-    return targetError("error", "写入本地 staging 失败，未激活新数据。", write.issues.map((issue) => issue.code));
+    return targetError("error", "本地保存准备失败，当前数据未改变。", write.issues.map((issue) => issue.code));
   }
   const readBack = await readBackAndValidateV2Dataset({
     store,
@@ -218,7 +218,7 @@ export const saveTargetDatasetMutation = async ({
     expectedRecordKeys: prepared.recordKeys,
   });
   if (readBack.status !== "readback_validated") {
-    return targetError("error", "本地 readback 校验失败，未激活新数据。", readBack.issues.map((issue) => issue.code));
+    return targetError("error", "本地保存校验失败，当前数据未改变。", readBack.issues.map((issue) => issue.code));
   }
   const activation = await activatePreparedV2Dataset({
     store,
@@ -230,7 +230,7 @@ export const saveTargetDatasetMutation = async ({
     return targetError("conflict", "当前数据已被其他操作更新，请刷新后重试。", activation.issues.map((issue) => issue.code));
   }
   if (activation.status !== "activated" && activation.status !== "already_active") {
-    return targetError("error", "激活新数据失败，当前 active 数据未改变。", activation.issues.map((issue) => issue.code));
+    return targetError("error", "保存生效失败，当前数据未改变。", activation.issues.map((issue) => issue.code));
   }
 
   return success("保存成功。", activation.data?.datasetId ?? prepared.dataset.datasetId);

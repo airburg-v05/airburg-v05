@@ -1,8 +1,8 @@
 {
-  "taskId": "V0.5F_3_TARGET_CONTEXT_AND_BOARD_INTEGRATION",
-  "stage": "V0.5F-3",
+  "taskId": "V0.5F_4_TARGET_RUNTIME_VISUAL_AND_CONFLICT_CLOSURE",
+  "stage": "V0.5F-4",
   "dependsOn": [
-    "V0.5F_2_PARENT_CHILD_TARGET_ALLOCATION_WORKFLOW"
+    "V0.5F_3_TARGET_CONTEXT_AND_BOARD_INTEGRATION"
   ],
   "governanceContractHash": "a7099a6dc7aca9029412460946f41f34fefd7d89d45aa88da323c3f32e472e7c",
   "requiredDocuments": [
@@ -24,6 +24,7 @@
     "docs/project/task-completions/V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS.json",
     "docs/project/task-completions/V0.5F_1_R1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER.json",
     "docs/project/task-completions/V0.5F_2_PARENT_CHILD_TARGET_ALLOCATION_WORKFLOW.json",
+    "docs/project/task-completions/V0.5F_3_TARGET_CONTEXT_AND_BOARD_INTEGRATION.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
@@ -32,42 +33,42 @@
     "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
   ],
   "allowedModifyPaths": [
+    "app/(workspace)/targets/page.tsx",
     "app/(workspace)/home/page.tsx",
     "app/(workspace)/store-board/page.tsx",
     "app/(workspace)/series-board/page.tsx",
     "app/(workspace)/product-board/page.tsx",
+    "components/targets/v05/**",
+    "components/target-context/**",
     "components/home/v05/**",
     "components/store-board/v05/**",
     "components/series-board/v05/**",
     "components/product-board/v05/**",
-    "components/target-context/**",
+    "lib/v05/target-management/**",
+    "lib/v05/target-context/**",
     "lib/v05/home-command-center/**",
     "lib/v05/store-board/**",
     "lib/v05/series-board/**",
     "lib/v05/product-board/**",
-    "lib/v05/target-context/**",
     "lib/v05/index.ts",
-    "scripts/private-audit/validate-v05f3-target-context-board-integration-data.ts",
-    "scripts/private-audit/validate-v05f3-target-context-board-integration-ui.ts",
+    "scripts/private-audit/validate-v05f4-target-runtime-visual-conflict.ts",
+    "scripts/private-audit/validate-v05f4-target-accessibility-screenshots.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5F_3_TARGET_CONTEXT_AND_BOARD_INTEGRATION.json",
-    "docs/project/task-completions/V0.5F_3_TARGET_CONTEXT_AND_BOARD_INTEGRATION.json"
+    "docs/project/task-authorizations/V0.5F_4_TARGET_RUNTIME_VISUAL_AND_CONFLICT_CLOSURE.json",
+    "docs/project/task-completions/V0.5F_4_TARGET_RUNTIME_VISUAL_AND_CONFLICT_CLOSURE.json"
   ],
   "forbiddenModifyPaths": [
     "app/(workspace)/upload/**",
     "app/(workspace)/raw-data/**",
-    "app/(workspace)/targets/page.tsx",
     "app/(workspace)/series-board/manage/**",
     "app/(workspace)/product-board/tracked/**",
     "components/upload/**",
-    "components/targets/**",
     "components/focus-management/**",
     "lib/v05/import/**",
     "lib/v05/import-history/**",
     "lib/v05/data-quality/**",
     "lib/v05/data-center/**",
     "lib/v05/focus-management/**",
-    "lib/v05/target-management/**",
     "lib/v05/target-hierarchy/**",
     "lib/v05/domain/**",
     "lib/v05/validation/**",
@@ -95,27 +96,27 @@
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
     "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "npx tsx scripts/private-audit/validate-v05f3-target-context-board-integration-data.ts",
-    "npx tsx scripts/private-audit/validate-v05f3-target-context-board-integration-ui.ts",
+    "npx tsx scripts/private-audit/validate-v05f4-target-runtime-visual-conflict.ts",
+    "npx tsx scripts/private-audit/validate-v05f4-target-accessibility-screenshots.ts",
     "npm run lint",
     "npm run build"
   ],
   "stopConditions": [
-    "V0.5F_2_PARENT_CHILD_TARGET_ALLOCATION_WORKFLOW dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
+    "V0.5F_3_TARGET_CONTEXT_AND_BOARD_INTEGRATION dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
     "V0.5A, V0.5B, V0.5C, V0.5D, or V0.5E is not complete, or V0.5F is not pending.",
-    "Existing board ViewModels cannot expose actual values needed for compact target summaries without changing frozen metric, trend, sort, or filter rules.",
-    "A target summary would require modifying persistence, target-management save logic, target-hierarchy allocation rules, four-source parsing, import flows, storage structures, or package dependencies.",
-    "A page would need to show targets from another scope, another store, duplicate targets, auto-generated targets, auto-allocated values, or folded weekly/custom targets.",
-    "The browser runtime cannot verify pages without touching production IndexedDB or leaking sensitive after-sales values."
+    "Runtime or visual closure would require modifying persistence, repositories, domain contracts, target-hierarchy allocation rules, import flows, storage structures, four-source parsing, or package dependencies.",
+    "Target creation, editing, pausing, reactivation, parent changes, or allocation summaries cannot be verified without touching production IndexedDB or leaking sensitive after-sales values.",
+    "Conflict handling cannot be validated through existing public target-management or persistence APIs without bypassing active pointer protection.",
+    "Any page would need to show dataset, pointer, readback, staging, raw after-sales detail, duplicate targets, auto-generated targets, auto-allocated values, or folded weekly/custom targets."
   ],
-  "baselineCommit": "f1379f8e0e994dbe221e360aaa666336a564ca3d",
-  "authorizationFile": "docs/project/task-authorizations/V0.5F_3_TARGET_CONTEXT_AND_BOARD_INTEGRATION.json",
-  "authorizationHash": "7c6a122bf7229b69e6bbb0b083b37a1f9f0c5bd76ca9e4e0b4984aefb7a42c85",
-  "authorizationCommit": "ca532a20cc4b4396aa46d3b6573589cfd9104300",
+  "baselineCommit": "d555606d2c794e6b44d1d0071be7182c32ed828d",
+  "authorizationFile": "docs/project/task-authorizations/V0.5F_4_TARGET_RUNTIME_VISUAL_AND_CONFLICT_CLOSURE.json",
+  "authorizationHash": "55330d12e36ca47ba8bb1f0788167db0cb17a55a7f1af06619f15dfd18f9d6de",
+  "authorizationCommit": "e9b15da8323ef6552fd1371c9eb9b1a83292e209",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
-  "startedAt": "2026-06-23T03:09:20+08:00",
-  "completedAt": "2026-06-23T03:26:59+08:00",
-  "status": "complete",
+  "startedAt": "2026-06-23T03:32:28+08:00",
+  "completedAt": null,
+  "status": "in_progress",
   "commandResults": [
     {
       "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
@@ -142,12 +143,13 @@
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05f3-target-context-board-integration-data.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05f4-target-runtime-visual-conflict.ts",
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05f3-target-context-board-integration-ui.ts",
-      "status": "PASS"
+      "command": "npx tsx scripts/private-audit/validate-v05f4-target-accessibility-screenshots.ts",
+      "status": "PASS",
+      "screenshotManifestPath": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v05f4-target-screenshots-JJArnY/manifest.json"
     },
     {
       "command": "npm run lint",

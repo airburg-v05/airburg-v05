@@ -42,8 +42,8 @@ export const loadTargetManagementContext = async ({
     if (!dataset) {
       return {
         status: "empty",
-        viewModel: buildEmptyTargetManagementViewModel("当前没有 active 多店铺数据，请先完成数据导入。"),
-        message: "当前没有 active 多店铺数据。",
+        viewModel: buildEmptyTargetManagementViewModel("当前没有可用的多店铺数据，请先完成数据导入。"),
+        message: "当前没有可用的多店铺数据。",
       };
     }
 
