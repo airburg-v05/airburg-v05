@@ -1,0 +1,67 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5F_1_R1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER",
+  "stage": "V0.5F-1-R1",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5F_1_R1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER.json",
+  "authorizationHash": "adde0078813f61e18d5f0c03c946150ca90d6e72929629366e6bd07564223205",
+  "authorizationCommit": "ee1cfb3c5a1201dc0749e357f9228c878e74d974",
+  "completionCommit": "9e2d093e7bc1d5ed96710ac598135bf8d9f3d145",
+  "completedAt": "2026-06-23T02:46:15+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+    "npx tsx scripts/private-audit/validate-v05f1r1-target-management-data.ts",
+    "npx tsx scripts/private-audit/validate-v05f1r1-target-management-ui.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05f1r1-target-management-data.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05f1r1-target-management-ui.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-23T02:47:10+08:00"
+}
