@@ -7,7 +7,6 @@ import { SectionCard } from "@/components/ui/section-card";
 import { StatusPill } from "@/components/ui/status-pill";
 import {
   dataCenterHref,
-  dataCenterReimportHref,
   dataCenterStoreKey,
   parseDataCenterSearchParams,
 } from "@/lib/v05/data-center";
@@ -427,16 +426,6 @@ function ImportHistoryDrawer({
               className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
             >
               查看当前批次质量
-            </Link>
-            <Link
-              href={dataCenterReimportHref({
-                platformCode: entry.platformCode,
-                storeId: entry.storeId,
-                batchId: entry.importBatchId,
-              })}
-              className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50"
-            >
-              重新导入
             </Link>
           </div>
         </div>

@@ -1,12 +1,12 @@
 {
-  "taskId": "V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE",
-  "stage": "V0.5B-4",
+  "taskId": "V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE",
+  "stage": "V0.5B-4.1",
   "dependsOn": [
-    "V0.5B_3_DATA_QUALITY_AND_SAFE_REIMPORT_CENTER"
+    "V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE"
   ],
-  "baselineCommit": "c8da57a5c7072613f3061f6a06b45de4aa4e98ec",
-  "authorizationFile": "docs/project/task-authorizations/V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE.json",
-  "authorizationHash": "f5eef4e8dcbf557a482f1889708ab9d2ddbd8333b99140c2c431785f5b067908",
+  "baselineCommit": "bb07ae5319b0fb02acd201a30455591f38603043",
+  "authorizationFile": "docs/project/task-authorizations/V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE.json",
+  "authorizationHash": "d3ab767d4506b29fd6c7e17740ec803ecb0171b5e25e2c91295854b3fa2073de",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
   "governanceContractHash": "ada25bae453aa0ad1f3a8807aaf0349aa696d827d2d3152940b120239c80c008",
   "requiredDocuments": [
@@ -22,10 +22,8 @@
     "docs/decisions/ADR-001-platform-and-store-ownership.md",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
-    "docs/project/task-completions/V0.5B_1_R1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
-    "docs/project/task-completions/V0.5B_2_IMPORT_HISTORY_AND_BATCH_TRACEABILITY_CENTER.json",
-    "docs/project/task-completions/V0.5B_3_DATA_QUALITY_AND_SAFE_REIMPORT_CENTER.json",
-    "docs/project/task-authorizations/V0.5B_3_DATA_QUALITY_AND_SAFE_REIMPORT_CENTER.json",
+    "docs/project/task-authorizations/V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE.json",
+    "docs/project/task-completions/V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
@@ -37,24 +35,17 @@
     "scripts/private-audit/validate-v05b2-import-history-data.ts",
     "scripts/private-audit/validate-v05b2-import-history-ui.ts",
     "scripts/private-audit/validate-v05b3-data-quality.ts",
-    "scripts/private-audit/validate-v05b3-safe-reimport-ui.ts"
+    "scripts/private-audit/validate-v05b3-safe-reimport-ui.ts",
+    "scripts/private-audit/validate-v05b4-data-center-navigation.ts",
+    "scripts/private-audit/validate-v05b4-data-center-usability-ui.ts"
   ],
   "allowedModifyPaths": [
-    "app/(workspace)/upload/layout.tsx",
-    "app/(workspace)/upload/page.tsx",
     "app/(workspace)/upload/history/page.tsx",
-    "app/(workspace)/upload/quality/page.tsx",
-    "components/upload/data-center/**",
-    "components/upload/batch-import/**",
     "components/upload/import-history/**",
-    "components/upload/data-quality/**",
-    "lib/v05/data-center/**",
-    "lib/v05/index.ts",
-    "scripts/private-audit/validate-v05b4-data-center-navigation.ts",
-    "scripts/private-audit/validate-v05b4-data-center-usability-ui.ts",
+    "scripts/private-audit/validate-v05b41-history-readonly-runtime-closure.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE.json",
-    "docs/project/task-completions/V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE.json"
+    "docs/project/task-authorizations/V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE.json",
+    "docs/project/task-completions/V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE.json"
   ],
   "forbiddenModifyPaths": [
     "app/(workspace)/home/**",
@@ -63,10 +54,15 @@
     "app/(workspace)/product-board/**",
     "app/(workspace)/targets/**",
     "app/(workspace)/raw-data/**",
+    "app/(workspace)/upload/page.tsx",
+    "app/(workspace)/upload/quality/page.tsx",
     "components/home/**",
     "components/store-board/**",
     "components/series-board/**",
     "components/product-board/**",
+    "components/upload/batch-import/**",
+    "components/upload/data-quality/**",
+    "components/upload/data-center/**",
     "components/upload/upload-data-quality-center.tsx",
     "components/upload/upload-source-status-card.tsx",
     "lib/storage/**",
@@ -79,11 +75,11 @@
     "lib/v05/import/**",
     "lib/v05/import-history/**",
     "lib/v05/data-quality/**",
+    "lib/v05/data-center/**",
     "types/**",
     "package.json",
     "package-lock.json",
     "private-samples/**",
-    "docs/releases/v0.5a-platform-store-data-foundation-freeze.md",
     "AGENTS.md",
     "docs/product/**",
     "docs/design/**",
@@ -93,13 +89,8 @@
     "docs/decisions/**",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
-    "docs/project/task-authorizations/V0.5B_1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
-    "docs/project/task-authorizations/V0.5B_1_R1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
-    "docs/project/task-authorizations/V0.5B_2_IMPORT_HISTORY_AND_BATCH_TRACEABILITY_CENTER.json",
-    "docs/project/task-authorizations/V0.5B_3_DATA_QUALITY_AND_SAFE_REIMPORT_CENTER.json",
-    "docs/project/task-completions/V0.5B_1_R1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
-    "docs/project/task-completions/V0.5B_2_IMPORT_HISTORY_AND_BATCH_TRACEABILITY_CENTER.json",
-    "docs/project/task-completions/V0.5B_3_DATA_QUALITY_AND_SAFE_REIMPORT_CENTER.json",
+    "docs/project/task-authorizations/V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE.json",
+    "docs/project/task-completions/V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
@@ -112,7 +103,9 @@
     "scripts/private-audit/validate-v05b2-import-history-data.ts",
     "scripts/private-audit/validate-v05b2-import-history-ui.ts",
     "scripts/private-audit/validate-v05b3-data-quality.ts",
-    "scripts/private-audit/validate-v05b3-safe-reimport-ui.ts"
+    "scripts/private-audit/validate-v05b3-safe-reimport-ui.ts",
+    "scripts/private-audit/validate-v05b4-data-center-navigation.ts",
+    "scripts/private-audit/validate-v05b4-data-center-usability-ui.ts"
   ],
   "requiredCommands": [
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
@@ -127,11 +120,10 @@
     "npx tsx scripts/private-audit/validate-v05b2-import-history-ui.ts",
     "npx tsx scripts/private-audit/validate-v05b3-data-quality.ts",
     "npx tsx scripts/private-audit/validate-v05b3-safe-reimport-ui.ts",
-    "npx tsx scripts/private-audit/validate-v05b4-data-center-navigation.ts",
-    "npx tsx scripts/private-audit/validate-v05b4-data-center-usability-ui.ts",
+    "npx tsx scripts/private-audit/validate-v05b41-history-readonly-runtime-closure.ts",
     "npm run lint",
     "npm run build",
-    "Chrome full browser acceptance"
+    "Chrome DOM.setFileInputFiles runtime acceptance"
   ],
   "commandResults": [
     {
@@ -183,11 +175,7 @@
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05b4-data-center-navigation.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05b4-data-center-usability-ui.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05b41-history-readonly-runtime-closure.ts",
       "status": "PASS"
     },
     {
@@ -199,34 +187,30 @@
       "status": "PASS"
     },
     {
-      "command": "Chrome full browser acceptance",
+      "command": "Chrome DOM.setFileInputFiles runtime acceptance",
       "status": "PASS"
     }
   ],
   "stopConditions": [
-    "B3 dependency is not satisfied by an immutable task completion record.",
-    "B3 requiredCommands are not all PASS.",
+    "B4 dependency is not satisfied by an immutable task completion record.",
+    "B4 requiredCommands are not all PASS.",
     "PRE-FLIGHT does not pass before implementation edits.",
     "Git root is not the ecommerce-platform-optimized repository.",
     "The working tree is not clean before starting implementation.",
-    "V0.5A is not complete or V0.5B is not pending.",
-    "B1-R1 batch import baseline is not valid.",
-    "B2 import history baseline is not valid.",
-    "B3 data quality baseline is not valid.",
     "The implementation would need to modify V0.5A frozen domain, validation, repository, migration, or persistence code.",
     "The implementation would need to modify B1 import service core or lib/v05/import core.",
-    "The implementation would need to modify B2 import-history core algorithms.",
+    "The implementation would need to modify B2 import-history business algorithms.",
     "The implementation would need to modify B3 data-quality business algorithms.",
-    "The implementation would need to modify home, store-board, series-board, product-board, targets, raw-data, storage, Tmall bottom logic, package files, private samples, or fixed governance documents.",
-    "The data-center navigation would require localStorage or sessionStorage context persistence.",
-    "The data-center navigation would need to pass file names, raw rows, preview rows, original warnings, issue text, dataset objects, or after-sales sensitive values in URLs.",
-    "The quality, history, or upload pages would need delete, rollback, overwrite, force overwrite, or manual edit actions.",
-    "The browser acceptance would need to touch or delete production database airburg-v05.",
+    "The implementation would need to modify home, store-board, series-board, product-board, targets, raw-data, package files, private samples, or fixed governance documents.",
+    "History page would need a delete, rollback, overwrite, force overwrite, manual edit, or reimport action.",
+    "Quality page reimport entry disappears or no longer preserves platform/store/batch context.",
+    "Chrome runtime evidence cannot select files through the real upload input.",
+    "Browser acceptance would touch or delete production database airburg-v05.",
     "Privacy or numeric safety checks fail.",
     "lint or build fails.",
     "The working tree contains unexplained out-of-scope changes."
   ],
-  "startedAt": "2026-06-22T07:15:31+08:00",
-  "completedAt": "2026-06-22T07:33:32+08:00",
+  "startedAt": "2026-06-22T08:00:40+08:00",
+  "completedAt": "2026-06-22T08:26:00+08:00",
   "status": "complete"
 }
