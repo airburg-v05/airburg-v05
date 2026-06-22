@@ -1,0 +1,67 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5F_3_TARGET_CONTEXT_AND_BOARD_INTEGRATION",
+  "stage": "V0.5F-3",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5F_3_TARGET_CONTEXT_AND_BOARD_INTEGRATION.json",
+  "authorizationHash": "7c6a122bf7229b69e6bbb0b083b37a1f9f0c5bd76ca9e4e0b4984aefb7a42c85",
+  "authorizationCommit": "ca532a20cc4b4396aa46d3b6573589cfd9104300",
+  "completionCommit": "6be738eeaa239fa8f061cd26c13ea7eb67f05466",
+  "completedAt": "2026-06-23T03:26:59+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+    "npx tsx scripts/private-audit/validate-v05f3-target-context-board-integration-data.ts",
+    "npx tsx scripts/private-audit/validate-v05f3-target-context-board-integration-ui.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05f3-target-context-board-integration-data.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05f3-target-context-board-integration-ui.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-23T03:29:31+08:00"
+}
