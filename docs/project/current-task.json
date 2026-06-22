@@ -1,8 +1,8 @@
 {
-  "taskId": "V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS",
-  "stage": "V0.5F-0",
+  "taskId": "V0.5F_1_R1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER",
+  "stage": "V0.5F-1-R1",
   "dependsOn": [
-    "V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE"
+    "V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS"
   ],
   "governanceContractHash": "a7099a6dc7aca9029412460946f41f34fefd7d89d45aa88da323c3f32e472e7c",
   "requiredDocuments": [
@@ -16,9 +16,12 @@
     "docs/roadmap/V05_EXECUTION_SEQUENCE.md",
     "docs/quality/V05_ACCEPTANCE_GATES.md",
     "docs/decisions/ADR-001-platform-and-store-ownership.md",
+    "docs/decisions/ADR-005-explicit-target-parent-hierarchy.md",
+    "docs/architecture/V05F_TARGET_HIERARCHY_CONTRACT.md",
+    "docs/architecture/v0.5f-target-hierarchy-contract.json",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
-    "docs/project/task-completions/V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-completions/V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
@@ -27,47 +30,56 @@
     "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
   ],
   "allowedModifyPaths": [
-    "docs/decisions/ADR-005-explicit-target-parent-hierarchy.md",
-    "docs/architecture/V05F_TARGET_HIERARCHY_CONTRACT.md",
-    "docs/architecture/v0.5f-target-hierarchy-contract.json",
-    "lib/v05/target-hierarchy/**",
-    "lib/v05/domain/models.ts",
-    "lib/v05/domain/keys.ts",
-    "lib/v05/validation/records.ts",
-    "lib/v05/validation/dataset.ts",
-    "lib/v05/repositories/contracts.ts",
-    "lib/v05/repositories/memory-adapter.ts",
-    "lib/v05/persistence/**",
+    "app/(workspace)/targets/page.tsx",
+    "components/targets/v05/**",
+    "lib/v05/target-management/**",
     "lib/v05/index.ts",
-    "scripts/private-audit/validate-v05f0-target-hierarchy-contract.ts",
-    "scripts/private-audit/validate-v05f0-target-hierarchy-persistence.ts",
+    "scripts/private-audit/validate-v05f1r1-target-management-data.ts",
+    "scripts/private-audit/validate-v05f1r1-target-management-ui.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS.json",
-    "docs/project/task-completions/V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS.json"
+    "docs/project/task-authorizations/V0.5F_1_R1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER.json",
+    "docs/project/task-completions/V0.5F_1_R1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER.json"
   ],
   "forbiddenModifyPaths": [
-    "app/**",
-    "components/**",
+    "app/(workspace)/home/**",
+    "app/(workspace)/store-board/**",
+    "app/(workspace)/series-board/**",
+    "app/(workspace)/product-board/**",
+    "app/(workspace)/upload/**",
+    "app/(workspace)/raw-data/**",
+    "components/home/**",
+    "components/store-board/**",
+    "components/series-board/**",
+    "components/product-board/**",
+    "components/upload/**",
     "lib/v05/import/**",
-    "lib/v05/focus-management/**",
+    "lib/v05/import-history/**",
+    "lib/v05/data-quality/**",
+    "lib/v05/data-center/**",
     "lib/v05/home-command-center/**",
     "lib/v05/store-board/**",
     "lib/v05/series-board/**",
     "lib/v05/product-board/**",
+    "lib/v05/focus-management/**",
+    "lib/v05/domain/**",
+    "lib/v05/validation/**",
+    "lib/v05/repositories/**",
+    "lib/v05/migration/**",
+    "lib/v05/persistence/**",
+    "lib/v05/target-hierarchy/**",
     "lib/storage/**",
     "lib/tmall/**",
-    "types/tmall.ts",
-    "types/tmall-targets.ts",
+    "types/**",
     "package.json",
     "package-lock.json",
     "private-samples/**",
-    "docs/releases/v0.5a-platform-store-data-foundation-freeze.md",
-    "docs/releases/v0.5b-data-center-freeze.md",
-    "docs/releases/v0.5c-home-command-center-freeze.md",
-    "docs/releases/v0.5d-multi-store-board-freeze.md",
-    "docs/releases/v0.5e-series-tracked-product-focus-freeze.md",
-    "docs/project/task-completions/V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-authorizations/V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
+    "docs/releases/**",
+    "docs/product/**",
+    "docs/design/**",
+    "docs/roadmap/**",
+    "docs/quality/**",
+    "docs/architecture/**",
+    "docs/decisions/**"
   ],
   "requiredCommands": [
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
@@ -76,28 +88,11 @@
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
     "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "npx tsx scripts/private-audit/validate-v05f0-target-hierarchy-contract.ts",
-    "npx tsx scripts/private-audit/validate-v05f0-target-hierarchy-persistence.ts",
+    "npx tsx scripts/private-audit/validate-v05f1r1-target-management-data.ts",
+    "npx tsx scripts/private-audit/validate-v05f1r1-target-management-ui.ts",
     "npm run lint",
     "npm run build"
   ],
-  "stopConditions": [
-    "V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
-    "V0.5A, V0.5B, V0.5C, V0.5D, or V0.5E is not complete, or V0.5F is not pending.",
-    "The original V0.5F_1 BLOCKED history would need to be rewritten.",
-    "Completing this task would require modifying app pages, components, target UI, four-source parsing, business view models, package files, private samples, or fixed governance documents.",
-    "The target hierarchy cannot be represented with TargetRecord.parentTargetId without adding a new IndexedDB object store or increasing databaseVersion.",
-    "Existing persistence drops parentTargetId and cannot be minimally fixed within authorized persistence files.",
-    "The implementation would need to infer parent-child target relationships from scope, name, metricKey, period, or targetValue."
-  ],
-  "baselineCommit": "f260b5b0643a33e9efc306ef6118e94a00a2a6ce",
-  "authorizationFile": "docs/project/task-authorizations/V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS.json",
-  "authorizationHash": "fedb31c4dd58a7c8dd761ae8de4c6b69bbcfda47ddccec6ec03fdf3cf15171cc",
-  "authorizationCommit": "013ed8d3b3680887abeb41a8c3f3286401faa39b",
-  "authorizedContractVersion": "v0.5-task-authorization-v1",
-  "startedAt": "2026-06-23T01:57:10+08:00",
-  "completedAt": "2026-06-23T02:15:53+08:00",
-  "status": "complete",
   "commandResults": [
     {
       "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
@@ -124,11 +119,11 @@
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05f0-target-hierarchy-contract.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05f1r1-target-management-data.ts",
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05f0-target-hierarchy-persistence.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05f1r1-target-management-ui.ts",
       "status": "PASS"
     },
     {
@@ -139,5 +134,21 @@
       "command": "npm run build",
       "status": "PASS"
     }
-  ]
+  ],
+  "stopConditions": [
+    "V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
+    "V0.5A, V0.5B, V0.5C, V0.5D, or V0.5E is not complete, or V0.5F is not pending.",
+    "Existing public V2 persistence APIs cannot read active dataset or perform prepare/readback/activate without modifying frozen persistence code.",
+    "Existing TargetRecord contract cannot express explicit parentTargetId hierarchy without modifying F0 frozen target hierarchy contracts.",
+    "Implementing the task would require modifying home, boards, upload, raw-data, four-source parsing, target completion-rate formulas, storage structures, package files, private samples, or frozen V0.5A-E code.",
+    "The UI would need to infer parent-child target relationships from scope, name, metricKey, period, targetValue, or ownership instead of explicit user selection."
+  ],
+  "baselineCommit": "b98c57a3d8f537f9b160610249e047cc7f7e32d5",
+  "authorizationFile": "docs/project/task-authorizations/V0.5F_1_R1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER.json",
+  "authorizationHash": "adde0078813f61e18d5f0c03c946150ca90d6e72929629366e6bd07564223205",
+  "authorizationCommit": "ee1cfb3c5a1201dc0749e357f9228c878e74d974",
+  "authorizedContractVersion": "v0.5-task-authorization-v1",
+  "startedAt": "2026-06-23T02:20:01+08:00",
+  "completedAt": null,
+  "status": "in_progress"
 }
