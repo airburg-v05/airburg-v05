@@ -494,6 +494,10 @@ function StoreTargetSummary({ viewModel }: { viewModel: StoreBoardViewModel }) {
 
 function StoreFocusSection({ viewModel }: { viewModel: StoreBoardViewModel }) {
   const [activeTab, setActiveTab] = useState<FocusTabKey>("products");
+  const context = viewModel.storeContext;
+  const managerParams = context
+    ? new URLSearchParams({ platform: context.platformCode, storeId: context.storeId }).toString()
+    : "";
   return (
     <SectionCard
       title="店铺表现与优先入口"
@@ -508,6 +512,25 @@ function StoreFocusSection({ viewModel }: { viewModel: StoreBoardViewModel }) {
     >
       <div className="space-y-4">
         <StoreTargetSummary viewModel={viewModel} />
+
+        {context ? (
+          <div className="grid gap-3 rounded-xl border border-slate-100 bg-slate-50 p-4 md:grid-cols-2">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-slate-900">自定义关注对象</p>
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+                系列和重点商品由用户主动维护，按当前店铺隔离保存。
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row md:justify-end">
+              <Link href={`/series-board/manage?${managerParams}`} className="secondary-button justify-center">
+                管理系列
+              </Link>
+              <Link href={`/product-board/tracked?${managerParams}`} className="secondary-button justify-center">
+                管理重点商品
+              </Link>
+            </div>
+          </div>
+        ) : null}
 
         <div className="flex max-w-full gap-2 overflow-x-auto pb-1" role="tablist" aria-label="店铺运营关注">
           {FOCUS_TABS.map((tab) => (

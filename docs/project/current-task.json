@@ -1,8 +1,8 @@
 {
-  "taskId": "V0.5D_3_1_FREEZE_METADATA_CONSISTENCY_CLOSURE",
-  "stage": "V0.5D-3.1",
+  "taskId": "V0.5E_1_STORE_SCOPED_SERIES_AND_TRACKED_PRODUCT_MANAGEMENT",
+  "stage": "V0.5E-1",
   "dependsOn": [
-    "V0.5D_3_FINAL_REGRESSION_AND_STAGE_FREEZE"
+    "V0.5D_3_1_FREEZE_METADATA_CONSISTENCY_CLOSURE"
   ],
   "governanceContractHash": "7e23a0e70eb9b1202bed569de98ee2fc867c042cd84684aad38b19771709c634",
   "requiredDocuments": [
@@ -18,25 +18,45 @@
     "docs/decisions/ADR-001-platform-and-store-ownership.md",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
+    "docs/project/task-completions/V0.5D_3_1_FREEZE_METADATA_CONSISTENCY_CLOSURE.json",
     "docs/releases/v0.5d-multi-store-board-freeze.md",
-    "docs/project/task-completions/V0.5D_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
-    "scripts/private-audit/validate-v05-governance-lock.ts"
+    "scripts/private-audit/validate-v05-governance-lock.ts",
+    "scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
   ],
   "allowedModifyPaths": [
-    "docs/releases/v0.5d-multi-store-board-freeze.md",
+    "app/(workspace)/series-board/manage/page.tsx",
+    "app/(workspace)/product-board/tracked/page.tsx",
+    "components/focus-management/**",
+    "components/store-board/v05/**",
+    "lib/v05/focus-management/**",
+    "lib/v05/index.ts",
+    "scripts/private-audit/validate-v05e1-series-tracked-product-data.ts",
+    "scripts/private-audit/validate-v05e1-series-tracked-product-ui.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5D_3_1_FREEZE_METADATA_CONSISTENCY_CLOSURE.json",
-    "docs/project/task-authorizations/V0.5D_3_1_FREEZE_METADATA_CONSISTENCY_CLOSURE_R1.json",
-    "docs/project/task-completions/V0.5D_3_1_FREEZE_METADATA_CONSISTENCY_CLOSURE.json",
-    "scripts/private-audit/validate-v05d31-freeze-metadata-consistency.ts"
+    "docs/project/task-authorizations/V0.5E_1_STORE_SCOPED_SERIES_AND_TRACKED_PRODUCT_MANAGEMENT.json",
+    "docs/project/task-completions/V0.5E_1_STORE_SCOPED_SERIES_AND_TRACKED_PRODUCT_MANAGEMENT.json"
   ],
   "forbiddenModifyPaths": [
-    "app/**",
-    "components/**",
-    "lib/**",
+    "app/(workspace)/upload/**",
+    "app/(workspace)/home/**",
+    "app/(workspace)/store-board/page.tsx",
+    "app/(workspace)/series-board/page.tsx",
+    "app/(workspace)/product-board/page.tsx",
+    "app/(workspace)/targets/**",
+    "app/(workspace)/raw-data/**",
+    "lib/v05/import/**",
+    "lib/v05/store-board/**",
+    "lib/v05/domain/**",
+    "lib/v05/validation/**",
+    "lib/v05/repositories/**",
+    "lib/v05/migration/**",
+    "lib/v05/persistence/**",
+    "lib/storage/**",
+    "lib/tmall/**",
     "types/**",
     "package.json",
     "package-lock.json",
@@ -44,7 +64,7 @@
     "docs/releases/v0.5a-platform-store-data-foundation-freeze.md",
     "docs/releases/v0.5b-data-center-freeze.md",
     "docs/releases/v0.5c-home-command-center-freeze.md",
-    "docs/project/task-completions/V0.5D_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/releases/v0.5d-multi-store-board-freeze.md",
     "docs/product/**",
     "docs/design/**",
     "docs/roadmap/**",
@@ -57,52 +77,78 @@
     "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
-    "npx tsx scripts/private-audit/validate-v05d31-freeze-metadata-consistency.ts",
+    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+    "npx tsx scripts/private-audit/validate-v05e1-series-tracked-product-data.ts",
+    "npx tsx scripts/private-audit/validate-v05e1-series-tracked-product-ui.ts",
     "npm run lint",
     "npm run build"
   ],
   "stopConditions": [
-    "V0.5D_3_FINAL_REGRESSION_AND_STAGE_FREEZE dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
-    "D3 completion record is missing, not complete, modified, or its commit is not a HEAD ancestor.",
-    "V0.5D lock status is not complete or V0.5E lock status is not pending.",
-    "The requested metadata closure requires modifying business code, package files, private samples, or historical D3 completion records."
+    "V0.5D_3_1_FREEZE_METADATA_CONSISTENCY_CLOSURE dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
+    "V0.5A, V0.5B, V0.5C, or V0.5D is not complete, or V0.5E is not pending.",
+    "Existing public V2 persistence or repository APIs cannot safely write SeriesRecord or TrackedProductRecord atomically.",
+    "Implementing the task would require modifying V0.5A-D frozen code, four-source parsing, target/trend rules, storage structures, package files, or private samples.",
+    "The management pages cannot preserve store isolation, legacy keys, and other dataset facts."
   ],
-  "baselineCommit": "fe10a44b6f8f8194d02ac85d7a04111bd59c50ea",
-  "authorizationFile": "docs/project/task-authorizations/V0.5D_3_1_FREEZE_METADATA_CONSISTENCY_CLOSURE_R1.json",
-  "authorizationHash": "7975139a91b878ed98429e4931a63658075a8a891a83a377beeae978db7188db",
-  "authorizationCommit": "4a14d7bdfe25999dff5e27561f615c38e9f20ab0",
+  "baselineCommit": "f19760cb6bcc1650d5b18cbbccbefa4caf9a5283",
+  "authorizationFile": "docs/project/task-authorizations/V0.5E_1_STORE_SCOPED_SERIES_AND_TRACKED_PRODUCT_MANAGEMENT.json",
+  "authorizationHash": "0ef8ab037458ed685a7f76646d24d61b344ae6137bb89c1e69e6d8c0746bd1b0",
+  "authorizationCommit": "8c80213a5d5e572843e5412b5736072c2336a2f0",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
   "commandResults": [
     {
       "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
-      "status": "PASS"
+      "status": "PASS",
+      "evidence": "/tmp/v05e1-auth-postbrowser.json"
     },
     {
       "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
-      "status": "PASS"
+      "status": "PASS",
+      "evidence": "/tmp/v05e1-ledger-final.json"
     },
     {
       "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
-      "status": "PASS"
+      "status": "PASS",
+      "evidence": "/tmp/v05e1-preflight-final.json"
     },
     {
       "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
-      "status": "PASS"
+      "status": "PASS",
+      "evidence": "/tmp/v05e1-governance-final.json"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05d31-freeze-metadata-consistency.ts",
-      "status": "PASS"
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS",
+      "evidence": "/tmp/v05e1-a32-final.json"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+      "status": "PASS",
+      "evidence": "/tmp/v05e1-a41-final.json"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05e1-series-tracked-product-data.ts",
+      "status": "PASS",
+      "evidence": "/tmp/v05e1-data-final.json"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05e1-series-tracked-product-ui.ts",
+      "status": "PASS",
+      "evidence": "/tmp/v05e1-ui-final.json"
     },
     {
       "command": "npm run lint",
-      "status": "PASS"
+      "status": "PASS",
+      "evidence": "/tmp/v05e1-lint-final.txt"
     },
     {
       "command": "npm run build",
-      "status": "PASS"
+      "status": "PASS",
+      "evidence": "/tmp/v05e1-build-final.txt"
     }
   ],
-  "startedAt": "2026-06-22T20:35:07+08:00",
-  "completedAt": "2026-06-22T20:43:00+08:00",
+  "startedAt": "2026-06-22T21:01:00+08:00",
+  "completedAt": "2026-06-22T21:57:23+08:00",
   "status": "complete"
 }

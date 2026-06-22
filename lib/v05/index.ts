@@ -11,4 +11,5 @@ export * from "./migration";
 export * from "./persistence";
 export * from "./data-center";
 export * from "./home-command-center";
+export * as focusManagement from "./focus-management";
 export * as storeBoard from "./store-board";
