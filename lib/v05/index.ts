@@ -10,3 +10,4 @@ export * from "./repositories/memory-adapter";
 export * from "./migration";
 export * from "./persistence";
 export * from "./data-center";
+export * from "./home-command-center";
