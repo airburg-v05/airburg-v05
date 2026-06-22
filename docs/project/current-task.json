@@ -1,12 +1,12 @@
 {
-  "taskId": "V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE",
-  "stage": "V0.5B-4.1",
+  "taskId": "V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE",
+  "stage": "V0.5B-5",
   "dependsOn": [
-    "V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE"
+    "V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE"
   ],
-  "baselineCommit": "bb07ae5319b0fb02acd201a30455591f38603043",
-  "authorizationFile": "docs/project/task-authorizations/V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE.json",
-  "authorizationHash": "d3ab767d4506b29fd6c7e17740ec803ecb0171b5e25e2c91295854b3fa2073de",
+  "baselineCommit": "660688ceb3a1d93b6fb094c6d04060a44a1d94ba",
+  "authorizationFile": "docs/project/task-authorizations/V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "authorizationHash": "13fdb32d33cb6a3d0a92b9ead5df9b13f3010a98bcd3f33844ec22242e94eb76",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
   "governanceContractHash": "ada25bae453aa0ad1f3a8807aaf0349aa696d827d2d3152940b120239c80c008",
   "requiredDocuments": [
@@ -22,60 +22,31 @@
     "docs/decisions/ADR-001-platform-and-store-ownership.md",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
-    "docs/project/task-authorizations/V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE.json",
+    "docs/project/task-completions/V0.5B_1_R1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
+    "docs/project/task-completions/V0.5B_2_IMPORT_HISTORY_AND_BATCH_TRACEABILITY_CENTER.json",
+    "docs/project/task-completions/V0.5B_3_DATA_QUALITY_AND_SAFE_REIMPORT_CENTER.json",
     "docs/project/task-completions/V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE.json",
+    "docs/project/task-completions/V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
     "scripts/private-audit/validate-v05-governance-lock.ts",
     "scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-    "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "scripts/private-audit/validate-v05b1-platform-store-batch-import.ts",
-    "scripts/private-audit/validate-v05b1-upload-page-ui.ts",
-    "scripts/private-audit/validate-v05b2-import-history-data.ts",
-    "scripts/private-audit/validate-v05b2-import-history-ui.ts",
-    "scripts/private-audit/validate-v05b3-data-quality.ts",
-    "scripts/private-audit/validate-v05b3-safe-reimport-ui.ts",
-    "scripts/private-audit/validate-v05b4-data-center-navigation.ts",
-    "scripts/private-audit/validate-v05b4-data-center-usability-ui.ts"
+    "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
   ],
   "allowedModifyPaths": [
-    "app/(workspace)/upload/history/page.tsx",
-    "components/upload/import-history/**",
-    "scripts/private-audit/validate-v05b41-history-readonly-runtime-closure.ts",
+    "docs/releases/v0.5b-data-center-freeze.md",
+    "docs/project/v0.5-lock.json",
+    "scripts/private-audit/validate-v05b-final-regression-and-freeze.ts",
+    "scripts/private-audit/validate-v05b-final-browser-runtime.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE.json",
-    "docs/project/task-completions/V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE.json"
+    "docs/project/task-authorizations/V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-completions/V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
   ],
   "forbiddenModifyPaths": [
-    "app/(workspace)/home/**",
-    "app/(workspace)/store-board/**",
-    "app/(workspace)/series-board/**",
-    "app/(workspace)/product-board/**",
-    "app/(workspace)/targets/**",
-    "app/(workspace)/raw-data/**",
-    "app/(workspace)/upload/page.tsx",
-    "app/(workspace)/upload/quality/page.tsx",
-    "components/home/**",
-    "components/store-board/**",
-    "components/series-board/**",
-    "components/product-board/**",
-    "components/upload/batch-import/**",
-    "components/upload/data-quality/**",
-    "components/upload/data-center/**",
-    "components/upload/upload-data-quality-center.tsx",
-    "components/upload/upload-source-status-card.tsx",
-    "lib/storage/**",
-    "lib/tmall/**",
-    "lib/v05/domain/**",
-    "lib/v05/validation/**",
-    "lib/v05/repositories/**",
-    "lib/v05/migration/**",
-    "lib/v05/persistence/**",
-    "lib/v05/import/**",
-    "lib/v05/import-history/**",
-    "lib/v05/data-quality/**",
-    "lib/v05/data-center/**",
+    "app/**",
+    "components/**",
+    "lib/**",
     "types/**",
     "package.json",
     "package-lock.json",
@@ -87,10 +58,19 @@
     "docs/quality/**",
     "docs/architecture/**",
     "docs/decisions/**",
+    "docs/audits/**",
     "docs/project/V05_TASK_CONTRACT.md",
-    "docs/project/v0.5-lock.json",
+    "docs/project/task-authorizations/V0.5B_1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
+    "docs/project/task-authorizations/V0.5B_1_R1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
+    "docs/project/task-authorizations/V0.5B_2_IMPORT_HISTORY_AND_BATCH_TRACEABILITY_CENTER.json",
+    "docs/project/task-authorizations/V0.5B_3_DATA_QUALITY_AND_SAFE_REIMPORT_CENTER.json",
     "docs/project/task-authorizations/V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE.json",
+    "docs/project/task-authorizations/V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE.json",
+    "docs/project/task-completions/V0.5B_1_R1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
+    "docs/project/task-completions/V0.5B_2_IMPORT_HISTORY_AND_BATCH_TRACEABILITY_CENTER.json",
+    "docs/project/task-completions/V0.5B_3_DATA_QUALITY_AND_SAFE_REIMPORT_CENTER.json",
     "docs/project/task-completions/V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE.json",
+    "docs/project/task-completions/V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
@@ -105,7 +85,8 @@
     "scripts/private-audit/validate-v05b3-data-quality.ts",
     "scripts/private-audit/validate-v05b3-safe-reimport-ui.ts",
     "scripts/private-audit/validate-v05b4-data-center-navigation.ts",
-    "scripts/private-audit/validate-v05b4-data-center-usability-ui.ts"
+    "scripts/private-audit/validate-v05b4-data-center-usability-ui.ts",
+    "scripts/private-audit/validate-v05b41-history-readonly-runtime-closure.ts"
   ],
   "requiredCommands": [
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
@@ -114,16 +95,10 @@
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
     "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "npx tsx scripts/private-audit/validate-v05b1-platform-store-batch-import.ts",
-    "npx tsx scripts/private-audit/validate-v05b1-upload-page-ui.ts",
-    "npx tsx scripts/private-audit/validate-v05b2-import-history-data.ts",
-    "npx tsx scripts/private-audit/validate-v05b2-import-history-ui.ts",
-    "npx tsx scripts/private-audit/validate-v05b3-data-quality.ts",
-    "npx tsx scripts/private-audit/validate-v05b3-safe-reimport-ui.ts",
-    "npx tsx scripts/private-audit/validate-v05b41-history-readonly-runtime-closure.ts",
+    "npx tsx scripts/private-audit/validate-v05b-final-browser-runtime.ts",
+    "npx tsx scripts/private-audit/validate-v05b-final-regression-and-freeze.ts",
     "npm run lint",
-    "npm run build",
-    "Chrome DOM.setFileInputFiles runtime acceptance"
+    "npm run build"
   ],
   "commandResults": [
     {
@@ -151,31 +126,11 @@
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05b1-platform-store-batch-import.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05b-final-browser-runtime.ts",
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05b1-upload-page-ui.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05b2-import-history-data.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05b2-import-history-ui.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05b3-data-quality.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05b3-safe-reimport-ui.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05b41-history-readonly-runtime-closure.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05b-final-regression-and-freeze.ts",
       "status": "PASS"
     },
     {
@@ -185,32 +140,24 @@
     {
       "command": "npm run build",
       "status": "PASS"
-    },
-    {
-      "command": "Chrome DOM.setFileInputFiles runtime acceptance",
-      "status": "PASS"
     }
   ],
   "stopConditions": [
-    "B4 dependency is not satisfied by an immutable task completion record.",
-    "B4 requiredCommands are not all PASS.",
-    "PRE-FLIGHT does not pass before implementation edits.",
-    "Git root is not the ecommerce-platform-optimized repository.",
+    "B4.1 dependency is not satisfied by an immutable task completion record.",
+    "Any B1-R1, B2, B3, B4, or B4.1 completion record is missing, changed, duplicated, non-complete, or has non-PASS requiredCommands.",
+    "PRE-FLIGHT does not pass before editing freeze materials.",
     "The working tree is not clean before starting implementation.",
-    "The implementation would need to modify V0.5A frozen domain, validation, repository, migration, or persistence code.",
-    "The implementation would need to modify B1 import service core or lib/v05/import core.",
-    "The implementation would need to modify B2 import-history business algorithms.",
-    "The implementation would need to modify B3 data-quality business algorithms.",
-    "The implementation would need to modify home, store-board, series-board, product-board, targets, raw-data, package files, private samples, or fixed governance documents.",
-    "History page would need a delete, rollback, overwrite, force overwrite, manual edit, or reimport action.",
-    "Quality page reimport entry disappears or no longer preserves platform/store/batch context.",
-    "Chrome runtime evidence cannot select files through the real upload input.",
-    "Browser acceptance would touch or delete production database airburg-v05.",
+    "V0.5A is not complete, V0.5B is not pending, or V0.5C is not pending before freeze edits.",
+    "The current task is not recognized as an authorized freeze task for V0.5B.",
+    "The stage transition cannot be validated as V0.5B pending to complete.",
+    "The implementation would need to modify app, components, lib, types, package files, private samples, fixed product or architecture documents, ADRs, historical scripts, historical authorization records, or historical completion records.",
+    "A real defect is found in import, history, quality, safe reimport, navigation, storage activation, multi-store isolation, privacy, mobile, or legacy compatibility.",
+    "The final browser runtime would need to touch or delete production database airburg-v05.",
     "Privacy or numeric safety checks fail.",
     "lint or build fails.",
     "The working tree contains unexplained out-of-scope changes."
   ],
-  "startedAt": "2026-06-22T08:00:40+08:00",
-  "completedAt": "2026-06-22T08:26:00+08:00",
+  "startedAt": "2026-06-22T08:16:00+08:00",
+  "completedAt": "2026-06-22T08:31:00+08:00",
   "status": "complete"
 }

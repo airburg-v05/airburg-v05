@@ -237,7 +237,7 @@
     "V0.5A-0.1": "complete",
     "V0.5A-0.2": "complete",
     "V0.5A": "complete",
-    "V0.5B": "pending",
+    "V0.5B": "complete",
     "V0.5C": "pending",
     "V0.5D": "pending",
     "V0.5E": "pending",
@@ -246,5 +246,10 @@
   },
   "v05aCompletedAt": "2026-06-22T02:12:00+08:00",
   "v05aFreezeDocument": "docs/releases/v0.5a-platform-store-data-foundation-freeze.md",
-  "v05aFinalCompletionRecord": "docs/project/task-completions/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
+  "v05aFinalCompletionRecord": "docs/project/task-completions/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "v05bCompletedAt": "2026-06-22T08:31:00+08:00",
+  "v05bFreezeDocument": "docs/releases/v0.5b-data-center-freeze.md",
+  "v05bFinalCompletionRecord": "docs/project/task-completions/V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "nextStage": "V0.5C",
+  "nextTask": "V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT"
 }
