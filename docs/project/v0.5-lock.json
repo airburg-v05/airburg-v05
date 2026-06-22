@@ -133,7 +133,7 @@
       "dependsOn": [
         "V0.5D"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "V0.5F",
@@ -240,7 +240,7 @@
     "V0.5B": "complete",
     "V0.5C": "complete",
     "V0.5D": "complete",
-    "V0.5E": "pending",
+    "V0.5E": "complete",
     "V0.5F": "pending",
     "V0.5G": "pending"
   },
@@ -256,6 +256,9 @@
   "v05dCompletedAt": "2026-06-22T20:20:00+08:00",
   "v05dFreezeDocument": "docs/releases/v0.5d-multi-store-board-freeze.md",
   "v05dFinalCompletionRecord": "docs/project/task-completions/V0.5D_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-  "nextStage": "V0.5E",
-  "nextTask": "V0.5E_1_STORE_SCOPED_SERIES_AND_TRACKED_PRODUCT_MANAGEMENT"
+  "v05eCompletedAt": "2026-06-23T01:13:29+08:00",
+  "v05eFreezeDocument": "docs/releases/v0.5e-series-tracked-product-focus-freeze.md",
+  "v05eFinalCompletionRecord": "docs/project/task-completions/V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "nextStage": "V0.5F",
+  "nextTask": "V0.5F_1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER"
 }
