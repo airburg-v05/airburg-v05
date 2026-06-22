@@ -55,20 +55,9 @@ export function HomeStorePerformance({ viewModel }: { viewModel: HomeCommandCent
                           查看店铺
                         </Link>
                       ) : (
-                        <>
-                          <button
-                            type="button"
-                            disabled
-                            aria-disabled="true"
-                            title="多店铺店铺看板将在后续阶段升级"
-                            className="inline-flex min-h-9 cursor-not-allowed items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-400"
-                          >
-                            店铺看板待升级
-                          </button>
-                          <Link href={store.historyHref} className="text-xs font-semibold text-blue-700 hover:text-blue-800">
-                            查看导入记录
-                          </Link>
-                        </>
+                        <Link href={store.historyHref} className="text-xs font-semibold text-blue-700 hover:text-blue-800">
+                          查看导入记录
+                        </Link>
                       )}
                     </div>
                   </td>

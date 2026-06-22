@@ -24,15 +24,11 @@ const PLATFORM_LABELS: Record<PlatformCode, string> = {
 const storeKey = (store: Pick<StoreRecord, "platformCode" | "storeId">): string =>
   `${store.platformCode}:${store.storeId}`;
 
-const DEFAULT_TMAIL_STORE_ID = "tmall-default-store";
-
 export const platformLabel = (platformCode: PlatformCode): string =>
   PLATFORM_LABELS[platformCode] ?? platformCode;
 
 const storeBoardHref = (store: Pick<StoreRecord, "platformCode" | "storeId">): string | null =>
-  store.platformCode === "tmall" && store.storeId === DEFAULT_TMAIL_STORE_ID
-    ? `/store-board?platform=tmall&storeId=${DEFAULT_TMAIL_STORE_ID}`
-    : null;
+  `/store-board?platform=${encodeURIComponent(store.platformCode)}&storeId=${encodeURIComponent(store.storeId)}`;
 
 const latestBatchIdForStore = (dataset: V2Dataset, store: Pick<StoreRecord, "platformCode" | "storeId">): string | null =>
   dataset.importBatches

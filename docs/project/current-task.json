@@ -1,8 +1,8 @@
 {
-  "taskId": "V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE",
-  "stage": "V0.5C-3.1",
+  "taskId": "V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT",
+  "stage": "V0.5D-1",
   "dependsOn": [
-    "V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE"
+    "V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE"
   ],
   "governanceContractHash": "1ab7817a47efa3704e45823665a84c102cc5c4004a6e19f20c1ca39a81fb3c30",
   "requiredDocuments": [
@@ -18,43 +18,58 @@
     "docs/decisions/ADR-001-platform-and-store-ownership.md",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
-    "docs/project/task-completions/V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT.json",
-    "docs/project/task-completions/V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE.json",
-    "docs/project/task-completions/V0.5C_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-authorizations/V0.5C_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-completions/V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE.json",
+    "docs/releases/v0.5c-home-command-center-freeze.md",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
-    "scripts/private-audit/validate-v05-governance-lock.ts"
+    "scripts/private-audit/validate-v05-governance-lock.ts",
+    "scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
   ],
   "allowedModifyPaths": [
-    "scripts/private-audit/lib/v05-stage-freeze-policy.ts",
-    "scripts/private-audit/validate-v05-governance-lock.ts",
-    "scripts/private-audit/validate-v05-major-stage-freeze-scope.ts",
-    "scripts/private-audit/validate-v05c3-post-registration-closure.ts",
-    "docs/releases/v0.5c-home-command-center-freeze.md",
+    "app/(workspace)/store-board/page.tsx",
+    "components/store-board/v05/**",
+    "lib/v05/store-board/**",
+    "lib/v05/index.ts",
+    "components/home/v05/home-store-performance.tsx",
+    "lib/v05/home-command-center/contracts.ts",
+    "lib/v05/home-command-center/store-ranking.ts",
+    "lib/v05/home-command-center/build-view-model.ts",
+    "scripts/private-audit/validate-v05d1-store-board-data.ts",
+    "scripts/private-audit/validate-v05d1-store-board-ui.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE.json",
-    "docs/project/task-completions/V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE.json"
+    "docs/project/task-authorizations/V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT.json",
+    "docs/project/task-completions/V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT.json"
   ],
   "forbiddenModifyPaths": [
-    "app/**",
-    "components/**",
-    "lib/**",
+    "app/(workspace)/upload/**",
+    "app/(workspace)/home/page.tsx",
+    "app/(workspace)/series-board/**",
+    "app/(workspace)/product-board/**",
+    "app/(workspace)/targets/**",
+    "app/(workspace)/raw-data/**",
+    "components/upload/**",
+    "components/series-board/**",
+    "components/product-board/**",
+    "lib/v05/import/**",
+    "lib/v05/import-history/**",
+    "lib/v05/data-quality/**",
+    "lib/v05/data-center/**",
+    "lib/v05/domain/**",
+    "lib/v05/validation/**",
+    "lib/v05/repositories/**",
+    "lib/v05/migration/**",
+    "lib/v05/persistence/**",
+    "lib/storage/**",
+    "lib/tmall/**",
     "types/**",
     "package.json",
     "package-lock.json",
     "private-samples/**",
     "docs/releases/v0.5a-platform-store-data-foundation-freeze.md",
     "docs/releases/v0.5b-data-center-freeze.md",
-    "docs/project/task-authorizations/V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT.json",
-    "docs/project/task-authorizations/V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE.json",
-    "docs/project/task-authorizations/V0.5C_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT.json",
-    "docs/project/task-completions/V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE.json",
-    "docs/project/task-completions/V0.5C_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "scripts/private-audit/validate-v05c-final-browser-runtime.ts",
-    "scripts/private-audit/validate-v05c-final-regression-and-freeze.ts",
+    "docs/releases/v0.5c-home-command-center-freeze.md",
     "docs/product/**",
     "docs/design/**",
     "docs/roadmap/**",
@@ -66,23 +81,26 @@
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
     "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
-    "npx tsx scripts/private-audit/validate-v05-major-stage-freeze-scope.ts",
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
-    "npx tsx scripts/private-audit/validate-v05c3-post-registration-closure.ts",
+    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+    "npx tsx scripts/private-audit/validate-v05d1-store-board-data.ts",
+    "npx tsx scripts/private-audit/validate-v05d1-store-board-ui.ts",
     "npm run lint",
     "npm run build"
   ],
   "stopConditions": [
-    "V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE dependency is not satisfied by an immutable completion record.",
-    "C3 authorization, implementation commit, completion record commit, or completion record evidence is missing or modified.",
-    "PRE-FLIGHT does not pass before editing governance scripts.",
-    "Fixing the issue would require modifying homepage, business code, V0.5A/B freeze code, C1/C2/C3 historical records, package files, private samples, or fixed product/architecture/design contracts.",
-    "The current lock cannot remain V0.5A/B/C complete and V0.5D-G pending after the scope fix.",
-    "Major stage freeze scope cannot be validated with pure destructive tests."
+    "V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE dependency is not satisfied by an immutable completion record.",
+    "V0.5A, V0.5B, or V0.5C is not complete, or V0.5D is not pending.",
+    "PRE-FLIGHT does not pass before implementation edits.",
+    "Implementing Store Board requires modifying V0.5A/B/C frozen data rules, domain, persistence, import, migration, validation, storage, tmall parser, package files, private samples, or non-store-board workspace pages.",
+    "The existing public V2 API cannot support safe store-board reads without direct IndexedDB access from the page.",
+    "A non-default store would need to read default legacy data to render.",
+    "Real Chrome store isolation, privacy, mobile, lint, or build validation fails."
   ],
-  "baselineCommit": "e74d12ee517e875c82a9152ffb87d93cbdc21f3a",
-  "authorizationFile": "docs/project/task-authorizations/V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE.json",
-  "authorizationHash": "137ffbcc594f276c554865cde31743b541ed257c67f9e1987f23120c45d13413",
+  "baselineCommit": "b8f948284954dec2e882f3dce068bd1d3c5f89de",
+  "authorizationFile": "docs/project/task-authorizations/V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT.json",
+  "authorizationHash": "a712a874720b9eb95925280f90e0752e22d4bb804a69cc4b365187b9eae99adf",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
   "commandResults": [
     {
@@ -98,15 +116,23 @@
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05-major-stage-freeze-scope.ts",
-      "status": "PASS"
-    },
-    {
       "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05c3-post-registration-closure.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05d1-store-board-data.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05d1-store-board-ui.ts",
       "status": "PASS"
     },
     {
@@ -118,7 +144,7 @@
       "status": "PASS"
     }
   ],
-  "startedAt": "2026-06-22T18:41:00+08:00",
-  "completedAt": "2026-06-22T18:46:00+08:00",
+  "startedAt": "2026-06-22T19:05:00+08:00",
+  "completedAt": "2026-06-22T19:24:07+08:00",
   "status": "complete"
 }
