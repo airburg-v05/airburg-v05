@@ -1,8 +1,8 @@
 {
-  "taskId": "V0.5E_2_STORE_SCOPED_USER_DEFINED_SERIES_BOARD_RELAYOUT",
-  "stage": "V0.5E-2",
+  "taskId": "V0.5E_3_STORE_SCOPED_TRACKED_PRODUCT_BOARD_RELAYOUT",
+  "stage": "V0.5E-3",
   "dependsOn": [
-    "V0.5E_1_STORE_SCOPED_SERIES_AND_TRACKED_PRODUCT_MANAGEMENT"
+    "V0.5E_2_STORE_SCOPED_USER_DEFINED_SERIES_BOARD_RELAYOUT"
   ],
   "governanceContractHash": "7e23a0e70eb9b1202bed569de98ee2fc867c042cd84684aad38b19771709c634",
   "requiredDocuments": [
@@ -19,6 +19,7 @@
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
     "docs/project/task-completions/V0.5E_1_STORE_SCOPED_SERIES_AND_TRACKED_PRODUCT_MANAGEMENT.json",
+    "docs/project/task-completions/V0.5E_2_STORE_SCOPED_USER_DEFINED_SERIES_BOARD_RELAYOUT.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
@@ -27,29 +28,33 @@
     "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
   ],
   "allowedModifyPaths": [
-    "app/(workspace)/series-board/page.tsx",
-    "components/series-board/v05/**",
-    "lib/v05/series-board/**",
+    "app/(workspace)/product-board/page.tsx",
+    "components/product-board/v05/**",
+    "lib/v05/product-board/**",
     "lib/v05/index.ts",
     "components/store-board/v05/**",
-    "scripts/private-audit/validate-v05e2-series-board-data.ts",
-    "scripts/private-audit/validate-v05e2-series-board-ui.ts",
+    "lib/v05/store-board/**",
+    "components/series-board/v05/**",
+    "lib/v05/series-board/**",
+    "components/focus-management/**",
+    "scripts/private-audit/validate-v05e3-tracked-product-board-data.ts",
+    "scripts/private-audit/validate-v05e3-tracked-product-board-ui.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5E_2_STORE_SCOPED_USER_DEFINED_SERIES_BOARD_RELAYOUT.json",
-    "docs/project/task-completions/V0.5E_2_STORE_SCOPED_USER_DEFINED_SERIES_BOARD_RELAYOUT.json"
+    "docs/project/task-authorizations/V0.5E_3_STORE_SCOPED_TRACKED_PRODUCT_BOARD_RELAYOUT.json",
+    "docs/project/task-completions/V0.5E_3_STORE_SCOPED_TRACKED_PRODUCT_BOARD_RELAYOUT.json"
   ],
   "forbiddenModifyPaths": [
     "app/(workspace)/upload/**",
     "app/(workspace)/home/**",
     "app/(workspace)/store-board/page.tsx",
+    "app/(workspace)/series-board/page.tsx",
     "app/(workspace)/series-board/manage/**",
-    "app/(workspace)/product-board/page.tsx",
     "app/(workspace)/product-board/tracked/**",
     "app/(workspace)/targets/**",
     "app/(workspace)/raw-data/**",
     "lib/v05/focus-management/**",
     "lib/v05/import/**",
-    "lib/v05/store-board/**",
+    "lib/v05/data-quality/**",
     "lib/v05/domain/**",
     "lib/v05/validation/**",
     "lib/v05/repositories/**",
@@ -79,24 +84,24 @@
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
     "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "npx tsx scripts/private-audit/validate-v05e1-series-tracked-product-data.ts",
-    "npx tsx scripts/private-audit/validate-v05e1-series-tracked-product-ui.ts",
     "npx tsx scripts/private-audit/validate-v05e2-series-board-data.ts",
     "npx tsx scripts/private-audit/validate-v05e2-series-board-ui.ts",
+    "npx tsx scripts/private-audit/validate-v05e3-tracked-product-board-data.ts",
+    "npx tsx scripts/private-audit/validate-v05e3-tracked-product-board-ui.ts",
     "npm run lint",
     "npm run build"
   ],
   "stopConditions": [
-    "V0.5E_1_STORE_SCOPED_SERIES_AND_TRACKED_PRODUCT_MANAGEMENT dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
+    "V0.5E_2_STORE_SCOPED_USER_DEFINED_SERIES_BOARD_RELAYOUT dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
     "V0.5A, V0.5B, V0.5C, or V0.5D is not complete, or V0.5E is not pending.",
-    "Existing public V2 persistence APIs cannot safely read SeriesRecord, fact records, and TargetRecord for Series Board.",
-    "Implementing the task would require modifying E1 management rules, Product Board, four-source parsing, storage structures, package files, private samples, or V0.5A-D frozen code.",
-    "Series Board cannot preserve platform/store/series isolation without direct IndexedDB access."
+    "Existing public V2 persistence APIs cannot safely read active dataset, TrackedProductRecord, SeriesRecord, fact records, and TargetRecord for Product Board.",
+    "Implementing the task would require modifying E1 management save rules, E2 Series Board business rules, Store Board metrics/target/trend algorithms, four-source parsing, storage structures, package files, private samples, or V0.5A-D frozen code.",
+    "Tracked Product Board cannot preserve platform/store/tracked product isolation without direct IndexedDB access."
   ],
-  "baselineCommit": "c3c32fb71f2d519bcdd435a02091b569ea90ad41",
-  "authorizationFile": "docs/project/task-authorizations/V0.5E_2_STORE_SCOPED_USER_DEFINED_SERIES_BOARD_RELAYOUT.json",
-  "authorizationHash": "903830700ba471013ceefa914c5694e22cd7a69f3d109d16ea57b3c3cac96ff3",
-  "authorizationCommit": "d2b7e1ee3c9df0442160a7230a141db4cade58b5",
+  "baselineCommit": "a0f8b60049fbb04fb1828e014f18d5e7e84dfaf8",
+  "authorizationFile": "docs/project/task-authorizations/V0.5E_3_STORE_SCOPED_TRACKED_PRODUCT_BOARD_RELAYOUT.json",
+  "authorizationHash": "00388d898300e5cf61b3c7b5424192f4fa68ae7319b78af223fa938ae8ee707c",
+  "authorizationCommit": "999fb59e7ab3c14887bc1187adb30c62ca345814",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
   "commandResults": [
     {
@@ -124,19 +129,19 @@
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05e1-series-tracked-product-data.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05e1-series-tracked-product-ui.ts",
-      "status": "PASS"
-    },
-    {
       "command": "npx tsx scripts/private-audit/validate-v05e2-series-board-data.ts",
       "status": "PASS"
     },
     {
       "command": "npx tsx scripts/private-audit/validate-v05e2-series-board-ui.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05e3-tracked-product-board-data.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05e3-tracked-product-board-ui.ts",
       "status": "PASS"
     },
     {
@@ -148,7 +153,7 @@
       "status": "PASS"
     }
   ],
-  "startedAt": "2026-06-22T23:22:00+08:00",
-  "completedAt": "2026-06-22T23:57:16+08:00",
+  "startedAt": "2026-06-23T00:12:00+08:00",
+  "completedAt": "2026-06-23T00:54:11+08:00",
   "status": "complete"
 }

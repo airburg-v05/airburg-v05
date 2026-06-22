@@ -142,6 +142,7 @@ export interface SeriesBoardProductRow {
   adSpend: number | null;
   adRoi: number | null;
   refundAmount: number | null;
+  trackedProductId: string | null;
   productBoardHref: string | null;
   fallbackHref: string;
 }

@@ -190,6 +190,12 @@ export const buildV2StoreBoardViewModel = ({
   const scopedSeries = dataset.series.filter(
     (item) => item.platformCode === platformCode && item.storeId === storeId,
   );
+  const trackedByProductId = new Map(
+    dataset.trackedProducts
+      .filter((item) => item.status === "active" && item.platformCode === platformCode && item.storeId === storeId)
+      .map((item) => [item.productId, item]),
+  );
+  const manageTrackedHref = `/product-board/tracked?${new URLSearchParams({ platform: platformCode, storeId }).toString()}`;
 
   return {
     mode: "v2_valid",
@@ -213,7 +219,21 @@ export const buildV2StoreBoardViewModel = ({
       platformCode,
       storeId,
     }),
-    productTop: buildV2ProductTop({ businessFacts, adProductFacts }),
+    productTop: buildV2ProductTop({ businessFacts, adProductFacts }).map((product) => {
+      const tracked = trackedByProductId.get(product.productId) ?? null;
+      return {
+        ...product,
+        trackedProductId: tracked?.trackedProductId ?? null,
+        productBoardHref: tracked
+          ? `/product-board?${new URLSearchParams({
+            platform: platformCode,
+            storeId,
+            trackedProductId: tracked.trackedProductId,
+          }).toString()}`
+          : null,
+        manageTrackedHref,
+      };
+    }),
     seriesProgress: buildV2StoreSeriesProgress({
       series: scopedSeries,
       businessFacts,

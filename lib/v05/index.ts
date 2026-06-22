@@ -14,3 +14,4 @@ export * from "./home-command-center";
 export * as focusManagement from "./focus-management";
 export * as storeBoard from "./store-board";
 export * as seriesBoard from "./series-board";
+export * as productBoard from "./product-board";

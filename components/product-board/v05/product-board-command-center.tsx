@@ -1,43 +1,52 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import type {
-  SeriesBoardMetricKey,
-  SeriesBoardPeriod,
-  SeriesBoardViewModel,
-} from "@/lib/v05/series-board";
+  ProductBoardMetricKey,
+  ProductBoardPeriod,
+  ProductBoardViewModel,
+} from "@/lib/v05/product-board";
 import {
   formatInteger,
   formatMoney,
   formatPercent,
+  formatProductTargetMetricValue,
   formatRoi,
-  formatSeriesTargetMetricValue,
-} from "@/lib/v05/series-board";
+} from "@/lib/v05/product-board";
 import { metricValueOfPoint } from "@/lib/v05/home-command-center";
 import { SectionCard } from "@/components/ui/section-card";
 import { StatusPill } from "@/components/ui/status-pill";
-import { SeriesBoardSafeState } from "./series-board-safe-state";
+import { ProductBoardSafeState } from "./product-board-safe-state";
 
-const PERIOD_OPTIONS: Array<{ key: SeriesBoardPeriod; label: string }> = [
+const PERIOD_OPTIONS: Array<{ key: ProductBoardPeriod; label: string }> = [
   { key: "day", label: "日" },
   { key: "week", label: "周" },
   { key: "month", label: "月" },
   { key: "custom", label: "自定义" },
 ];
 
-interface SeriesBoardCommandCenterProps {
-  viewModel: SeriesBoardViewModel;
-  selectedPeriod: SeriesBoardPeriod;
-  selectedTrendMetric: SeriesBoardMetricKey;
+type FocusTabKey = "ad_after_sales" | "series" | "data_status";
+
+const FOCUS_TABS: Array<{ key: FocusTabKey; label: string }> = [
+  { key: "ad_after_sales", label: "推广与售后" },
+  { key: "series", label: "所属系列" },
+  { key: "data_status", label: "数据状态" },
+];
+
+interface ProductBoardCommandCenterProps {
+  viewModel: ProductBoardViewModel;
+  selectedPeriod: ProductBoardPeriod;
+  selectedTrendMetric: ProductBoardMetricKey;
   customDateRange: { start: string | null; end: string | null };
-  onPeriodChange: (period: SeriesBoardPeriod) => void;
+  onPeriodChange: (period: ProductBoardPeriod) => void;
   onDateChange: (date: string | null) => void;
   onCustomDateRangeChange: (range: { start: string | null; end: string | null }) => void;
-  onTrendMetricChange: (metric: SeriesBoardMetricKey) => void;
+  onTrendMetricChange: (metric: ProductBoardMetricKey) => void;
   onHrefChange: (href: string) => void;
 }
 
-const pillTone = (tone: SeriesBoardViewModel["statusTone"]): "success" | "warning" | "danger" | "info" | "neutral" => {
+const pillTone = (tone: ProductBoardViewModel["statusTone"]): "success" | "warning" | "danger" | "info" | "neutral" => {
   if (tone === "emerald") return "success";
   if (tone === "amber") return "warning";
   if (tone === "rose") return "danger";
@@ -45,13 +54,13 @@ const pillTone = (tone: SeriesBoardViewModel["statusTone"]): "success" | "warnin
   return "neutral";
 };
 
-const metricFormatter = (metricKey: SeriesBoardMetricKey, value: number | null): string => {
+const metricFormatter = (metricKey: ProductBoardMetricKey, value: number | null): string => {
   if (metricKey === "conversionRate") return formatPercent(value);
   if (metricKey === "visitors" || metricKey === "paidBuyers") return formatInteger(value);
   return formatMoney(value);
 };
 
-function SeriesContextBar({
+function ProductContextBar({
   viewModel,
   selectedPeriod,
   customDateRange,
@@ -59,7 +68,7 @@ function SeriesContextBar({
   onDateChange,
   onCustomDateRangeChange,
   onHrefChange,
-}: Omit<SeriesBoardCommandCenterProps, "selectedTrendMetric" | "onTrendMetricChange">) {
+}: Omit<ProductBoardCommandCenterProps, "selectedTrendMetric" | "onTrendMetricChange">) {
   const context = viewModel.storeContext;
   const platformOptions = context
     ? Array.from(
@@ -77,7 +86,7 @@ function SeriesContextBar({
     : [];
 
   return (
-    <section className="panel p-4" aria-label="系列经营范围控制">
+    <section className="panel p-4" aria-label="重点商品经营范围控制">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -87,9 +96,9 @@ function SeriesContextBar({
                 {context.platformLabel} · <span className="break-words font-medium text-slate-700">{context.storeName}</span>
               </span>
             ) : null}
-            {viewModel.selectedSeriesName ? (
+            {viewModel.selectedTrackedProduct.displayName ? (
               <span className="min-w-0 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
-                {viewModel.selectedSeriesName}
+                {viewModel.selectedTrackedProduct.displayName}
               </span>
             ) : null}
           </div>
@@ -116,7 +125,7 @@ function SeriesContextBar({
             <label className="min-w-0 text-sm">
               <span className="mb-1 block text-xs font-semibold text-slate-500">平台</span>
               <select
-                id="series-board-platform-select"
+                id="product-board-platform-select"
                 className="form-input"
                 value={context?.platformCode ?? ""}
                 onChange={(event) => {
@@ -136,7 +145,7 @@ function SeriesContextBar({
             <label className="min-w-0 text-sm">
               <span className="mb-1 block text-xs font-semibold text-slate-500">店铺</span>
               <select
-                id="series-board-store-select"
+                id="product-board-store-select"
                 className="form-input"
                 value={context?.storeKey ?? ""}
                 onChange={(event) => {
@@ -153,20 +162,20 @@ function SeriesContextBar({
             </label>
 
             <label className="min-w-0 text-sm">
-              <span className="mb-1 block text-xs font-semibold text-slate-500">系列</span>
+              <span className="mb-1 block text-xs font-semibold text-slate-500">重点商品</span>
               <select
-                id="series-board-series-select"
+                id="product-board-tracked-select"
                 className="form-input"
-                value={viewModel.selectedSeriesId ?? ""}
+                value={viewModel.selectedTrackedProduct.trackedProductId ?? ""}
                 onChange={(event) => {
-                  const selected = viewModel.seriesOptions.find((series) => series.seriesId === event.target.value);
+                  const selected = viewModel.trackedOptions.find((item) => item.trackedProductId === event.target.value);
                   if (selected) onHrefChange(selected.href);
                 }}
               >
-                {viewModel.seriesOptions.length === 0 ? <option value="">暂无系列</option> : null}
-                {viewModel.seriesOptions.map((series) => (
-                  <option key={series.seriesId} value={series.seriesId}>
-                    {series.name}（{series.productCount}）
+                {viewModel.trackedOptions.length === 0 ? <option value="">暂无重点商品</option> : null}
+                {viewModel.trackedOptions.map((item) => (
+                  <option key={item.trackedProductId} value={item.trackedProductId}>
+                    {item.displayName}（{item.dataLabel}）
                   </option>
                 ))}
               </select>
@@ -175,7 +184,7 @@ function SeriesContextBar({
             <label className="min-w-0 text-sm">
               <span className="mb-1 block text-xs font-semibold text-slate-500">经营日期</span>
               <select
-                id="series-board-business-date-select"
+                id="product-board-business-date-select"
                 className="form-input"
                 value={viewModel.dateRange.selectedDate ?? ""}
                 onChange={(event) => onDateChange(event.target.value || null)}
@@ -231,8 +240,8 @@ function SeriesContextBar({
 
         <div className="flex shrink-0 flex-col gap-2 sm:flex-row xl:flex-col">
           {context ? (
-            <Link href={context.manageSeriesHref} className="primary-button justify-center">
-              管理系列
+            <Link href={context.manageTrackedHref} className="primary-button justify-center">
+              管理重点商品
             </Link>
           ) : null}
           <Link href={context?.storeBoardHref ?? "/store-board"} className="secondary-button justify-center">
@@ -244,9 +253,9 @@ function SeriesContextBar({
   );
 }
 
-function SeriesMetricGrid({ viewModel }: { viewModel: SeriesBoardViewModel }) {
+function ProductMetricGrid({ viewModel }: { viewModel: ProductBoardViewModel }) {
   return (
-    <section aria-label="系列核心指标" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
+    <section aria-label="重点商品核心指标" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
       {viewModel.metrics.slice(0, 6).map((metric) => (
         <article key={metric.key} className="panel min-w-0 p-4">
           <p className="text-xs font-semibold text-slate-500">{metric.label}</p>
@@ -260,17 +269,29 @@ function SeriesMetricGrid({ viewModel }: { viewModel: SeriesBoardViewModel }) {
   );
 }
 
-function SeriesTargetSummary({ viewModel }: { viewModel: SeriesBoardViewModel }) {
+function ProductIdentityAndTargets({ viewModel }: { viewModel: ProductBoardViewModel }) {
+  const identity = viewModel.selectedTrackedProduct;
   return (
     <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-900">系列目标进度</p>
-          <p className="mt-1 text-xs text-slate-500">只展示当前系列可匹配当前周期的只读目标。</p>
+          <p className="break-words text-sm font-semibold text-slate-900">{identity.displayName ?? "未选择重点商品"}</p>
+          <p className="mt-1 truncate text-xs text-slate-500">{identity.productId ?? "--"}</p>
+          <p className="mt-2 text-xs text-slate-500">只展示当前重点商品可匹配当前周期的只读目标。</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <StatusPill tone={identity.dataStatus === "business" ? "success" : identity.dataStatus === "ad_only" ? "info" : "neutral"}>
+              {identity.dataStatus === "business"
+                ? "有经营数据"
+                : identity.dataStatus === "ad_only"
+                  ? "仅推广数据"
+                  : "暂无当前范围数据"}
+            </StatusPill>
+            <StatusPill tone="info">用户主动添加</StatusPill>
+          </div>
         </div>
         {viewModel.targetProgress.length === 0 ? (
           <span className="w-fit rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500 ring-1 ring-slate-200">
-            当前周期暂无系列目标
+            当前周期暂无商品目标
           </span>
         ) : (
           <Link href="/targets" className="secondary-button shrink-0 justify-center">
@@ -302,13 +323,13 @@ function SeriesTargetSummary({ viewModel }: { viewModel: SeriesBoardViewModel })
                 <div>
                   <p>实际</p>
                   <p className="mt-1 font-semibold text-slate-900">
-                    {formatSeriesTargetMetricValue(target.metricKey, target.actualValue)}
+                    {formatProductTargetMetricValue(target.metricKey, target.actualValue)}
                   </p>
                 </div>
                 <div>
                   <p>目标</p>
                   <p className="mt-1 font-semibold text-slate-900">
-                    {formatSeriesTargetMetricValue(target.metricKey, target.targetValue)}
+                    {formatProductTargetMetricValue(target.metricKey, target.targetValue)}
                   </p>
                 </div>
               </div>
@@ -320,14 +341,14 @@ function SeriesTargetSummary({ viewModel }: { viewModel: SeriesBoardViewModel })
   );
 }
 
-function SeriesMainTrend({
+function ProductMainTrend({
   viewModel,
   selectedMetric,
   onMetricChange,
 }: {
-  viewModel: SeriesBoardViewModel;
-  selectedMetric: SeriesBoardMetricKey;
-  onMetricChange: (metric: SeriesBoardMetricKey) => void;
+  viewModel: ProductBoardViewModel;
+  selectedMetric: ProductBoardMetricKey;
+  onMetricChange: (metric: ProductBoardMetricKey) => void;
 }) {
   const points = viewModel.trendPoints;
   const dailyValues = points.map((point) => metricValueOfPoint(point, selectedMetric));
@@ -359,10 +380,10 @@ function SeriesMainTrend({
 
   return (
     <SectionCard
-      title="系列主趋势"
+      title="商品主趋势"
       description="单日期只展示当日值；缺失日期不会补 0。"
       action={
-        <div className="flex max-w-full gap-2 overflow-x-auto pb-1" role="tablist" aria-label="系列趋势指标">
+        <div className="flex max-w-full gap-2 overflow-x-auto pb-1" role="tablist" aria-label="商品趋势指标">
           {viewModel.trendMetricOptions.map((option) => (
             <button
               key={option.key}
@@ -383,14 +404,14 @@ function SeriesMainTrend({
       }
     >
       <p className="sr-only">
-        当前图表展示系列每日实际值和范围累计实际值，当前指标为
+        当前图表展示重点商品每日实际值和范围累计实际值，当前指标为
         {viewModel.trendMetricOptions.find((item) => item.key === selectedMetric)?.label ?? selectedMetric}。
       </p>
       {!hasData ? (
         <div className="flex min-h-56 items-center justify-center rounded-xl bg-slate-50 p-6 text-center">
           <div>
             <p className="text-sm font-semibold text-slate-900">当前范围暂无可展示趋势数据</p>
-            <p className="mt-2 text-sm text-slate-500">请选择有系列商品数据的日期范围，缺失日期不会按 0 处理。</p>
+            <p className="mt-2 text-sm text-slate-500">请选择有重点商品数据的日期范围，缺失日期不会按 0 处理。</p>
           </div>
         </div>
       ) : (
@@ -398,7 +419,7 @@ function SeriesMainTrend({
           <svg
             viewBox={`0 0 ${width} ${height}`}
             role="img"
-            aria-label="系列主趋势图"
+            aria-label="重点商品主趋势图"
             className="h-auto w-full max-w-full"
             preserveAspectRatio="none"
           >
@@ -469,107 +490,149 @@ function SeriesMainTrend({
   );
 }
 
-function SeriesProductList({ viewModel }: { viewModel: SeriesBoardViewModel }) {
-  const rows = viewModel.productRows.slice(0, 20);
+function ProductFocusSection({ viewModel }: { viewModel: ProductBoardViewModel }) {
+  const [activeTab, setActiveTab] = useState<FocusTabKey>("ad_after_sales");
+  const context = viewModel.storeContext;
+
   return (
     <SectionCard
-      title="系列商品组成"
-      description="只展示当前系列 productIds，默认最多显示 20 条。"
+      title="重点商品运营关注"
+      description="只展示当前重点商品的推广、售后安全聚合、所属系列和数据状态。"
       action={
-        viewModel.storeContext ? (
-          <Link href={viewModel.storeContext.manageSeriesHref} className="secondary-button justify-center">
-            管理系列
+        context ? (
+          <Link href={context.manageTrackedHref} className="secondary-button justify-center">
+            管理重点商品
           </Link>
         ) : null
       }
     >
-      {rows.length === 0 ? (
-        <div className="rounded-xl bg-slate-50 p-5 text-sm text-slate-500">
-          当前系列尚未添加商品，或当前范围没有系列商品数据。
+      <div className="space-y-4">
+        <div className="flex max-w-full gap-2 overflow-x-auto pb-1" role="tablist" aria-label="重点商品运营关注">
+          {FOCUS_TABS.map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`min-h-10 shrink-0 rounded-full px-4 text-sm font-semibold transition ${
+                activeTab === tab.key
+                  ? "bg-blue-600 text-white"
+                  : "border border-slate-200 bg-white text-slate-600 hover:border-blue-200 hover:text-blue-700"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="data-table min-w-[980px]">
-            <thead>
-              <tr>
-                <th>商品</th>
-                <th>数据状态</th>
-                <th>GMV</th>
-                <th>访客</th>
-                <th>买家</th>
-                <th>转化率</th>
-                <th>推广花费</th>
-                <th>ROI</th>
-                <th>安全退款</th>
-                <th>下钻</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.productId}>
-                  <td>
-                    <p className="max-w-sm break-words font-semibold text-slate-900">{row.productName}</p>
-                    <p className="mt-1 truncate text-xs text-slate-400">{row.productId}</p>
-                  </td>
-                  <td>
-                    <StatusPill tone={row.dataStatus === "business" ? "success" : row.dataStatus === "ad_only" ? "info" : "neutral"}>
-                      {row.dataStatus === "business"
-                        ? "有经营数据"
-                        : row.dataStatus === "ad_only"
-                          ? "仅推广数据"
-                          : "暂无当前范围数据"}
-                    </StatusPill>
-                  </td>
-                  <td>{formatMoney(row.gmv)}</td>
-                  <td>{formatInteger(row.visitors)}</td>
-                  <td>{formatInteger(row.paidBuyers)}</td>
-                  <td>{formatPercent(row.conversionRate)}</td>
-                  <td>{row.hasAdData ? formatMoney(row.adSpend) : "--"}</td>
-                  <td>{row.hasAdData ? formatRoi(row.adRoi) : "--"}</td>
-                  <td>{formatMoney(row.refundAmount)}</td>
-                  <td>
-                    {row.productBoardHref ? (
-                      <Link href={row.productBoardHref} className="secondary-button whitespace-nowrap">
-                        查看重点商品
-                      </Link>
-                    ) : (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          type="button"
-                          disabled
-                          className="secondary-button cursor-not-allowed whitespace-nowrap opacity-60"
-                        >
-                          未设为重点商品
-                          <span className="sr-only">，商品看板待升级为重点商品入口</span>
-                        </button>
-                        <Link href={row.fallbackHref} className="text-xs font-semibold text-blue-700">
-                          添加到重点商品
-                        </Link>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
 
-      <div className="mt-4 grid gap-3 text-xs text-slate-500 md:grid-cols-3">
-        <div className="rounded-xl bg-slate-50 px-3 py-2">系列数：{viewModel.dataStatus.seriesCount}</div>
-        <div className="rounded-xl bg-slate-50 px-3 py-2">商品数：{viewModel.selectedSeriesProductCount}</div>
-        <div className="rounded-xl bg-slate-50 px-3 py-2">
-          数据提示：{viewModel.dataStatus.warningCount} 条 ·
-          <Link href={viewModel.dataStatus.qualityHref} className="ml-1 font-semibold text-blue-700">
-            查看质量
-          </Link>
-        </div>
+        {activeTab === "ad_after_sales" ? (
+          <div role="tabpanel" className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
+                <p className="text-xs font-semibold text-slate-500">商品推广花费</p>
+                <p className="mt-2 text-lg font-semibold text-slate-950">{formatMoney(viewModel.adSummary.adSpend)}</p>
+                <p className="mt-1 text-xs text-slate-500">ROI {formatRoi(viewModel.adSummary.adRoi)}</p>
+              </div>
+              <div className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
+                <p className="text-xs font-semibold text-slate-500">点击</p>
+                <p className="mt-2 text-lg font-semibold text-slate-950">
+                  {viewModel.adSummary.hasAdData ? formatInteger(viewModel.adSummary.clicks) : "--"}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">点击率 {viewModel.adSummary.hasAdData ? formatPercent(viewModel.adSummary.clickRate) : "--"}</p>
+              </div>
+              <div className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
+                <p className="text-xs font-semibold text-slate-500">安全退款金额</p>
+                <p className="mt-2 text-lg font-semibold text-slate-950">
+                  {formatMoney(viewModel.afterSalesSummary.refundAmount)}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  退款单 {formatInteger(viewModel.afterSalesSummary.refundOrderCount)}
+                </p>
+              </div>
+              <div className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
+                <p className="text-xs font-semibold text-slate-500">售后快照</p>
+                <p className="mt-2 text-lg font-semibold text-slate-950">
+                  {formatInteger(viewModel.afterSalesSummary.pendingCount)}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">待处理安全计数</p>
+              </div>
+            </div>
+            <p className="mt-3 text-xs leading-5 text-slate-500">
+              推广指标只使用商品推广数据；售后只展示安全聚合，不展示敏感明细。
+            </p>
+          </div>
+        ) : null}
+
+        {activeTab === "series" ? (
+          <div role="tabpanel" className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-slate-900">所属系列</p>
+                <p className="mt-1 text-xs text-slate-500">只显示当前店铺 active 系列中包含该商品的记录。</p>
+              </div>
+              {context ? (
+                <Link href={context.manageTrackedHref.replace("/product-board/tracked", "/series-board/manage")} className="secondary-button shrink-0 justify-center">
+                  管理系列
+                </Link>
+              ) : null}
+            </div>
+            {viewModel.seriesMemberships.length === 0 ? (
+              <p className="mt-4 rounded-xl bg-white p-4 text-sm text-slate-500 ring-1 ring-slate-100">
+                当前重点商品暂未加入任何启用系列。
+              </p>
+            ) : (
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {viewModel.seriesMemberships.map((series) => (
+                  <article key={series.seriesId} className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
+                    <p className="break-words text-sm font-semibold text-slate-900">{series.name}</p>
+                    <p className="mt-1 text-xs text-slate-500">{series.productCount} 个商品</p>
+                    <Link href={series.href} className="mt-3 inline-flex text-xs font-semibold text-blue-700">
+                      查看系列
+                    </Link>
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : null}
+
+        {activeTab === "data_status" ? (
+          <div role="tabpanel" className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <div className="grid gap-3 text-sm text-slate-600 md:grid-cols-3">
+              <div className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
+                <p className="text-xs font-semibold text-slate-500">重点商品数</p>
+                <p className="mt-2 font-semibold text-slate-950">{viewModel.dataStatus.trackedProductCount}</p>
+              </div>
+              <div className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
+                <p className="text-xs font-semibold text-slate-500">当前范围</p>
+                <p className="mt-2 leading-5">{viewModel.dateRange.coverageText}</p>
+              </div>
+              <div className="rounded-xl bg-white p-3 ring-1 ring-slate-100">
+                <p className="text-xs font-semibold text-slate-500">数据提示</p>
+                <p className="mt-2">
+                  {viewModel.dataStatus.warningCount > 0 ? `${viewModel.dataStatus.warningCount} 条` : "暂无"}
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link href={viewModel.dataStatus.qualityHref} className="secondary-button justify-center">
+                查看数据质量
+              </Link>
+              {context ? (
+                <Link href={context.historyHref} className="secondary-button justify-center">
+                  查看导入记录
+                </Link>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
       </div>
     </SectionCard>
   );
 }
 
-export function SeriesBoardCommandCenter({
+export function ProductBoardCommandCenter({
   viewModel,
   selectedPeriod,
   selectedTrendMetric,
@@ -579,28 +642,52 @@ export function SeriesBoardCommandCenter({
   onCustomDateRangeChange,
   onTrendMetricChange,
   onHrefChange,
-}: SeriesBoardCommandCenterProps) {
+}: ProductBoardCommandCenterProps) {
   if (
     viewModel.mode === "empty" ||
     viewModel.mode === "invalid_store" ||
-    viewModel.mode === "invalid_series" ||
-    viewModel.mode === "no_series" ||
+    viewModel.mode === "invalid_tracked_product" ||
+    viewModel.mode === "not_tracked" ||
+    viewModel.mode === "no_tracked_products" ||
+    viewModel.mode === "tracked_product_no_data" ||
+    viewModel.mode === "legacy_untracked" ||
     viewModel.mode === "corrupted" ||
     viewModel.mode === "error"
   ) {
     return (
-      <SeriesBoardSafeState
+      <ProductBoardSafeState
         title={viewModel.statusLabel}
-        description={viewModel.notices[0] ?? "当前系列数据不可用。"}
+        description={viewModel.notices[0] ?? "当前重点商品数据不可用。"}
         actionHref={viewModel.primaryActions[0]?.href}
         actionLabel={viewModel.primaryActions[0]?.label}
+        secondaryAction={
+          viewModel.primaryActions[1] ? (
+            <Link href={viewModel.primaryActions[1].href} className="secondary-button justify-center">
+              {viewModel.primaryActions[1].label}
+            </Link>
+          ) : null
+        }
       />
     );
   }
 
   return (
-    <div className="space-y-6">
-      <SeriesContextBar
+    <div className="mx-auto w-full max-w-[1440px] space-y-5">
+      {viewModel.selectedTrackedProduct.canonicalHref ? (
+        <div className="rounded-2xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-sm leading-6 text-blue-800">
+          已将旧 productId 查询归一到当前重点商品入口。
+        </div>
+      ) : null}
+
+      {viewModel.notices.length > 0 ? (
+        <div className="rounded-2xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-sm leading-6 text-blue-800">
+          {viewModel.notices.slice(0, 2).map((notice) => (
+            <p key={notice}>{notice}</p>
+          ))}
+        </div>
+      ) : null}
+
+      <ProductContextBar
         viewModel={viewModel}
         selectedPeriod={selectedPeriod}
         customDateRange={customDateRange}
@@ -611,25 +698,17 @@ export function SeriesBoardCommandCenter({
       />
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.8fr)]">
-        <SeriesMetricGrid viewModel={viewModel} />
-        <SeriesTargetSummary viewModel={viewModel} />
+        <ProductMetricGrid viewModel={viewModel} />
+        <ProductIdentityAndTargets viewModel={viewModel} />
       </div>
 
-      <SeriesMainTrend
+      <ProductMainTrend
         viewModel={viewModel}
         selectedMetric={selectedTrendMetric}
         onMetricChange={onTrendMetricChange}
       />
 
-      <SeriesProductList viewModel={viewModel} />
-
-      {viewModel.notices.length > 0 ? (
-        <div className="panel grid gap-3 p-4 text-sm leading-6 text-slate-600 md:grid-cols-3">
-          {viewModel.notices.slice(0, 3).map((notice) => (
-            <p key={notice} className="rounded-xl bg-slate-50 p-3">{notice}</p>
-          ))}
-        </div>
-      ) : null}
+      <ProductFocusSection viewModel={viewModel} />
     </div>
   );
 }

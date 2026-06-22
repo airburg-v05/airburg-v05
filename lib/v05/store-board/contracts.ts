@@ -102,6 +102,9 @@ export interface StoreBoardTargetProgress {
 export interface StoreBoardProductRankItem {
   productId: string;
   productName: string;
+  trackedProductId: string | null;
+  productBoardHref: string | null;
+  manageTrackedHref: string;
   gmv: number | null;
   gsv: number | null;
   visitors: number | null;

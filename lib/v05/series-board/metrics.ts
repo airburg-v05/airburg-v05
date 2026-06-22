@@ -195,6 +195,11 @@ export const buildV2SeriesProductRows = ({
   const businessFacts = filterV2SeriesBusinessFacts({ dataset, range, platformCode, storeId, productIds });
   const adProductFacts = filterV2SeriesAdProductFacts({ dataset, range, platformCode, storeId, productIds });
   const afterSales = filterV2SeriesAfterSalesRangeAggregates({ dataset, range, platformCode, storeId, productIds });
+  const trackedByProductId = new Map(
+    dataset.trackedProducts
+      .filter((item) => item.status === "active" && item.platformCode === platformCode && item.storeId === storeId)
+      .map((item) => [item.productId, item]),
+  );
 
   return [...new Set(productIds)]
     .map((productId) => {
@@ -207,6 +212,7 @@ export const buildV2SeriesProductRows = ({
       const gsv = productBusiness.length > 0 ? safeSum(productBusiness, (fact) => fact.gsv) : null;
       const adSpend = productAds.length > 0 ? safeSum(productAds, (fact) => fact.adSpend) : null;
       const adSalesAmount = productAds.length > 0 ? safeSum(productAds, (fact) => fact.adSalesAmount) : null;
+      const tracked = trackedByProductId.get(productId) ?? null;
       return {
         productId,
         productName: productNameFromBusiness(scopedBusinessAll, productId) ?? productId,
@@ -225,10 +231,10 @@ export const buildV2SeriesProductRows = ({
         adSpend,
         adRoi: productAds.length > 0 ? safeDivide(adSalesAmount, adSpend) : null,
         refundAmount: productAfterSales.length > 0 ? safeSum(productAfterSales, (item) => item.refundAmount) : null,
-        productBoardHref:
-          platformCode === "tmall" && storeId === "tmall-default-store"
-            ? `/product-board?${new URLSearchParams({ platform: platformCode, storeId, productId }).toString()}`
-            : null,
+        trackedProductId: tracked?.trackedProductId ?? null,
+        productBoardHref: tracked
+          ? `/product-board?${new URLSearchParams({ platform: platformCode, storeId, trackedProductId: tracked.trackedProductId }).toString()}`
+          : null,
         fallbackHref: `/product-board/tracked?${new URLSearchParams({ platform: platformCode, storeId }).toString()}`,
       } satisfies SeriesBoardProductRow;
     })

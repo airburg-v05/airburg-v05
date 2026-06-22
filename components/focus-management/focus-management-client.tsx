@@ -518,7 +518,7 @@ function TrackedProductList({
               const candidate = candidateById.get(product.productId);
               const displayName = product.displayName ?? candidate?.productName ?? product.productId;
               return (
-                <tr key={product.trackedProductId}>
+              <tr key={product.trackedProductId}>
                   <td>
                     <p className="break-words font-semibold text-slate-900">{displayName}</p>
                   </td>
@@ -536,6 +536,18 @@ function TrackedProductList({
                   <td>{formatTime(product.updatedAt)}</td>
                   <td>
                     <div className="flex flex-wrap gap-2">
+                      {product.status === "active" && viewModel.storeContext ? (
+                        <Link
+                          href={`/product-board?${new URLSearchParams({
+                            platform: viewModel.storeContext.platformCode,
+                            storeId: viewModel.storeContext.storeId,
+                            trackedProductId: product.trackedProductId,
+                          }).toString()}`}
+                          className="secondary-button"
+                        >
+                          查看看板
+                        </Link>
+                      ) : null}
                       <button type="button" className="secondary-button" onClick={(event) => onEdit(product, event)}>
                         编辑
                       </button>

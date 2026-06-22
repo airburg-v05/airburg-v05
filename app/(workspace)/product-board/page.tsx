@@ -1,338 +1,195 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
-import { ProductAudienceSummary } from "@/components/product-board/product-audience-summary";
-import { ProductAfterSalesSummary } from "@/components/product-board/product-after-sales-summary";
-import { ProductBoardSectionNav } from "@/components/product-board/product-board-section-nav";
-import { ProductDataTable } from "@/components/product-board/product-data-table";
-import { ProductEmptyState } from "@/components/product-board/product-empty-state";
-import { ProductFocusEntry } from "@/components/product-board/product-focus-entry";
-import { ProductMetricGrid } from "@/components/product-board/product-metric-grid";
-import { ProductOperatingInsights } from "@/components/product-board/product-operating-insights";
-import { ProductSummary } from "@/components/product-board/product-summary";
-import { ProductTargetDiagnostics } from "@/components/product-board/product-target-diagnostics";
-import { ProductTargetSummary } from "@/components/product-board/product-target-summary";
-import { ProductToolbar } from "@/components/product-board/product-toolbar";
-import { TmallCorruptedResultState } from "@/components/tmall/tmall-corrupted-result-state";
-import { TmallDataContextBar } from "@/components/tmall/tmall-data-context-bar";
-import { TmallGlobalDataStatusGuide } from "@/components/tmall/tmall-global-data-status-guide";
-import { TrendCard } from "@/components/trends/trend-card";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ProductBoardCommandCenter } from "@/components/product-board/v05/product-board-command-center";
+import { ProductBoardSafeState } from "@/components/product-board/v05/product-board-safe-state";
 import { PageHeader } from "@/components/ui/page-header";
-import { SectionCard } from "@/components/ui/section-card";
 import { StatusPill } from "@/components/ui/status-pill";
+import type { PlatformCode } from "@/lib/v05/domain/models";
 import {
-  parseTmallSeriesGroupStorage,
-  TMALL_SERIES_STORAGE_EVENT,
-  TMALL_SERIES_STORAGE_KEY,
-} from "@/lib/storage/tmall-series-storage";
-import {
-  parseTmallTargetStorage,
-  TMALL_TARGET_STORAGE_EVENT,
-  TMALL_TARGET_STORAGE_KEY,
-} from "@/lib/storage/tmall-target-storage";
-import { useTmallAnalysisResult } from "@/lib/storage/use-tmall-analysis-result";
-import { buildTmallGlobalDataStatusGuide } from "@/lib/tmall/view-models/global-data-status-guide";
-import {
-  buildTmallProductBoardSectionNav,
-} from "@/lib/tmall/view-models/product-board-section-nav";
-import {
-  buildTmallProductBoardOverview,
-  getTmallProductBoardDates,
-} from "@/lib/tmall/view-models/product-board";
-import { buildTmallProductFocusEntry } from "@/lib/tmall/view-models/product-focus-entry";
-import { buildTmallProductOperatingInsights } from "@/lib/tmall/view-models/product-operating-insights";
-import { buildTmallProductTargetSummary } from "@/lib/tmall/view-models/product-target-summary";
-import { buildTmallProductTargetDiagnostics } from "@/lib/tmall/view-models/target-diagnostics";
-import { buildTmallProductTrendSection } from "@/lib/tmall/view-models/product-trend-section";
-import type { TmallSourceStatus } from "@/types/tmall";
+  buildEmptyProductBoardViewModel,
+  buildInvalidProductBoardViewModel,
+  buildLegacyUntrackedProductBoardViewModel,
+  buildV2ProductBoardViewModel,
+  loadProductBoardContext,
+  type ProductBoardLoadResult,
+  type ProductBoardMetricKey,
+  type ProductBoardPeriod,
+} from "@/lib/v05/product-board";
+import { DEFAULT_TMALL_STORE_ID } from "@/lib/v05/store-board";
 
-const isParsedSource = (status: TmallSourceStatus): boolean => status === "parsed";
-
-const subscribeTargets = (callback: () => void): (() => void) => {
-  window.addEventListener("storage", callback);
-  window.addEventListener(TMALL_TARGET_STORAGE_EVENT, callback);
-
-  return () => {
-    window.removeEventListener("storage", callback);
-    window.removeEventListener(TMALL_TARGET_STORAGE_EVENT, callback);
-  };
+const initialLoadResult: ProductBoardLoadResult = {
+  status: "loading",
+  context: null,
+  message: "正在读取重点商品数据。",
 };
 
-const subscribeSeriesGroups = (callback: () => void): (() => void) => {
-  window.addEventListener("storage", callback);
-  window.addEventListener(TMALL_SERIES_STORAGE_EVENT, callback);
+const isPlatformCode = (value: string | null): value is PlatformCode =>
+  value === "tmall" || value === "jd" || value === "pdd" || value === "douyin" || value === "youzan";
 
-  return () => {
-    window.removeEventListener("storage", callback);
-    window.removeEventListener(TMALL_SERIES_STORAGE_EVENT, callback);
-  };
-};
-
-const getTargetSnapshot = (): string | null =>
-  window.localStorage.getItem(TMALL_TARGET_STORAGE_KEY);
-
-const getSeriesSnapshot = (): string | null =>
-  window.localStorage.getItem(TMALL_SERIES_STORAGE_KEY);
-
-const getServerSnapshot = (): undefined => undefined;
-
-export default function ProductBoardPage() {
-  const analysisState = useTmallAnalysisResult();
-  const analysis = analysisState.status === "valid" ? analysisState.result : null;
-  const rawTargetStorage = useSyncExternalStore(
-    subscribeTargets,
-    getTargetSnapshot,
-    getServerSnapshot,
-  );
-  const rawSeriesStorage = useSyncExternalStore(
-    subscribeSeriesGroups,
-    getSeriesSnapshot,
-    getServerSnapshot,
-  );
-  const targetStorageState = useMemo(
-    () => parseTmallTargetStorage(rawTargetStorage),
-    [rawTargetStorage],
-  );
-  const seriesStorageState = useMemo(
-    () => parseTmallSeriesGroupStorage(rawSeriesStorage),
-    [rawSeriesStorage],
-  );
+function ProductBoardPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const requestedPlatform = searchParams.get("platform");
+  const requestedStoreId = searchParams.get("storeId");
+  const requestedTrackedProductId = searchParams.get("trackedProductId");
+  const requestedProductId = searchParams.get("productId");
+  const platformCode = isPlatformCode(requestedPlatform) ? requestedPlatform : "tmall";
+  const storeId = requestedStoreId?.trim() || DEFAULT_TMALL_STORE_ID;
+  const [loadResult, setLoadResult] = useState<ProductBoardLoadResult>(initialLoadResult);
+  const [selectedPeriod, setSelectedPeriod] = useState<ProductBoardPeriod>("day");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const availableDates = useMemo(
-    () => (analysis ? getTmallProductBoardDates(analysis) : []),
-    [analysis],
-  );
-  const effectiveDate =
-    selectedDate && availableDates.includes(selectedDate)
-      ? selectedDate
-      : availableDates[0] ?? null;
-  const overview = useMemo(
-    () => (analysis ? buildTmallProductBoardOverview(analysis, effectiveDate, selectedProductId) : null),
-    [analysis, effectiveDate, selectedProductId],
-  );
-  const focusEntry = useMemo(
-    () => buildTmallProductFocusEntry(overview),
-    [overview],
-  );
-  const trendSection = useMemo(
-    () =>
-      analysis && overview?.selectedProductId
-        ? buildTmallProductTrendSection(analysis, overview.selectedProductId)
-        : null,
-    [analysis, overview],
-  );
-  const targetSummary = useMemo(
-    () =>
-      targetStorageState.status === "corrupted"
-        ? null
-        : buildTmallProductTargetSummary({
-          targets: targetStorageState.targets,
-          analysis,
-          productId: overview?.selectedProductId ?? null,
-        }),
-    [analysis, overview?.selectedProductId, targetStorageState],
-  );
-  const targetDiagnostics = useMemo(
-    () =>
-      targetStorageState.status === "corrupted"
-        ? null
-        : buildTmallProductTargetDiagnostics({
-          targets: targetStorageState.targets,
-          analysis,
-          productId: overview?.selectedProductId ?? null,
-          options: { maxItems: 5 },
-        }),
-    [analysis, overview?.selectedProductId, targetStorageState],
-  );
-  const operatingInsights = useMemo(
-    () =>
-      buildTmallProductOperatingInsights({
-        overview,
-        targetDiagnostics,
-        trendSection,
-      }),
-    [overview, targetDiagnostics, trendSection],
-  );
-  const sectionNav = useMemo(
-    () => buildTmallProductBoardSectionNav({ hasTrendSection: Boolean(trendSection) }),
-    [trendSection],
-  );
-  const globalDataStatusGuide = useMemo(
-    () =>
-      buildTmallGlobalDataStatusGuide({
-        analysisStatus: analysisState.status,
-        analysis,
-        targetStorageState,
-        seriesStorageState,
-        selectedDate: effectiveDate,
-      }),
-    [analysis, analysisState.status, effectiveDate, seriesStorageState, targetStorageState],
-  );
+  const [customDateRange, setCustomDateRange] = useState<{ start: string | null; end: string | null }>({
+    start: null,
+    end: null,
+  });
+  const [selectedTrendMetric, setSelectedTrendMetric] = useState<ProductBoardMetricKey>("gmv");
 
-  const handleDateChange = (date: string) => {
-    setSelectedDate(date || null);
-    setSelectedProductId(null);
-  };
+  useEffect(() => {
+    let mounted = true;
+    loadProductBoardContext({ platformCode: requestedPlatform, storeId: requestedStoreId })
+      .then((result) => {
+        if (mounted) setLoadResult(result);
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setLoadResult({
+          status: "error",
+          context: null,
+          message: "读取重点商品数据失败，请刷新后重试。",
+        });
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [requestedPlatform, requestedStoreId]);
+
+  const viewModel = useMemo(() => {
+    const context = loadResult.context;
+    if (loadResult.status === "empty" || !context || context.mode === "empty") {
+      return buildEmptyProductBoardViewModel("当前没有 active 多店铺重点商品数据，请先完成数据导入并添加重点商品。");
+    }
+
+    if (context.mode === "v2_valid" && context.dataset) {
+      return buildV2ProductBoardViewModel({
+        dataset: context.dataset,
+        platformCode,
+        storeId,
+        trackedProductId: requestedTrackedProductId,
+        productId: requestedProductId,
+        selectedPeriod,
+        selectedDate,
+        customDateRange,
+      });
+    }
+
+    if (context.mode === "legacy_untracked") {
+      return buildLegacyUntrackedProductBoardViewModel(
+        "当前只有旧版单店商品数据。新版宝贝看板只展示用户主动添加的重点商品，请完成新数据导入并添加重点商品。",
+      );
+    }
+
+    if (context.mode === "corrupted" || loadResult.status === "corrupted") {
+      return {
+        ...buildInvalidProductBoardViewModel({
+          mode: "corrupted",
+          platformCode: requestedPlatform,
+          storeId: requestedStoreId,
+          message: "本地多店铺重点商品数据不可安全读取，请前往数据质量页面重新处理。",
+        }),
+        primaryActions: [
+          { label: "查看数据质量", href: "/upload/quality", tone: "blue" as const },
+          { label: "数据导入", href: "/upload", tone: "slate" as const },
+        ],
+      };
+    }
+
+    return buildInvalidProductBoardViewModel({
+      mode: "error",
+      platformCode: requestedPlatform,
+      storeId: requestedStoreId,
+      message: "读取重点商品数据失败，请刷新后重试。",
+    });
+  }, [
+    customDateRange,
+    loadResult.context,
+    loadResult.status,
+    platformCode,
+    requestedPlatform,
+    requestedProductId,
+    requestedStoreId,
+    requestedTrackedProductId,
+    selectedDate,
+    selectedPeriod,
+    storeId,
+  ]);
+
+  useEffect(() => {
+    const canonicalHref = viewModel.selectedTrackedProduct.canonicalHref;
+    if (canonicalHref) router.replace(canonicalHref);
+  }, [router, viewModel.selectedTrackedProduct.canonicalHref]);
 
   return (
-    <div className="space-y-6 lg:space-y-8">
+    <div className="space-y-6">
       <PageHeader
-        eyebrow="天猫宝贝看板"
+        eyebrow="重点商品看板"
         title="宝贝看板"
-        description="基于天猫四源安全聚合结果，按单日经营日期查看单个商品的经营、推广、获客和售后表现。"
-        action={<StatusPill tone="info">真实数据基础版</StatusPill>}
+        description="按平台、店铺和用户主动添加的重点商品查看经营、推广、目标、趋势和售后安全聚合。"
+        action={<StatusPill tone={viewModel.statusTone === "amber" ? "warning" : viewModel.statusTone === "rose" ? "danger" : "info"}>{viewModel.statusLabel}</StatusPill>}
       />
 
-      <TmallGlobalDataStatusGuide guide={globalDataStatusGuide} />
-
-      {analysisState.status === "loading" ? (
-        <ProductEmptyState
-          title="正在读取本地四源分析结果"
-          description="读取完成后会显示当前商品分析。"
-          showAction={false}
+      {loadResult.status === "loading" ? (
+        <ProductBoardSafeState
+          title="正在读取重点商品数据"
+          description="系统正在检查多店铺数据和当前店铺重点商品。"
+          actionHref="/upload"
+          actionLabel="数据导入"
         />
       ) : null}
 
-      {analysisState.status === "empty" ? (
-        <ProductEmptyState
-          title="还没有天猫四源分析结果，请先上传天猫经营、推广和售后数据。"
-          description="上传完成后，宝贝看板会展示单个商品的经营、推广、获客和售后表现。"
-        />
-      ) : null}
-
-      {analysisState.status === "corrupted" ? <TmallCorruptedResultState /> : null}
-
-      {overview?.missingBusinessData ? (
-        <ProductEmptyState
-          title="当前分析结果缺少生意参谋商品数据，无法建立宝贝看板。"
-          description="请在数据上传页查看数据质量，并补充经营商品报表后重新分析。"
+      {loadResult.status === "corrupted" || loadResult.status === "error" ? (
+        <ProductBoardSafeState
+          title={loadResult.status === "corrupted" ? "本地重点商品数据不可安全读取" : "读取重点商品数据失败"}
+          description={
+            loadResult.status === "corrupted"
+              ? "请前往数据质量页面重新处理，不会在宝贝看板展示损坏对象。"
+              : "请刷新页面重试；如果仍然失败，请前往数据导入检查当前数据。"
+          }
+          actionHref="/upload/quality"
           actionLabel="查看数据质量"
         />
       ) : null}
 
-      {overview && !overview.missingBusinessData && overview.products.length === 0 ? (
-        <ProductEmptyState
-          title="当前经营日期没有可分析商品。"
-          description="请切换经营日期，或在数据上传页复核当前结果的数据质量。"
-          actionLabel="查看数据质量"
+      {loadResult.status === "valid" || loadResult.status === "empty" ? (
+        <ProductBoardCommandCenter
+          viewModel={viewModel}
+          selectedPeriod={selectedPeriod}
+          selectedTrendMetric={selectedTrendMetric}
+          customDateRange={customDateRange}
+          onPeriodChange={setSelectedPeriod}
+          onDateChange={setSelectedDate}
+          onCustomDateRangeChange={setCustomDateRange}
+          onTrendMetricChange={setSelectedTrendMetric}
+          onHrefChange={(href) => router.push(href)}
         />
-      ) : null}
-
-      {analysis && overview && !overview.missingBusinessData && overview.products.length > 0 ? (
-        <>
-          <TmallDataContextBar
-            analysisTimestamp={analysis.analysisTimestamp}
-            selectedDate={overview.selectedDate}
-            sourceCount={Object.values(analysis.sourceHealth).filter((source) => isParsedSource(source.status)).length}
-            dataQualityWarningCount={analysis.dataQualityWarnings.length}
-            extraItems={[{ label: "商品数", value: overview.products.length }]}
-          />
-
-          <ProductBoardSectionNav nav={sectionNav} />
-
-          <ProductToolbar
-            availableDates={overview.availableDates}
-            selectedDate={overview.selectedDate}
-            products={overview.products}
-            selectedProductId={overview.selectedProductId}
-            searchTerm={searchTerm}
-            onDateChange={handleDateChange}
-            onProductChange={setSelectedProductId}
-            onSearchChange={setSearchTerm}
-          />
-
-          <div id="product-focus-entry" className="scroll-mt-24">
-            <ProductFocusEntry
-              focusEntry={focusEntry}
-              onSelectProduct={setSelectedProductId}
-            />
-          </div>
-
-          <div id="product-summary" className="scroll-mt-24">
-            <ProductSummary overview={overview} />
-          </div>
-
-          <div id="product-operating-insights" className="scroll-mt-24">
-            <ProductOperatingInsights insights={operatingInsights} />
-          </div>
-
-          <div id="product-target-summary" className="scroll-mt-24">
-            <ProductTargetSummary
-              summary={targetSummary}
-              targetStorageStatus={targetStorageState.status}
-            />
-          </div>
-
-          <div id="product-target-diagnostics" className="scroll-mt-24">
-            <ProductTargetDiagnostics
-              summary={targetDiagnostics}
-              targetStorageStatus={targetStorageState.status}
-            />
-          </div>
-
-          {trendSection ? (
-            <div id="product-trends" className="scroll-mt-24">
-              <SectionCard
-                title="商品趋势分析"
-                description="基于当前商品的多日数据展示经营和推广趋势。若某类数据只有 1 个日期点，系统只展示当日值，不解释为趋势。"
-              >
-                <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4">
-                  <p className="text-sm leading-6 text-blue-800">{trendSection.summaryText}</p>
-                  <div className="mt-3 flex flex-col gap-2 text-xs leading-5 text-blue-700 sm:flex-row sm:flex-wrap">
-                    <span>经营趋势：{trendSection.businessPointCount} 个日期点</span>
-                    <span>商品推广趋势：{trendSection.adProductPointCount} 个日期点</span>
-                  </div>
-                </div>
-                <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {trendSection.cards.map((card) => (
-                    <TrendCard key={card.id} card={card} />
-                  ))}
-                </div>
-              </SectionCard>
-            </div>
-          ) : null}
-
-          <div id="product-business-metrics" className="scroll-mt-24">
-            <ProductMetricGrid
-              title="商品经营指标"
-              description="数据来源：生意参谋商品表。比率类指标按汇总分子和分母重新计算。"
-              metrics={overview.businessMetrics}
-              notice="成功退款金额按报表统计周期内的退款完成口径计算，可能包含历史支付订单。当前 GSV 表示“当期支付金额 - 当期成功退款金额”，不等同于同日订单最终净销售额。"
-            />
-          </div>
-
-          <div id="product-ad-metrics" className="scroll-mt-24">
-            <ProductMetricGrid
-              title="商品推广指标"
-              description="数据来源：商品推广报表。单个商品推广指标不使用计划推广报表。"
-              metrics={overview.adMetrics}
-              emptyMessage={overview.selectedProduct?.hasAdData ? undefined : "当前商品在所选日期暂无推广数据。"}
-            />
-          </div>
-
-          <div id="product-audience" className="scroll-mt-24">
-            <ProductAudienceSummary summary={overview.audienceSummary} />
-          </div>
-
-          <div id="product-after-sales" className="scroll-mt-24">
-            <ProductAfterSalesSummary
-              summary={overview.afterSalesSummary}
-              dateRange={overview.afterSalesDateRange}
-            />
-          </div>
-
-          <div id="product-table" className="scroll-mt-24">
-            <ProductDataTable
-              rows={overview.productTableRows}
-              searchTerm={searchTerm}
-              selectedProductId={overview.selectedProductId}
-              onSelectProduct={setSelectedProductId}
-            />
-          </div>
-        </>
       ) : null}
     </div>
+  );
+}
+
+export default function ProductBoardPage() {
+  return (
+    <Suspense
+      fallback={
+        <ProductBoardSafeState
+          title="正在准备宝贝看板"
+          description="稍后会读取当前店铺和重点商品上下文。"
+        />
+      }
+    >
+      <ProductBoardPageContent />
+    </Suspense>
   );
 }

@@ -556,9 +556,13 @@ function StoreFocusSection({ viewModel }: { viewModel: StoreBoardViewModel }) {
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-slate-900">商品 TOP5</p>
-                <p className="mt-1 text-xs text-slate-500">当前店铺 GMV TOP5，不展示全量商品。</p>
+                <p className="mt-1 text-xs text-slate-500">当前店铺 GMV TOP5；只有已添加为重点商品的记录可进入宝贝看板。</p>
               </div>
-              <LegacyDrilldownActions viewModel={viewModel} kind="product" />
+              {context ? (
+                <Link href={`/product-board/tracked?${managerParams}`} className="secondary-button shrink-0 justify-center">
+                  管理重点商品
+                </Link>
+              ) : null}
             </div>
             {viewModel.productTop.length === 0 ? (
               <p className="mt-4 rounded-xl bg-white p-4 text-sm text-slate-500 ring-1 ring-slate-100">
@@ -584,6 +588,22 @@ function StoreFocusSection({ viewModel }: { viewModel: StoreBoardViewModel }) {
                       <span>访客 {formatInteger(product.visitors)}</span>
                       <span>转化 {formatPercent(product.conversionRate)}</span>
                       <span>推广 {product.hasAdData ? formatMoney(product.adSpend) : "--"}</span>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {product.productBoardHref ? (
+                        <Link href={product.productBoardHref} className="secondary-button">
+                          查看重点商品
+                        </Link>
+                      ) : (
+                        <>
+                          <button type="button" disabled className="secondary-button cursor-not-allowed opacity-60">
+                            未设为重点商品
+                          </button>
+                          <Link href={product.manageTrackedHref || `/product-board/tracked?${managerParams}`} className="text-xs font-semibold text-blue-700">
+                            添加到重点商品
+                          </Link>
+                        </>
+                      )}
                     </div>
                   </article>
                 ))}

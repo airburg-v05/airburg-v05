@@ -484,7 +484,8 @@ const buildLegacyRows = ({
           const value = (fact.gmv ?? 0) - (fact.gsv ?? 0);
           return value > 0 ? value : 0;
         }) : null,
-        productBoardHref: `/product-board?${new URLSearchParams({ platform: "tmall", storeId: DEFAULT_TMALL_STORE_ID, productId }).toString()}`,
+        trackedProductId: null,
+        productBoardHref: null,
         fallbackHref: `/product-board/tracked?${new URLSearchParams({ platform: "tmall", storeId: DEFAULT_TMALL_STORE_ID }).toString()}`,
       } satisfies SeriesBoardProductRow;
     })

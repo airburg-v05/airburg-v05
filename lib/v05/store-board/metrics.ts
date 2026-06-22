@@ -191,6 +191,9 @@ export const buildV2ProductTop = ({
       return {
         productId,
         productName: productNameOf(facts, productId),
+        trackedProductId: null,
+        productBoardHref: null,
+        manageTrackedHref: "",
         gmv: safeSum(facts, (fact) => fact.gmv),
         gsv: safeSum(facts, (fact) => fact.gsv),
         visitors,
@@ -229,6 +232,9 @@ export const buildLegacyProductTop = ({
       return {
         productId: fact.productId,
         productName: fact.productName?.trim() || fact.productId,
+        trackedProductId: null,
+        productBoardHref: null,
+        manageTrackedHref: "/product-board/tracked?platform=tmall&storeId=tmall-default-store",
         gmv: safeNumber(fact.gmv),
         gsv: safeNumber(fact.gsv),
         visitors: safeNumber(fact.visitors),
