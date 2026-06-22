@@ -1,0 +1,77 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5D_2_STORE_BOARD_VISUAL_RUNTIME_AND_DRILLDOWN_CLOSURE",
+  "stage": "V0.5D-2",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5D_2_STORE_BOARD_VISUAL_RUNTIME_AND_DRILLDOWN_CLOSURE.json",
+  "authorizationHash": "cd2f44ce66d360c448ba36f0bb91f59652c95f97364521dd2aada5d39624c371",
+  "authorizationCommit": "27eeab5d286f17cb4f89004271773b2b907e9887",
+  "completionCommit": "9a741f700ed68811bb53ddb53c9c7c1ae9af6ded",
+  "completedAt": "2026-06-22T20:03:00+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+    "npx tsx scripts/private-audit/validate-v05d1-store-board-data.ts",
+    "npx tsx scripts/private-audit/validate-v05d1-store-board-ui.ts",
+    "npx tsx scripts/private-audit/validate-v05d2-store-board-runtime.ts",
+    "npx tsx scripts/private-audit/validate-v05d2-store-board-visual-usability.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05d1-store-board-data.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05d1-store-board-ui.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05d2-store-board-runtime.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05d2-store-board-visual-usability.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-22T20:05:00+08:00"
+}
