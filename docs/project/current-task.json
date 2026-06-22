@@ -1,14 +1,14 @@
 {
-  "taskId": "V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE",
-  "stage": "V0.5B-5",
+  "taskId": "V0.5B_5_1_FREEZE_METADATA_CONSISTENCY_CLOSURE",
+  "stage": "V0.5B-5.1",
   "dependsOn": [
-    "V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE"
+    "V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE"
   ],
-  "baselineCommit": "660688ceb3a1d93b6fb094c6d04060a44a1d94ba",
-  "authorizationFile": "docs/project/task-authorizations/V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-  "authorizationHash": "13fdb32d33cb6a3d0a92b9ead5df9b13f3010a98bcd3f33844ec22242e94eb76",
+  "baselineCommit": "f371e86cb52ba04b33394daa6f293b104a544896",
+  "authorizationFile": "docs/project/task-authorizations/V0.5B_5_1_FREEZE_METADATA_CONSISTENCY_CLOSURE.json",
+  "authorizationHash": "46b7ed22519124699897a47afc70c3b0a44c2a87105d0b037e37d84e630410b2",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
-  "governanceContractHash": "ada25bae453aa0ad1f3a8807aaf0349aa696d827d2d3152940b120239c80c008",
+  "governanceContractHash": "db8dcc6145004291ddfcca6ef64c0e532ce361350e4810a668e3ef79fabb3c00",
   "requiredDocuments": [
     "AGENTS.md",
     "docs/product/V05_PRODUCT_NORTH_STAR.md",
@@ -22,26 +22,20 @@
     "docs/decisions/ADR-001-platform-and-store-ownership.md",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
-    "docs/project/task-completions/V0.5B_1_R1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
-    "docs/project/task-completions/V0.5B_2_IMPORT_HISTORY_AND_BATCH_TRACEABILITY_CENTER.json",
-    "docs/project/task-completions/V0.5B_3_DATA_QUALITY_AND_SAFE_REIMPORT_CENTER.json",
-    "docs/project/task-completions/V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE.json",
-    "docs/project/task-completions/V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE.json",
+    "docs/releases/v0.5b-data-center-freeze.md",
+    "docs/project/task-completions/V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
-    "scripts/private-audit/validate-v05-governance-lock.ts",
-    "scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-    "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
+    "scripts/private-audit/validate-v05-governance-lock.ts"
   ],
   "allowedModifyPaths": [
-    "docs/releases/v0.5b-data-center-freeze.md",
     "docs/project/v0.5-lock.json",
-    "scripts/private-audit/validate-v05b-final-regression-and-freeze.ts",
-    "scripts/private-audit/validate-v05b-final-browser-runtime.ts",
+    "docs/releases/v0.5b-data-center-freeze.md",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
+    "docs/project/task-authorizations/V0.5B_5_1_FREEZE_METADATA_CONSISTENCY_CLOSURE.json",
+    "docs/project/task-completions/V0.5B_5_1_FREEZE_METADATA_CONSISTENCY_CLOSURE.json",
+    "scripts/private-audit/validate-v05b-freeze-metadata-consistency.ts"
   ],
   "forbiddenModifyPaths": [
     "app/**",
@@ -58,45 +52,27 @@
     "docs/quality/**",
     "docs/architecture/**",
     "docs/decisions/**",
-    "docs/audits/**",
     "docs/project/V05_TASK_CONTRACT.md",
-    "docs/project/task-authorizations/V0.5B_1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
-    "docs/project/task-authorizations/V0.5B_1_R1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
-    "docs/project/task-authorizations/V0.5B_2_IMPORT_HISTORY_AND_BATCH_TRACEABILITY_CENTER.json",
-    "docs/project/task-authorizations/V0.5B_3_DATA_QUALITY_AND_SAFE_REIMPORT_CENTER.json",
-    "docs/project/task-authorizations/V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE.json",
-    "docs/project/task-authorizations/V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE.json",
+    "docs/project/task-completions/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "docs/project/task-completions/V0.5B_1_R1_PLATFORM_STORE_BATCH_IMPORT_UPLOAD_PAGE_RELAYOUT.json",
     "docs/project/task-completions/V0.5B_2_IMPORT_HISTORY_AND_BATCH_TRACEABILITY_CENTER.json",
     "docs/project/task-completions/V0.5B_3_DATA_QUALITY_AND_SAFE_REIMPORT_CENTER.json",
     "docs/project/task-completions/V0.5B_4_DATA_CENTER_NAVIGATION_AND_USABILITY_CLOSURE.json",
     "docs/project/task-completions/V0.5B_4_1_HISTORY_READONLY_BOUNDARY_AND_RUNTIME_EVIDENCE_CLOSURE.json",
+    "docs/project/task-completions/V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
-    "scripts/private-audit/validate-v05-stage-freeze-transition.ts",
     "scripts/private-audit/validate-v05-governance-lock.ts",
-    "scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-    "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "scripts/private-audit/validate-v05b1-platform-store-batch-import.ts",
-    "scripts/private-audit/validate-v05b1-upload-page-ui.ts",
-    "scripts/private-audit/validate-v05b2-import-history-data.ts",
-    "scripts/private-audit/validate-v05b2-import-history-ui.ts",
-    "scripts/private-audit/validate-v05b3-data-quality.ts",
-    "scripts/private-audit/validate-v05b3-safe-reimport-ui.ts",
-    "scripts/private-audit/validate-v05b4-data-center-navigation.ts",
-    "scripts/private-audit/validate-v05b4-data-center-usability-ui.ts",
-    "scripts/private-audit/validate-v05b41-history-readonly-runtime-closure.ts"
+    "scripts/private-audit/validate-v05b-final-browser-runtime.ts",
+    "scripts/private-audit/validate-v05b-final-regression-and-freeze.ts"
   ],
   "requiredCommands": [
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
     "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
-    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "npx tsx scripts/private-audit/validate-v05b-final-browser-runtime.ts",
-    "npx tsx scripts/private-audit/validate-v05b-final-regression-and-freeze.ts",
+    "npx tsx scripts/private-audit/validate-v05b-freeze-metadata-consistency.ts",
     "npm run lint",
     "npm run build"
   ],
@@ -118,19 +94,7 @@
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05b-final-browser-runtime.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05b-final-regression-and-freeze.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05b-freeze-metadata-consistency.ts",
       "status": "PASS"
     },
     {
@@ -143,21 +107,14 @@
     }
   ],
   "stopConditions": [
-    "B4.1 dependency is not satisfied by an immutable task completion record.",
-    "Any B1-R1, B2, B3, B4, or B4.1 completion record is missing, changed, duplicated, non-complete, or has non-PASS requiredCommands.",
-    "PRE-FLIGHT does not pass before editing freeze materials.",
-    "The working tree is not clean before starting implementation.",
-    "V0.5A is not complete, V0.5B is not pending, or V0.5C is not pending before freeze edits.",
-    "The current task is not recognized as an authorized freeze task for V0.5B.",
-    "The stage transition cannot be validated as V0.5B pending to complete.",
-    "The implementation would need to modify app, components, lib, types, package files, private samples, fixed product or architecture documents, ADRs, historical scripts, historical authorization records, or historical completion records.",
-    "A real defect is found in import, history, quality, safe reimport, navigation, storage activation, multi-store isolation, privacy, mobile, or legacy compatibility.",
-    "The final browser runtime would need to touch or delete production database airburg-v05.",
-    "Privacy or numeric safety checks fail.",
-    "lint or build fails.",
-    "The working tree contains unexplained out-of-scope changes."
+    "V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE dependency is not satisfied by an immutable completion record.",
+    "The metadata fix would require modifying app, components, lib, types, package files, private samples, fixed governance documents, or historical completion records.",
+    "currentVersion, governanceEnforcementVersion, currentGovernanceStage, product direction, execution order, or privacy boundary would need to change.",
+    "V0.5B completion record path cannot be verified.",
+    "executionSequence and stageStatuses cannot be made consistent without changing product direction or stage order.",
+    "governance lock, completion ledger, lint, or build fails."
   ],
-  "startedAt": "2026-06-22T08:16:00+08:00",
-  "completedAt": "2026-06-22T08:31:00+08:00",
+  "startedAt": "2026-06-22T08:51:59+08:00",
+  "completedAt": "2026-06-22T08:56:17+08:00",
   "status": "complete"
 }
