@@ -1,0 +1,77 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE",
+  "stage": "V0.5C-2",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5C_2_HOME_VISUAL_DRILLDOWN_AND_RUNTIME_CLOSURE.json",
+  "authorizationHash": "43aa30cd17188a28bf4cf5af72267cf019f314fe7faf79d1a6d7b46f647abeed",
+  "authorizationCommit": "d7d7b962150ef7609ca11b91142efa893d27e2cf",
+  "completionCommit": "359f3b36429efc0eb0830c9d7508ec000d97cf5d",
+  "completedAt": "2026-06-22T13:55:00+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+    "npx tsx scripts/private-audit/validate-v05c1-home-command-center-data.ts",
+    "npx tsx scripts/private-audit/validate-v05c1-home-command-center-ui.ts",
+    "npx tsx scripts/private-audit/validate-v05c2-home-runtime-and-drilldown.ts",
+    "npx tsx scripts/private-audit/validate-v05c2-home-visual-usability.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05c1-home-command-center-data.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05c1-home-command-center-ui.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05c2-home-runtime-and-drilldown.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05c2-home-visual-usability.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-22T13:58:00+08:00"
+}
