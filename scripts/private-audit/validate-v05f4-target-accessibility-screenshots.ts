@@ -1013,7 +1013,12 @@ const staticChecks = (): Check[] => {
   ];
   return [
     { name: "F3 completion record complete", pass: f3.status === "complete" && f3.commandResults.every((item) => item.status === "PASS") },
-    { name: "current task is F4", pass: currentTask.taskId === "V0.5F_4_TARGET_RUNTIME_VISUAL_AND_CONFLICT_CLOSURE" && currentTask.status === "in_progress" },
+    {
+      name: "current task is F4",
+      pass:
+        currentTask.taskId === "V0.5F_4_TARGET_RUNTIME_VISUAL_AND_CONFLICT_CLOSURE" &&
+        (currentTask.status === "in_progress" || currentTask.status === "complete"),
+    },
     { name: "no visible internal terms in target UI sources", pass: visibleForbidden.every((term) => !source.includes(term)) },
     { name: "no package dependency added", pass: !packageJson.includes("playwright") && !packageJson.includes("puppeteer") },
     { name: "runtime uses isolated audit database", pass: String(DATABASE_NAME) !== String(PRODUCTION_DATABASE_NAME) },

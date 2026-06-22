@@ -149,7 +149,7 @@
     {
       "command": "npx tsx scripts/private-audit/validate-v05f4-target-accessibility-screenshots.ts",
       "status": "PASS",
-      "screenshotManifestPath": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v05f4-target-screenshots-JJArnY/manifest.json"
+      "screenshotManifestPath": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v05f4-target-screenshots-d5ex5n/manifest.json"
     },
     {
       "command": "npm run lint",

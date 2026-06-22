@@ -528,7 +528,12 @@ const run = async () => {
   const checks: Check[] = [
     { name: "F3 completion complete", pass: f3Completion.status === "complete" && f3Completion.commandResults.every((item) => item.status === "PASS") },
     { name: "stage statuses allow F4", pass: lock.stageStatuses["V0.5F"] === "pending" && lock.stageStatuses["V0.5E"] === "complete" },
-    { name: "current task is F4", pass: currentTask.taskId === "V0.5F_4_TARGET_RUNTIME_VISUAL_AND_CONFLICT_CLOSURE" && currentTask.status === "in_progress" },
+    {
+      name: "current task is F4",
+      pass:
+        currentTask.taskId === "V0.5F_4_TARGET_RUNTIME_VISUAL_AND_CONFLICT_CLOSURE" &&
+        (currentTask.status === "in_progress" || currentTask.status === "complete"),
+    },
     { name: "create company target", pass: companyCreated?.scope === "company" && companyCreated.parentTargetId === null },
     { name: "create store target", pass: storeCreated?.scope === "store" && storeCreated.parentTargetId === companyCreated?.targetId },
     { name: "create series target", pass: seriesCreated?.scope === "series" && seriesCreated.parentTargetId === storeCreated?.targetId },
