@@ -1,8 +1,8 @@
 {
-  "taskId": "V0.5G_1_CROSS_PAGE_VISUAL_SYSTEM_AND_NAVIGATION_CLOSURE",
-  "stage": "V0.5G-1",
+  "taskId": "V0.5G_2_ACCESSIBILITY_MOBILE_PERFORMANCE_AND_RUNTIME_CLOSURE",
+  "stage": "V0.5G-2",
   "dependsOn": [
-    "V0.5F_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE"
+    "V0.5G_1_CROSS_PAGE_VISUAL_SYSTEM_AND_NAVIGATION_CLOSURE"
   ],
   "governanceContractHash": "a7099a6dc7aca9029412460946f41f34fefd7d89d45aa88da323c3f32e472e7c",
   "requiredDocuments": [
@@ -18,8 +18,7 @@
     "docs/decisions/ADR-001-platform-and-store-ownership.md",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
-    "docs/releases/v0.5f-target-allocation-freeze.md",
-    "docs/project/task-completions/V0.5F_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-completions/V0.5G_1_CROSS_PAGE_VISUAL_SYSTEM_AND_NAVIGATION_CLOSURE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
@@ -58,11 +57,11 @@
     "components/series-board/v05/**",
     "components/product-board/v05/**",
     "components/focus-management/**",
-    "scripts/private-audit/validate-v05g1-cross-page-visual-system.ts",
-    "scripts/private-audit/validate-v05g1-navigation-runtime.ts",
+    "scripts/private-audit/validate-v05g2-accessibility-runtime.ts",
+    "scripts/private-audit/validate-v05g2-mobile-performance.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5G_1_CROSS_PAGE_VISUAL_SYSTEM_AND_NAVIGATION_CLOSURE.json",
-    "docs/project/task-completions/V0.5G_1_CROSS_PAGE_VISUAL_SYSTEM_AND_NAVIGATION_CLOSURE.json"
+    "docs/project/task-authorizations/V0.5G_2_ACCESSIBILITY_MOBILE_PERFORMANCE_AND_RUNTIME_CLOSURE.json",
+    "docs/project/task-completions/V0.5G_2_ACCESSIBILITY_MOBILE_PERFORMANCE_AND_RUNTIME_CLOSURE.json"
   ],
   "forbiddenModifyPaths": [
     "app/api/**",
@@ -75,23 +74,18 @@
     "private-samples/**",
     "docs/product/**",
     "docs/architecture/**",
-    "docs/design/V05_DESIGN_SYSTEM.md",
-    "docs/design/V05_REFERENCE_PLATFORM_MAP.md",
+    "docs/design/**",
     "docs/roadmap/**",
     "docs/quality/**",
     "docs/decisions/**",
-    "docs/releases/v0.5a-multi-store-foundation-freeze.md",
-    "docs/releases/v0.5b-data-center-freeze.md",
-    "docs/releases/v0.5c-home-command-center-freeze.md",
-    "docs/releases/v0.5d-multi-store-board-freeze.md",
-    "docs/releases/v0.5e-focus-management-freeze.md",
-    "docs/releases/v0.5f-target-allocation-freeze.md",
+    "docs/releases/**",
     "docs/project/task-completions/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "docs/project/task-completions/V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "docs/project/task-completions/V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE.json",
     "docs/project/task-completions/V0.5D_3_1_FREEZE_METADATA_CONSISTENCY_CLOSURE.json",
     "docs/project/task-completions/V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5F_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
+    "docs/project/task-completions/V0.5F_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-completions/V0.5G_1_CROSS_PAGE_VISUAL_SYSTEM_AND_NAVIGATION_CLOSURE.json"
   ],
   "requiredCommands": [
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
@@ -100,25 +94,31 @@
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
     "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "npx tsx scripts/private-audit/validate-v05g1-cross-page-visual-system.ts",
-    "npx tsx scripts/private-audit/validate-v05g1-navigation-runtime.ts",
+    "npx tsx scripts/private-audit/validate-v05g2-accessibility-runtime.ts",
+    "npx tsx scripts/private-audit/validate-v05g2-mobile-performance.ts",
     "npm run lint",
     "npm run build"
   ],
-  "stopConditions": [
-    "V0.5F_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
-    "The visual or navigation closure would require modifying lib, storage, persistence, import, migration, domain, validation, repository, parser, metric, target, trend, or package files.",
-    "The task would require changing V0.5A-F frozen documents, historical authorization records, historical completion records, or fixed governance documents.",
-    "A runtime regression reveals a business rule defect rather than a visual/navigation issue.",
-    "Chrome evidence cannot be produced with the isolated airburg-v05-g1-audit database without touching production airburg-v05."
+  "inventoryFindings": [
+    "button elements already include explicit type attributes in the scoped source inventory.",
+    "G1 runtime pages expose the shared visual system; G2 is authorized for accessibility, focus, responsive, console, privacy, and runtime closure only.",
+    "Potential risk areas to verify are dialogs, tab semantics, local scroll containment, invalid context states, and mobile overflow across the 12 V0.5 pages."
   ],
-  "baselineCommit": "c5a131dcbc067f5791efc452ac22145ff6f8b3a9",
-  "authorizationFile": "docs/project/task-authorizations/V0.5G_1_CROSS_PAGE_VISUAL_SYSTEM_AND_NAVIGATION_CLOSURE.json",
-  "authorizationHash": "952084efb5e2317f782c55c112a9cc4a0bdc74149253126dd8deae32cc5e2603",
-  "authorizationCommit": "882c9bc65aa6b38194bd9cd3a6139108ca8cd6bd",
+  "stopConditions": [
+    "V0.5G_1_CROSS_PAGE_VISUAL_SYSTEM_AND_NAVIGATION_CLOSURE dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
+    "A detected problem requires changing business algorithms, metrics, target hierarchy, storage, import, persistence, migration, parsing, or V0.5A-F frozen code.",
+    "A runtime regression reveals a business-rule defect rather than an accessibility, layout, focus, or runtime presentation issue.",
+    "Chrome evidence cannot be produced with the isolated airburg-v05-g2-audit database without touching production airburg-v05.",
+    "The work would require adding dependencies, modifying package files, or changing historical authorization/completion records."
+  ],
+  "authorizedAt": "2026-06-23T07:11:53+08:00",
+  "contractVersion": "v0.5-task-authorization-v1",
+  "baselineCommit": "8ee3e65c14ca39b9132740d22fcfd541d9c9d373",
+  "authorizationFile": "docs/project/task-authorizations/V0.5G_2_ACCESSIBILITY_MOBILE_PERFORMANCE_AND_RUNTIME_CLOSURE.json",
+  "authorizationHash": "5883298a9f7eb1f179602bb9bd1de71d19b5cf0339af427463278bd1ba21bc89",
+  "authorizationCommit": "13478b084f0066929835b97f4f5668a4b4f5c2b0",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
-  "startedAt": "2026-06-23T06:50:18+08:00",
-  "completedAt": "2026-06-23T07:05:39+08:00",
+  "startedAt": "2026-06-23T07:11:53+08:00",
   "status": "complete",
   "commandResults": [
     {
@@ -146,13 +146,27 @@
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05g1-cross-page-visual-system.ts",
-      "status": "PASS"
+      "command": "npx tsx scripts/private-audit/validate-v05g2-accessibility-runtime.ts",
+      "status": "PASS",
+      "routesChecked": 17,
+      "accessibilityPass": true,
+      "keyboardAndFocusPass": true,
+      "consolePass": true,
+      "privacyPass": true,
+      "numberSafetyPass": true
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05g1-navigation-runtime.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05g2-mobile-performance.ts",
       "status": "PASS",
-      "screenshotManifestPath": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v05g1-screenshots-L4dQzj/manifest.json"
+      "screenshotManifestPath": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v05g2-screenshots-QISngs/manifest.json",
+      "screenshotCount": 36,
+      "screenshotFilesCleaned": true,
+      "mobile390NoOverflow": true,
+      "tablet768NoOverflow": true,
+      "desktop1440NoOverflow": true,
+      "consolePass": true,
+      "privacyPass": true,
+      "numberSafetyPass": true
     },
     {
       "command": "npm run lint",
@@ -162,5 +176,6 @@
       "command": "npm run build",
       "status": "PASS"
     }
-  ]
+  ],
+  "completedAt": "2026-06-23T07:31:00+08:00"
 }
