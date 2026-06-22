@@ -117,7 +117,7 @@
       "dependsOn": [
         "V0.5B"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "V0.5D",
@@ -238,7 +238,7 @@
     "V0.5A-0.2": "complete",
     "V0.5A": "complete",
     "V0.5B": "complete",
-    "V0.5C": "pending",
+    "V0.5C": "complete",
     "V0.5D": "pending",
     "V0.5E": "pending",
     "V0.5F": "pending",
@@ -250,6 +250,9 @@
   "v05bCompletedAt": "2026-06-22T08:31:00+08:00",
   "v05bFreezeDocument": "docs/releases/v0.5b-data-center-freeze.md",
   "v05bFinalCompletionRecord": "docs/project/task-completions/V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-  "nextStage": "V0.5C",
-  "nextTask": "V0.5C_1_HOME_COMMAND_CENTER_RELAYOUT"
+  "v05cCompletedAt": "2026-06-22T14:50:00+08:00",
+  "v05cFreezeDocument": "docs/releases/v0.5c-home-command-center-freeze.md",
+  "v05cFinalCompletionRecord": "docs/project/task-completions/V0.5C_3_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "nextStage": "V0.5D",
+  "nextTask": "V0.5D_1_STORE_CONTEXT_AND_MULTI_STORE_BOARD_RELAYOUT"
 }
