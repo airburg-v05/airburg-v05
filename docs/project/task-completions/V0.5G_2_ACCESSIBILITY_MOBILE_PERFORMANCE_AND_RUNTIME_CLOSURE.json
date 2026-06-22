@@ -1,0 +1,88 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5G_2_ACCESSIBILITY_MOBILE_PERFORMANCE_AND_RUNTIME_CLOSURE",
+  "stage": "V0.5G-2",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5G_2_ACCESSIBILITY_MOBILE_PERFORMANCE_AND_RUNTIME_CLOSURE.json",
+  "authorizationHash": "5883298a9f7eb1f179602bb9bd1de71d19b5cf0339af427463278bd1ba21bc89",
+  "authorizationCommit": "13478b084f0066929835b97f4f5668a4b4f5c2b0",
+  "completionCommit": "9671ebfe619cdee09352a981a140f210dbdb8494",
+  "completedAt": "2026-06-23T07:31:00+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+    "npx tsx scripts/private-audit/validate-v05g2-accessibility-runtime.ts",
+    "npx tsx scripts/private-audit/validate-v05g2-mobile-performance.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05g2-accessibility-runtime.ts",
+      "status": "PASS",
+      "routesChecked": 17,
+      "accessibilityPass": true,
+      "keyboardAndFocusPass": true,
+      "stateMatrixPass": true,
+      "consolePass": true,
+      "privacyPass": true,
+      "numberSafetyPass": true,
+      "auditDatabaseDeleted": true,
+      "productionDatabaseUntouched": true
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05g2-mobile-performance.ts",
+      "status": "PASS",
+      "screenshotManifestPath": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v05g2-screenshots-QISngs/manifest.json",
+      "screenshotCount": 36,
+      "screenshotFilesCleaned": true,
+      "mobile390NoOverflow": true,
+      "tablet768NoOverflow": true,
+      "desktop1440NoOverflow": true,
+      "performancePass": true,
+      "consolePass": true,
+      "privacyPass": true,
+      "numberSafetyPass": true,
+      "auditDatabaseDeleted": true,
+      "productionDatabaseUntouched": true
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-23T07:31:32+08:00"
+}
