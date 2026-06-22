@@ -1,3 +1,4 @@
+export * from "./allocation";
 export * from "./build-view-model";
 export * from "./browser-runtime";
 export * from "./contracts";

@@ -5,6 +5,7 @@ import type {
   TargetManagementViewModel,
   TargetRowViewModel,
 } from "./contracts";
+import { buildTargetAllocationChildOptions } from "./allocation";
 import {
   TARGET_METRIC_OPTIONS,
   buildProductOptions,
@@ -103,6 +104,7 @@ const buildTargetRows = (dataset: V2Dataset): TargetRowViewModel[] => {
               parentTarget: target,
               childTargets: dataset.targets,
             }),
+      allocationChildOptions: buildTargetAllocationChildOptions({ dataset, parentTarget: target }),
     }));
 };
 

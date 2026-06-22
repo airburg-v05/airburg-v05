@@ -1,8 +1,8 @@
 {
-  "taskId": "V0.5F_1_R1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER",
-  "stage": "V0.5F-1-R1",
+  "taskId": "V0.5F_2_PARENT_CHILD_TARGET_ALLOCATION_WORKFLOW",
+  "stage": "V0.5F-2",
   "dependsOn": [
-    "V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS"
+    "V0.5F_1_R1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER"
   ],
   "governanceContractHash": "a7099a6dc7aca9029412460946f41f34fefd7d89d45aa88da323c3f32e472e7c",
   "requiredDocuments": [
@@ -22,6 +22,7 @@
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
     "docs/project/task-completions/V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS.json",
+    "docs/project/task-completions/V0.5F_1_R1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
@@ -34,11 +35,11 @@
     "components/targets/v05/**",
     "lib/v05/target-management/**",
     "lib/v05/index.ts",
-    "scripts/private-audit/validate-v05f1r1-target-management-data.ts",
-    "scripts/private-audit/validate-v05f1r1-target-management-ui.ts",
+    "scripts/private-audit/validate-v05f2-target-allocation-data.ts",
+    "scripts/private-audit/validate-v05f2-target-allocation-ui.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5F_1_R1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER.json",
-    "docs/project/task-completions/V0.5F_1_R1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER.json"
+    "docs/project/task-authorizations/V0.5F_2_PARENT_CHILD_TARGET_ALLOCATION_WORKFLOW.json",
+    "docs/project/task-completions/V0.5F_2_PARENT_CHILD_TARGET_ALLOCATION_WORKFLOW.json"
   ],
   "forbiddenModifyPaths": [
     "app/(workspace)/home/**",
@@ -88,67 +89,25 @@
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
     "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "npx tsx scripts/private-audit/validate-v05f1r1-target-management-data.ts",
-    "npx tsx scripts/private-audit/validate-v05f1r1-target-management-ui.ts",
+    "npx tsx scripts/private-audit/validate-v05f2-target-allocation-data.ts",
+    "npx tsx scripts/private-audit/validate-v05f2-target-allocation-ui.ts",
     "npm run lint",
     "npm run build"
   ],
-  "commandResults": [
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05f1r1-target-management-data.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05f1r1-target-management-ui.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npm run lint",
-      "status": "PASS"
-    },
-    {
-      "command": "npm run build",
-      "status": "PASS"
-    }
-  ],
   "stopConditions": [
-    "V0.5F_0_TARGET_HIERARCHY_CONTRACT_AND_STORAGE_READINESS dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
+    "V0.5F_1_R1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
     "V0.5A, V0.5B, V0.5C, V0.5D, or V0.5E is not complete, or V0.5F is not pending.",
-    "Existing public V2 persistence APIs cannot read active dataset or perform prepare/readback/activate without modifying frozen persistence code.",
-    "Existing TargetRecord contract cannot express explicit parentTargetId hierarchy without modifying F0 frozen target hierarchy contracts.",
+    "Existing explicit parentTargetId contract or allocation summary cannot support manual direct child allocation without modifying F0 frozen target hierarchy code.",
+    "Existing target-management save path cannot perform prepare/readback/activate with expectedCurrentDatasetId without modifying frozen persistence code.",
     "Implementing the task would require modifying home, boards, upload, raw-data, four-source parsing, target completion-rate formulas, storage structures, package files, private samples, or frozen V0.5A-E code.",
-    "The UI would need to infer parent-child target relationships from scope, name, metricKey, period, targetValue, or ownership instead of explicit user selection."
+    "The UI would need to auto-generate child targets, auto-allocate values, infer parents from scope/name/metric/period, allocate non-additive metrics, jump levels, or cross stores."
   ],
-  "baselineCommit": "b98c57a3d8f537f9b160610249e047cc7f7e32d5",
-  "authorizationFile": "docs/project/task-authorizations/V0.5F_1_R1_HIERARCHICAL_TARGET_ALLOCATION_AND_TARGET_DRAWER.json",
-  "authorizationHash": "adde0078813f61e18d5f0c03c946150ca90d6e72929629366e6bd07564223205",
-  "authorizationCommit": "ee1cfb3c5a1201dc0749e357f9228c878e74d974",
+  "baselineCommit": "88e563a4fc6d37b93655cd7804d09671b54408c6",
+  "authorizationFile": "docs/project/task-authorizations/V0.5F_2_PARENT_CHILD_TARGET_ALLOCATION_WORKFLOW.json",
+  "authorizationHash": "63c441453f7cb3441973ff58a5285dc62fc9e336de711617fccaebd3ab8f4598",
+  "authorizationCommit": "0daf6c27869c5d95e152fa8208e0e39bd594beed",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
-  "startedAt": "2026-06-23T02:20:01+08:00",
-  "completedAt": "2026-06-23T02:46:15+08:00",
-  "status": "complete"
+  "startedAt": "2026-06-23T02:50:30+08:00",
+  "completedAt": null,
+  "status": "in_progress"
 }

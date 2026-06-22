@@ -77,6 +77,34 @@ export interface TargetParentOption {
   description: string;
 }
 
+export interface TargetAllocationChildOption {
+  value: string;
+  childScope: Exclude<TargetScope, "company">;
+  label: string;
+  description: string;
+  platformCode: PlatformCode;
+  storeId: string;
+  seriesId?: string;
+  productId?: string;
+}
+
+export interface BuildTargetAllocationChildOptionsInput {
+  dataset: V2Dataset;
+  parentTarget: TargetRecord;
+}
+
+export interface BuildAllocationChildDraftInput {
+  parentTarget: TargetRecord;
+  childOption: TargetAllocationChildOption;
+  targetValue: number;
+}
+
+export interface AllocateChildTargetInput {
+  parentTargetId: string;
+  childOptionValue: string;
+  targetValue: number;
+}
+
 export interface TargetRowViewModel {
   target: TargetRecord;
   scopeLabel: string;
@@ -87,6 +115,7 @@ export interface TargetRowViewModel {
   valueLabel: string;
   statusLabel: string;
   allocationSummary: TargetAllocationSummary | null;
+  allocationChildOptions: TargetAllocationChildOption[];
 }
 
 export interface TargetManagementViewModel {

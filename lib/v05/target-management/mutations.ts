@@ -1,6 +1,7 @@
 import { V2_SCHEMA_VERSION, type TargetRecord } from "../domain/models";
+import { buildAllocationChildDraft, buildTargetAllocationChildOptions } from "./allocation";
 import { buildTargetParentOptions } from "./options";
-import type { TargetDatasetMutation, TargetDraft, TargetSaveResult } from "./contracts";
+import type { AllocateChildTargetInput, TargetDatasetMutation, TargetDraft, TargetSaveResult } from "./contracts";
 
 const CONTROL_CHAR_PATTERN = /[\u0000-\u001F\u007F]/;
 
@@ -159,4 +160,26 @@ export const setTargetStatusMutation = ({
     ),
     activeDatasetPointer: null,
   };
+};
+
+export const allocateChildTargetMutation = ({
+  parentTargetId,
+  childOptionValue,
+  targetValue,
+}: AllocateChildTargetInput): TargetDatasetMutation => ({ dataset, now }) => {
+  const parentTarget = dataset.targets.find((target) => target.targetId === parentTargetId);
+  if (!parentTarget) {
+    return targetError("validation_error", "未找到父目标。", ["target_parent_missing"]);
+  }
+  if (parentTarget.scope === "product") {
+    return targetError("validation_error", "商品目标不能继续向下分配。", ["target_allocation_child_scope_missing"]);
+  }
+
+  const childOptions = buildTargetAllocationChildOptions({ dataset, parentTarget });
+  const childOption = childOptions.find((option) => option.value === childOptionValue);
+  if (!childOption) {
+    return targetError("validation_error", "请选择合法的直接子目标归属。", ["target_allocation_child_invalid"]);
+  }
+
+  return upsertTargetMutation(buildAllocationChildDraft({ parentTarget, childOption, targetValue }))({ dataset, now });
 };

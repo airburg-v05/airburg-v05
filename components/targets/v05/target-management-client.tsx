@@ -6,12 +6,16 @@ import { PageHeader } from "@/components/ui/page-header";
 import { SectionCard } from "@/components/ui/section-card";
 import { StatusPill } from "@/components/ui/status-pill";
 import {
+  allocateChildTargetMutation,
   buildTargetParentOptions,
   loadTargetManagementContext,
+  parentTargetCanAllocate,
   saveTargetManagementChange,
   setTargetStatusMutation,
   targetDirectionLabel,
   upsertTargetMutation,
+  type TargetAllocationChildOption,
+  type TargetDatasetMutation,
   type TargetDraft,
   type TargetManagementLoadResult,
   type TargetManagementViewModel,
@@ -23,6 +27,8 @@ type DrawerState =
   | { mode: "create"; target: null; trigger: HTMLElement | null }
   | { mode: "edit"; target: TargetRecord; trigger: HTMLElement | null }
   | null;
+
+type AllocationDrawerState = { target: TargetRecord; trigger: HTMLElement | null } | null;
 
 type ParentChoice = "__unset__" | "";
 
@@ -218,10 +224,12 @@ function SummaryStrip({
 function TargetRows({
   viewModel,
   onEdit,
+  onAllocate,
   onToggleStatus,
 }: {
   viewModel: TargetManagementViewModel;
   onEdit: (target: TargetRecord, event: MouseEvent<HTMLButtonElement>) => void;
+  onAllocate: (target: TargetRecord, event: MouseEvent<HTMLButtonElement>) => void;
   onToggleStatus: (target: TargetRecord) => void;
 }) {
   return (
@@ -277,8 +285,19 @@ function TargetRows({
                           {allocationLabel(row.allocationSummary.allocationStatus)}
                         </StatusPill>
                         <p className="text-xs text-slate-500">
-                          已分配 {formatNumber(row.allocationSummary.activeAllocatedValue)} / 子目标{" "}
-                          {row.allocationSummary.activeChildCount}
+                          父目标 {formatNumber(row.allocationSummary.parentTargetValue)}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          启用已分配 {formatNumber(row.allocationSummary.activeAllocatedValue)}，暂停已分配{" "}
+                          {formatNumber(row.allocationSummary.pausedAllocatedValue)}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          剩余 {formatNumber(row.allocationSummary.remainingValue)}，超额{" "}
+                          {formatNumber(row.allocationSummary.overAllocatedValue)}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          启用子目标 {row.allocationSummary.activeChildCount}，暂停子目标{" "}
+                          {row.allocationSummary.pausedChildCount}
                         </p>
                       </div>
                     ) : (
@@ -294,6 +313,11 @@ function TargetRows({
                       <button type="button" className="secondary-button" onClick={(event) => onEdit(row.target, event)}>
                         编辑
                       </button>
+                      {parentTargetCanAllocate(row.target) ? (
+                        <button type="button" className="secondary-button" onClick={(event) => onAllocate(row.target, event)}>
+                          分配子目标
+                        </button>
+                      ) : null}
                       {row.target.status === "deleted" ? null : (
                         <button type="button" className="secondary-button" onClick={() => onToggleStatus(row.target)}>
                           {row.target.status === "paused" ? "重新启用" : "暂停"}
@@ -628,11 +652,237 @@ function TargetDrawer({
   );
 }
 
+const childScopeLabel = (option: TargetAllocationChildOption): string => {
+  if (option.childScope === "store") return "店铺目标";
+  if (option.childScope === "series") return "系列目标";
+  return "商品目标";
+};
+
+function AllocationDrawer({
+  drawer,
+  viewModel,
+  saving,
+  onClose,
+  onSave,
+}: {
+  drawer: AllocationDrawerState;
+  viewModel: TargetManagementViewModel;
+  saving: boolean;
+  onClose: () => void;
+  onSave: (parentTargetId: string, childOptionValue: string, targetValue: number) => Promise<void>;
+}) {
+  const row = drawer ? viewModel.targets.find((item) => item.target.targetId === drawer.target.targetId) : null;
+  const options = row?.allocationChildOptions ?? [];
+  const [childOptionValue, setChildOptionValue] = useState("");
+  const [targetValueText, setTargetValueText] = useState("");
+  const [dirty, setDirty] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  const selectedOption = options.find((option) => option.value === childOptionValue);
+  const targetValue = Number(targetValueText);
+  const projectedActiveAllocated =
+    row?.allocationSummary && Number.isFinite(targetValue)
+      ? row.allocationSummary.activeAllocatedValue + targetValue
+      : null;
+  const projectedOverAllocated =
+    row?.allocationSummary && projectedActiveAllocated !== null
+      ? Math.max(projectedActiveAllocated - row.allocationSummary.parentTargetValue, 0)
+      : 0;
+
+  const attemptClose = useCallback(() => {
+    if (!dirty || window.confirm("当前有未保存修改，确认关闭吗？")) onClose();
+  }, [dirty, onClose]);
+
+  useEffect(() => {
+    if (!drawer) return;
+    const focusTimer = window.setTimeout(() => closeButtonRef.current?.focus(), 0);
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        attemptClose();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [attemptClose, drawer]);
+
+  if (!drawer || !row) return null;
+
+  const submit = async () => {
+    if (!selectedOption) {
+      setFormError("请选择合法的直接子目标归属。");
+      return;
+    }
+    if (!Number.isFinite(targetValue) || targetValue <= 0) {
+      setFormError("子目标值必须大于 0。");
+      return;
+    }
+    await onSave(drawer.target.targetId, selectedOption.value, targetValue);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/30" role="dialog" aria-modal="true" aria-label="分配子目标">
+      <button type="button" className="absolute inset-0 cursor-default" aria-label="关闭分配抽屉遮罩" onClick={attemptClose} />
+      <aside className="relative flex h-full w-full max-w-full flex-col bg-white shadow-xl sm:max-w-[640px]">
+        <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+          <div className="min-w-0">
+            <h2 className="text-base font-semibold text-slate-950">分配子目标</h2>
+            <p className="mt-1 text-sm text-slate-500">只创建当前父目标的合法直接子目标，不自动分配数值。</p>
+          </div>
+          <button ref={closeButtonRef} type="button" className="secondary-button shrink-0" onClick={attemptClose}>
+            关闭
+          </button>
+        </div>
+
+        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-5">
+          {formError ? <div className="rounded-xl bg-rose-50 p-3 text-sm text-rose-700">{formError}</div> : null}
+
+          <div className="rounded-xl bg-slate-50 p-4">
+            <p className="text-xs font-semibold text-slate-500">父目标</p>
+            <p className="mt-1 break-words text-sm font-semibold text-slate-950">{row.ownerLabel}</p>
+            <div className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
+              <div>
+                <p className="text-xs text-slate-500">父目标值</p>
+                <p className="font-semibold text-slate-900">{formatNumber(row.allocationSummary?.parentTargetValue ?? drawer.target.targetValue)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">allocationStatus</p>
+                <StatusPill tone={toneForAllocation(row.allocationSummary?.allocationStatus ?? "none")}>
+                  {allocationLabel(row.allocationSummary?.allocationStatus ?? "none")}
+                </StatusPill>
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">启用已分配</p>
+                <p className="font-semibold text-slate-900">{formatNumber(row.allocationSummary?.activeAllocatedValue ?? 0)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">暂停已分配</p>
+                <p className="font-semibold text-slate-900">{formatNumber(row.allocationSummary?.pausedAllocatedValue ?? 0)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">剩余值</p>
+                <p className="font-semibold text-slate-900">{formatNumber(row.allocationSummary?.remainingValue ?? 0)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">超额值</p>
+                <p className="font-semibold text-slate-900">{formatNumber(row.allocationSummary?.overAllocatedValue ?? 0)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">子目标数量</p>
+                <p className="font-semibold text-slate-900">
+                  启用 {row.allocationSummary?.activeChildCount ?? 0} / 暂停 {row.allocationSummary?.pausedChildCount ?? 0}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 p-4">
+            <p className="text-xs font-semibold text-slate-500">锁定口径</p>
+            <div className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
+              <p>
+                <span className="block text-xs text-slate-500">指标</span>
+                <span className="font-semibold text-slate-900">{row.metricLabel}</span>
+              </p>
+              <p>
+                <span className="block text-xs text-slate-500">周期</span>
+                <span className="font-semibold text-slate-900">{row.periodLabel}</span>
+              </p>
+              <p>
+                <span className="block text-xs text-slate-500">方向</span>
+                <span className="font-semibold text-slate-900">{targetDirectionLabel(drawer.target.direction)}</span>
+              </p>
+              <p>
+                <span className="block text-xs text-slate-500">父子层级</span>
+                <span className="font-semibold text-slate-900">
+                  {selectedOption ? childScopeLabel(selectedOption) : "选择后确认"}
+                </span>
+              </p>
+            </div>
+          </div>
+
+          {options.length === 0 ? (
+            <div className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
+              当前父目标没有可继续分配的直接子对象，或该子对象已经存在同口径目标。
+            </div>
+          ) : (
+            <label className="block text-sm">
+              <span className="mb-1 block text-xs font-semibold text-slate-500">直接子目标归属</span>
+              <select
+                className="form-input"
+                value={childOptionValue}
+                onChange={(event) => {
+                  setChildOptionValue(event.target.value);
+                  setDirty(true);
+                  setFormError(null);
+                }}
+              >
+                <option value="">请选择直接子目标</option>
+                {options.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label} / {option.description}
+                  </option>
+                ))}
+              </select>
+              <span className="mt-1 block text-xs leading-5 text-slate-500">
+                company 只能分配到 store，store 只能分配到同店系列，series 只能分配到该系列商品。
+              </span>
+            </label>
+          )}
+
+          <label className="block text-sm">
+            <span className="mb-1 block text-xs font-semibold text-slate-500">子目标值</span>
+            <input
+              className="form-input"
+              type="number"
+              min="0"
+              step="0.01"
+              value={targetValueText}
+              onChange={(event) => {
+                setTargetValueText(event.target.value);
+                setDirty(true);
+                setFormError(null);
+              }}
+              placeholder="手动填写子目标值"
+            />
+          </label>
+
+          {selectedOption && Number.isFinite(targetValue) && targetValue > 0 ? (
+            projectedOverAllocated > 0 ? (
+              <div className="rounded-xl bg-amber-50 p-3 text-sm leading-6 text-amber-700">
+                保存后启用子目标将超出父目标 {formatNumber(projectedOverAllocated)}。系统允许保存，但请确认这是有意的超额分配。
+              </div>
+            ) : (
+              <div className="rounded-xl bg-blue-50 p-3 text-sm leading-6 text-blue-700">
+                保存后启用已分配将为 {formatNumber(projectedActiveAllocated ?? 0)}，剩余{" "}
+                {formatNumber(Math.max((row.allocationSummary?.parentTargetValue ?? drawer.target.targetValue) - (projectedActiveAllocated ?? 0), 0))}。
+              </div>
+            )
+          ) : null}
+        </div>
+
+        <div className="flex flex-col gap-2 border-t border-slate-100 p-5 sm:flex-row sm:justify-end">
+          <button type="button" className="secondary-button" onClick={attemptClose} disabled={saving}>
+            取消
+          </button>
+          <button type="button" className="primary-button" onClick={submit} disabled={saving || options.length === 0}>
+            {saving ? "保存中" : "保存子目标"}
+          </button>
+        </div>
+      </aside>
+    </div>
+  );
+}
+
 function TargetManagementPageInner() {
   const [loadResult, setLoadResult] = useState<TargetManagementLoadResult>(initialLoadResult);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [drawer, setDrawer] = useState<DrawerState>(null);
+  const [allocationDrawer, setAllocationDrawer] = useState<AllocationDrawerState>(null);
   const [feedback, setFeedback] = useState<{ tone: "success" | "warning" | "danger"; message: string } | null>(null);
   const lastTriggerRef = useRef<HTMLElement | null>(null);
 
@@ -661,7 +911,13 @@ function TargetManagementPageInner() {
     window.setTimeout(() => trigger?.focus(), 0);
   }, [drawer]);
 
-  const runSave = async (mutation: ReturnType<typeof upsertTargetMutation>) => {
+  const closeAllocationDrawer = useCallback(() => {
+    const trigger = allocationDrawer?.trigger ?? lastTriggerRef.current;
+    setAllocationDrawer(null);
+    window.setTimeout(() => trigger?.focus(), 0);
+  }, [allocationDrawer]);
+
+  const runSave = async (mutation: TargetDatasetMutation, onSuccess?: () => void) => {
     const expectedCurrentDatasetId = loadResult.viewModel.expectedCurrentDatasetId;
     if (!expectedCurrentDatasetId) {
       setFeedback({ tone: "danger", message: "当前没有可写入的 active 数据。" });
@@ -675,7 +931,7 @@ function TargetManagementPageInner() {
       message: result.message,
     });
     if (result.status === "success") {
-      closeDrawer();
+      onSuccess?.();
       await reload();
     }
   };
@@ -690,6 +946,11 @@ function TargetManagementPageInner() {
     setDrawer({ mode: "edit", target, trigger: event.currentTarget });
   };
 
+  const openAllocate = (target: TargetRecord, event: MouseEvent<HTMLButtonElement>) => {
+    lastTriggerRef.current = event.currentTarget;
+    setAllocationDrawer({ target, trigger: event.currentTarget });
+  };
+
   const toggleStatus = async (target: TargetRecord) => {
     await runSave(setTargetStatusMutation({
       targetId: target.targetId,
@@ -698,7 +959,11 @@ function TargetManagementPageInner() {
   };
 
   const saveDraft = async (draft: TargetDraft) => {
-    await runSave(upsertTargetMutation(draft));
+    await runSave(upsertTargetMutation(draft), closeDrawer);
+  };
+
+  const saveAllocation = async (parentTargetId: string, childOptionValue: string, targetValue: number) => {
+    await runSave(allocateChildTargetMutation({ parentTargetId, childOptionValue, targetValue }), closeAllocationDrawer);
   };
 
   const viewModel = loadResult.viewModel;
@@ -755,11 +1020,21 @@ function TargetManagementPageInner() {
               </div>
             </SectionCard>
           ) : null}
-          <TargetRows viewModel={viewModel} onEdit={openEdit} onToggleStatus={toggleStatus} />
+          <TargetRows viewModel={viewModel} onEdit={openEdit} onAllocate={openAllocate} onToggleStatus={toggleStatus} />
         </>
       ) : null}
 
       <TargetDrawer drawer={drawer} viewModel={viewModel} saving={saving} onClose={closeDrawer} onSave={saveDraft} />
+      {allocationDrawer ? (
+        <AllocationDrawer
+          key={allocationDrawer.target.targetId}
+          drawer={allocationDrawer}
+          viewModel={viewModel}
+          saving={saving}
+          onClose={closeAllocationDrawer}
+          onSave={saveAllocation}
+        />
+      ) : null}
     </div>
   );
 }
