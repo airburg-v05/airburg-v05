@@ -1,0 +1,150 @@
+{
+  "release": "V0.5",
+  "taskId": "V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE",
+  "decisionStatus": "awaiting_user_approval",
+  "deploymentDecisionStatus": "AWAITING_USER_APPROVAL",
+  "sourceMatrix": "docs/operations/v0.5-deployment-readiness.json",
+  "sourceHandoff": "docs/operations/V05_RELEASE_HANDOFF.md",
+  "sourceTask": "V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS",
+  "sourceCompletionRecord": "docs/project/task-completions/V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS.json",
+  "runtime": {
+    "requiresNodeRuntime": true,
+    "staticExportSupported": false,
+    "staticExportReason": "next.config.ts does not set output: 'export'; V0.5 is validated with next start.",
+    "buildCommand": "npm run build",
+    "startCommand": "npm run start -- -p <port>",
+    "outputDirectory": ".next",
+    "healthCheckRoute": "/login",
+    "requiresHttps": true,
+    "requiresPersistentOrigin": true,
+    "requiresServerEnvironmentVariables": false,
+    "requiresBackend": false,
+    "requiresServerDatabase": false,
+    "requiresWebSocket": false,
+    "requiresFileUploadToServer": false,
+    "browserStorageOnly": true
+  },
+  "originAndDataBoundary": {
+    "originScopedBrowserData": true,
+    "indexedDbDatabaseName": "airburg-v05",
+    "localStorageStillOriginScoped": true,
+    "platformDefaultDomainCanBeUsedFirst": true,
+    "formalDomainRequiredForFinalPublicUse": "recommended",
+    "formalDomainSwitchAutoMigratesBrowserData": false,
+    "formalDomainSwitchNotice": "Data imported under a platform default domain will not automatically appear under a later formal domain because IndexedDB and localStorage are scoped to origin.",
+    "firstProductionUseRequiresReimport": true,
+    "serverSideDataSync": false,
+    "sharedMultiUserSupported": false,
+    "crossBrowserSyncSupported": false
+  },
+  "decisionRequirements": {
+    "userApprovalRequiredBeforeDeployment": true,
+    "gitRemoteCreatedByThisTask": false,
+    "platformProjectCreatedByThisTask": false,
+    "domainBoundByThisTask": false,
+    "credentialsWrittenByThisTask": false,
+    "businessCodeModifiedByThisTask": false,
+    "dependenciesAddedByThisTask": false
+  },
+  "questions": {
+    "isGitRemoteNeeded": {
+      "answer": "not_required_by_application_contract_but_usually_needed_for_managed_node_platform_ci_cd",
+      "notes": "This task does not create a Git remote. Hosted platforms commonly require a Git remote or equivalent code source."
+    },
+    "isDeploymentPlatformAccountNeeded": {
+      "answer": "yes_for_hosted_node_platform_no_for_some_self_hosted_node_paths",
+      "notes": "A hosted Node platform requires an account. Self-hosting requires server access instead."
+    },
+    "isFormalDomainNeeded": {
+      "answer": "recommended_for_final_public_use_not_required_for_initial_platform_default_domain_smoke",
+      "notes": "A stable HTTPS platform default domain can be used first, but data will be tied to that origin."
+    },
+    "canUsePlatformDefaultDomainFirst": {
+      "answer": true,
+      "conditions": [
+        "HTTPS is enabled.",
+        "The origin is stable.",
+        "The user accepts that later formal-domain data will not auto-migrate."
+      ]
+    },
+    "httpsAndFixedOriginRequired": {
+      "answer": true,
+      "notes": "Production use requires HTTPS and a fixed origin because browser storage is origin-scoped."
+    }
+  },
+  "deploymentOptions": [
+    {
+      "type": "hosted_node_platform",
+      "label": "托管 Node 平台",
+      "fit": "high",
+      "operationsComplexity": "low_to_medium",
+      "dataBoundary": "Browser IndexedDB/localStorage remains origin-scoped; no server database is required.",
+      "risks": [
+        "Usually requires a platform account.",
+        "Usually requires Git remote or an equivalent code source.",
+        "Switching from platform default domain to formal domain will not auto-migrate browser data.",
+        "The selected platform must support Node runtime for Next.js rather than static-only hosting."
+      ],
+      "contractCompatible": true
+    },
+    {
+      "type": "static_hosting",
+      "label": "静态托管",
+      "fit": "low",
+      "operationsComplexity": "low",
+      "dataBoundary": "Browser data would still be origin-scoped if a future static export exists.",
+      "risks": [
+        "Current V0.5 does not support static export.",
+        "Using static hosting now would require code/config changes and a separate regression cycle.",
+        "Pure static output is not the validated deployment artifact."
+      ],
+      "contractCompatible": false
+    },
+    {
+      "type": "self_hosted_node",
+      "label": "自托管 Node",
+      "fit": "high",
+      "operationsComplexity": "high",
+      "dataBoundary": "Server does not hold business data; browser storage remains tied to the served origin.",
+      "risks": [
+        "Operator must manage Node version, process supervision, HTTPS, domain, rollback, and security patches.",
+        "Changing host, port, protocol, or domain changes origin and separates browser data.",
+        "Rollback must not clear browser IndexedDB or localStorage."
+      ],
+      "contractCompatible": true
+    },
+    {
+      "type": "other_contract_compliant_node_runtime",
+      "label": "其他符合合同的 Node 运行方案",
+      "fit": "conditional",
+      "operationsComplexity": "medium_to_high",
+      "dataBoundary": "Must preserve stable HTTPS origin and browser-local data boundaries.",
+      "risks": [
+        "Temporary URLs or changing ports can break the fixed-origin requirement.",
+        "HTTP production access does not satisfy the HTTPS requirement.",
+        "This must not be represented as shared multi-user production."
+      ],
+      "contractCompatible": true
+    }
+  ],
+  "recommendedOption": {
+    "type": "hosted_node_platform",
+    "approvalStatus": "not_approved",
+    "reason": "V0.5 requires Node runtime, does not support static export, and does not require server database/backend/server file storage."
+  },
+  "notPerformed": [
+    "actual_deployment",
+    "git_remote_creation",
+    "deployment_platform_project_creation",
+    "domain_binding",
+    "credential_write",
+    "business_code_change",
+    "dependency_addition"
+  ],
+  "nextDecisionNeededFromUser": [
+    "Choose hosted Node platform, self-hosted Node, or another contract-compliant Node runtime.",
+    "Decide whether to use a platform default HTTPS domain first.",
+    "Decide whether and when to bind a formal domain.",
+    "Approve whether a Git remote or platform project may be created in a later task."
+  ]
+}

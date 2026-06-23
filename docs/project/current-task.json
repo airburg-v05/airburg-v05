@@ -1,8 +1,8 @@
 {
-  "taskId": "V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS",
-  "stage": "V0.5G-4",
+  "taskId": "V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE",
+  "stage": "V0.5G-5",
   "dependsOn": [
-    "V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE"
+    "V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS"
   ],
   "governanceContractHash": "a7099a6dc7aca9029412460946f41f34fefd7d89d45aa88da323c3f32e472e7c",
   "requiredDocuments": [
@@ -18,20 +18,20 @@
     "docs/decisions/ADR-001-platform-and-store-ownership.md",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
-    "docs/releases/v0.5-final-release-candidate-freeze.md",
-    "docs/project/task-completions/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/operations/v0.5-deployment-readiness.json",
+    "docs/operations/V05_RELEASE_HANDOFF.md",
+    "docs/project/task-completions/V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
     "scripts/private-audit/validate-v05-governance-lock.ts"
   ],
   "allowedModifyPaths": [
-    "docs/operations/**",
-    "scripts/private-audit/validate-v05-release-handoff.ts",
-    "scripts/private-audit/validate-v05-production-build-smoke.ts",
+    "docs/operations/V05_DEPLOYMENT_TARGET_DECISION.md",
+    "docs/operations/v0.5-deployment-target-decision.json",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS.json",
-    "docs/project/task-completions/V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS.json"
+    "docs/project/task-authorizations/V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE.json",
+    "docs/project/task-completions/V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE.json"
   ],
   "forbiddenModifyPaths": [
     "app/**",
@@ -46,56 +46,50 @@
     "private-samples/**",
     ".env",
     ".env.*",
-    ".next/**",
-    "logs/**",
     "docs/project/v0.5-lock.json",
-    "docs/releases/v0.5-final-release-candidate-freeze.md",
-    "docs/releases/v0.5a-multi-store-foundation-freeze.md",
-    "docs/releases/v0.5b-data-center-freeze.md",
-    "docs/releases/v0.5c-home-command-center-freeze.md",
-    "docs/releases/v0.5d-multi-store-board-freeze.md",
-    "docs/releases/v0.5e-focus-management-freeze.md",
-    "docs/releases/v0.5f-target-allocation-freeze.md",
+    "docs/releases/**",
     "docs/product/**",
     "docs/architecture/**",
     "docs/design/**",
     "docs/roadmap/**",
     "docs/quality/**",
     "docs/decisions/**",
-    "docs/project/task-authorizations/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
+    "docs/project/task-completions/V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS.json",
+    "vercel.json",
+    "netlify.toml",
+    "Dockerfile",
+    "nginx.conf",
+    "fly.toml",
+    "render.yaml"
   ],
   "requiredCommands": [
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
     "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
-    "npx tsx scripts/private-audit/validate-v05-release-handoff.ts",
-    "npx tsx scripts/private-audit/validate-v05-production-build-smoke.ts",
     "npm run lint",
     "npm run build"
   ],
   "inventoryFindings": [
-    "V0.5G_3_R2 release candidate completion record is registered and READY.",
-    "This post-freeze task must not change v0.5-lock.json, releaseCandidateStatus, V0.5 final freeze documentation, business code, or package files.",
-    "Deployment target is not selected; output must remain target-neutral and document the technical conditions instead of creating provider-specific configuration.",
-    "The application is local-first and must document origin-scoped IndexedDB/localStorage boundaries."
+    "V0.5G_4 post-freeze handoff completion record is complete with all requiredCommands PASS.",
+    "G4 readiness matrix says requiresNodeRuntime=true and staticExportSupported=false.",
+    "Deployment target remains SELECTION_REQUIRED; this task must keep machine state awaiting_user_approval.",
+    "This task must not create provider-specific configuration, Git remote, domain binding, credentials, business code, or dependencies."
   ],
   "stopConditions": [
-    "V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE dependency is not satisfied by an immutable completion record with RELEASE_CANDIDATE_STATUS READY.",
-    "Governance scripts reject post-freeze V0.5G-4 tasks while V0.5G remains complete.",
-    "Production build/start requires modifying app, components, lib, types, package files, next config, or V0.5A-G frozen rules.",
-    "Production smoke cannot run against isolated airburg-v05-release-handoff-audit without touching production airburg-v05.",
-    "Deployment readiness would require choosing a vendor, binding a domain, adding backend/server database/AI, or adding dependencies."
+    "V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
+    "The decision package would require executing deployment, creating a Git remote, creating a platform project, binding a domain, writing credentials, or modifying business code.",
+    "The decision package would need to mark a deployment target as approved without explicit user approval.",
+    "The compatibility matrix is missing or contradicts Node runtime/static export requirements."
   ],
-  "authorizedAt": "2026-06-23T08:39:00+08:00",
+  "authorizedAt": "2026-06-23T08:52:38+08:00",
   "contractVersion": "v0.5-task-authorization-v1",
-  "baselineCommit": "a48feb1731ee0174ce836425b0eb87ade081a870",
-  "authorizationFile": "docs/project/task-authorizations/V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS.json",
-  "authorizationHash": "c1b8b04903945a720a961b77ac88623505bc42e286e9c9d44976714c8c4926cb",
-  "authorizationCommit": "598338e73aaf6b0d548219569462f7a87f66da71",
+  "baselineCommit": "15d4e1ecd110dbf52cb6c875d6d8724e2179948f",
+  "authorizationFile": "docs/project/task-authorizations/V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE.json",
+  "authorizationHash": "b4575a4d283455417e4d3078b4fc162a2252ee66e9e49fd3ffbba69a0da9cc90",
+  "authorizationCommit": "eb4ff05b95285b26fb11037224f0b61170a80789",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
-  "startedAt": "2026-06-23T00:39:48.502Z",
+  "startedAt": "2026-06-23T00:54:29.300Z",
   "status": "complete",
   "commandResults": [
     {
@@ -115,33 +109,6 @@
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05-release-handoff.ts",
-      "status": "PASS",
-      "releaseCommit": "7f8db73d05f5f05599590dac77729e69775a5b9e",
-      "deploymentTargetStatus": "SELECTION_REQUIRED",
-      "operatingModelStatus": "SINGLE_BROWSER_OPERATOR_READY",
-      "productionUseCaseStatus": "NOT_READY_FOR_SHARED_MULTIUSER",
-      "operationDocCount": 5
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05-production-build-smoke.ts",
-      "status": "PASS",
-      "databaseName": "airburg-v05-release-handoff-audit",
-      "selectedFileCount": 4,
-      "fileSelectionMethod": "DOM.setFileInputFiles",
-      "importCompleted": true,
-      "routesChecked": 12,
-      "productionBuildPass": true,
-      "productionServerStarted": true,
-      "auditDatabaseDeleted": true,
-      "productionDatabaseUntouched": true,
-      "mobile390NoOverflow": true,
-      "privacyPass": true,
-      "numberSafetyPass": true,
-      "consolePass": true,
-      "staticResourcesLoad": true
-    },
-    {
       "command": "npm run lint",
       "status": "PASS"
     },
@@ -150,9 +117,9 @@
       "status": "PASS"
     }
   ],
-  "completedAt": "2026-06-23T08:39:00+08:00",
-  "deploymentHandoffStatus": "READY",
-  "deploymentTargetStatus": "SELECTION_REQUIRED",
-  "operatingModelStatus": "SINGLE_BROWSER_OPERATOR_READY",
-  "operatingModelLimit": "SHARED_MULTIUSER_NOT_SUPPORTED"
+  "completedAt": "2026-06-23T09:01:51+08:00",
+  "deploymentDecisionStatus": "AWAITING_USER_APPROVAL",
+  "decisionStatus": "awaiting_user_approval",
+  "recommendedDeploymentType": "hosted_node_platform",
+  "recommendedDeploymentApprovalStatus": "not_approved"
 }
