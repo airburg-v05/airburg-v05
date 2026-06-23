@@ -1,0 +1,86 @@
+{
+  "taskId": "V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION",
+  "stage": "V0.5G-5.1",
+  "dependsOn": [
+    "V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE"
+  ],
+  "governanceContractHash": "a7099a6dc7aca9029412460946f41f34fefd7d89d45aa88da323c3f32e472e7c",
+  "requiredDocuments": [
+    "AGENTS.md",
+    "docs/product/V05_PRODUCT_NORTH_STAR.md",
+    "docs/product/V05_INFORMATION_ARCHITECTURE.md",
+    "docs/architecture/V05_PLATFORM_STORE_DATA_CONTRACT.md",
+    "docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md",
+    "docs/design/V05_DESIGN_SYSTEM.md",
+    "docs/design/V05_REFERENCE_PLATFORM_MAP.md",
+    "docs/roadmap/V05_EXECUTION_SEQUENCE.md",
+    "docs/quality/V05_ACCEPTANCE_GATES.md",
+    "docs/decisions/ADR-001-platform-and-store-ownership.md",
+    "docs/project/V05_TASK_CONTRACT.md",
+    "docs/project/v0.5-lock.json",
+    "docs/operations/v0.5-deployment-target-decision.json",
+    "docs/project/task-completions/V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE.json",
+    "scripts/private-audit/validate-v05-task-authorization.ts",
+    "scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "scripts/private-audit/validate-v05-task-preflight.ts",
+    "scripts/private-audit/validate-v05-governance-lock.ts"
+  ],
+  "allowedModifyPaths": [
+    "docs/operations/v0.5-deployment-target-decision.json",
+    "docs/project/current-task.json",
+    "docs/project/task-authorizations/V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION.json",
+    "docs/project/task-completions/V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION.json"
+  ],
+  "forbiddenModifyPaths": [
+    "app/**",
+    "components/**",
+    "lib/**",
+    "types/**",
+    "package.json",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "yarn.lock",
+    "next.config.*",
+    "private-samples/**",
+    ".env",
+    ".env.*",
+    "docs/project/v0.5-lock.json",
+    "docs/releases/**",
+    "docs/product/**",
+    "docs/architecture/**",
+    "docs/design/**",
+    "docs/roadmap/**",
+    "docs/quality/**",
+    "docs/decisions/**",
+    "docs/project/task-completions/V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE.json",
+    "docs/operations/V05_DEPLOYMENT_TARGET_DECISION.md",
+    "vercel.json",
+    "netlify.toml",
+    "Dockerfile",
+    "nginx.conf",
+    "fly.toml",
+    "render.yaml"
+  ],
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "inventoryFindings": [
+    "V0.5G_5 completion record is complete with all requiredCommands PASS.",
+    "User explicitly approved selectedTarget=vercel, selectedPlan=pro, useProviderDefaultDomain=true, customDomain=null, gitRemoteAuthorization=false, deploymentProjectAuthorization=true, deploymentRegionPreference=provider_default, environment=preview, approvedByUser=true.",
+    "This task only registers approval in the machine decision file and must not deploy, create Git remote, create platform project, bind domain, write credentials, or modify business code.",
+    "G7 production deployment remains unauthorized and must require separate explicit approval."
+  ],
+  "stopConditions": [
+    "V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
+    "Any required user approval field is missing or ambiguous.",
+    "The update would need to store an access token, password, API key, private key, cookie, or other credential.",
+    "The task would require actual deployment, Git remote creation, platform project creation, domain binding, or provider configuration."
+  ],
+  "authorizedAt": "2026-06-23T09:47:24+08:00",
+  "contractVersion": "v0.5-task-authorization-v1"
+}
