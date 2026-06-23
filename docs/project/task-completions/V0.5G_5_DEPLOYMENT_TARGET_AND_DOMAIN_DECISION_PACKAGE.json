@@ -1,0 +1,53 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE",
+  "stage": "V0.5G-5",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE.json",
+  "authorizationHash": "b4575a4d283455417e4d3078b4fc162a2252ee66e9e49fd3ffbba69a0da9cc90",
+  "authorizationCommit": "eb4ff05b95285b26fb11037224f0b61170a80789",
+  "completionCommit": "f8616bbec73956aef3d5ac7d98e4223384b2b410",
+  "completedAt": "2026-06-23T09:01:51+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "deploymentDecisionStatus": "AWAITING_USER_APPROVAL",
+  "decisionStatus": "awaiting_user_approval",
+  "recommendedDeploymentType": "hosted_node_platform",
+  "recommendedDeploymentApprovalStatus": "not_approved",
+  "decisionDocument": "docs/operations/V05_DEPLOYMENT_TARGET_DECISION.md",
+  "decisionMachineFile": "docs/operations/v0.5-deployment-target-decision.json",
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-23T09:01:51+08:00"
+}
