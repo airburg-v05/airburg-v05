@@ -1,0 +1,82 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE",
+  "stage": "V0.5G-3-R2",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "authorizationHash": "f23512afc17f4b42a5333084af4f0c05ef20d1a66a4235530ef35ed3841ba990",
+  "authorizationCommit": "3fd3f972a41dcfa680b9f15991467878d3530270",
+  "completionCommit": "7f8db73d05f5f05599590dac77729e69775a5b9e",
+  "completedAt": "2026-06-23T08:13:10+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+    "npx tsx scripts/private-audit/validate-v05g3r2-release-candidate-browser-runtime.ts",
+    "npx tsx scripts/private-audit/validate-v05g3r2-release-candidate-final-audit.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05g3r2-release-candidate-browser-runtime.ts",
+      "status": "PASS",
+      "screenshotManifestPath": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v05g3r2-screenshots-CUw0Yi/manifest.json",
+      "screenshotManifestSha256": "66c0818270bd09de281ea564b87fc8ddb8a91d887ad46a9b53ca3772b4a1ac4e",
+      "screenshotCount": 36,
+      "mobile390NoOverflow": true,
+      "tablet768NoOverflow": true,
+      "desktop1440NoOverflow": true,
+      "privacyPass": true,
+      "numberSafetyPass": true,
+      "consolePass": true,
+      "auditDatabaseDeleted": true,
+      "productionDatabaseUntouched": true
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05g3r2-release-candidate-final-audit.ts",
+      "status": "PASS",
+      "releaseCandidateStatus": "READY",
+      "mustFixItems": 0,
+      "oldR1BlockedEvidencePreserved": true,
+      "historicalCompletionCount": 8
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-23T08:13:10+08:00"
+}
