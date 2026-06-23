@@ -1,0 +1,62 @@
+{
+  "release": "V0.5",
+  "releaseCandidateStatus": "READY",
+  "deploymentHandoffStatus": "READY",
+  "deploymentTargetStatus": "SELECTION_REQUIRED",
+  "operatingModelStatus": "SINGLE_BROWSER_OPERATOR_READY",
+  "operatingModelLimit": "SHARED_MULTIUSER_NOT_SUPPORTED",
+  "productionUseCaseStatus": "NOT_READY_FOR_SHARED_MULTIUSER",
+  "releaseCommit": "7f8db73d05f5f05599590dac77729e69775a5b9e",
+  "completionRecord": "docs/project/task-completions/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "freezeDocument": "docs/releases/v0.5-final-release-candidate-freeze.md",
+  "runtime": {
+    "verifiedNodeVersion": "v24.16.0",
+    "verifiedNpmVersion": "11.13.0",
+    "nextVersion": "16.2.9",
+    "supportedBuildCommand": "npm run build",
+    "supportedStartCommand": "npm run start -- -p <port>",
+    "outputDirectory": ".next",
+    "healthCheckRoute": "/login",
+    "requiresNodeRuntime": true,
+    "staticExportSupported": false,
+    "staticExportReason": "next.config.ts does not set output: 'export'; V0.5 is validated with next start.",
+    "requiresHttps": true,
+    "requiresPersistentOrigin": true,
+    "requiresServerEnvironmentVariables": false,
+    "requiresBackend": false,
+    "requiresServerDatabase": false,
+    "requiresWebSocket": false,
+    "requiresFileUploadToServer": false,
+    "browserStorageOnly": true,
+    "productionDatabaseName": "airburg-v05",
+    "auditDatabaseNamePattern": "airburg-v05-*-audit"
+  },
+  "browserApis": {
+    "indexedDB": true,
+    "localStorage": true,
+    "fileApi": true,
+    "webCrypto": true,
+    "textEncoder": true
+  },
+  "localDataBoundary": {
+    "originScoped": true,
+    "localhostDataDoesNotMoveToProductionDomain": true,
+    "firstProductionUseRequiresReimport": true,
+    "noServerSync": true,
+    "noAccountSharing": true,
+    "noCrossBrowserSync": true,
+    "browserDataDeletionCanLoseLocalData": true,
+    "rollbackMustNotClearIndexedDB": true,
+    "rollbackMustNotClearLegacyKeys": true
+  },
+  "targetSelectionConditions": [
+    "Must support Node runtime for next start.",
+    "Must provide stable HTTPS origin.",
+    "Must not clear browser IndexedDB or localStorage during deployment.",
+    "Must serve static Next.js resources from the application origin.",
+    "Does not require server database, backend API, WebSocket, or server-side upload storage."
+  ],
+  "knownNonBlockingIssues": [
+    "favicon.ico 404 may be recorded as a non-business resource issue."
+  ]
+}

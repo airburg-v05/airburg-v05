@@ -1,8 +1,8 @@
 {
-  "taskId": "V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE",
-  "stage": "V0.5G-3-R2",
+  "taskId": "V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS",
+  "stage": "V0.5G-4",
   "dependsOn": [
-    "V0.5G_2_ACCESSIBILITY_MOBILE_PERFORMANCE_AND_RUNTIME_CLOSURE"
+    "V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE"
   ],
   "governanceContractHash": "a7099a6dc7aca9029412460946f41f34fefd7d89d45aa88da323c3f32e472e7c",
   "requiredDocuments": [
@@ -18,23 +18,20 @@
     "docs/decisions/ADR-001-platform-and-store-ownership.md",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
-    "docs/project/task-completions/V0.5G_1_CROSS_PAGE_VISUAL_SYSTEM_AND_NAVIGATION_CLOSURE.json",
-    "docs/project/task-completions/V0.5G_2_ACCESSIBILITY_MOBILE_PERFORMANCE_AND_RUNTIME_CLOSURE.json",
+    "docs/releases/v0.5-final-release-candidate-freeze.md",
+    "docs/project/task-completions/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
-    "scripts/private-audit/validate-v05-governance-lock.ts",
-    "scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-    "scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts"
+    "scripts/private-audit/validate-v05-governance-lock.ts"
   ],
   "allowedModifyPaths": [
-    "docs/releases/v0.5-final-release-candidate-freeze.md",
-    "docs/project/v0.5-lock.json",
-    "scripts/private-audit/validate-v05g3r2-release-candidate-browser-runtime.ts",
-    "scripts/private-audit/validate-v05g3r2-release-candidate-final-audit.ts",
+    "docs/operations/**",
+    "scripts/private-audit/validate-v05-release-handoff.ts",
+    "scripts/private-audit/validate-v05-production-build-smoke.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
+    "docs/project/task-authorizations/V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS.json",
+    "docs/project/task-completions/V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS.json"
   ],
   "forbiddenModifyPaths": [
     "app/**",
@@ -45,69 +42,60 @@
     "package-lock.json",
     "pnpm-lock.yaml",
     "yarn.lock",
+    "next.config.*",
     "private-samples/**",
-    "docs/product/**",
-    "docs/architecture/**",
-    "docs/design/**",
-    "docs/roadmap/**",
-    "docs/quality/**",
-    "docs/decisions/**",
+    ".env",
+    ".env.*",
+    ".next/**",
+    "logs/**",
+    "docs/project/v0.5-lock.json",
+    "docs/releases/v0.5-final-release-candidate-freeze.md",
     "docs/releases/v0.5a-multi-store-foundation-freeze.md",
     "docs/releases/v0.5b-data-center-freeze.md",
     "docs/releases/v0.5c-home-command-center-freeze.md",
     "docs/releases/v0.5d-multi-store-board-freeze.md",
     "docs/releases/v0.5e-focus-management-freeze.md",
     "docs/releases/v0.5f-target-allocation-freeze.md",
-    "scripts/private-audit/validate-v05g1-cross-page-visual-system.ts",
-    "scripts/private-audit/validate-v05g1-navigation-runtime.ts",
-    "scripts/private-audit/validate-v05g2-accessibility-runtime.ts",
-    "scripts/private-audit/validate-v05g2-mobile-performance.ts",
-    "docs/project/task-authorizations/V0.5G_3_V05_RELEASE_CANDIDATE_FINAL_AUDIT_AND_FREEZE.json",
-    "docs/project/task-authorizations/V0.5G_3_R1_V05_RELEASE_CANDIDATE_FINAL_AUDIT_AND_FREEZE.json",
-    "docs/project/task-completions/V0.5G_3_V05_RELEASE_CANDIDATE_FINAL_AUDIT_AND_FREEZE.json",
-    "docs/project/task-completions/V0.5G_3_R1_V05_RELEASE_CANDIDATE_FINAL_AUDIT_AND_FREEZE.json",
-    "docs/project/task-completions/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE.json",
-    "docs/project/task-completions/V0.5D_3_1_FREEZE_METADATA_CONSISTENCY_CLOSURE.json",
-    "docs/project/task-completions/V0.5E_4_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5F_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-    "docs/project/task-completions/V0.5G_1_CROSS_PAGE_VISUAL_SYSTEM_AND_NAVIGATION_CLOSURE.json",
-    "docs/project/task-completions/V0.5G_2_ACCESSIBILITY_MOBILE_PERFORMANCE_AND_RUNTIME_CLOSURE.json"
+    "docs/product/**",
+    "docs/architecture/**",
+    "docs/design/**",
+    "docs/roadmap/**",
+    "docs/quality/**",
+    "docs/decisions/**",
+    "docs/project/task-authorizations/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-completions/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
   ],
   "requiredCommands": [
     "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
     "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
-    "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-    "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "npx tsx scripts/private-audit/validate-v05g3r2-release-candidate-browser-runtime.ts",
-    "npx tsx scripts/private-audit/validate-v05g3r2-release-candidate-final-audit.ts",
+    "npx tsx scripts/private-audit/validate-v05-release-handoff.ts",
+    "npx tsx scripts/private-audit/validate-v05-production-build-smoke.ts",
     "npm run lint",
     "npm run build"
   ],
   "inventoryFindings": [
-    "V0.5A through V0.5F are complete in docs/project/v0.5-lock.json.",
-    "V0.5G_1 and V0.5G_2 immutable completion records exist with all requiredCommands PASS.",
-    "V0.5G remains pending before this final release-candidate regression task.",
-    "The previous V0.5G_3_R1 task is intentionally blocked because its taskId was not recognized by the stage freeze policy."
+    "V0.5G_3_R2 release candidate completion record is registered and READY.",
+    "This post-freeze task must not change v0.5-lock.json, releaseCandidateStatus, V0.5 final freeze documentation, business code, or package files.",
+    "Deployment target is not selected; output must remain target-neutral and document the technical conditions instead of creating provider-specific configuration.",
+    "The application is local-first and must document origin-scoped IndexedDB/localStorage boundaries."
   ],
   "stopConditions": [
-    "V0.5G_2_ACCESSIBILITY_MOBILE_PERFORMANCE_AND_RUNTIME_CLOSURE dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
-    "Any must-fix blocker is found in final audit, including data error, cross-store contamination, privacy leak, page crash, main flow failure, console business error, lint/build failure, governance error, or production database access.",
-    "The release-candidate audit would require modifying app, components, lib, types, package files, business rules, storage, persistence, import, target, metric, trend, parser, or historical completion records.",
-    "The old V0.5G_3 or V0.5G_3_R1 blocked evidence would need to be modified, overwritten, amended, or represented as PASS.",
-    "Chrome evidence cannot be produced with the isolated airburg-v05-g3r2-audit database without preserving production airburg-v05."
+    "V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE dependency is not satisfied by an immutable completion record with RELEASE_CANDIDATE_STATUS READY.",
+    "Governance scripts reject post-freeze V0.5G-4 tasks while V0.5G remains complete.",
+    "Production build/start requires modifying app, components, lib, types, package files, next config, or V0.5A-G frozen rules.",
+    "Production smoke cannot run against isolated airburg-v05-release-handoff-audit without touching production airburg-v05.",
+    "Deployment readiness would require choosing a vendor, binding a domain, adding backend/server database/AI, or adding dependencies."
   ],
-  "authorizedAt": "2026-06-23T08:13:10+08:00",
+  "authorizedAt": "2026-06-23T08:39:00+08:00",
   "contractVersion": "v0.5-task-authorization-v1",
-  "baselineCommit": "16c51945ffe60141d6f68848080101371d27baf8",
-  "authorizationFile": "docs/project/task-authorizations/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-  "authorizationHash": "f23512afc17f4b42a5333084af4f0c05ef20d1a66a4235530ef35ed3841ba990",
-  "authorizationCommit": "3fd3f972a41dcfa680b9f15991467878d3530270",
+  "baselineCommit": "a48feb1731ee0174ce836425b0eb87ade081a870",
+  "authorizationFile": "docs/project/task-authorizations/V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS.json",
+  "authorizationHash": "c1b8b04903945a720a961b77ac88623505bc42e286e9c9d44976714c8c4926cb",
+  "authorizationCommit": "598338e73aaf6b0d548219569462f7a87f66da71",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
-  "startedAt": "2026-06-23T00:14:17.050Z",
+  "startedAt": "2026-06-23T00:39:48.502Z",
   "status": "complete",
   "commandResults": [
     {
@@ -127,35 +115,31 @@
       "status": "PASS"
     },
     {
-      "command": "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-      "status": "PASS"
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05g3r2-release-candidate-browser-runtime.ts",
+      "command": "npx tsx scripts/private-audit/validate-v05-release-handoff.ts",
       "status": "PASS",
-      "screenshotManifestPath": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v05g3r2-screenshots-CUw0Yi/manifest.json",
-      "screenshotManifestSha256": "66c0818270bd09de281ea564b87fc8ddb8a91d887ad46a9b53ca3772b4a1ac4e",
-      "screenshotCount": 36,
+      "releaseCommit": "7f8db73d05f5f05599590dac77729e69775a5b9e",
+      "deploymentTargetStatus": "SELECTION_REQUIRED",
+      "operatingModelStatus": "SINGLE_BROWSER_OPERATOR_READY",
+      "productionUseCaseStatus": "NOT_READY_FOR_SHARED_MULTIUSER",
+      "operationDocCount": 5
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-production-build-smoke.ts",
+      "status": "PASS",
+      "databaseName": "airburg-v05-release-handoff-audit",
+      "selectedFileCount": 4,
+      "fileSelectionMethod": "DOM.setFileInputFiles",
+      "importCompleted": true,
+      "routesChecked": 12,
+      "productionBuildPass": true,
+      "productionServerStarted": true,
+      "auditDatabaseDeleted": true,
+      "productionDatabaseUntouched": true,
       "mobile390NoOverflow": true,
-      "tablet768NoOverflow": true,
-      "desktop1440NoOverflow": true,
       "privacyPass": true,
       "numberSafetyPass": true,
       "consolePass": true,
-      "auditDatabaseDeleted": true,
-      "productionDatabaseUntouched": true
-    },
-    {
-      "command": "npx tsx scripts/private-audit/validate-v05g3r2-release-candidate-final-audit.ts",
-      "status": "PASS",
-      "releaseCandidateStatus": "READY",
-      "mustFixItems": 0,
-      "oldR1BlockedEvidencePreserved": true,
-      "historicalCompletionCount": 8
+      "staticResourcesLoad": true
     },
     {
       "command": "npm run lint",
@@ -166,7 +150,9 @@
       "status": "PASS"
     }
   ],
-  "completedAt": "2026-06-23T08:13:10+08:00",
-  "releaseCandidateStatus": "READY",
-  "mustFixItems": []
+  "completedAt": "2026-06-23T08:39:00+08:00",
+  "deploymentHandoffStatus": "READY",
+  "deploymentTargetStatus": "SELECTION_REQUIRED",
+  "operatingModelStatus": "SINGLE_BROWSER_OPERATOR_READY",
+  "operatingModelLimit": "SHARED_MULTIUSER_NOT_SUPPORTED"
 }
