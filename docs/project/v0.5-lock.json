@@ -149,7 +149,7 @@
       "dependsOn": [
         "V0.5F"
       ],
-      "status": "pending"
+      "status": "complete"
     }
   ],
   "forbiddenModifyPaths": [
@@ -242,7 +242,7 @@
     "V0.5D": "complete",
     "V0.5E": "complete",
     "V0.5F": "complete",
-    "V0.5G": "pending"
+    "V0.5G": "complete"
   },
   "v05aCompletedAt": "2026-06-22T02:12:00+08:00",
   "v05aFreezeDocument": "docs/releases/v0.5a-platform-store-data-foundation-freeze.md",
@@ -262,6 +262,10 @@
   "v05fCompletedAt": "2026-06-23T06:26:31+08:00",
   "v05fFreezeDocument": "docs/releases/v0.5f-target-allocation-freeze.md",
   "v05fFinalCompletionRecord": "docs/project/task-completions/V0.5F_5_R1_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
-  "nextStage": "V0.5G",
-  "nextTask": "V0.5G_1_CROSS_PAGE_VISUAL_SYSTEM_AND_NAVIGATION_CLOSURE"
+  "nextStage": "V0.5",
+  "nextTask": "V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE",
+  "v05gCompletedAt": "2026-06-23T08:13:10+08:00",
+  "v05gFreezeDocument": "docs/releases/v0.5-final-release-candidate-freeze.md",
+  "v05gFinalCompletionRecord": "docs/project/task-completions/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "releaseCandidateStatus": "READY"
 }

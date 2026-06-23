@@ -1,6 +1,6 @@
 {
-  "taskId": "V0.5G_3_R1_V05_RELEASE_CANDIDATE_FINAL_AUDIT_AND_FREEZE",
-  "stage": "V0.5G-3-R1",
+  "taskId": "V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE",
+  "stage": "V0.5G-3-R2",
   "dependsOn": [
     "V0.5G_2_ACCESSIBILITY_MOBILE_PERFORMANCE_AND_RUNTIME_CLOSURE"
   ],
@@ -30,11 +30,11 @@
   "allowedModifyPaths": [
     "docs/releases/v0.5-final-release-candidate-freeze.md",
     "docs/project/v0.5-lock.json",
-    "scripts/private-audit/validate-v05g3r1-release-candidate-browser-runtime.ts",
-    "scripts/private-audit/validate-v05g3r1-release-candidate-final-audit.ts",
+    "scripts/private-audit/validate-v05g3r2-release-candidate-browser-runtime.ts",
+    "scripts/private-audit/validate-v05g3r2-release-candidate-final-audit.ts",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5G_3_R1_V05_RELEASE_CANDIDATE_FINAL_AUDIT_AND_FREEZE.json",
-    "docs/project/task-completions/V0.5G_3_R1_V05_RELEASE_CANDIDATE_FINAL_AUDIT_AND_FREEZE.json"
+    "docs/project/task-authorizations/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-completions/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
   ],
   "forbiddenModifyPaths": [
     "app/**",
@@ -62,6 +62,10 @@
     "scripts/private-audit/validate-v05g1-navigation-runtime.ts",
     "scripts/private-audit/validate-v05g2-accessibility-runtime.ts",
     "scripts/private-audit/validate-v05g2-mobile-performance.ts",
+    "docs/project/task-authorizations/V0.5G_3_V05_RELEASE_CANDIDATE_FINAL_AUDIT_AND_FREEZE.json",
+    "docs/project/task-authorizations/V0.5G_3_R1_V05_RELEASE_CANDIDATE_FINAL_AUDIT_AND_FREEZE.json",
+    "docs/project/task-completions/V0.5G_3_V05_RELEASE_CANDIDATE_FINAL_AUDIT_AND_FREEZE.json",
+    "docs/project/task-completions/V0.5G_3_R1_V05_RELEASE_CANDIDATE_FINAL_AUDIT_AND_FREEZE.json",
     "docs/project/task-completions/V0.5A_5_R2_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "docs/project/task-completions/V0.5B_5_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
     "docs/project/task-completions/V0.5C_3_1_STAGE_SCOPED_FREEZE_GATE_AND_POST_REGISTRATION_CLOSURE.json",
@@ -78,27 +82,33 @@
     "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
     "npx tsx scripts/private-audit/validate-v05a32-real-fixture-readiness-gate.ts",
     "npx tsx scripts/private-audit/validate-v05a41-real-adapter-browser-integration.ts",
-    "npx tsx scripts/private-audit/validate-v05g3r1-release-candidate-browser-runtime.ts",
-    "npx tsx scripts/private-audit/validate-v05g3r1-release-candidate-final-audit.ts",
+    "npx tsx scripts/private-audit/validate-v05g3r2-release-candidate-browser-runtime.ts",
+    "npx tsx scripts/private-audit/validate-v05g3r2-release-candidate-final-audit.ts",
     "npm run lint",
     "npm run build"
+  ],
+  "inventoryFindings": [
+    "V0.5A through V0.5F are complete in docs/project/v0.5-lock.json.",
+    "V0.5G_1 and V0.5G_2 immutable completion records exist with all requiredCommands PASS.",
+    "V0.5G remains pending before this final release-candidate regression task.",
+    "The previous V0.5G_3_R1 task is intentionally blocked because its taskId was not recognized by the stage freeze policy."
   ],
   "stopConditions": [
     "V0.5G_2_ACCESSIBILITY_MOBILE_PERFORMANCE_AND_RUNTIME_CLOSURE dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
     "Any must-fix blocker is found in final audit, including data error, cross-store contamination, privacy leak, page crash, main flow failure, console business error, lint/build failure, governance error, or production database access.",
     "The release-candidate audit would require modifying app, components, lib, types, package files, business rules, storage, persistence, import, target, metric, trend, parser, or historical completion records.",
-    "The old V0.5G_3 blocked evidence is present but not preserved as blocked.",
-    "Chrome evidence cannot be produced with the isolated airburg-v05-g3r1-audit database without touching production airburg-v05."
+    "The old V0.5G_3 or V0.5G_3_R1 blocked evidence would need to be modified, overwritten, amended, or represented as PASS.",
+    "Chrome evidence cannot be produced with the isolated airburg-v05-g3r2-audit database without preserving production airburg-v05."
   ],
-  "authorizedAt": "2026-06-23T07:35:44+08:00",
+  "authorizedAt": "2026-06-23T08:13:10+08:00",
   "contractVersion": "v0.5-task-authorization-v1",
-  "baselineCommit": "119817435e826fd495302cb3fe69e3b126a3740c",
-  "authorizationFile": "docs/project/task-authorizations/V0.5G_3_R1_V05_RELEASE_CANDIDATE_FINAL_AUDIT_AND_FREEZE.json",
-  "authorizationHash": "d9c1eeb85fb6f80221f20a31a4ae1eba28a97831d77005036cce83cb856c0cc6",
-  "authorizationCommit": "b92ad9fd8764fd6b2b5fd708ae5cf9978de86e78",
+  "baselineCommit": "16c51945ffe60141d6f68848080101371d27baf8",
+  "authorizationFile": "docs/project/task-authorizations/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+  "authorizationHash": "f23512afc17f4b42a5333084af4f0c05ef20d1a66a4235530ef35ed3841ba990",
+  "authorizationCommit": "3fd3f972a41dcfa680b9f15991467878d3530270",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
-  "startedAt": "2026-06-23T07:35:44+08:00",
-  "status": "blocked",
+  "startedAt": "2026-06-23T00:14:17.050Z",
+  "status": "complete",
   "commandResults": [
     {
       "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
@@ -125,21 +135,38 @@
       "status": "PASS"
     },
     {
-      "command": "governance freeze policy compatibility check",
-      "status": "FAIL",
-      "failedCheck": "taskIdSuffixNotAuthorizedForMajorStageFreeze"
-    }
-  ],
-  "blockedAt": "2026-06-23T07:39:13+08:00",
-  "blockedReason": "Existing V0.5 major-stage freeze policy only authorizes taskIds ending with _FINAL_REGRESSION_AND_STAGE_FREEZE to change stageStatuses/executionSequence from pending to complete. This taskId ends with _FINAL_AUDIT_AND_FREEZE, so V0.5G pending->complete would fail validate-v05-governance-lock.ts. The task forbids modifying governance scripts or fixed contracts, so release-candidate registration cannot proceed in this task.",
-  "mustFixItems": [
+      "command": "npx tsx scripts/private-audit/validate-v05g3r2-release-candidate-browser-runtime.ts",
+      "status": "PASS",
+      "screenshotManifestPath": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v05g3r2-screenshots-CUw0Yi/manifest.json",
+      "screenshotManifestSha256": "66c0818270bd09de281ea564b87fc8ddb8a91d887ad46a9b53ca3772b4a1ac4e",
+      "screenshotCount": 36,
+      "mobile390NoOverflow": true,
+      "tablet768NoOverflow": true,
+      "desktop1440NoOverflow": true,
+      "privacyPass": true,
+      "numberSafetyPass": true,
+      "consolePass": true,
+      "auditDatabaseDeleted": true,
+      "productionDatabaseUntouched": true
+    },
     {
-      "code": "governance_freeze_task_suffix_mismatch",
-      "severity": "blocking",
-      "description": "V0.5G_3_R1_V05_RELEASE_CANDIDATE_FINAL_AUDIT_AND_FREEZE is not recognized by scripts/private-audit/lib/v05-stage-freeze-policy.ts as an authorized major-stage freeze task.",
-      "impact": "Cannot set stageStatuses.V0.5G or executionSequence.V0.5G to complete while keeping governance lock PASS.",
-      "minimumFixTask": "Add a narrow governance metadata closure task to authorize this exact release-candidate freeze taskId or rerun the final freeze under an allowed _FINAL_REGRESSION_AND_STAGE_FREEZE taskId, without changing business code."
+      "command": "npx tsx scripts/private-audit/validate-v05g3r2-release-candidate-final-audit.ts",
+      "status": "PASS",
+      "releaseCandidateStatus": "READY",
+      "mustFixItems": 0,
+      "oldR1BlockedEvidencePreserved": true,
+      "historicalCompletionCount": 8
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
     }
   ],
-  "releaseCandidateStatus": "NOT_READY"
+  "completedAt": "2026-06-23T08:13:10+08:00",
+  "releaseCandidateStatus": "READY",
+  "mustFixItems": []
 }
