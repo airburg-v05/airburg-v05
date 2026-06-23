@@ -1,8 +1,8 @@
 {
-  "taskId": "V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE",
-  "stage": "V0.5G-5",
+  "taskId": "V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION",
+  "stage": "V0.5G-5.1",
   "dependsOn": [
-    "V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS"
+    "V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE"
   ],
   "governanceContractHash": "a7099a6dc7aca9029412460946f41f34fefd7d89d45aa88da323c3f32e472e7c",
   "requiredDocuments": [
@@ -18,20 +18,18 @@
     "docs/decisions/ADR-001-platform-and-store-ownership.md",
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
-    "docs/operations/v0.5-deployment-readiness.json",
-    "docs/operations/V05_RELEASE_HANDOFF.md",
-    "docs/project/task-completions/V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS.json",
+    "docs/operations/v0.5-deployment-target-decision.json",
+    "docs/project/task-completions/V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
     "scripts/private-audit/validate-v05-governance-lock.ts"
   ],
   "allowedModifyPaths": [
-    "docs/operations/V05_DEPLOYMENT_TARGET_DECISION.md",
     "docs/operations/v0.5-deployment-target-decision.json",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE.json",
-    "docs/project/task-completions/V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE.json"
+    "docs/project/task-authorizations/V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION.json",
+    "docs/project/task-completions/V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION.json"
   ],
   "forbiddenModifyPaths": [
     "app/**",
@@ -54,7 +52,8 @@
     "docs/roadmap/**",
     "docs/quality/**",
     "docs/decisions/**",
-    "docs/project/task-completions/V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS.json",
+    "docs/project/task-completions/V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE.json",
+    "docs/operations/V05_DEPLOYMENT_TARGET_DECISION.md",
     "vercel.json",
     "netlify.toml",
     "Dockerfile",
@@ -71,25 +70,25 @@
     "npm run build"
   ],
   "inventoryFindings": [
-    "V0.5G_4 post-freeze handoff completion record is complete with all requiredCommands PASS.",
-    "G4 readiness matrix says requiresNodeRuntime=true and staticExportSupported=false.",
-    "Deployment target remains SELECTION_REQUIRED; this task must keep machine state awaiting_user_approval.",
-    "This task must not create provider-specific configuration, Git remote, domain binding, credentials, business code, or dependencies."
+    "V0.5G_5 completion record is complete with all requiredCommands PASS.",
+    "User explicitly approved selectedTarget=vercel, selectedPlan=pro, useProviderDefaultDomain=true, customDomain=null, gitRemoteAuthorization=false, deploymentProjectAuthorization=true, deploymentRegionPreference=provider_default, environment=preview, approvedByUser=true.",
+    "This task only registers approval in the machine decision file and must not deploy, create Git remote, create platform project, bind domain, write credentials, or modify business code.",
+    "G7 production deployment remains unauthorized and must require separate explicit approval."
   ],
   "stopConditions": [
-    "V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
-    "The decision package would require executing deployment, creating a Git remote, creating a platform project, binding a domain, writing credentials, or modifying business code.",
-    "The decision package would need to mark a deployment target as approved without explicit user approval.",
-    "The compatibility matrix is missing or contradicts Node runtime/static export requirements."
+    "V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
+    "Any required user approval field is missing or ambiguous.",
+    "The update would need to store an access token, password, API key, private key, cookie, or other credential.",
+    "The task would require actual deployment, Git remote creation, platform project creation, domain binding, or provider configuration."
   ],
-  "authorizedAt": "2026-06-23T08:52:38+08:00",
+  "authorizedAt": "2026-06-23T09:47:24+08:00",
   "contractVersion": "v0.5-task-authorization-v1",
-  "baselineCommit": "15d4e1ecd110dbf52cb6c875d6d8724e2179948f",
-  "authorizationFile": "docs/project/task-authorizations/V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE.json",
-  "authorizationHash": "b4575a4d283455417e4d3078b4fc162a2252ee66e9e49fd3ffbba69a0da9cc90",
-  "authorizationCommit": "eb4ff05b95285b26fb11037224f0b61170a80789",
+  "baselineCommit": "7501e53446919c6de9a583543858c2a4547a1e75",
+  "authorizationFile": "docs/project/task-authorizations/V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION.json",
+  "authorizationHash": "a067a380c72648b9808e7e9ce9cd8b0b9cc4fc47427200b36a89998f9b33019e",
+  "authorizationCommit": "a9b624901581dd4d77ea189964abaf8563475c8c",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
-  "startedAt": "2026-06-23T00:54:29.300Z",
+  "startedAt": "2026-06-23T01:47:24.300Z",
   "status": "complete",
   "commandResults": [
     {
@@ -117,9 +116,16 @@
       "status": "PASS"
     }
   ],
-  "completedAt": "2026-06-23T09:01:51+08:00",
-  "deploymentDecisionStatus": "AWAITING_USER_APPROVAL",
-  "decisionStatus": "awaiting_user_approval",
-  "recommendedDeploymentType": "hosted_node_platform",
-  "recommendedDeploymentApprovalStatus": "not_approved"
+  "completedAt": "2026-06-23T09:50:47+08:00",
+  "deploymentDecisionStatus": "APPROVED",
+  "decisionStatus": "approved",
+  "selectedTarget": "vercel",
+  "selectedPlan": "pro",
+  "useProviderDefaultDomain": true,
+  "customDomain": null,
+  "gitRemoteAuthorization": false,
+  "deploymentProjectAuthorization": true,
+  "deploymentRegionPreference": "provider_default",
+  "environment": "preview",
+  "approvedByUser": true
 }
