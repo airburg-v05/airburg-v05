@@ -1,8 +1,8 @@
 {
-  "taskId": "V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION",
-  "stage": "V0.5G-5.1",
+  "taskId": "V0.5G_6_SELECTED_TARGET_CONFIGURATION_AND_PREVIEW_DEPLOYMENT",
+  "stage": "V0.5G-6",
   "dependsOn": [
-    "V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE"
+    "V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION"
   ],
   "governanceContractHash": "a7099a6dc7aca9029412460946f41f34fefd7d89d45aa88da323c3f32e472e7c",
   "requiredDocuments": [
@@ -19,17 +19,18 @@
     "docs/project/V05_TASK_CONTRACT.md",
     "docs/project/v0.5-lock.json",
     "docs/operations/v0.5-deployment-target-decision.json",
-    "docs/project/task-completions/V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE.json",
+    "docs/project/task-completions/V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION.json",
     "scripts/private-audit/validate-v05-task-authorization.ts",
     "scripts/private-audit/validate-v05-task-completion-ledger.ts",
     "scripts/private-audit/validate-v05-task-preflight.ts",
     "scripts/private-audit/validate-v05-governance-lock.ts"
   ],
   "allowedModifyPaths": [
-    "docs/operations/v0.5-deployment-target-decision.json",
+    "docs/operations/V05_PREVIEW_DEPLOYMENT_REPORT.md",
+    "docs/operations/v0.5-preview-deployment-result.json",
     "docs/project/current-task.json",
-    "docs/project/task-authorizations/V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION.json",
-    "docs/project/task-completions/V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION.json"
+    "docs/project/task-authorizations/V0.5G_6_SELECTED_TARGET_CONFIGURATION_AND_PREVIEW_DEPLOYMENT.json",
+    "docs/project/task-completions/V0.5G_6_SELECTED_TARGET_CONFIGURATION_AND_PREVIEW_DEPLOYMENT.json"
   ],
   "forbiddenModifyPaths": [
     "app/**",
@@ -52,7 +53,7 @@
     "docs/roadmap/**",
     "docs/quality/**",
     "docs/decisions/**",
-    "docs/project/task-completions/V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE.json",
+    "docs/project/task-completions/V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION.json",
     "docs/operations/V05_DEPLOYMENT_TARGET_DECISION.md",
     "vercel.json",
     "netlify.toml",
@@ -70,26 +71,28 @@
     "npm run build"
   ],
   "inventoryFindings": [
-    "V0.5G_5 completion record is complete with all requiredCommands PASS.",
-    "User explicitly approved selectedTarget=vercel, selectedPlan=pro, useProviderDefaultDomain=true, customDomain=null, gitRemoteAuthorization=false, deploymentProjectAuthorization=true, deploymentRegionPreference=provider_default, environment=preview, approvedByUser=true.",
-    "This task only registers approval in the machine decision file and must not deploy, create Git remote, create platform project, bind domain, write credentials, or modify business code.",
-    "G7 production deployment remains unauthorized and must require separate explicit approval."
+    "V0.5G_5_1 completion record is complete with all requiredCommands PASS.",
+    "Deployment decision is approved for selectedTarget=vercel, selectedPlan=pro, environment=preview, useProviderDefaultDomain=true, customDomain=null.",
+    "User explicitly forbids production deployment, --prod, ailianshou.com binding, Git remote creation or use, and credential persistence.",
+    "This task may create a Vercel Preview deployment through the Vercel CLI only because the local machine is already logged in.",
+    "This task must generate preview deployment evidence documents without modifying business code, storage, schemas, or frozen rules."
   ],
   "stopConditions": [
-    "V0.5G_5_DEPLOYMENT_TARGET_AND_DOMAIN_DECISION_PACKAGE dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
-    "Any required user approval field is missing or ambiguous.",
-    "The update would need to store an access token, password, API key, private key, cookie, or other credential.",
-    "The task would require actual deployment, Git remote creation, platform project creation, domain binding, or provider configuration."
+    "V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
+    "The deployment decision is not approved for Vercel Preview.",
+    "The local Vercel CLI is not logged in.",
+    "The task would require --prod, production release, custom domain binding, ailianshou.com binding, Git remote creation or use, credential storage, business code changes, dependency changes, or schema changes.",
+    "Preview deployment cannot be verified through a public HTTPS URL without exposing secrets."
   ],
-  "authorizedAt": "2026-06-23T09:47:24+08:00",
+  "authorizedAt": "2026-06-23T18:39:19+08:00",
   "contractVersion": "v0.5-task-authorization-v1",
-  "baselineCommit": "7501e53446919c6de9a583543858c2a4547a1e75",
-  "authorizationFile": "docs/project/task-authorizations/V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION.json",
-  "authorizationHash": "a067a380c72648b9808e7e9ce9cd8b0b9cc4fc47427200b36a89998f9b33019e",
-  "authorizationCommit": "a9b624901581dd4d77ea189964abaf8563475c8c",
+  "baselineCommit": "11f358391cba3aad5c55244696d6be77a2678182",
+  "authorizationFile": "docs/project/task-authorizations/V0.5G_6_SELECTED_TARGET_CONFIGURATION_AND_PREVIEW_DEPLOYMENT.json",
+  "authorizationHash": "01769ed165575bf71239aeb52a7e7a272247793346335806d1bc00ffba587134",
+  "authorizationCommit": "212e8e02b4ea159710152b0db60eac1650a8b4b9",
   "authorizedContractVersion": "v0.5-task-authorization-v1",
-  "startedAt": "2026-06-23T01:47:24.300Z",
-  "status": "complete",
+  "startedAt": "2026-06-23T18:39:19+08:00",
+  "status": "blocked",
   "commandResults": [
     {
       "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
@@ -114,9 +117,15 @@
     {
       "command": "npm run build",
       "status": "PASS"
+    },
+    {
+      "command": "VERCEL_TELEMETRY_DISABLED=1 npx --yes vercel deploy --yes --target=preview --logs",
+      "status": "FAIL"
     }
   ],
-  "completedAt": "2026-06-23T09:50:47+08:00",
+  "completedAt": "2026-06-23T18:44:49+08:00",
+  "blockedReason": "Vercel returned deployment.target=production even though the CLI command used --target=preview and did not use --prod. The resulting URL also returned HTTP 401 with Vercel SSO protection, so it was not confirmed as a publicly accessible Preview URL.",
+  "previewDeploymentStatus": "NOT_READY",
   "deploymentDecisionStatus": "APPROVED",
   "decisionStatus": "approved",
   "selectedTarget": "vercel",
@@ -127,5 +136,6 @@
   "deploymentProjectAuthorization": true,
   "deploymentRegionPreference": "provider_default",
   "environment": "preview",
-  "approvedByUser": true
+  "approvedByUser": true,
+  "productionDeploymentAuthorization": false
 }

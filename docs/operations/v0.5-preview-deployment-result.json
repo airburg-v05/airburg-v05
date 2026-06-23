@@ -1,0 +1,56 @@
+{
+  "release": "V0.5",
+  "taskId": "V0.5G_6_SELECTED_TARGET_CONFIGURATION_AND_PREVIEW_DEPLOYMENT",
+  "status": "BLOCKED",
+  "previewDeploymentStatus": "NOT_READY",
+  "generatedAt": "2026-06-23T18:44:49+08:00",
+  "selectedTarget": "vercel",
+  "selectedPlan": "pro",
+  "environment": "preview",
+  "useProviderDefaultDomain": true,
+  "customDomain": null,
+  "gitRemoteAuthorization": false,
+  "deploymentProjectAuthorization": true,
+  "commandUsed": "VERCEL_TELEMETRY_DISABLED=1 npx --yes vercel deploy --yes --target=preview --logs",
+  "usedProdFlag": false,
+  "vercelLoggedIn": true,
+  "deploymentAttempted": true,
+  "deployment": {
+    "id": "dpl_FiyjG4HZoXYyfd55PWZnEBfo4E8r",
+    "url": "https://ecommerce-platform-optimized-ciz03jd72-zongji.vercel.app",
+    "inspectorUrl": "https://vercel.com/zongji/ecommerce-platform-optimized/FiyjG4HZoXYyfd55PWZnEBfo4E8r",
+    "readyState": "READY",
+    "target": "production"
+  },
+  "aliasesReported": [
+    "https://ecommerce-platform-optimized.vercel.app",
+    "https://ecommerce-platform-optimized-zongji.vercel.app",
+    "https://ecommerce-platform-optimized-jizong549-1822-zongji.vercel.app"
+  ],
+  "publicAccessCheck": {
+    "url": "https://ecommerce-platform-optimized-ciz03jd72-zongji.vercel.app/login",
+    "httpStatus": 401,
+    "accessibleWithoutVercelSso": false,
+    "result": "not_publicly_accessible"
+  },
+  "boundaryChecks": {
+    "prodFlagUsed": false,
+    "productionTargetReturnedByProvider": true,
+    "customDomainBound": false,
+    "ailianshouDomainBound": false,
+    "gitRemoteCreated": false,
+    "credentialsWrittenToRepository": false,
+    "businessCodeModified": false,
+    "storageSchemaModified": false,
+    "dependenciesAdded": false,
+    "localVercelMetadataRemoved": true
+  },
+  "blockingReasons": [
+    "Vercel returned deployment.target=production even though the command used --target=preview and did not use --prod.",
+    "The resulting URL returned HTTP 401 with Vercel SSO protection, so it was not confirmed as a public Preview URL accessible from another computer."
+  ],
+  "nextUserDecisionRequired": [
+    "Decide whether to remove the accidentally created Vercel project/deployment from the Vercel dashboard.",
+    "Decide whether to adjust Vercel project protection/settings or deployment workflow before retrying G6."
+  ]
+}
