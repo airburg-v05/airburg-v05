@@ -1,0 +1,89 @@
+{
+  "taskId": "V0.5G_6_SELECTED_TARGET_CONFIGURATION_AND_PREVIEW_DEPLOYMENT",
+  "stage": "V0.5G-6",
+  "dependsOn": [
+    "V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION"
+  ],
+  "governanceContractHash": "a7099a6dc7aca9029412460946f41f34fefd7d89d45aa88da323c3f32e472e7c",
+  "requiredDocuments": [
+    "AGENTS.md",
+    "docs/product/V05_PRODUCT_NORTH_STAR.md",
+    "docs/product/V05_INFORMATION_ARCHITECTURE.md",
+    "docs/architecture/V05_PLATFORM_STORE_DATA_CONTRACT.md",
+    "docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md",
+    "docs/design/V05_DESIGN_SYSTEM.md",
+    "docs/design/V05_REFERENCE_PLATFORM_MAP.md",
+    "docs/roadmap/V05_EXECUTION_SEQUENCE.md",
+    "docs/quality/V05_ACCEPTANCE_GATES.md",
+    "docs/decisions/ADR-001-platform-and-store-ownership.md",
+    "docs/project/V05_TASK_CONTRACT.md",
+    "docs/project/v0.5-lock.json",
+    "docs/operations/v0.5-deployment-target-decision.json",
+    "docs/project/task-completions/V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION.json",
+    "scripts/private-audit/validate-v05-task-authorization.ts",
+    "scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "scripts/private-audit/validate-v05-task-preflight.ts",
+    "scripts/private-audit/validate-v05-governance-lock.ts"
+  ],
+  "allowedModifyPaths": [
+    "docs/operations/V05_PREVIEW_DEPLOYMENT_REPORT.md",
+    "docs/operations/v0.5-preview-deployment-result.json",
+    "docs/project/current-task.json",
+    "docs/project/task-authorizations/V0.5G_6_SELECTED_TARGET_CONFIGURATION_AND_PREVIEW_DEPLOYMENT.json",
+    "docs/project/task-completions/V0.5G_6_SELECTED_TARGET_CONFIGURATION_AND_PREVIEW_DEPLOYMENT.json"
+  ],
+  "forbiddenModifyPaths": [
+    "app/**",
+    "components/**",
+    "lib/**",
+    "types/**",
+    "package.json",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "yarn.lock",
+    "next.config.*",
+    "private-samples/**",
+    ".env",
+    ".env.*",
+    "docs/project/v0.5-lock.json",
+    "docs/releases/**",
+    "docs/product/**",
+    "docs/architecture/**",
+    "docs/design/**",
+    "docs/roadmap/**",
+    "docs/quality/**",
+    "docs/decisions/**",
+    "docs/project/task-completions/V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION.json",
+    "docs/operations/V05_DEPLOYMENT_TARGET_DECISION.md",
+    "vercel.json",
+    "netlify.toml",
+    "Dockerfile",
+    "nginx.conf",
+    "fly.toml",
+    "render.yaml"
+  ],
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "inventoryFindings": [
+    "V0.5G_5_1 completion record is complete with all requiredCommands PASS.",
+    "Deployment decision is approved for selectedTarget=vercel, selectedPlan=pro, environment=preview, useProviderDefaultDomain=true, customDomain=null.",
+    "User explicitly forbids production deployment, --prod, ailianshou.com binding, Git remote creation or use, and credential persistence.",
+    "This task may create a Vercel Preview deployment through the Vercel CLI only if the local machine is already logged in.",
+    "This task must generate preview deployment evidence documents without modifying business code, storage, schemas, or frozen rules."
+  ],
+  "stopConditions": [
+    "V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION dependency is not satisfied by an immutable completion record with all requiredCommands PASS.",
+    "The deployment decision is not approved for Vercel Preview.",
+    "The local Vercel CLI is not logged in.",
+    "The task would require --prod, production release, custom domain binding, ailianshou.com binding, Git remote creation or use, credential storage, business code changes, dependency changes, or schema changes.",
+    "Preview deployment cannot be verified through a public HTTPS URL without exposing secrets."
+  ],
+  "authorizedAt": "2026-06-23T18:39:19+08:00",
+  "contractVersion": "v0.5-task-authorization-v1"
+}
