@@ -1,0 +1,60 @@
+{
+  "recordVersion": "v0.5-task-completion-v1",
+  "taskId": "V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION",
+  "stage": "V0.5G-5.1",
+  "status": "complete",
+  "authorizationFile": "docs/project/task-authorizations/V0.5G_5_1_DEPLOYMENT_TARGET_USER_APPROVAL_REGISTRATION.json",
+  "authorizationHash": "a067a380c72648b9808e7e9ce9cd8b0b9cc4fc47427200b36a89998f9b33019e",
+  "authorizationCommit": "a9b624901581dd4d77ea189964abaf8563475c8c",
+  "completionCommit": "8e2ae6d039203e1c96efddbd565b91d15cb9c079",
+  "completedAt": "2026-06-23T09:50:47+08:00",
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "commandResults": [
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ],
+  "deploymentDecisionStatus": "APPROVED",
+  "decisionStatus": "approved",
+  "selectedTarget": "vercel",
+  "selectedPlan": "pro",
+  "useProviderDefaultDomain": true,
+  "customDomain": null,
+  "gitRemoteAuthorization": false,
+  "deploymentProjectAuthorization": true,
+  "deploymentRegionPreference": "provider_default",
+  "environment": "preview",
+  "approvedByUser": true,
+  "productionDeploymentAuthorization": false,
+  "decisionMachineFile": "docs/operations/v0.5-deployment-target-decision.json",
+  "sourceTaskContractPath": "docs/project/current-task.json",
+  "registeredAt": "2026-06-23T09:50:47+08:00"
+}
