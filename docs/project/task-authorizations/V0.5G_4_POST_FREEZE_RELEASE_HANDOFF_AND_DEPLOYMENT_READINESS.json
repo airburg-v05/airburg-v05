@@ -1,0 +1,93 @@
+{
+  "taskId": "V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS",
+  "stage": "V0.5G-4",
+  "dependsOn": [
+    "V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE"
+  ],
+  "governanceContractHash": "a7099a6dc7aca9029412460946f41f34fefd7d89d45aa88da323c3f32e472e7c",
+  "requiredDocuments": [
+    "AGENTS.md",
+    "docs/product/V05_PRODUCT_NORTH_STAR.md",
+    "docs/product/V05_INFORMATION_ARCHITECTURE.md",
+    "docs/architecture/V05_PLATFORM_STORE_DATA_CONTRACT.md",
+    "docs/architecture/V05_STORAGE_AND_MIGRATION_CONTRACT.md",
+    "docs/design/V05_DESIGN_SYSTEM.md",
+    "docs/design/V05_REFERENCE_PLATFORM_MAP.md",
+    "docs/roadmap/V05_EXECUTION_SEQUENCE.md",
+    "docs/quality/V05_ACCEPTANCE_GATES.md",
+    "docs/decisions/ADR-001-platform-and-store-ownership.md",
+    "docs/project/V05_TASK_CONTRACT.md",
+    "docs/project/v0.5-lock.json",
+    "docs/releases/v0.5-final-release-candidate-freeze.md",
+    "docs/project/task-completions/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "scripts/private-audit/validate-v05-task-authorization.ts",
+    "scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "scripts/private-audit/validate-v05-task-preflight.ts",
+    "scripts/private-audit/validate-v05-governance-lock.ts"
+  ],
+  "allowedModifyPaths": [
+    "docs/operations/**",
+    "scripts/private-audit/validate-v05-release-handoff.ts",
+    "scripts/private-audit/validate-v05-production-build-smoke.ts",
+    "docs/project/current-task.json",
+    "docs/project/task-authorizations/V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS.json",
+    "docs/project/task-completions/V0.5G_4_POST_FREEZE_RELEASE_HANDOFF_AND_DEPLOYMENT_READINESS.json"
+  ],
+  "forbiddenModifyPaths": [
+    "app/**",
+    "components/**",
+    "lib/**",
+    "types/**",
+    "package.json",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "yarn.lock",
+    "next.config.*",
+    "private-samples/**",
+    ".env",
+    ".env.*",
+    ".next/**",
+    "logs/**",
+    "docs/project/v0.5-lock.json",
+    "docs/releases/v0.5-final-release-candidate-freeze.md",
+    "docs/releases/v0.5a-multi-store-foundation-freeze.md",
+    "docs/releases/v0.5b-data-center-freeze.md",
+    "docs/releases/v0.5c-home-command-center-freeze.md",
+    "docs/releases/v0.5d-multi-store-board-freeze.md",
+    "docs/releases/v0.5e-focus-management-freeze.md",
+    "docs/releases/v0.5f-target-allocation-freeze.md",
+    "docs/product/**",
+    "docs/architecture/**",
+    "docs/design/**",
+    "docs/roadmap/**",
+    "docs/quality/**",
+    "docs/decisions/**",
+    "docs/project/task-authorizations/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json",
+    "docs/project/task-completions/V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE.json"
+  ],
+  "requiredCommands": [
+    "npx tsx scripts/private-audit/validate-v05-task-authorization.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-completion-ledger.ts",
+    "npx tsx scripts/private-audit/validate-v05-task-preflight.ts",
+    "npx tsx scripts/private-audit/validate-v05-governance-lock.ts",
+    "npx tsx scripts/private-audit/validate-v05-release-handoff.ts",
+    "npx tsx scripts/private-audit/validate-v05-production-build-smoke.ts",
+    "npm run lint",
+    "npm run build"
+  ],
+  "inventoryFindings": [
+    "V0.5G_3_R2 release candidate completion record is registered and READY.",
+    "This post-freeze task must not change v0.5-lock.json, releaseCandidateStatus, V0.5 final freeze documentation, business code, or package files.",
+    "Deployment target is not selected; output must remain target-neutral and document the technical conditions instead of creating provider-specific configuration.",
+    "The application is local-first and must document origin-scoped IndexedDB/localStorage boundaries."
+  ],
+  "stopConditions": [
+    "V0.5G_3_R2_V05_RELEASE_CANDIDATE_FINAL_REGRESSION_AND_STAGE_FREEZE dependency is not satisfied by an immutable completion record with RELEASE_CANDIDATE_STATUS READY.",
+    "Governance scripts reject post-freeze V0.5G-4 tasks while V0.5G remains complete.",
+    "Production build/start requires modifying app, components, lib, types, package files, next config, or V0.5A-G frozen rules.",
+    "Production smoke cannot run against isolated airburg-v05-release-handoff-audit without touching production airburg-v05.",
+    "Deployment readiness would require choosing a vendor, binding a domain, adding backend/server database/AI, or adding dependencies."
+  ],
+  "authorizedAt": "2026-06-23T08:39:00+08:00",
+  "contractVersion": "v0.5-task-authorization-v1"
+}
