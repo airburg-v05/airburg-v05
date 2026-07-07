@@ -8,6 +8,16 @@
 
 - `RESTORE_FULL_KPI_GRID_FROM_PAGE_PROBLEM_V2_BASELINE_V1`: `PUBLIC_DEPLOYED`
 - `PAGE_PROBLEM_V1_V2_LAYOUT_AGENT_RESOLUTION_PIPELINE_V1`: `PUBLIC_DEPLOYED`
+- `HOME_LAYOUT_POLISH_WITH_OPEN_SOURCE_REFERENCE_V1`: `PUBLIC_DEPLOYED`
+- `HOME_TOP_CONTROL_COMPACT_TOOLBAR_HARD_FIX_V2`: `PUBLIC_DEPLOYED`
+- `BOARD_TOP_CONTROL_COMPACT_TOOLBAR_SYNC_FROM_HOME_V1`: `PUBLIC_DEPLOYED`
+- `HOME_POST_UPLOAD_TIME_RANGE_DEFAULT_TO_DATASET_RANGE_V1`: `PUBLIC_DEPLOYED`
+- `HOME_SERIES_FILTER_FROM_DEBUG_CONTEXT_BRIDGE_V1`: `PUBLIC_DEPLOYED`
+- `CHART_SCOPE_AND_TIME_RANGE_CONSISTENCY_AUDIT_AND_FIX_V1`: `PUBLIC_DEPLOYED`
+- `LOCAL_GATE_FIX_COMPACT_TOOLBAR_PRODUCT_SELECTOR_HOME_390_KPI_V1`: `PASS` recorded as deployment precondition
+- `HOME_LAYOUT_POLISH_PUBLIC_REVIEW`: `public_pass_waiting_human_review`
+- `HOME_AND_BOARD_COMPACT_TOOLBAR_PUBLIC_REVIEW`: `public_pass_waiting_human_review`
+- `TIME_RANGE_SERIES_FILTER_CHART_PUBLIC_REVIEW`: `public_pass_waiting_human_review`
 - `PAGE_PROBLEM_V1_V2_LAYOUT_PUBLIC_HUMAN_REVIEW_ACCEPTANCE_NOTE`: `RECORDED`
 - `PUBLIC_DEPLOYED = true`
 - `SERVER_ALIGNED = true`
@@ -97,11 +107,19 @@
 
 - `ALIYUN_ECS_DEPLOY_RESTORE_FULL_KPI_GRID_FROM_PAGE_PROBLEM_V2_BASELINE_AND_PUBLIC_REGRESSION`: PASS。
 - `ALIYUN_ECS_DEPLOY_PAGE_PROBLEM_V1_V2_LAYOUT_AGENT_RESOLUTION_AND_PUBLIC_REGRESSION`: PASS。
+- `ALIYUN_ECS_DEPLOY_HOME_LAYOUT_POLISH_WITH_OPEN_SOURCE_REFERENCE_V1_AND_PUBLIC_REGRESSION`: PASS。
 - 公网入口：`http://123.57.49.121/home`、`/series-board`、`/product-board`、`/store-board`、`/upload`、`/upload/history`、`/upload/quality`。
 - 真实 18 文件上传回归：PASS。
 - 截图 manifest：`/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-full-kpi-public-deploy-regression-wxvaub/manifest.json`。
 - 页面问题一 + 二小范围 UI 回归 manifest：`/tmp/airburg-page-problem-v1-v2-layout-jBqc19/manifest.json`。
 - 真实上传 E2E manifest：`/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-tmall-real-upload-e2e-eZ262U/manifest.json`。
+- `/home` 小范围布局打磨公网回归 manifest：`/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-home-polish-public-final-ZSSXnR/manifest.json`。
+- `/home` 小范围布局打磨当前状态：公网回归 PASS，等待用户人工核查；不得在用户确认前记录为 `human_review_pass`。
+- Home / Series / Store / Product compact toolbar 公网回归 manifest：`/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-compact-toolbar-public-regression-ebK6A5/manifest.json`。
+- Home / Series / Store / Product compact toolbar 当前状态：公网回归 PASS，等待用户人工核查；不得在用户确认前记录为 `human_review_pass`。
+- Time range / series bridge / chart consistency 公网回归 manifest：`/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-time-series-chart-public-regression-oab26K/manifest.json`。
+- Time range / series bridge / chart consistency 当前状态：公网回归 PASS，等待用户人工核查；不得在用户确认前记录为 `human_review_pass`。
+- 本轮验证事实：active dataset 导入 / 恢复后旧无交集 timeRange 自动切回 `2026-06-26 ~ 2026-06-30`；售后 `2026-07-01` 不拖动默认经营范围；`/series-board` 临时系列“空气净化器”已桥接到 `/home`，首页系列筛选后 GMV 收窄为 `34,047`；Home / Series / Store / Product 图表按当前 timeRange 和 scope 渲染；390px 无整页横向溢出；console 业务错误为 0。
 
 ## 用户人工核查记录
 
