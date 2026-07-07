@@ -33,6 +33,7 @@ import {
 } from "@/lib/persistence/target-drafts-persistence.types";
 import type { BISearchProductKeyword, BrandModelFilter } from "@/lib/bi/search-keyword.types";
 import { BIChartCard } from "@/components/visual-system/v1/bi-chart";
+import { dateAxisWithTimeRangeFallback } from "@/components/visual-system/v1/chart-utils";
 import { BrandModelFilterPopover } from "@/components/visual-system/v1/brand-model-filter-popover";
 import {
   loadCrossPageDebugContext,
@@ -40,12 +41,13 @@ import {
   saveCrossPageDebugContextPatch,
 } from "@/lib/persistence/debug-context-persistence";
 import {
-  V1DimensionScopeBar,
-  V1LogoAccountButton,
   V1Sidebar,
   V1TimeRangePopover,
   V1TopBar,
+  v1DatasetDateRangeFromDates,
   v1MonthRangeForMonth,
+  v1ResolveTimeRangeForDataset,
+  v1TimeRangeSourceLabel,
   v1WeekRangeForWeek,
   type V1ChartMode,
 } from "@/components/visual-system/v1/visual-system";
@@ -289,6 +291,32 @@ const rangeText = (state: UIState): string =>
   state.timeRange.startDate && state.timeRange.endDate
     ? `${state.timeRange.startDate} ~ ${state.timeRange.endDate}`
     : "--";
+
+const DATASET_RANGE_METRIC_KEYS = [
+  "gmv",
+  "gsv",
+  "visitors",
+  "paidBuyers",
+  "adSpend",
+  "adRevenue",
+  "adClicks",
+  "directTransactionAmount",
+  "indirectTransactionAmount",
+  "totalTransactionAmount",
+] as const;
+
+const hasDatasetRangeMetric = (point: BIDataPoint): boolean =>
+  DATASET_RANGE_METRIC_KEYS.some((key) => typeof point.metrics[key] === "number" && Number.isFinite(point.metrics[key]));
+
+const datasetDateRangeForSource = (source: BIHomeDataSource) => {
+  const primaryRange = v1DatasetDateRangeFromDates([
+    ...source.points.filter(hasDatasetRangeMetric).map((point) => point.businessDate),
+    ...source.seriesPoints.filter(hasDatasetRangeMetric).map((point) => point.businessDate),
+    ...source.searchTotalKeywords.map((keyword) => keyword.date),
+    ...source.searchProductKeywords.map((keyword) => keyword.date),
+  ]);
+  return primaryRange ?? v1DatasetDateRangeFromDates(source.points.map((point) => point.businessDate));
+};
 
 const buildStoreOptions = (source: BIHomeDataSource): StoreOption[] => {
   const options = new Map<string, StoreOption>();
@@ -534,7 +562,7 @@ const buildChartLines = (
   selectedMetric: string,
 ): { xAxis: string[]; lines: ChartSeries[]; title: string; empty: boolean } => {
   const dates = Array.from(new Set(points.map((point) => point.businessDate))).sort();
-  const xAxis = dates.length > 0 ? dates : [source.selectedDate ?? "--"];
+  const xAxis = dateAxisWithTimeRangeFallback(dates, state.timeRange.startDate, state.timeRange.endDate, source.selectedDate);
   const selectedDefinition = SERIES_KPIS.find((kpi) => kpi.key === selectedMetric) ?? SERIES_KPIS[0];
 
   if (BRAND_SERIES_KPI_KEYS.has(selectedMetric)) {
@@ -665,7 +693,7 @@ const buildBrandSeriesChart = ({
     ...rows.map((row) => effectiveKeywordDate(row.date, source.selectedDate)),
   ];
   const xAxis = Array.from(new Set(dateCandidates.filter(Boolean))).sort();
-  const fallbackAxis = xAxis.length > 0 ? xAxis : [source.selectedDate ?? "--"];
+  const fallbackAxis = dateAxisWithTimeRangeFallback(xAxis, state.timeRange.startDate, state.timeRange.endDate, source.selectedDate);
 
   if (refs.length === 0 || !hasBrandModelTokens(state.brandModelFilter)) {
     return {
@@ -794,6 +822,7 @@ function Controls({
   storeOptions,
   seriesNames,
   selectedSeriesName,
+  selectedProductCount,
   storeMenuOpen,
   onToggleStoreMenu,
   onToggleStore,
@@ -811,6 +840,7 @@ function Controls({
   storeOptions: StoreOption[];
   seriesNames: string[];
   selectedSeriesName: string | null;
+  selectedProductCount: number;
   storeMenuOpen: boolean;
   onToggleStoreMenu: () => void;
   onToggleStore: (storeId: string) => void;
@@ -829,20 +859,35 @@ function Controls({
   const selectedPlatforms = uniqueTextList(
     storeOptions.filter((option) => selectedStoreIds.has(option.storeId)).map((option) => option.platformName),
   );
+  const selectedStoreNames = uniqueTextList(
+    storeOptions.filter((option) => selectedStoreIds.has(option.storeId)).map((option) => option.storeName),
+  );
+  const platformText = selectedPlatforms.length > 0 ? selectedPlatforms.join(" / ") : "天猫";
+  const selectedStoreText =
+    selectedStoreNames.length === 1 ? selectedStoreNames[0] : selectedStoreCount > 0 ? `${selectedStoreCount} 个店铺` : "未选择店铺";
+  const seriesText = selectedSeriesName ? `当前系列：${selectedSeriesName}` : "当前系列：未选择系列";
+  const productCountText = selectedProductCount > 0 ? `${selectedProductCount} 个商品ID` : "未维护商品ID";
+  const scopeBreadcrumb = `${platformText} / ${selectedStoreText} / ${seriesText} / ${productCountText}`;
 
   return (
-    <section className="border-b border-slate-200 bg-white px-4 py-2.5">
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-        <div className="flex min-w-0 flex-wrap items-start gap-3">
-          <V1LogoAccountButton testId="series-board-v1-logo-button" />
-          <div className="relative min-w-0 space-y-2">
+    <section
+      className="border-b border-slate-200 bg-white px-4 py-2"
+      data-testid="series-board-v1-control"
+      data-problem-ids="PVM2-001 PVM2-002 PVM2-004 PVM2-006 PVM2-007 PVM2-013"
+    >
+      <div className="space-y-1.5">
+        <div data-testid="series-board-v1-business-toolbar" className="flex min-h-12 flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
+            <div className="relative flex min-w-0 items-center gap-2">
+              <span className="text-xs font-semibold text-slate-600">店铺：</span>
             <button
               type="button"
               aria-expanded={storeMenuOpen}
-              className="inline-flex min-h-9 min-w-52 items-center justify-between gap-8 rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 text-sm font-semibold text-slate-900"
+                data-testid="series-board-v1-target-store"
+                className="inline-flex min-h-8 w-[min(220px,70vw)] items-center justify-between gap-4 rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold text-slate-900 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
               onClick={onToggleStoreMenu}
             >
-              目标店铺
+                <span className="truncate">目标店铺</span>
               <span aria-hidden="true">▾</span>
             </button>
             {storeMenuOpen ? (
@@ -880,58 +925,62 @@ function Controls({
                 )}
               </div>
             ) : null}
-            <div className="space-y-1 text-sm text-slate-700">
-              <p>店铺数量 {storeOptions.length}个 · 已选择 {selectedStoreCount} 个店铺</p>
-              <p className="break-words">涉及平台：{selectedPlatforms.length > 0 ? selectedPlatforms.join("｜") : "天猫｜京东｜抖音｜拼多多｜有赞"}</p>
             </div>
+            <span className="text-xs font-semibold text-slate-600">平台：{platformText}</span>
+            <span className="text-xs font-semibold text-slate-600">店铺 {storeOptions.length} / 已选 {selectedStoreCount}</span>
+            <label className="flex min-w-0 items-center gap-2 text-xs font-semibold text-slate-600">
+              当前系列：
+              <select
+                data-testid="series-board-v1-series-selector"
+                className="h-8 w-[min(220px,70vw)] rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold text-slate-950 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+                value={selectedSeriesName ?? ""}
+                onChange={(event) => onSelectSeries(event.target.value || null)}
+              >
+                {seriesNames.length === 0 ? (
+                  <option value="">请先维护商品ID</option>
+                ) : (
+                  <>
+                    <option value="">请选择系列</option>
+                    {seriesNames.map((name) => (
+                      <option key={name} value={name}>
+                        {name}
+                      </option>
+                    ))}
+                  </>
+                )}
+              </select>
+            </label>
+            <span className="text-xs font-semibold text-slate-600">已维护 {selectedProductCount} 个商品ID</span>
           </div>
+          <div className="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
           <button
             type="button"
-            className="min-h-9 rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 text-sm font-semibold"
+              className="min-h-8 rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
             onClick={() => onOpenPopup("series")}
           >
             系列设置
           </button>
-          <label className="min-w-[220px] text-xs font-semibold text-slate-600">
-            当前系列
-            <select
-              data-testid="series-board-v1-series-selector"
-              className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-sm font-semibold text-slate-950 shadow-[0_1px_3px_rgba(15,23,42,0.06)]"
-              value={selectedSeriesName ?? ""}
-              onChange={(event) => onSelectSeries(event.target.value || null)}
-            >
-              {seriesNames.length === 0 ? (
-                <option value="">请先在系列设置中维护商品ID</option>
-              ) : (
-                <>
-                  <option value="">请选择系列</option>
-                  {seriesNames.map((name) => (
-                    <option key={name} value={name}>
-                      {name}
-                    </option>
-                  ))}
-                </>
-              )}
-            </select>
-          </label>
-        </div>
-        <div className="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
-          <button type="button" className="rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 py-2 text-sm font-semibold" onClick={() => onOpenPopup("remark")}>
+            <button type="button" className="min-h-8 rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.04)]" onClick={() => onOpenPopup("remark")}>
             商家备注
           </button>
           <button
             type="button"
             data-testid="series-board-v1-brand-model-filter-button"
-            className="rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 py-2 text-sm font-semibold"
+              className="min-h-8 rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
             onClick={() => onOpenPopup("brandModel")}
           >
             品牌词筛选
           </button>
-          <button type="button" className="rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 py-2 text-sm font-semibold" onClick={() => onOpenPopup("target")}>
+            <button type="button" className="min-h-8 rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.04)]" onClick={() => onOpenPopup("target")}>
             系列目标
           </button>
+          </div>
+        </div>
+        <div data-testid="series-board-v1-time-scope-toolbar" className="flex min-h-10 flex-wrap items-center justify-between gap-x-4 gap-y-1.5 border-t border-slate-200/80 pt-1.5">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
           <V1TimeRangePopover
             testId="series-board-v1-time-range-popover"
+              variant="split"
             mode={state.timeRange.mode}
             startDate={state.timeRange.startDate}
             endDate={state.timeRange.endDate}
@@ -942,6 +991,16 @@ function Controls({
             onMonthChange={onMonthChange}
             onCustomDateChange={onCustomDateChange}
           />
+            <span className="text-xs font-semibold text-slate-600">{rangeText(state)}</span>
+          </div>
+          <p
+            data-testid="series-board-v1-dimension-scope"
+            data-scope-variant="breadcrumb"
+            className="min-w-0 truncate text-xs font-semibold text-slate-600"
+            title={`范围：${scopeBreadcrumb}`}
+          >
+            <span className="text-slate-900">范围：</span>{scopeBreadcrumb}
+          </p>
         </div>
       </div>
     </section>
@@ -1331,6 +1390,11 @@ export function SeriesBoardV1Dashboard() {
   const [remarkKeywords, setRemarkKeywords] = useState<string[]>([]);
 
   const storeOptions = useMemo(() => buildStoreOptions(dataSource), [dataSource]);
+  const datasetDateRange = useMemo(() => datasetDateRangeForSource(dataSource), [dataSource]);
+  const timeRangeSourceLabel = useMemo(
+    () => v1TimeRangeSourceLabel(biState.timeRange, datasetDateRange),
+    [biState.timeRange, datasetDateRange],
+  );
   const allStoreIds = useMemo(() => storeOptions.map((option) => option.storeId), [storeOptions]);
   const allRefs = useMemo(() => buildSeriesRefs(dataSource, tempSeriesItems), [dataSource, tempSeriesItems]);
   const seriesNames = useMemo(() => uniqueTextList(allRefs.map((ref) => ref.seriesName)), [allRefs]);
@@ -1376,11 +1440,7 @@ export function SeriesBoardV1Dashboard() {
         setBiState((state) => ({
           ...state,
           selectedStores: state.selectedStores.length > 0 ? state.selectedStores : nextStoreIds,
-          timeRange: {
-            ...state.timeRange,
-            startDate: state.timeRange.startDate ?? nextSource.selectedDate,
-            endDate: state.timeRange.endDate ?? nextSource.selectedDate,
-          },
+          timeRange: v1ResolveTimeRangeForDataset(state.timeRange, datasetDateRangeForSource(nextSource)).timeRange,
         }));
       })
       .catch(() => {
@@ -1391,6 +1451,22 @@ export function SeriesBoardV1Dashboard() {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!debugContextReady || !datasetDateRange) return;
+    let active = true;
+    void Promise.resolve().then(() => {
+      if (!active) return;
+      setBiState((state) => {
+        const resolved = v1ResolveTimeRangeForDataset(state.timeRange, datasetDateRange);
+        if (resolved.source !== "dataset") return state;
+        return { ...state, timeRange: resolved.timeRange };
+      });
+    });
+    return () => {
+      active = false;
+    };
+  }, [datasetDateRange, debugContextReady]);
 
   useEffect(() => {
     if (!debugContextReady) return;
@@ -1455,8 +1531,6 @@ export function SeriesBoardV1Dashboard() {
   );
   const contributions = useMemo(() => buildContributions(seriesPoints), [seriesPoints]);
   const hasConfiguredSeries = selectedRefs.length > 0;
-  const selectedSeriesStores = uniqueTextList(selectedRefs.map((ref) => ref.storeName));
-  const selectedSeriesPlatforms = uniqueTextList(selectedRefs.map((ref) => ref.platformName));
 
   useEffect(() => {
     let active = true;
@@ -1518,7 +1592,7 @@ export function SeriesBoardV1Dashboard() {
   }, [seriesTargetContext, targetMonth]);
 
   const handlePeriodChange = (period: PeriodLabel) => {
-    const selectedDate = dataSource.selectedDate;
+    const selectedDate = datasetDateRange?.endDate ?? dataSource.selectedDate;
     if (period === "日") {
       setBiState((state) => ({ ...state, timeRange: { mode: "day", startDate: selectedDate, endDate: selectedDate } }));
       return;
@@ -1642,6 +1716,7 @@ export function SeriesBoardV1Dashboard() {
             storeOptions={storeOptions}
             seriesNames={seriesNames}
             selectedSeriesName={effectiveSelectedSeriesName}
+            selectedProductCount={selectedRefs.length}
             storeMenuOpen={storeMenuOpen}
             onToggleStoreMenu={() => setStoreMenuOpen((open) => !open)}
             onToggleStore={handleToggleStore}
@@ -1710,17 +1785,11 @@ export function SeriesBoardV1Dashboard() {
 
           <div className="mx-4 mt-3 rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-xs font-semibold text-slate-600">
             <span className="mr-3 text-slate-900">{dataSource.dataStatus.label}</span>
+            <span data-testid="series-board-time-range-source-label" className="mr-3 text-blue-700">{timeRangeSourceLabel}</span>
             {hasConfiguredSeries
               ? `当前系列：${effectiveSelectedSeriesName} · 已维护 ${selectedRefs.length} 个商品ID`
               : "请先在系列设置中添加商品ID。"}
           </div>
-          <V1DimensionScopeBar
-            testId="series-board-v1-dimension-scope"
-            platform={selectedSeriesPlatforms.length > 0 ? selectedSeriesPlatforms.join(" / ") : "全部平台"}
-            store={selectedSeriesStores.length > 0 ? selectedSeriesStores.join(" / ") : "未选择店铺"}
-            series={hasConfiguredSeries ? effectiveSelectedSeriesName : "请先配置当前系列"}
-            product={hasConfiguredSeries ? `${selectedRefs.length} 个商品ID` : "--"}
-          />
 
           <section data-testid="series-board-v1-kpi-section" className="px-4 py-3" data-problem-ids="PVM2-002 PVM2-007">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -1741,7 +1810,7 @@ export function SeriesBoardV1Dashboard() {
           <section data-testid="series-board-v1-chart-section" className="px-4 py-3" data-problem-ids="PVM2-004 PVM2-005 PVM2-007">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <h2 className="break-words text-base font-semibold text-slate-950">系列趋势与商品贡献</h2>
-              <div className="text-xs font-semibold text-slate-500">MTD / DLY 单图切换，品牌词按当前系列 productId-first 计算</div>
+              <div className="text-xs font-semibold text-slate-500">MTD / DLY 单图切换，品牌词按当前系列已维护商品计算</div>
             </div>
             {!hasConfiguredSeries ? (
               <div className="mb-4 rounded-xl border border-dashed border-slate-200/80 bg-white px-4 py-5 text-sm font-semibold text-slate-600">

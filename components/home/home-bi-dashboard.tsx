@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { UIState } from "@/lib/bi/bi.types";
+import type { BIDataPoint, UIState } from "@/lib/bi/bi.types";
 import {
   createEmptyHomeBIDataSource,
   loadHomeBIDataSource,
   type BIHomeDataSource,
+  type BIHomeSeriesDefinition,
 } from "@/lib/bi/bi.data-source";
 import { buildHomeBIViewModel, type HomeBIKpiCard } from "@/lib/bi/bi.home-view-model";
 import { createDefaultBIState } from "@/lib/bi/bi.store";
@@ -28,12 +29,13 @@ import {
 } from "@/lib/persistence/target-drafts-persistence.types";
 import { BIChartCard } from "@/components/visual-system/v1/bi-chart";
 import {
-  V1DimensionScopeBar,
-  V1LogoAccountButton,
   V1Sidebar,
   V1TimeRangePopover,
   V1TopBar,
   v1MonthRangeForMonth,
+  v1DatasetDateRangeFromDates,
+  v1ResolveTimeRangeForDataset,
+  v1TimeRangeSourceLabel,
   v1WeekRangeForWeek,
   type V1ChartMode,
 } from "@/components/visual-system/v1/visual-system";
@@ -43,6 +45,7 @@ import {
   loadCrossPageDebugContext,
   mergeDebugContextIntoUIState,
   saveCrossPageDebugContextPatch,
+  type DebugContextTempSeriesItem,
 } from "@/lib/persistence/debug-context-persistence";
 
 interface PlatformTargetField {
@@ -151,6 +154,169 @@ const buildStoreOptions = (source: BIHomeDataSource): HomeBIStoreOption[] =>
     .map(([, option]) => option)
     .sort((left, right) => `${left.platformName}${left.storeName}`.localeCompare(`${right.platformName}${right.storeName}`));
 
+const homeSeriesDefinitionKey = (series: BIHomeSeriesDefinition): string =>
+  `${series.platformCode}::${series.storeId}::${series.seriesId || series.seriesName}`;
+
+const homeSeriesNameKey = (series: BIHomeSeriesDefinition): string =>
+  `${series.platformCode}::${series.storeId}::${series.seriesName.trim()}`;
+
+const normalizeDebugSeriesDefinitions = (items: DebugContextTempSeriesItem[]): BIHomeSeriesDefinition[] => {
+  const groups = new Map<string, BIHomeSeriesDefinition>();
+
+  items.forEach((item) => {
+    const productId = item.productId.trim();
+    const seriesName = item.seriesName.trim();
+    const storeId = item.storeId.trim();
+    if (!productId || !seriesName || !storeId) return;
+    const seriesId = (item.seriesId || item.id || seriesName).trim();
+    const key = `${item.platformCode || "tmall"}::${storeId}::${seriesId || seriesName}`;
+    const existing = groups.get(key);
+    if (existing) {
+      existing.productIds = uniqueTextList([...existing.productIds, productId]);
+      return;
+    }
+    groups.set(key, {
+      platformCode: item.platformCode || "tmall",
+      platformName: item.platformName || item.platformCode || "天猫",
+      storeId,
+      storeName: item.storeName || storeId,
+      seriesId: seriesId || key,
+      seriesName,
+      productIds: [productId],
+    });
+  });
+
+  return Array.from(groups.values())
+    .map((series) => ({ ...series, productIds: uniqueTextList(series.productIds) }))
+    .filter((series) => series.productIds.length > 0)
+    .sort((left, right) => `${left.storeName}${left.seriesName}`.localeCompare(`${right.storeName}${right.seriesName}`));
+};
+
+const buildHomeSeriesPointsFromDefinitions = (
+  points: BIDataPoint[],
+  definitions: BIHomeSeriesDefinition[],
+): BIDataPoint[] =>
+  points.flatMap((point) =>
+    definitions
+      .filter(
+        (series) =>
+          point.platformCode === series.platformCode &&
+          point.storeId === series.storeId &&
+          Boolean(point.productId) &&
+          series.productIds.includes(point.productId ?? ""),
+      )
+      .map((series) => ({
+        ...point,
+        seriesId: series.seriesId,
+        seriesName: series.seriesName,
+      })),
+  );
+
+const mergeHomeDebugSeriesDataSource = (
+  source: BIHomeDataSource,
+  debugSeriesItems: DebugContextTempSeriesItem[],
+): BIHomeDataSource => {
+  const debugSeries = normalizeDebugSeriesDefinitions(debugSeriesItems);
+  if (debugSeries.length === 0) return source;
+
+  const definitions: BIHomeSeriesDefinition[] = [];
+  const seenKeys = new Set<string>();
+  const seenNames = new Set<string>();
+  const pushDefinition = (series: BIHomeSeriesDefinition) => {
+    const normalizedSeries = {
+      ...series,
+      productIds: uniqueTextList(series.productIds),
+    };
+    const key = homeSeriesDefinitionKey(normalizedSeries);
+    const nameKey = homeSeriesNameKey(normalizedSeries);
+    if (seenKeys.has(key) || seenNames.has(nameKey)) return;
+    seenKeys.add(key);
+    seenNames.add(nameKey);
+    definitions.push(normalizedSeries);
+  };
+
+  debugSeries.forEach(pushDefinition);
+  source.seriesDefinitions.forEach(pushDefinition);
+
+  return {
+    ...source,
+    seriesDefinitions: definitions,
+    seriesPoints: buildHomeSeriesPointsFromDefinitions(source.points, definitions),
+  };
+};
+
+const scopeHomeDataSourceBySeries = (
+  source: BIHomeDataSource,
+  selectedSeriesId?: string | null,
+): BIHomeDataSource => {
+  if (!selectedSeriesId) return source;
+  const series = source.seriesDefinitions.find((definition) => definition.seriesId === selectedSeriesId);
+  if (!series) return source;
+  const productIds = new Set(series.productIds.filter(Boolean));
+  if (productIds.size === 0) {
+    return {
+      ...source,
+      points: [],
+      searchProductKeywords: [],
+    };
+  }
+
+  return {
+    ...source,
+    points: source.points
+      .filter(
+        (point) =>
+          point.platformCode === series.platformCode &&
+          point.storeId === series.storeId &&
+          Boolean(point.productId) &&
+          productIds.has(point.productId ?? ""),
+      )
+      .map((point) => ({
+        ...point,
+        seriesId: series.seriesId,
+        seriesName: series.seriesName,
+      })),
+    searchProductKeywords: source.searchProductKeywords.filter(
+      (keyword) =>
+        keyword.platformCode === series.platformCode &&
+        keyword.storeId === series.storeId &&
+        productIds.has(keyword.productId),
+    ),
+  };
+};
+
+const selectedSeriesIdFromMetric = (metric?: string | null): string | null => {
+  if (!metric?.startsWith("series:")) return null;
+  const seriesId = metric.slice("series:".length).trim();
+  return seriesId || null;
+};
+
+const DATASET_RANGE_METRIC_KEYS = [
+  "gmv",
+  "gsv",
+  "visitors",
+  "paidBuyers",
+  "adSpend",
+  "adRevenue",
+  "adClicks",
+  "directTransactionAmount",
+  "indirectTransactionAmount",
+  "totalTransactionAmount",
+] as const;
+
+const hasDatasetRangeMetric = (point: BIDataPoint): boolean =>
+  DATASET_RANGE_METRIC_KEYS.some((key) => typeof point.metrics[key] === "number" && Number.isFinite(point.metrics[key]));
+
+const datasetDateRangeForSource = (source: BIHomeDataSource) => {
+  const primaryRange = v1DatasetDateRangeFromDates([
+    ...source.points.filter(hasDatasetRangeMetric).map((point) => point.businessDate),
+    ...source.seriesPoints.filter(hasDatasetRangeMetric).map((point) => point.businessDate),
+    ...source.searchTotalKeywords.map((keyword) => keyword.date),
+    ...source.searchProductKeywords.map((keyword) => keyword.date),
+  ]);
+  return primaryRange ?? v1DatasetDateRangeFromDates(source.points.map((point) => point.businessDate));
+};
+
 const parseDate = (date: string | null): Date | null => {
   if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
   const parsed = new Date(`${date}T00:00:00Z`);
@@ -232,6 +398,7 @@ function DashboardControls({
   platformTargetOpen,
   state,
   storeOptions,
+  currentSeriesLabel,
   storeMenuOpen,
   customRangeError,
   onToggleStoreMenu,
@@ -251,6 +418,7 @@ function DashboardControls({
   platformTargetOpen: boolean;
   state: UIState;
   storeOptions: HomeBIStoreOption[];
+  currentSeriesLabel: string;
   storeMenuOpen: boolean;
   customRangeError: string | null;
   onToggleStoreMenu: () => void;
@@ -272,29 +440,38 @@ function DashboardControls({
   const selectedPlatforms = uniqueTextList(
     storeOptions.filter((option) => selectedStoreIds.has(option.storeId)).map((option) => option.platformName),
   );
+  const selectedStoreNames = uniqueTextList(
+    storeOptions.filter((option) => selectedStoreIds.has(option.storeId)).map((option) => option.storeName),
+  );
+  const selectedPlatformText = selectedPlatforms.length > 0 ? selectedPlatforms.join(" / ") : "全部平台";
+  const selectedStoreText = selectedStoreNames.length === 1 ? selectedStoreNames[0] ?? "未选择" : selectedStoreCount > 0 ? `${selectedStoreCount} 个店铺` : "未选择";
   const storeCount = storeOptions.length;
+  const scopeBreadcrumb = `${selectedPlatformText} / ${selectedStoreText} / ${currentSeriesLabel} / 全部商品`;
 
   return (
-    <section data-testid="home-bi-controls" className="border-b border-slate-200 bg-white px-4 py-3">
+    <section data-testid="home-bi-controls" className="border-b border-slate-200 bg-white px-4 py-2">
       <div
         data-testid="home-bi-control-shell-v2"
-        className="grid gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3 shadow-[0_1px_3px_rgba(15,23,42,0.05)] xl:grid-cols-[minmax(360px,0.9fr)_minmax(520px,1.4fr)] xl:items-start"
+        data-problem-ids="PVM2-001 PVM2-002 PVM2-006 PVM2-013"
+        className="space-y-1.5"
       >
-        <div className="flex min-w-0 items-start gap-3 rounded-xl border border-slate-200/80 bg-white p-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-          <V1LogoAccountButton testId="home-bi-logo-button" />
-          <div className="relative min-w-0 space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">账号与店铺</p>
+        <div
+          data-testid="home-bi-business-toolbar"
+          className="flex min-h-12 flex-wrap items-center justify-between gap-x-4 gap-y-2"
+        >
+          <div className="relative flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5">
+            <span className="text-xs font-semibold text-slate-500">店铺：</span>
             <button
               type="button"
               aria-expanded={storeMenuOpen}
-              className="inline-flex min-h-9 min-w-52 items-center justify-between gap-8 rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 text-sm font-semibold text-slate-900"
+              className="inline-flex min-h-8 w-[min(220px,calc(100vw-2rem))] items-center justify-between gap-2 rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold text-slate-900 shadow-[0_1px_2px_rgba(15,23,42,0.05)]"
               onClick={onToggleStoreMenu}
             >
               目标店铺
               <span aria-hidden="true">▾</span>
             </button>
             {storeMenuOpen ? (
-              <div className="absolute left-0 top-11 z-30 w-[min(360px,calc(100vw-2rem))] rounded-xl border border-slate-200/80 bg-white p-3 shadow-[0_24px_70px_rgba(15,23,42,0.18)]">
+              <div className="absolute left-0 top-10 z-30 w-[min(340px,calc(100vw-2rem))] rounded-xl border border-slate-200/80 bg-white p-3 shadow-[0_18px_48px_rgba(15,23,42,0.16)]">
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <p className="text-sm font-semibold text-slate-950">目标店铺</p>
                   <div className="flex gap-2">
@@ -328,68 +505,77 @@ function DashboardControls({
                 )}
               </div>
             ) : null}
-            <div className="grid gap-1 text-sm text-slate-700">
-              <p>店铺数量 {storeCount}个 · 已选择 {selectedStoreCount} 个店铺</p>
-              <p className="break-words">涉及平台：{selectedPlatforms.length > 0 ? selectedPlatforms.join("｜") : "天猫｜京东｜抖音｜拼多多｜有赞"}</p>
-            </div>
+            <span className="text-xs font-semibold text-slate-500">平台：天猫</span>
+            <span className="text-xs font-semibold text-slate-500">店铺 {storeCount} / 已选 {selectedStoreCount}</span>
+            <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-500">
+              本浏览器内测数据
+            </span>
+          </div>
+          <div className="flex min-w-0 flex-wrap items-center justify-start gap-2 xl:justify-end">
+            <button
+              type="button"
+              data-testid="home-bi-series-picker-button"
+              className="min-h-8 rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.05)] hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+              onClick={onSeriesPickerOpen}
+            >
+              系列自定义
+            </button>
+            <button
+              type="button"
+              data-testid="home-bi-product-exclude-button"
+              className="min-h-8 rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.05)] hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+              onClick={onProductExcludeOpen}
+            >
+              商品排除
+            </button>
+            <button
+              type="button"
+              data-testid="home-bi-brand-model-filter-button"
+              className="min-h-8 rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.05)] hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+              onClick={onBrandModelFilterOpen}
+            >
+              品牌词筛选
+            </button>
+            <button
+              type="button"
+              data-testid="home-bi-platform-target-button"
+              aria-expanded={platformTargetOpen}
+              className="min-h-8 rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.05)] hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+              onClick={onPlatformTargetOpen}
+            >
+              平台目标
+            </button>
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-          <div className="mb-2 flex items-center justify-between gap-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">操作与统计时间</p>
-            <span className="hidden rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-500 md:inline-flex">
-              本浏览器安全聚合数据
-            </span>
+        <div
+          data-testid="home-bi-time-scope-toolbar"
+          data-problem-ids="PVM2-001 PVM2-013"
+          className="flex min-h-10 flex-wrap items-center justify-between gap-x-4 gap-y-1.5 border-t border-slate-200/80 pt-1.5"
+        >
+          <div className="min-w-0">
+            <V1TimeRangePopover
+              testId="home-bi-time-range-popover"
+              variant="split"
+              mode={state.timeRange.mode}
+              startDate={state.timeRange.startDate}
+              endDate={state.timeRange.endDate}
+              rangeLabel={rangeText(state)}
+              onPeriodChange={onPeriodChange}
+              onDayChange={onDayDateChange}
+              onWeekChange={onWeekChange}
+              onMonthChange={onMonthChange}
+              onCustomDateChange={onCustomDateChange}
+            />
+            {customRangeError ? <p className="mt-1 text-xs font-semibold text-rose-700">{customRangeError}</p> : null}
           </div>
-          <div className="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
-          <button
-            type="button"
-            data-testid="home-bi-series-picker-button"
-            className="rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 py-2 text-sm font-semibold"
-            onClick={onSeriesPickerOpen}
+          <p
+            data-testid="home-bi-dimension-scope"
+            data-scope-variant="breadcrumb"
+            className="min-w-0 flex-1 truncate text-xs font-semibold text-slate-600 xl:text-right"
           >
-            系列自定义
-          </button>
-          <button
-            type="button"
-            data-testid="home-bi-product-exclude-button"
-            className="rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 py-2 text-sm font-semibold"
-            onClick={onProductExcludeOpen}
-          >
-            商品排除
-          </button>
-          <button
-            type="button"
-            data-testid="home-bi-brand-model-filter-button"
-            className="rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 py-2 text-sm font-semibold"
-            onClick={onBrandModelFilterOpen}
-          >
-            品牌词筛选
-          </button>
-          <button
-            type="button"
-            data-testid="home-bi-platform-target-button"
-            aria-expanded={platformTargetOpen}
-            className="rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 py-2 text-sm font-semibold"
-            onClick={onPlatformTargetOpen}
-          >
-            平台目标
-          </button>
-          <V1TimeRangePopover
-            testId="home-bi-time-range-popover"
-            mode={state.timeRange.mode}
-            startDate={state.timeRange.startDate}
-            endDate={state.timeRange.endDate}
-            rangeLabel={rangeText(state)}
-            onPeriodChange={onPeriodChange}
-            onDayChange={onDayDateChange}
-            onWeekChange={onWeekChange}
-            onMonthChange={onMonthChange}
-            onCustomDateChange={onCustomDateChange}
-          />
-          {customRangeError ? <p className="w-full text-right text-xs font-semibold text-rose-700">{customRangeError}</p> : null}
-          </div>
+            <span className="text-slate-900">范围：</span>{scopeBreadcrumb}
+          </p>
         </div>
       </div>
     </section>
@@ -416,9 +602,10 @@ function KPICardTile({
       aria-pressed={selected}
       data-testid="home-bi-kpi-card"
       data-kpi-title={card.title}
+      data-kpi-five-field-layout="current-value,mtd-target,total-target,difference,completion-rate,progress"
       title={`${card.title}: 当前 ${card.value}; MTD目标 ${card.mtdTarget}; 总目标 ${card.totalTarget}; 差值 ${card.difference}; 完成率 ${card.completionRate}`}
-      className={`h-[170px] min-w-0 overflow-hidden rounded-xl border p-3 text-left shadow-[0_1px_3px_rgba(15,23,42,0.05)] transition ${
-        selected ? "border-blue-300 bg-blue-50/40 ring-1 ring-blue-200" : "border-slate-200/80 bg-white hover:bg-slate-50/80"
+      className={`flex min-h-[178px] min-w-0 flex-col overflow-hidden rounded-xl border p-3 text-left shadow-[0_1px_3px_rgba(15,23,42,0.05)] transition ${
+        selected ? "border-blue-300 bg-white ring-1 ring-blue-100" : "border-slate-200/80 bg-white hover:border-blue-200 hover:bg-slate-50/80"
       }`}
       onClick={onClick}
     >
@@ -426,27 +613,35 @@ function KPICardTile({
         <p className="break-words text-sm font-semibold text-slate-950">{card.title}</p>
         {card.coreSeriesId ? <span className="shrink-0 rounded-full bg-slate-900 px-1.5 py-0.5 text-[10px] text-white">系列</span> : null}
       </div>
-      <p className="mt-1.5 break-words text-xl font-semibold leading-6 text-slate-950">{card.value}</p>
-      {helperText ? <p className="mt-1 min-h-4 break-words text-[10px] font-semibold text-slate-500">{helperText}</p> : null}
-      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200">
+      <div className="mt-2 flex items-end justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-[10px] font-semibold text-slate-400">当前值</p>
+          <p className="mt-0.5 break-words text-xl font-semibold leading-6 text-slate-950">{card.value}</p>
+        </div>
+        <span className={`shrink-0 rounded-full px-2 py-1 text-[10px] ${missing ? "bg-slate-100 text-slate-500" : "bg-slate-50 text-slate-600"}`}>
+          {card.completionRate}
+        </span>
+      </div>
+      {helperText ? <p className="mt-1 min-h-4 break-words text-[10px] font-semibold leading-4 text-slate-500">{helperText}</p> : null}
+      <div className="mt-2 h-1 overflow-hidden rounded-full bg-slate-200">
         <div className={`h-full rounded-full ${progressColor}`} style={{ width: `${Math.min(card.progress, 100)}%` }} />
       </div>
-      <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] leading-4 text-slate-700">
-        <div className="min-w-0">
-          <dt>MTD目标</dt>
-          <dd className="truncate text-right font-semibold text-slate-950">{card.mtdTarget}</dd>
+      <dl className="mt-auto grid grid-cols-2 gap-1.5 rounded-xl bg-slate-50/80 p-2 text-[10px] leading-4 text-slate-700">
+        <div className="min-w-0 rounded-lg bg-white/70 px-1.5 py-1">
+          <dt className="text-slate-500">MTD目标</dt>
+          <dd className="truncate font-semibold text-slate-950">{card.mtdTarget}</dd>
         </div>
-        <div className="min-w-0">
-          <dt>总目标</dt>
-          <dd className="truncate text-right font-semibold text-slate-950">{card.totalTarget}</dd>
+        <div className="min-w-0 rounded-lg bg-white/70 px-1.5 py-1">
+          <dt className="text-slate-500">总目标</dt>
+          <dd className="truncate font-semibold text-slate-950">{card.totalTarget}</dd>
         </div>
-        <div className="min-w-0">
-          <dt>差值</dt>
-          <dd className={`truncate text-right ${resultTone}`}>{card.difference}</dd>
+        <div className="min-w-0 rounded-lg bg-white/70 px-1.5 py-1">
+          <dt className="text-slate-500">差值</dt>
+          <dd className={`truncate ${resultTone}`}>{card.difference}</dd>
         </div>
-        <div className="min-w-0">
-          <dt>完成率</dt>
-          <dd className={`truncate text-right ${resultTone}`}>{card.completionRate}</dd>
+        <div className="min-w-0 rounded-lg bg-white/70 px-1.5 py-1">
+          <dt className="text-slate-500">完成率</dt>
+          <dd className={`truncate ${resultTone}`}>{card.completionRate}</dd>
         </div>
       </dl>
     </button>
@@ -466,7 +661,8 @@ function KpiGrid({
     <section
       aria-label={`首页 KPI 指标卡片，共 ${cards.length} 项`}
       data-testid="home-bi-kpi-grid"
-      className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5"
+      data-problem-ids="PVM2-002 PVM2-003"
+      className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5"
     >
       {cards.map((card) => (
         <KPICardTile
@@ -516,6 +712,7 @@ function PlatformTargetPopover({
   return (
     <aside
       data-testid="home-bi-platform-target-popover"
+      data-problem-ids="PVM2-006"
       className="absolute right-4 top-28 z-20 w-[min(420px,calc(100vw-2rem))] rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_24px_70px_rgba(15,23,42,0.18)]"
     >
       <div className="mb-3 flex items-center justify-between gap-3">
@@ -592,15 +789,18 @@ function PlatformTargetPopover({
             })}
           </div>
         </div>
-        <div className="rounded-xl border border-slate-200/80 bg-slate-50/80 p-3">
-          <p className="mb-2 text-xs font-semibold text-slate-500">已隐藏的目标</p>
-          <p
-            className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700"
+        <details className="rounded-xl border border-slate-200/80 bg-slate-50/80 p-3">
+          <summary className="cursor-pointer text-xs font-semibold text-slate-600">
+            已隐藏的目标 · {unsupportedFields.length} 项暂不开放普通输入
+          </summary>
+          <div
+            className="mt-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold leading-5 text-amber-700"
             title={unsupportedFields.map((field) => `${field.title}: ${field.unsupportedReason ?? "暂不开放输入"}`).join("；")}
           >
-            {unsupportedFields.length} 项暂不开放普通输入，保留为信息说明，不写入目标草稿。
-          </p>
-        </div>
+            <p>这些指标当前只保留说明，不写入目标草稿，也不会影响真实实际值。</p>
+            <p className="mt-1">{unsupportedFields.map((field) => field.title).join("、")}</p>
+          </div>
+        </details>
       </div>
       <div className="mt-4 flex justify-end gap-2">
         <button type="button" className="rounded-xl border border-slate-200/80 px-4 py-2 text-sm font-semibold" onClick={onClose}>
@@ -680,17 +880,15 @@ function ProductExcludeDialog({
 
 function SeriesPickerDialog({
   seriesCards,
-  selectedSeriesIds,
-  onToggle,
+  activeSeriesId,
+  onSelect,
   onClose,
 }: {
   seriesCards: HomeBIKpiCard[];
-  selectedSeriesIds: string[];
-  onToggle: (seriesId: string) => void;
+  activeSeriesId: string | null;
+  onSelect: (seriesId: string | null) => void;
   onClose: () => void;
 }) {
-  const selected = new Set(selectedSeriesIds);
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
       <section
@@ -702,7 +900,7 @@ function SeriesPickerDialog({
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold text-slate-950">系列自定义</h2>
-            <p className="mt-1 text-xs font-semibold text-slate-500">首页最多展示 3 个已配置系列卡片。</p>
+            <p className="mt-1 text-xs font-semibold text-slate-500">选择后首页 KPI 和图表按该系列商品 ID 过滤。</p>
           </div>
           <button type="button" className="rounded-xl border border-slate-200/80 px-2 py-1 text-sm" onClick={onClose}>
             关闭
@@ -714,23 +912,45 @@ function SeriesPickerDialog({
           </p>
         ) : (
           <div className="space-y-2">
+            <button
+              type="button"
+              data-testid="home-bi-series-filter-all-option"
+              className={`flex w-full items-center justify-between rounded-xl border p-3 text-left text-sm font-semibold ${
+                activeSeriesId
+                  ? "border-slate-200/80 bg-white text-slate-700"
+                  : "border-blue-200 bg-blue-50 text-blue-800"
+              }`}
+              onClick={() => onSelect(null)}
+            >
+              <span>全部系列</span>
+              {!activeSeriesId ? <span className="text-xs">当前范围</span> : null}
+            </button>
             {seriesCards.map((card) => {
-              const disabled = !selected.has(card.coreSeriesId ?? "") && selected.size >= 3;
+              const seriesId = card.coreSeriesId ?? "";
+              const active = Boolean(seriesId) && activeSeriesId === seriesId;
               return (
-                <label key={card.id} className="flex items-start gap-2 rounded-xl border border-slate-200/80 p-3 text-sm font-semibold text-slate-800">
+                <button
+                  key={card.id}
+                  type="button"
+                  data-testid="home-bi-series-filter-option"
+                  data-series-id={seriesId}
+                  className={`flex w-full items-start gap-2 rounded-xl border p-3 text-left text-sm font-semibold ${
+                    active ? "border-blue-200 bg-blue-50 text-blue-800" : "border-slate-200/80 bg-white text-slate-800"
+                  }`}
+                  onClick={() => seriesId && onSelect(seriesId)}
+                >
                   <input
-                    type="checkbox"
+                    type="radio"
                     className="mt-0.5 h-4 w-4 accent-slate-900"
-                    checked={selected.has(card.coreSeriesId ?? "")}
-                    disabled={disabled}
-                    onChange={() => card.coreSeriesId && onToggle(card.coreSeriesId)}
+                    checked={active}
+                    readOnly
                   />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-slate-950">{card.title}</span>
                     <span className="block text-xs text-slate-500">{card.description ?? "已配置系列"}</span>
                   </span>
-                  {disabled ? <span className="text-xs text-amber-700">最多 3 个</span> : null}
-                </label>
+                  {active ? <span className="text-xs text-blue-700">当前范围</span> : null}
+                </button>
               );
             })}
           </div>
@@ -751,7 +971,7 @@ export function HomeBIDashboard() {
   const [chartMode, setChartMode] = useState<V1ChartMode>("mtd");
   const [platformTargetMonth, setPlatformTargetMonth] = useState("2026-06");
   const [platformTargetMessage, setPlatformTargetMessage] = useState<PlatformTargetMessage | null>(null);
-  const [displaySeriesIds, setDisplaySeriesIds] = useState<string[]>([]);
+  const [debugSeriesItems, setDebugSeriesItems] = useState<DebugContextTempSeriesItem[]>([]);
   const [customRangeError, setCustomRangeError] = useState<string | null>(null);
   const [platformTargetInputs, setPlatformTargetInputs] = useState<PlatformTargetDraftInputs>({});
   const [debugContextReady, setDebugContextReady] = useState(false);
@@ -760,7 +980,20 @@ export function HomeBIDashboard() {
     excludedRemarkKeywords: "",
   });
 
-  const storeOptions = useMemo(() => buildStoreOptions(dataSource), [dataSource]);
+  const seriesBridgeDataSource = useMemo(
+    () => mergeHomeDebugSeriesDataSource(dataSource, debugSeriesItems),
+    [dataSource, debugSeriesItems],
+  );
+  const scopedDataSource = useMemo(
+    () => scopeHomeDataSourceBySeries(seriesBridgeDataSource, biState.selectedSeries),
+    [biState.selectedSeries, seriesBridgeDataSource],
+  );
+  const storeOptions = useMemo(() => buildStoreOptions(seriesBridgeDataSource), [seriesBridgeDataSource]);
+  const datasetDateRange = useMemo(() => datasetDateRangeForSource(seriesBridgeDataSource), [seriesBridgeDataSource]);
+  const timeRangeSourceLabel = useMemo(
+    () => v1TimeRangeSourceLabel(biState.timeRange, datasetDateRange),
+    [biState.timeRange, datasetDateRange],
+  );
   const allStoreIds = useMemo(() => storeOptions.map((option) => option.storeId), [storeOptions]);
   const selectedPlatformTargetStore = useMemo(() => {
     const selectedStoreIds = biState.selectedStores.filter((storeId) => storeId !== NO_STORE_SELECTED);
@@ -777,6 +1010,7 @@ export function HomeBIDashboard() {
         if (result.status === "ok") {
           setBiState((state) => mergeDebugContextIntoUIState(state, result.snapshot, "home"));
           setChartMode(result.snapshot.pages.home.chartMode);
+          setDebugSeriesItems(result.snapshot.pages.series.temporarySeriesProductIds);
         }
         setDebugContextReady(true);
       })
@@ -802,11 +1036,7 @@ export function HomeBIDashboard() {
         setBiState((state) => ({
           ...state,
           selectedStores: state.selectedStores.length > 0 ? state.selectedStores : nextStoreIds,
-          timeRange: {
-            ...state.timeRange,
-            startDate: state.timeRange.startDate ?? nextSource.selectedDate,
-            endDate: state.timeRange.endDate ?? nextSource.selectedDate,
-          },
+          timeRange: v1ResolveTimeRangeForDataset(state.timeRange, datasetDateRangeForSource(nextSource)).timeRange,
         }));
       })
       .catch(() => {
@@ -820,6 +1050,24 @@ export function HomeBIDashboard() {
   }, []);
 
   useEffect(() => {
+    if (!debugContextReady || !datasetDateRange) return;
+    let active = true;
+    void Promise.resolve().then(() => {
+      if (!active) return;
+      setBiState((state) => {
+        const resolved = v1ResolveTimeRangeForDataset(state.timeRange, datasetDateRange);
+        if (resolved.source !== "dataset") return state;
+        return { ...state, timeRange: resolved.timeRange };
+      });
+    });
+    return () => {
+      active = false;
+    };
+  }, [datasetDateRange, debugContextReady]);
+
+  const persistedHomeSelectedMetric = biState.selectedSeries ? `series:${biState.selectedSeries}` : biState.selectedMetric;
+
+  useEffect(() => {
     if (!debugContextReady) return;
     void saveCrossPageDebugContextPatch({
       selectedPlatform: biState.selectedPlatform,
@@ -827,11 +1075,11 @@ export function HomeBIDashboard() {
       timeRange: biState.timeRange,
       brandModelFilter: biState.brandModelFilter,
       centerWordGroups: biState.brandModelFilter?.centerWordGroups,
-      selectedMetric: biState.selectedMetric,
+      selectedMetric: persistedHomeSelectedMetric,
       chartMode,
       pages: {
         home: {
-          selectedMetric: biState.selectedMetric,
+          selectedMetric: persistedHomeSelectedMetric,
           chartMode,
         },
       },
@@ -839,16 +1087,23 @@ export function HomeBIDashboard() {
   }, [
     biState.brandModelFilter,
     biState.selectedMetric,
+    biState.selectedSeries,
     biState.selectedPlatform,
     biState.selectedStores,
     biState.timeRange,
     chartMode,
     debugContextReady,
+    persistedHomeSelectedMetric,
   ]);
 
-  const viewModel = useMemo(() => buildHomeBIViewModel(dataSource, biState), [dataSource, biState]);
+  const viewModel = useMemo(() => buildHomeBIViewModel(scopedDataSource, biState), [scopedDataSource, biState]);
   const baseCards = useMemo(() => viewModel.kpiCards.filter((card) => !card.coreSeriesId), [viewModel.kpiCards]);
   const seriesCards = useMemo(() => viewModel.kpiCards.filter((card) => card.coreSeriesId), [viewModel.kpiCards]);
+  const selectedSeriesCard = useMemo(
+    () => seriesCards.find((card) => card.coreSeriesId === biState.selectedSeries) ?? null,
+    [biState.selectedSeries, seriesCards],
+  );
+  const currentSeriesLabel = selectedSeriesCard?.title ?? "全局经营视图";
   const mtdChart = viewModel.mtdChartModel;
   const dlyChart = viewModel.dlyChartModel;
   const activeChart = chartMode === "mtd" ? mtdChart : dlyChart;
@@ -866,11 +1121,26 @@ export function HomeBIDashboard() {
   const platformTargetFieldLabels = useMemo(() => new Set(platformTargetFields.map((field) => field.label)), [platformTargetFields]);
 
   useEffect(() => {
-    if (DISPLAY_HOME_KPI_TITLE_SET.has(String(biState.selectedMetric))) return;
+    const selectedMetric = String(biState.selectedMetric);
+    if (DISPLAY_HOME_KPI_TITLE_SET.has(selectedMetric) || selectedMetric.startsWith("series:")) return;
     void Promise.resolve().then(() => {
       setBiState((state) => ({ ...state, selectedMetric: "GMV", selectedSeries: null }));
     });
   }, [biState.selectedMetric]);
+
+  useEffect(() => {
+    if (!debugContextReady) return;
+    const restoredSeriesId = selectedSeriesIdFromMetric(String(biState.selectedMetric));
+    if (!restoredSeriesId || biState.selectedSeries === restoredSeriesId) return;
+    if (!seriesCards.some((card) => card.coreSeriesId === restoredSeriesId)) return;
+    void Promise.resolve().then(() => {
+      setBiState((state) => (
+        state.selectedSeries === restoredSeriesId
+          ? state
+          : { ...state, selectedSeries: restoredSeriesId }
+      ));
+    });
+  }, [biState.selectedMetric, biState.selectedSeries, debugContextReady, seriesCards]);
 
   useEffect(() => {
     let active = true;
@@ -969,7 +1239,7 @@ export function HomeBIDashboard() {
   };
 
   const handlePeriodChange = (period: (typeof PERIODS)[number]) => {
-    const selectedDate = dataSource.selectedDate;
+    const selectedDate = datasetDateRange?.endDate ?? dataSource.selectedDate;
     setCustomRangeError(null);
     if (period === "日") {
       setBiState((state) => ({
@@ -1131,23 +1401,18 @@ export function HomeBIDashboard() {
     setBiState((state) => ({
       ...state,
       selectedMetric: card.metricKey,
-      selectedSeries: card.coreSeriesId,
+      selectedSeries: card.coreSeriesId ?? state.selectedSeries,
     }));
   };
 
-  const handleToggleDisplaySeries = (seriesId: string) => {
-    setDisplaySeriesIds((current) => {
-      if (current.includes(seriesId)) return current.filter((id) => id !== seriesId);
-      return [...current, seriesId].slice(0, 3);
-    });
+  const handleSelectSeriesFilter = (seriesId: string | null) => {
+    setBiState((state) => ({
+      ...state,
+      selectedMetric: seriesId ? `series:${seriesId}` : "GMV",
+      selectedSeries: seriesId,
+    }));
+    setSeriesPickerOpen(false);
   };
-
-  const selectedHomeStoreIds = biState.selectedStores.filter((storeId) => storeId !== NO_STORE_SELECTED);
-  const selectedHomeStores = storeOptions.filter((option) => selectedHomeStoreIds.includes(option.storeId));
-  const selectedHomePlatforms = uniqueTextList(selectedHomeStores.map((option) => option.platformName));
-  const homeStoreScopeText = selectedHomeStores.length > 0
-    ? `${selectedHomeStores.length} 个店铺`
-    : "未选择店铺";
 
   return (
     <div data-testid="home-bi-dashboard" className="fixed inset-0 z-50 flex overflow-hidden bg-[#F5F7FB] text-slate-950">
@@ -1160,6 +1425,7 @@ export function HomeBIDashboard() {
             platformTargetOpen={platformTargetOpen}
             state={biState}
             storeOptions={storeOptions}
+            currentSeriesLabel={currentSeriesLabel}
             storeMenuOpen={storeMenuOpen}
             customRangeError={customRangeError}
             onToggleStoreMenu={() => setStoreMenuOpen((open) => !open)}
@@ -1191,21 +1457,15 @@ export function HomeBIDashboard() {
               onClose={() => setPlatformTargetOpen(false)}
             />
           ) : null}
-          <V1DimensionScopeBar
-            testId="home-bi-dimension-scope"
-            platform={selectedHomePlatforms.length > 0 ? selectedHomePlatforms.join(" / ") : "全部平台"}
-            store={homeStoreScopeText}
-            series="全局经营视图"
-            product="全商品聚合"
-          />
           <div className="mx-4 mt-3 rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-xs font-semibold text-slate-600">
             <span className="mr-3 text-slate-900">{viewModel.dataStatus.label}</span>
+            <span data-testid="home-time-range-source-label" className="mr-3 text-blue-700">{timeRangeSourceLabel}</span>
             {viewModel.notices.slice(0, 2).join(" ")}
           </div>
           <section data-testid="home-bi-kpi-section" className="px-4 py-3" data-problem-ids="PVM2-001 PVM2-002 PVM2-003">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <h2 className="break-words text-base font-semibold text-slate-950">经营指标</h2>
-              <div className="text-xs font-semibold text-slate-500">当前值、目标、差值、完成率和进度统一展示</div>
+              <div className="text-xs font-semibold text-slate-500">全量 KPI 网格 · 当前值、目标、差值、完成率和进度统一展示</div>
             </div>
             <KpiGrid cards={cards} state={biState} onSelect={handleSelectCard} />
           </section>
@@ -1253,8 +1513,8 @@ export function HomeBIDashboard() {
       {seriesPickerOpen ? (
         <SeriesPickerDialog
           seriesCards={seriesCards}
-          selectedSeriesIds={displaySeriesIds}
-          onToggle={handleToggleDisplaySeries}
+          activeSeriesId={biState.selectedSeries}
+          onSelect={handleSelectSeriesFilter}
           onClose={() => setSeriesPickerOpen(false)}
         />
       ) : null}

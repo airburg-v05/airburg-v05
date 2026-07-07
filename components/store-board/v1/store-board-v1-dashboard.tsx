@@ -9,18 +9,20 @@ import {
 } from "@/lib/bi/bi.data-source";
 import { createDefaultBIState } from "@/lib/bi/bi.store";
 import { BIChartCard } from "@/components/visual-system/v1/bi-chart";
+import { dateAxisWithTimeRangeFallback } from "@/components/visual-system/v1/chart-utils";
 import {
   loadCrossPageDebugContext,
   mergeDebugContextIntoUIState,
   saveCrossPageDebugContextPatch,
 } from "@/lib/persistence/debug-context-persistence";
 import {
-  V1DimensionScopeBar,
-  V1LogoAccountButton,
   V1Sidebar,
   V1TimeRangePopover,
   V1TopBar,
+  v1DatasetDateRangeFromDates,
   v1MonthRangeForMonth,
+  v1ResolveTimeRangeForDataset,
+  v1TimeRangeSourceLabel,
   v1WeekRangeForWeek,
   type V1ChartMode,
 } from "@/components/visual-system/v1/visual-system";
@@ -230,6 +232,32 @@ const rangeText = (state: UIState): string =>
     ? `${state.timeRange.startDate} ~ ${state.timeRange.endDate}`
     : "--";
 
+const DATASET_RANGE_METRIC_KEYS = [
+  "gmv",
+  "gsv",
+  "visitors",
+  "paidBuyers",
+  "adSpend",
+  "adRevenue",
+  "adClicks",
+  "directTransactionAmount",
+  "indirectTransactionAmount",
+  "totalTransactionAmount",
+] as const;
+
+const hasDatasetRangeMetric = (point: BIDataPoint): boolean =>
+  DATASET_RANGE_METRIC_KEYS.some((key) => typeof point.metrics[key] === "number" && Number.isFinite(point.metrics[key]));
+
+const datasetDateRangeForSource = (source: BIHomeDataSource) => {
+  const primaryRange = v1DatasetDateRangeFromDates([
+    ...source.points.filter(hasDatasetRangeMetric).map((point) => point.businessDate),
+    ...source.seriesPoints.filter(hasDatasetRangeMetric).map((point) => point.businessDate),
+    ...source.searchTotalKeywords.map((keyword) => keyword.date),
+    ...source.searchProductKeywords.map((keyword) => keyword.date),
+  ]);
+  return primaryRange ?? v1DatasetDateRangeFromDates(source.points.map((point) => point.businessDate));
+};
+
 const buildStoreOptions = (source: BIHomeDataSource, tempStores: TempStoreItem[]): StoreOption[] => {
   const options = new Map<string, StoreOption>();
   source.points.forEach((point) => {
@@ -320,14 +348,14 @@ const buildKpiCards = (points: BIDataPoint[]): StoreKpiCard[] =>
   });
 
 const buildChartLines = (
-  source: BIHomeDataSource,
   points: BIDataPoint[],
   storeOptions: StoreOption[],
   selectedStores: string[],
+  state: UIState,
   selectedMetric: string,
 ): { xAxis: string[]; lines: ChartSeries[]; title: string; empty: boolean } => {
   const dates = Array.from(new Set(points.map((point) => point.businessDate))).sort();
-  const xAxis = dates.length > 0 ? dates : [source.selectedDate ?? "--"];
+  const xAxis = dateAxisWithTimeRangeFallback(dates, state.timeRange.startDate, state.timeRange.endDate);
   const selectedDefinition = STORE_KPIS.find((kpi) => kpi.key === selectedMetric) ?? STORE_KPIS[0];
   const selectedSet = new Set(selectedStores.filter((key) => key !== NO_STORE_SELECTED));
 
@@ -570,56 +598,35 @@ function ControlBar({
 }) {
   const selectedSet = new Set(state.selectedStores.filter((key) => key !== NO_STORE_SELECTED));
   const selectedStores = storeOptions.filter((option) => selectedSet.has(option.key));
-  const platformText = uniqueTextList(selectedStores.map((store) => store.platformName)).join("｜") || "暂无数据";
+  const platformText = uniqueTextList(selectedStores.map((store) => store.platformName)).join(" / ") || "天猫";
+  const selectedStoreText =
+    selectedStores.length === 1 ? selectedStores[0].storeName : selectedStores.length > 1 ? `${selectedStores.length} 个店铺` : "未选择店铺";
+  const scopeBreadcrumb = `${platformText} / ${selectedStoreText} / 不按系列筛选 / 店铺内商品聚合`;
   return (
-    <section className="relative m-4 rounded-xl border border-slate-200/80 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06)] p-4" data-testid="store-board-v1-control">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-        <div className="flex min-w-0 flex-wrap items-start gap-3">
-          <V1LogoAccountButton testId="store-board-v1-logo-button" />
-          <div className="min-w-[220px]">
-            <div className="flex flex-wrap items-center gap-2">
+    <section
+      className="border-b border-slate-200 bg-white px-4 py-2"
+      data-testid="store-board-v1-control"
+      data-problem-ids="PVM2-001 PVM2-002 PVM2-004 PVM2-006 PVM2-008 PVM2-013"
+    >
+      <div className="space-y-1.5">
+        <div data-testid="store-board-v1-business-toolbar" className="flex min-h-12 flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
+            <div className="relative flex min-w-0 items-center gap-2">
+              <span className="text-xs font-semibold text-slate-600">店铺：</span>
               <button
                 type="button"
                 data-testid="store-board-v1-target-store"
-                className="min-w-[180px] rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 py-2 text-left text-sm font-semibold text-slate-950"
+                aria-expanded={storeMenuOpen}
+                className="inline-flex min-h-8 w-[min(220px,70vw)] items-center justify-between gap-4 rounded-lg border border-slate-200/80 bg-white px-3 text-left text-sm font-semibold text-slate-950 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
                 onClick={onToggleStoreMenu}
               >
-                目标店铺
+                <span className="truncate">目标店铺</span>
+                <span aria-hidden="true">▾</span>
               </button>
-              <button
-                type="button"
-                data-testid="store-board-v1-store-settings-button"
-                className="rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 py-2 text-sm font-semibold text-slate-950"
-                onClick={() => onOpenPopup("store")}
-              >
-                店铺设置
-              </button>
-            </div>
-            <p className="mt-2 text-xs font-semibold text-slate-600">
-              店铺数量 {storeOptions.length}个 · 已选择 {selectedStores.length}个
-            </p>
-            <p className="mt-1 break-words text-xs font-semibold text-slate-600">涉及平台 {platformText}</p>
-          </div>
-        </div>
-        <div className="flex min-w-0 flex-wrap items-center justify-start gap-2 xl:justify-end">
-          <V1TimeRangePopover
-            testId="store-board-v1-time-range-popover"
-            mode={state.timeRange.mode}
-            startDate={state.timeRange.startDate}
-            endDate={state.timeRange.endDate}
-            rangeLabel={rangeText(state)}
-            onPeriodChange={onPeriodChange}
-            onDayChange={onDayDateChange}
-            onWeekChange={onWeekChange}
-            onMonthChange={onMonthChange}
-            onCustomDateChange={onCustomDateChange}
-          />
-        </div>
-      </div>
       {storeMenuOpen ? (
         <div
           data-testid="store-board-v1-store-menu"
-          className="absolute left-28 top-24 z-30 w-[min(360px,calc(100vw-2rem))] rounded-xl border border-slate-200/80 bg-white p-3 shadow-[0_16px_48px_rgba(15,23,42,0.16)]"
+                  className="absolute left-0 top-10 z-30 w-[min(360px,calc(100vw-2rem))] rounded-xl border border-slate-200/80 bg-white p-3 shadow-[0_16px_48px_rgba(15,23,42,0.16)]"
         >
           <div className="mb-2 flex gap-2">
             <button type="button" className="rounded-xl border border-slate-200/80 px-3 py-1 text-xs font-semibold" onClick={onSelectAllStores}>
@@ -651,6 +658,48 @@ function ControlBar({
           </div>
         </div>
       ) : null}
+            </div>
+            <span className="text-xs font-semibold text-slate-600">平台：{platformText}</span>
+            <span className="text-xs font-semibold text-slate-600">店铺 {storeOptions.length} / 已选 {selectedStores.length}</span>
+          </div>
+          <div className="flex min-w-0 flex-wrap items-center justify-start gap-2 xl:justify-end">
+            <button
+              type="button"
+              data-testid="store-board-v1-store-settings-button"
+              className="min-h-8 rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold text-slate-950 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+              onClick={() => onOpenPopup("store")}
+            >
+              店铺设置
+            </button>
+          </div>
+        </div>
+        <div data-testid="store-board-v1-time-scope-toolbar" className="flex min-h-10 flex-wrap items-center justify-between gap-x-4 gap-y-1.5 border-t border-slate-200/80 pt-1.5">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <V1TimeRangePopover
+              testId="store-board-v1-time-range-popover"
+              variant="split"
+              mode={state.timeRange.mode}
+              startDate={state.timeRange.startDate}
+              endDate={state.timeRange.endDate}
+              rangeLabel={rangeText(state)}
+              onPeriodChange={onPeriodChange}
+              onDayChange={onDayDateChange}
+              onWeekChange={onWeekChange}
+              onMonthChange={onMonthChange}
+              onCustomDateChange={onCustomDateChange}
+            />
+            <span className="text-xs font-semibold text-slate-600">{rangeText(state)}</span>
+          </div>
+          <p
+            data-testid="store-board-v1-dimension-scope"
+            data-scope-variant="breadcrumb"
+            className="min-w-0 truncate text-xs font-semibold text-slate-600"
+            title={`范围：${scopeBreadcrumb}`}
+          >
+            <span className="text-slate-900">范围：</span>{scopeBreadcrumb}
+          </p>
+        </div>
+      </div>
     </section>
   );
 }
@@ -788,6 +837,11 @@ export function StoreBoardV1Dashboard() {
   const [debugContextReady, setDebugContextReady] = useState(false);
 
   const storeOptions = useMemo(() => buildStoreOptions(dataSource, tempStores), [dataSource, tempStores]);
+  const datasetDateRange = useMemo(() => datasetDateRangeForSource(dataSource), [dataSource]);
+  const timeRangeSourceLabel = useMemo(
+    () => v1TimeRangeSourceLabel(biState.timeRange, datasetDateRange),
+    [biState.timeRange, datasetDateRange],
+  );
   const activeStoreKeys = useMemo(
     () => storeOptions.filter((store) => store.status === "active").map((store) => store.key),
     [storeOptions],
@@ -813,11 +867,7 @@ export function StoreBoardV1Dashboard() {
           return {
             ...merged,
             selectedStores,
-            timeRange: {
-              ...merged.timeRange,
-              startDate: merged.timeRange.startDate ?? nextSource.selectedDate,
-              endDate: merged.timeRange.endDate ?? nextSource.selectedDate,
-            },
+            timeRange: v1ResolveTimeRangeForDataset(merged.timeRange, datasetDateRangeForSource(nextSource)).timeRange,
           };
         });
         if (contextResult.status === "ok") setChartMode(contextResult.snapshot.chartMode);
@@ -833,6 +883,22 @@ export function StoreBoardV1Dashboard() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!debugContextReady || !datasetDateRange) return;
+    let active = true;
+    void Promise.resolve().then(() => {
+      if (!active) return;
+      setBiState((state) => {
+        const resolved = v1ResolveTimeRangeForDataset(state.timeRange, datasetDateRange);
+        if (resolved.source !== "dataset") return state;
+        return { ...state, timeRange: resolved.timeRange };
+      });
+    });
+    return () => {
+      active = false;
+    };
+  }, [datasetDateRange, debugContextReady]);
+
   const selectedPoints = useMemo(() => scopedStorePoints(dataSource, biState), [biState, dataSource]);
   const allCards = useMemo(() => buildKpiCards(selectedPoints), [selectedPoints]);
   const cards = useMemo(
@@ -843,13 +909,11 @@ export function StoreBoardV1Dashboard() {
   );
   const selectedCard = cards.find((card) => card.key === biState.selectedMetric) ?? cards[0];
   const chart = useMemo(
-    () => buildChartLines(dataSource, selectedPoints, storeOptions, biState.selectedStores, selectedCard?.key ?? "storeGmv"),
-    [biState.selectedStores, dataSource, selectedCard?.key, selectedPoints, storeOptions],
+    () => buildChartLines(selectedPoints, storeOptions, biState.selectedStores, biState, selectedCard?.key ?? "storeGmv"),
+    [biState, selectedCard?.key, selectedPoints, storeOptions],
   );
   const contributions = useMemo(() => buildContributions(selectedPoints), [selectedPoints]);
   const hasActiveStore = activeStoreKeys.length > 0 && biState.selectedStores.some((key) => activeStoreKeys.includes(key));
-  const selectedStoreOptions = storeOptions.filter((option) => biState.selectedStores.includes(option.key));
-  const selectedStorePlatforms = Array.from(new Set(selectedStoreOptions.map((option) => option.platformName).filter(Boolean)));
 
   useEffect(() => {
     if (DISPLAY_STORE_KPI_KEY_SET.has(String(biState.selectedMetric))) return;
@@ -880,7 +944,7 @@ export function StoreBoardV1Dashboard() {
   ]);
 
   const handlePeriodChange = (period: PeriodLabel) => {
-    const selectedDate = dataSource.selectedDate;
+    const selectedDate = datasetDateRange?.endDate ?? dataSource.selectedDate;
     if (period === "日") {
       setBiState((state) => ({ ...state, timeRange: { mode: "day", startDate: selectedDate, endDate: selectedDate } }));
       return;
@@ -979,15 +1043,9 @@ export function StoreBoardV1Dashboard() {
 
           <div className="mx-4 mt-3 rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-xs font-semibold text-slate-600">
             <span className="mr-3 text-slate-900">{dataSource.dataStatus.label}</span>
+            <span data-testid="store-board-time-range-source-label" className="mr-3 text-blue-700">{timeRangeSourceLabel}</span>
             {hasActiveStore ? `当前选择 ${biState.selectedStores.filter((key) => key !== NO_STORE_SELECTED).length} 个店铺` : "请先在店铺设置中添加店铺，或完成数据上传。"}
           </div>
-          <V1DimensionScopeBar
-            testId="store-board-v1-dimension-scope"
-            platform={selectedStorePlatforms.length > 0 ? selectedStorePlatforms.join(" / ") : "全部平台"}
-            store={selectedStoreOptions.length > 0 ? `${selectedStoreOptions.length} 个店铺` : "未选择店铺"}
-            series="不按系列筛选"
-            product="店铺内商品聚合"
-          />
 
           <section data-testid="store-board-v1-kpi-section" className="px-4 py-3" data-problem-ids="PVM2-002 PVM2-008">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">

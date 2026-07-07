@@ -310,11 +310,15 @@ export function BIChartCard({
 }) {
   const lines = asLines(chart);
   return (
-    <section data-testid={testId} className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
+    <section
+      data-testid={testId}
+      data-chart-panel="mtd-dly-dashboard-panel"
+      className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.06)]"
+    >
       <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
           <h2 className="break-words text-base font-semibold text-slate-950">{title ?? chart.title}</h2>
-          {description ? <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">{description}</p> : null}
+          {description ? <p className="mt-1 max-w-3xl text-xs font-semibold leading-5 text-slate-500">{description}</p> : null}
         </div>
         <div className="flex shrink-0 flex-col items-start gap-2 lg:items-end">
           {showModeSwitch ? <V1ChartModeSwitch mode={mode} onChange={onModeChange} testId={modeSwitchTestId ?? `${testId}-mode-switch`} /> : null}

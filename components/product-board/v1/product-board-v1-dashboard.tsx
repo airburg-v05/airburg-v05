@@ -33,6 +33,7 @@ import {
 } from "@/lib/persistence/target-drafts-persistence.types";
 import type { BISearchProductKeyword, BrandModelFilter } from "@/lib/bi/search-keyword.types";
 import { BIChartCard } from "@/components/visual-system/v1/bi-chart";
+import { dateAxisWithTimeRangeFallback } from "@/components/visual-system/v1/chart-utils";
 import { BrandModelFilterPopover } from "@/components/visual-system/v1/brand-model-filter-popover";
 import {
   loadCrossPageDebugContext,
@@ -41,12 +42,13 @@ import {
   saveCrossPageDebugContextPatch,
 } from "@/lib/persistence/debug-context-persistence";
 import {
-  V1DimensionScopeBar,
-  V1LogoAccountButton,
   V1Sidebar,
   V1TimeRangePopover,
   V1TopBar,
+  v1DatasetDateRangeFromDates,
   v1MonthRangeForMonth,
+  v1ResolveTimeRangeForDataset,
+  v1TimeRangeSourceLabel,
   v1WeekRangeForWeek,
   type V1ChartMode,
 } from "@/components/visual-system/v1/visual-system";
@@ -314,6 +316,32 @@ const rangeText = (state: UIState): string =>
     ? `${state.timeRange.startDate} ~ ${state.timeRange.endDate}`
     : "--";
 
+const DATASET_RANGE_METRIC_KEYS = [
+  "gmv",
+  "gsv",
+  "visitors",
+  "paidBuyers",
+  "adSpend",
+  "adRevenue",
+  "adClicks",
+  "directTransactionAmount",
+  "indirectTransactionAmount",
+  "totalTransactionAmount",
+] as const;
+
+const hasDatasetRangeMetric = (point: BIDataPoint): boolean =>
+  DATASET_RANGE_METRIC_KEYS.some((key) => typeof point.metrics[key] === "number" && Number.isFinite(point.metrics[key]));
+
+const datasetDateRangeForSource = (source: BIHomeDataSource) => {
+  const primaryRange = v1DatasetDateRangeFromDates([
+    ...source.points.filter(hasDatasetRangeMetric).map((point) => point.businessDate),
+    ...source.seriesPoints.filter(hasDatasetRangeMetric).map((point) => point.businessDate),
+    ...source.searchTotalKeywords.map((keyword) => keyword.date),
+    ...source.searchProductKeywords.map((keyword) => keyword.date),
+  ]);
+  return primaryRange ?? v1DatasetDateRangeFromDates(source.points.map((point) => point.businessDate));
+};
+
 const buildStoreOptions = (source: BIHomeDataSource, tempProducts: TempProductItem[]): StoreOption[] => {
   const options = new Map<string, StoreOption>();
   source.points.forEach((point) => {
@@ -560,7 +588,7 @@ const buildChartLines = (
   selectedMetric: string,
 ): { xAxis: string[]; lines: ChartSeries[]; title: string; empty: boolean } => {
   const dates = Array.from(new Set(points.map((point) => point.businessDate))).sort();
-  const xAxis = dates.length > 0 ? dates : [source.selectedDate ?? "--"];
+  const xAxis = dateAxisWithTimeRangeFallback(dates, state.timeRange.startDate, state.timeRange.endDate, source.selectedDate);
   const selectedDefinition = PRODUCT_KPIS.find((kpi) => kpi.key === selectedMetric) ?? PRODUCT_KPIS[0];
   const selectedProduct = productOptions.find((product) => product.key === selectedProductKey);
   const productLabel = selectedProduct?.productName ?? "当前宝贝";
@@ -680,7 +708,7 @@ const buildBrandProductChart = ({
     ...rows.map((row) => effectiveKeywordDate(row.date, source.selectedDate)),
   ];
   const xAxis = Array.from(new Set(dateCandidates.filter(Boolean))).sort();
-  const fallbackAxis = xAxis.length > 0 ? xAxis : [source.selectedDate ?? "--"];
+  const fallbackAxis = dateAxisWithTimeRangeFallback(xAxis, state.timeRange.startDate, state.timeRange.endDate, source.selectedDate);
   const entityId = selectedProduct?.key ?? "unselected-product";
 
   if (!selectedProduct || !hasBrandModelTokens(state.brandModelFilter)) {
@@ -971,7 +999,7 @@ function ControlBar({
 }) {
   const selectedSet = new Set(state.selectedStores.filter((key) => key !== NO_STORE_SELECTED));
   const selectedStores = storeOptions.filter((option) => selectedSet.has(option.key));
-  const platformText = uniqueTextList(selectedStores.map((store) => store.platformName)).join("｜") || "暂无数据";
+  const platformText = uniqueTextList(selectedStores.map((store) => store.platformName)).join(" / ") || "天猫";
   const normalizedProductSearch = productSearch.trim().toLowerCase();
   const selectedProduct = productOptions.find((product) => product.key === selectedProductKey);
   const filteredProductsBase = productOptions
@@ -983,25 +1011,101 @@ function ControlBar({
   const filteredProducts = selectedProduct && !filteredProductsBase.some((product) => product.key === selectedProduct.key)
     ? [selectedProduct, ...filteredProductsBase]
     : filteredProductsBase;
+  const selectedStoreText =
+    selectedProduct?.storeName ??
+    (selectedStores.length === 1 ? selectedStores[0].storeName : selectedStores.length > 1 ? `${selectedStores.length} 个店铺` : "未选择店铺");
+  const productText = selectedProduct ? `${selectedProduct.productName} · ${selectedProduct.productId}` : "未选择宝贝";
+  const scopeBreadcrumb = `${selectedProduct?.platformName ?? platformText} / ${selectedStoreText} / ${productText} / 单品视图`;
   return (
-    <section className="relative m-4 rounded-xl border border-slate-200/80 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06)] p-4" data-testid="product-board-v1-control">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-        <div className="flex min-w-0 flex-wrap items-start gap-3">
-          <V1LogoAccountButton testId="product-board-v1-logo-button" />
-          <div className="min-w-[220px]">
-            <div className="flex flex-wrap items-center gap-2">
+    <section
+      className="border-b border-slate-200 bg-white px-4 py-2"
+      data-testid="product-board-v1-control"
+      data-problem-ids="PVM2-001 PVM2-002 PVM2-004 PVM2-006 PVM2-009 PVM2-013"
+    >
+      <div className="space-y-1.5">
+        <div data-testid="product-board-v1-business-toolbar" className="flex min-h-12 flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
+            <div className="relative flex min-w-0 items-center gap-2">
+              <span className="text-xs font-semibold text-slate-600">店铺：</span>
               <button
                 type="button"
                 data-testid="product-board-v1-target-store"
-                className="min-w-[180px] rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 py-2 text-left text-sm font-semibold text-slate-950"
+                aria-expanded={storeMenuOpen}
+                className="inline-flex min-h-8 w-[min(200px,70vw)] items-center justify-between gap-4 rounded-lg border border-slate-200/80 bg-white px-3 text-left text-sm font-semibold text-slate-950 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
                 onClick={onToggleStoreMenu}
               >
-                目标店铺
+                <span className="truncate">目标店铺</span>
+                <span aria-hidden="true">▾</span>
               </button>
+              {storeMenuOpen ? (
+                <div
+                  data-testid="product-board-v1-store-menu"
+                  className="absolute left-0 top-10 z-30 w-[min(360px,calc(100vw-2rem))] rounded-xl border border-slate-200/80 bg-white p-3 shadow-[0_16px_48px_rgba(15,23,42,0.16)]"
+                >
+                  <div className="mb-2 flex gap-2">
+                    <button type="button" className="rounded-xl border border-slate-200/80 px-3 py-1 text-xs font-semibold" onClick={onSelectAllStores}>
+                      全选
+                    </button>
+                    <button type="button" className="rounded-xl border border-slate-200/80 px-3 py-1 text-xs font-semibold" onClick={onClearStores}>
+                      清空
+                    </button>
+                  </div>
+                  <div className="max-h-64 space-y-2 overflow-auto">
+                    {storeOptions.length === 0 ? (
+                      <p className="rounded-xl border border-slate-200/80 bg-slate-50/80 p-3 text-sm font-semibold text-slate-500">暂无可选店铺。</p>
+                    ) : (
+                      storeOptions.map((store) => (
+                        <label key={store.key} className="flex items-start gap-2 rounded-xl border border-slate-200/80 p-2 text-sm font-semibold">
+                          <input
+                            type="checkbox"
+                            checked={selectedSet.has(store.key)}
+                            onChange={() => onToggleStore(store.key)}
+                            className="mt-1"
+                          />
+                          <span className="min-w-0">
+                            <span className="block break-words text-slate-950">{store.storeName}</span>
+                            <span className="text-xs text-slate-500">{store.platformName} · {store.storeId}</span>
+                          </span>
+                        </label>
+                      ))
+                    )}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+            <label className="flex min-w-0 items-center gap-2 text-xs font-semibold text-slate-600">
+              当前宝贝：
+              <select
+                data-testid="product-board-v1-product-selector"
+                className="h-8 w-[min(260px,70vw)] rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold text-slate-950 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+                value={selectedProductKey ?? ""}
+                onChange={(event) => onSelectProduct(event.target.value)}
+              >
+                <option value="">
+                  {productOptions.length === 0 ? "暂无宝贝，请先添加商品ID" : "请选择宝贝后查看数据"}
+                </option>
+                {filteredProducts.map((product) => (
+                  <option key={product.key} value={product.key}>
+                    {product.productName} · {product.productId} · {product.platformName}/{product.storeName}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <input
+              data-testid="product-board-v1-product-search"
+              className="h-8 w-[min(180px,70vw)] rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold text-slate-950 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+              value={productSearch}
+              onChange={(event) => onProductSearchChange(event.target.value)}
+              placeholder="搜索宝贝 / 商品ID"
+              aria-label="搜索宝贝"
+            />
+            <span className="text-xs font-semibold text-slate-600">平台：{selectedProduct?.platformName ?? platformText}</span>
+          </div>
+          <div className="flex min-w-0 flex-wrap items-center justify-start gap-2 xl:justify-end">
               <button
                 type="button"
                 data-testid="product-board-v1-product-settings-button"
-                className="rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 py-2 text-sm font-semibold text-slate-950"
+              className="min-h-8 rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold text-slate-950 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
                 onClick={() => onOpenPopup("product")}
               >
                 宝贝设置
@@ -1009,7 +1113,7 @@ function ControlBar({
               <button
                 type="button"
                 data-testid="product-board-v1-brand-model-filter-button"
-                className="rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 py-2 text-sm font-semibold text-slate-950"
+              className="min-h-8 rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold text-slate-950 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
                 onClick={() => onOpenPopup("brandModel")}
               >
                 品牌词筛选
@@ -1017,51 +1121,18 @@ function ControlBar({
               <button
                 type="button"
                 data-testid="product-board-v1-product-target-button"
-                className="rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.06)] bg-white px-4 py-2 text-sm font-semibold text-slate-950"
+              className="min-h-8 rounded-lg border border-slate-200/80 bg-white px-3 text-sm font-semibold text-slate-950 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
                 onClick={() => onOpenPopup("target")}
               >
                 宝贝目标
               </button>
             </div>
-            <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_1.4fr]">
-              <label className="text-xs font-semibold text-slate-600">
-                当前宝贝
-                <select
-                  data-testid="product-board-v1-product-selector"
-                  className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-sm font-semibold text-slate-950"
-                  value={selectedProductKey ?? ""}
-                  onChange={(event) => onSelectProduct(event.target.value)}
-                >
-                  <option value="">
-                    {productOptions.length === 0 ? "暂无宝贝，请先添加商品ID" : "请选择宝贝后查看数据"}
-                  </option>
-                  {filteredProducts.map((product) => (
-                    <option key={product.key} value={product.key}>
-                      {product.productName} · {product.productId} · {product.platformName}/{product.storeName}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="text-xs font-semibold text-slate-600">
-                搜索宝贝
-                <input
-                  data-testid="product-board-v1-product-search"
-                  className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-sm font-semibold text-slate-950"
-                  value={productSearch}
-                  onChange={(event) => onProductSearchChange(event.target.value)}
-                  placeholder="宝贝名称 / 商品ID"
-                />
-              </label>
-            </div>
-            <p className="mt-2 text-xs font-semibold text-slate-600">
-              店铺数量 {storeOptions.length}个 · 已选择 {selectedStores.length}个
-            </p>
-            <p className="mt-1 break-words text-xs font-semibold text-slate-600">涉及平台 {platformText}</p>
-          </div>
         </div>
-        <div className="flex min-w-0 flex-wrap items-center justify-start gap-2 xl:justify-end">
+        <div data-testid="product-board-v1-time-scope-toolbar" className="flex min-h-10 flex-wrap items-center justify-between gap-x-4 gap-y-1.5 border-t border-slate-200/80 pt-1.5">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
           <V1TimeRangePopover
             testId="product-board-v1-time-range-popover"
+              variant="split"
             mode={state.timeRange.mode}
             startDate={state.timeRange.startDate}
             endDate={state.timeRange.endDate}
@@ -1072,43 +1143,18 @@ function ControlBar({
             onMonthChange={onMonthChange}
             onCustomDateChange={onCustomDateChange}
           />
+            <span className="text-xs font-semibold text-slate-600">{rangeText(state)}</span>
+          </div>
+          <p
+            data-testid="product-board-v1-dimension-scope"
+            data-scope-variant="breadcrumb"
+            className="min-w-0 truncate text-xs font-semibold text-slate-600"
+            title={`范围：${scopeBreadcrumb}`}
+          >
+            <span className="text-slate-900">范围：</span>{scopeBreadcrumb}
+          </p>
         </div>
       </div>
-      {storeMenuOpen ? (
-        <div
-          data-testid="product-board-v1-store-menu"
-          className="absolute left-28 top-24 z-30 w-[min(360px,calc(100vw-2rem))] rounded-xl border border-slate-200/80 bg-white p-3 shadow-[0_16px_48px_rgba(15,23,42,0.16)]"
-        >
-          <div className="mb-2 flex gap-2">
-            <button type="button" className="rounded-xl border border-slate-200/80 px-3 py-1 text-xs font-semibold" onClick={onSelectAllStores}>
-              全选
-            </button>
-            <button type="button" className="rounded-xl border border-slate-200/80 px-3 py-1 text-xs font-semibold" onClick={onClearStores}>
-              清空
-            </button>
-          </div>
-          <div className="max-h-64 space-y-2 overflow-auto">
-            {storeOptions.length === 0 ? (
-              <p className="rounded-xl border border-slate-200/80 bg-slate-50/80 p-3 text-sm font-semibold text-slate-500">暂无可选店铺。</p>
-            ) : (
-              storeOptions.map((store) => (
-                <label key={store.key} className="flex items-start gap-2 rounded-xl border border-slate-200/80 p-2 text-sm font-semibold">
-                  <input
-                    type="checkbox"
-                    checked={selectedSet.has(store.key)}
-                    onChange={() => onToggleStore(store.key)}
-                    className="mt-1"
-                  />
-                  <span className="min-w-0">
-                    <span className="block break-words text-slate-950">{store.storeName}</span>
-                    <span className="text-xs text-slate-500">{store.platformName} · {store.storeId}</span>
-                  </span>
-                </label>
-              ))
-            )}
-          </div>
-        </div>
-      ) : null}
     </section>
   );
 }
@@ -1385,6 +1431,11 @@ export function ProductBoardV1Dashboard() {
 
   const storeOptions = useMemo(() => buildStoreOptions(dataSource, tempProducts), [dataSource, tempProducts]);
   const productOptions = useMemo(() => buildProductOptions(dataSource, tempProducts), [dataSource, tempProducts]);
+  const datasetDateRange = useMemo(() => datasetDateRangeForSource(dataSource), [dataSource]);
+  const timeRangeSourceLabel = useMemo(
+    () => v1TimeRangeSourceLabel(biState.timeRange, datasetDateRange),
+    [biState.timeRange, datasetDateRange],
+  );
   const activeStoreKeys = useMemo(
     () => storeOptions.filter((store) => store.status === "active").map((store) => store.key),
     [storeOptions],
@@ -1434,11 +1485,7 @@ export function ProductBoardV1Dashboard() {
         setBiState((state) => ({
           ...state,
           selectedStores: state.selectedStores.length > 0 ? state.selectedStores : nextStoreKeys,
-          timeRange: {
-            ...state.timeRange,
-            startDate: state.timeRange.startDate ?? nextSource.selectedDate,
-            endDate: state.timeRange.endDate ?? nextSource.selectedDate,
-          },
+          timeRange: v1ResolveTimeRangeForDataset(state.timeRange, datasetDateRangeForSource(nextSource)).timeRange,
         }));
       })
       .catch(() => {
@@ -1449,6 +1496,22 @@ export function ProductBoardV1Dashboard() {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!debugContextReady || !datasetDateRange) return;
+    let active = true;
+    void Promise.resolve().then(() => {
+      if (!active) return;
+      setBiState((state) => {
+        const resolved = v1ResolveTimeRangeForDataset(state.timeRange, datasetDateRange);
+        if (resolved.source !== "dataset") return state;
+        return { ...state, timeRange: resolved.timeRange };
+      });
+    });
+    return () => {
+      active = false;
+    };
+  }, [datasetDateRange, debugContextReady]);
 
   useEffect(() => {
     if (!debugContextReady) return;
@@ -1571,7 +1634,7 @@ export function ProductBoardV1Dashboard() {
   }, [selectedProduct, targetMonth]);
 
   const handlePeriodChange = (period: PeriodLabel) => {
-    const selectedDate = dataSource.selectedDate;
+    const selectedDate = datasetDateRange?.endDate ?? dataSource.selectedDate;
     if (period === "日") {
       setBiState((state) => ({ ...state, timeRange: { mode: "day", startDate: selectedDate, endDate: selectedDate } }));
       return;
@@ -1770,15 +1833,9 @@ export function ProductBoardV1Dashboard() {
 
           <div className="mx-4 mt-3 rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-xs font-semibold text-slate-600">
             <span className="mr-3 text-slate-900">{dataSource.dataStatus.label}</span>
+            <span data-testid="product-board-time-range-source-label" className="mr-3 text-blue-700">{timeRangeSourceLabel}</span>
             {hasSelectedProduct ? "当前为单宝贝视图" : PRODUCT_SELECTION_PROMPT}
           </div>
-          <V1DimensionScopeBar
-            testId="product-board-v1-dimension-scope"
-            platform={selectedProduct?.platformName ?? "全部平台"}
-            store={selectedProduct?.storeName ?? "未选择店铺"}
-            series="不按系列聚合"
-            product={selectedProduct ? `${selectedProduct.productName} · ${selectedProduct.productId}` : "请选择当前宝贝"}
-          />
 
           <section data-testid="product-board-v1-current-product-info" className="mx-4 mt-3 rounded-xl border border-slate-200/80 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
