@@ -19,15 +19,15 @@
   },
   "repository": {
     "activeBranch": "feature/saas-ui-v2-shell",
-    "headCommit": "7ade2f433d7dbd90e8fd1a0df5efdb00003ec8fa",
-    "headCommitMeaning": "reconciliation evidence baseline after the immutable SaaS V2 static-shell archive commit; later governance-only commits must be descendants",
-    "workingTree": "CLEAN_AT_EVIDENCE_BASELINE",
+    "headCommit": "af188c79ce7dda20c8b29088c205a7d56811fab1",
+    "headCommitMeaning": "committed governance and SSOT snapshot; the final validator-only commit must be a descendant",
+    "workingTree": "CLEAN_GOVERNANCE_SNAPSHOT",
     "remote": "origin=https://github.com/airburg-v05/airburg-v05.git",
     "upstream": "UNSET",
     "fallbackComparisonRef": "origin/feature/g6-preview",
     "fallbackComparisonAtEvidenceBaseline": {
       "behind": 0,
-      "ahead": 1
+      "ahead": 2
     }
   },
   "activeProductTrack": "SAAS_UI_V2",
