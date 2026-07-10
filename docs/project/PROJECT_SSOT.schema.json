@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "docs/project/PROJECT_SSOT.schema.json",
+  "title": "Airburg Project Single Source of Truth",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "updatedAt",
+    "authority",
+    "repository",
+    "activeProductTrack",
+    "tracks",
+    "canonicalSources",
+    "routeMatrix",
+    "metricSemantics",
+    "validatorRegistry",
+    "currentTask",
+    "nextAuthorizedEntryGate",
+    "deprecatedArtifacts",
+    "forbiddenClaims"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "updatedAt": { "type": "string", "minLength": 1 },
+    "authority": {
+      "type": "object",
+      "required": ["machineReadableSource", "derivedHumanReadableSources", "historicalSources", "specificationSources"],
+      "properties": {
+        "machineReadableSource": { "const": "docs/project/PROJECT_SSOT.json" },
+        "derivedHumanReadableSources": { "type": "array", "items": { "type": "string" } },
+        "historicalSources": { "type": "array", "items": { "type": "string" } },
+        "specificationSources": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "repository": {
+      "type": "object",
+      "required": ["activeBranch", "headCommit", "workingTree", "remote", "upstream"],
+      "properties": {
+        "activeBranch": { "type": "string", "minLength": 1 },
+        "headCommit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "headCommitMeaning": { "type": "string" },
+        "workingTree": { "type": "string" },
+        "remote": { "type": "string" },
+        "upstream": { "type": "string" },
+        "fallbackComparisonRef": { "type": "string" },
+        "fallbackComparisonAtEvidenceBaseline": {
+          "type": "object",
+          "required": ["behind", "ahead"],
+          "properties": {
+            "behind": { "type": "integer", "minimum": 0 },
+            "ahead": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "activeProductTrack": { "const": "SAAS_UI_V2" },
+    "tracks": {
+      "type": "object",
+      "required": ["tmallV1Data", "tmallV1Public", "v05", "saasUiV2"],
+      "properties": {
+        "tmallV1Data": { "$ref": "#/$defs/track" },
+        "tmallV1Public": { "$ref": "#/$defs/track" },
+        "v05": { "$ref": "#/$defs/track" },
+        "saasUiV2": { "$ref": "#/$defs/track" }
+      },
+      "additionalProperties": false
+    },
+    "canonicalSources": {
+      "type": "object",
+      "required": ["dataPipeline", "domainModel", "metricViewModel", "targetOverlay", "persistence", "ui"],
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+    "routeMatrix": { "const": "docs/project/ROUTE_DATA_SOURCE_MATRIX.json" },
+    "metricSemantics": { "const": "docs/project/METRIC_SEMANTIC_RECONCILIATION_V1.json" },
+    "validatorRegistry": { "const": "docs/project/VALIDATOR_REGISTRY.json" },
+    "currentTask": {
+      "type": "object",
+      "required": ["taskId", "status", "contract"],
+      "properties": {
+        "taskId": { "type": "string" },
+        "status": { "type": "string" },
+        "contract": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "nextAuthorizedEntryGate": { "const": "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1" },
+    "deprecatedArtifacts": { "type": "array", "items": { "type": "object" } },
+    "forbiddenClaims": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+  },
+  "$defs": {
+    "track": {
+      "type": "object",
+      "required": ["role", "status"],
+      "properties": {
+        "role": { "type": "string", "minLength": 1 },
+        "status": {
+          "enum": [
+            "FOUNDATION_CANDIDATE",
+            "DATA_E2E_PASS",
+            "STATIC_SHELL",
+            "PUBLIC_HEALTH_PASS_COMMIT_UNKNOWN",
+            "PUBLIC_ALIGNED",
+            "BLOCKED"
+          ]
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

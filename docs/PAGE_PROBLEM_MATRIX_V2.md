@@ -1,6 +1,8 @@
 # Page Problem Matrix V2
 
-本矩阵用于承接“页面问题梳理第二版”，避免后续任务凭印象修 UI 或跨层误改 ETL / BI / Target / Persistence。
+> **Authority and scope:** This is a historical problem ledger for the frozen Legacy V1 fallback. It is not the project SSOT and it does not define SaaS UI V2 runtime state. Current track/task status comes from `docs/project/PROJECT_SSOT.json` and `docs/project/current-task.json`.
+
+本矩阵用于承接“页面问题梳理第二版”，避免 Legacy V1 fallback 后续任务凭印象修 UI 或跨层误改 ETL / BI / Target / Persistence。
 
 状态枚举：
 

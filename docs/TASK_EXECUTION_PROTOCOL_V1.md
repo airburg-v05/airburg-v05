@@ -1,6 +1,25 @@
 # Task Execution Protocol V1
 
-本协议用于天猫 V1 内测排查版后续所有任务。目标是防止长上下文丢失、跨层误改和把本地状态误报为公网状态。
+本协议用于 Airburg 当前单轨项目后续所有任务。目标是防止长上下文丢失、跨层误改和把本地状态误报为公网状态。
+
+## 当前状态权威
+
+每次任务必须按顺序读取：
+
+1. `docs/project/PROJECT_SSOT.json`，唯一机器可读当前状态权威。
+2. `docs/project/current-task.json`，唯一当前任务指针。
+3. `current-task.json` 中 `contract` 指向的 `task-contract.json`。
+
+其它文档权威等级：
+
+- `docs/PROJECT_CURRENT_STATE.md`：由 SSOT 派生的人类可读摘要。
+- `docs/PAGE_PROBLEM_MATRIX_V2.md`：Legacy V1 历史问题 ledger。
+- `docs/UI_BASELINE_LOCK_V2.md`：仅适用于冻结的 Legacy V1 fallback。
+- `AIRBURG_SAAS_PRODUCT_UI_BLUEPRINT_V2.md`：产品规格，不代表已实现或已运行。
+- V0.5 freeze：归档发布证据，不代表当前所有路由已使用 V0.5。
+- `lib/state/system-state.ts`：不是项目状态 SSOT。
+
+每次只能存在一个 current task。Agent / Skill 不得自行创建平行状态源或越过 task contract。
 
 ## 每次新任务必须先判断
 
@@ -29,6 +48,8 @@ UI 任务必须先读取：
 - `LOCAL_VALIDATED`：本地验收脚本、lint、build 或指定验证已通过。
 - `PUBLIC_DEPLOYED`：已经部署到公网 IP 环境，但不等于完成业务回归。
 - `SERVER_ALIGNED`：服务器运行版本已与本地目标版本完成哈希或行为对齐，并通过必要公网检查。
+
+上述四个旧执行标签仍可用于 Legacy V1 历史记录；新产品阶段必须使用 `docs/project/STATUS_MODEL_V1.json`。尤其不得用一个 `PASS` 代替 `STATIC_SHELL`、`DATA_BOUND`、`LOCAL_E2E_PASS`、`VISUAL_ACCEPTED`、`PREVIEW_DEPLOYED`、`HUMAN_ACCEPTED` 或 `PUBLIC_ALIGNED`。
 
 不得混用状态：
 
@@ -117,6 +138,10 @@ UI 任务必须先读取：
 8. 公网页面 200。
 9. 不出现 `NaN` / `Infinity` / `undefined`。
 10. 不泄漏敏感字段。
+11. 部署源必须是 clean Git commit，禁止 dirty worktree rsync 后宣称 `PUBLIC_ALIGNED`。
+12. 部署证据必须记录 commit SHA、SSOT/schema version 和 UI version。
+13. 如服务器无法提供部署 commit，只能记录 `PUBLIC_HEALTH_PASS_COMMIT_UNKNOWN`。
+14. 后续应新增只读 build identity；本协议不把该建议冒充为已实现能力。
 
 ## Git Baseline 敏感扫描要求
 

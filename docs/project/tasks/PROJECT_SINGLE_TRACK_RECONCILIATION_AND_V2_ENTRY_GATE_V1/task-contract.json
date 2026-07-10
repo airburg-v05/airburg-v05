@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "PROJECT_SINGLE_TRACK_RECONCILIATION_AND_V2_ENTRY_GATE_V1",
+  "taskMeaning": "Archive the existing SaaS UI V2 static shell, establish one machine-readable project SSOT, reconcile routes and metric semantics, tier validators, and prepare but do not execute the /v2/home real-data vertical slice.",
+  "baselineCommit": "7ade2f433d7dbd90e8fd1a0df5efdb00003ec8fa",
+  "activeBranch": "feature/saas-ui-v2-shell",
+  "allowedPaths": [
+    "AGENTS.md",
+    "docs/project/**",
+    "docs/PROJECT_CURRENT_STATE.md",
+    "docs/PAGE_PROBLEM_MATRIX_V2.md",
+    "docs/TASK_EXECUTION_PROTOCOL_V1.md",
+    "docs/UI_BASELINE_LOCK_V2.md",
+    "scripts/private-audit/validate-project-single-track-reconciliation-and-v2-entry-gate-v1.ts"
+  ],
+  "forbiddenPaths": [
+    "app/**",
+    "components/**",
+    "lib/**",
+    "package.json",
+    "package-lock.json",
+    "vercel.json",
+    ".vercel/**",
+    "private-samples/**",
+    "*.xls",
+    "*.xlsx",
+    "*.csv",
+    "*.pem",
+    "*.key"
+  ],
+  "requiredEvidence": [
+    "Git branch/status/log/tag/remote/upstream inventory",
+    "SaaS UI V2 archive commit and static-shell validator",
+    "real 18-file Tmall pipeline, missing metrics, after-sales, series/product, and target evidence",
+    "read-only ECS/PM2/Nginx/port/public-route evidence",
+    "route import inventory",
+    "V0.5 release/domain/route-binding evidence",
+    "metric formula and target formula source evidence",
+    "system-state import audit",
+    "Sensitive Scan V2, lint, and build"
+  ],
+  "acceptanceCriteria": [
+    "PROJECT_SSOT validates and names exactly SAAS_UI_V2 as the active product track",
+    "Tmall V1 data is a trusted data foundation and Tmall V1 public is a frozen fallback",
+    "V0.5 is classified as FOUNDATION_CANDIDATE, not an assumed unique foundation",
+    "SaaS UI V2 remains STATIC_SHELL and is not claimed data-bound or deployed",
+    "All page routes and V0.5 not-route-bound entry points have concrete source ownership",
+    "The V2 home data foundation has exactly one decision and a 17-metric contract",
+    "geoSearchShare and brandKeywordPaidShare are separate keys",
+    "The obsolete current task is archived as SUPERSEDED",
+    "Exactly one next current task is READY_FOR_USER_AUTHORIZATION",
+    "Validator registry covers every scripts/private-audit TypeScript validator",
+    "No business code or formula changes",
+    "Final working tree is clean after local governance commits",
+    "No deployment and no push"
+  ],
+  "statusTransitions": [
+    "STATIC_SHELL_ARCHIVED",
+    "SSOT_ESTABLISHED",
+    "GOVERNANCE_VALIDATED",
+    "READY_FOR_USER_AUTHORIZATION"
+  ],
+  "gitPolicy": {
+    "localAddAllowed": true,
+    "localCommitAllowed": true,
+    "maximumCommits": 3,
+    "pushAllowed": false,
+    "forceOperationsAllowed": false
+  },
+  "deployPolicy": {
+    "deployAllowed": false,
+    "ecsChangesAllowed": false,
+    "readOnlyHealthCheckAllowed": true
+  }
+}

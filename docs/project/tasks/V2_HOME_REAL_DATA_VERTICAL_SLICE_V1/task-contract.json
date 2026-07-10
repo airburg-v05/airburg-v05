@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1",
+  "status": "READY_FOR_USER_AUTHORIZATION",
+  "taskMeaning": "Bind only /v2/home to one canonical typed adapter and prove the complete real-data, target-overlay, persistence, browser, responsive, and visual loop before any other V2 page is bound.",
+  "baselineCommit": "PROJECT_SINGLE_TRACK_RECONCILIATION_GOVERNANCE_COMMIT",
+  "activeBranch": "feature/saas-ui-v2-shell",
+  "requiredModelAndTools": {
+    "model": "strongest available Codex model with image understanding; prefer GPT-5.6 or equivalent when actually available",
+    "browserOrPlaywright": true,
+    "referenceScreenshotOrPdf": true,
+    "fullPageVisualComparison": true
+  },
+  "requiredInputs": [
+    "user reference screenshots",
+    "approved visual PDF or equivalent reference",
+    "Home Page Spec",
+    "real 18-file local sample directory or an already-restored active safe dataset"
+  ],
+  "allowedPaths": [
+    "app/(workspace-v2)/v2/home/page.tsx",
+    "components/saas-v2/**",
+    "lib/v2/**",
+    "types/v2/**",
+    "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/**",
+    "docs/project/PROJECT_SSOT.json",
+    "docs/project/ROUTE_DATA_SOURCE_MATRIX.json",
+    "scripts/private-audit/**"
+  ],
+  "forbiddenPaths": [
+    "app/(workspace)/**",
+    "app/(workspace-v2)/v2/store-board/**",
+    "app/(workspace-v2)/v2/series-board/**",
+    "app/(workspace-v2)/v2/product-board/**",
+    "app/(workspace-v2)/v2/upload/**",
+    "app/(workspace-v2)/v2/data-health/**",
+    "app/(workspace-v2)/v2/target-center/**",
+    "app/(workspace-v2)/v2/search-assets/**",
+    "app/(workspace-v2)/v2/exclusion-rules/**",
+    "lib/etl/**",
+    "lib/bi/bi.home-mapper.ts",
+    "lib/bi/brand-model-semantic.ts",
+    "lib/bi/target-metric-definitions.ts formula logic",
+    "lib/persistence/** schema changes",
+    "lib/state/system-state.ts",
+    "lib/storage/**",
+    "lib/tmall/**",
+    "package.json",
+    "package-lock.json",
+    "vercel.json",
+    ".vercel/**",
+    "private-samples/**"
+  ],
+  "foundationDecision": "V05_DOMAIN_WITH_V1_METRIC_COMPATIBILITY_ADAPTER",
+  "dataContract": "docs/project/V2_HOME_DATA_CONTRACT.json",
+  "requiredVerticalSlice": [
+    "real 18-file upload or active safe dataset restore",
+    "one canonical typed V2 home adapter/view model",
+    "17 KPI actual-value contract with explicit unavailable states",
+    "target overlay without changing actuals",
+    "key-series GSV",
+    "MTD and DLY",
+    "time range",
+    "year-over-year and period-over-period comparison structure",
+    "refresh restore through browser persistence",
+    "1440px Browser/Playwright E2E",
+    "390px Browser/Playwright E2E",
+    "reference screenshot/PDF comparison",
+    "full-page human acceptance"
+  ],
+  "acceptanceCriteria": [
+    "The page imports one V2 adapter boundary and does not compute formulas",
+    "Real reconciled metrics remain unchanged",
+    "All 17 metric states match the data contract",
+    "brandKeywordPaidShare is implemented independently or remains explicit --; geoSearchShare is never relabeled",
+    "Target values remain an overlay and runtime data has no targets field",
+    "Refresh restores data, scope, time range, and target overlay",
+    "No raw source, filename history, or sensitive after-sales details are persisted or displayed",
+    "Browser console business errors are zero",
+    "No NaN, Infinity, or undefined is shown",
+    "390px has no page-wide horizontal overflow",
+    "Human explicitly accepts the full page"
+  ],
+  "statusTransitions": [
+    "STATIC_SHELL",
+    "DATA_BOUND",
+    "LOCAL_E2E_PASS",
+    "VISUAL_ACCEPTED"
+  ],
+  "forbiddenStatusTransitions": [
+    "PREVIEW_DEPLOYED",
+    "PUBLIC_ALIGNED"
+  ],
+  "gitPolicy": {
+    "commitOnlyAfterAllLocalGates": true,
+    "pushAllowed": false
+  },
+  "deployPolicy": {
+    "deployAllowed": false
+  },
+  "humanReviewRequired": true
+}

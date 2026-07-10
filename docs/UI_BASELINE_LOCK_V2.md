@@ -1,5 +1,7 @@
 # UI Baseline Lock V2
 
+> **Authority and scope:** This document is the frozen Legacy V1 fallback UI baseline. It is historical/operational evidence, not the project SSOT, and its full-KPI-grid layout rules do not define the SaaS UI V2 specification. Current track state is authoritative only in `docs/project/PROJECT_SSOT.json`.
+
 ## 当前 UI 基线名称
 
 **页面问题梳理第二版 · 全量 KPI 卡片网格基线**

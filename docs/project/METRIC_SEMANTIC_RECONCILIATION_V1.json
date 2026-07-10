@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0.0",
+  "decisionId": "GEO_SEARCH_SHARE_VS_BRAND_KEYWORD_PAID_SHARE",
+  "status": "SPEC_APPROVED_PENDING_IMPLEMENTATION",
+  "currentImplementation": {
+    "metricKey": "geoSearchShare",
+    "uiLabel": "GEO搜索占比",
+    "actualFormula": "brand keyword paid buyers / total paid buyers",
+    "numeratorSource": "aggregateSearchTotalKeywords(filteredSearchTotalKeywords, active brand/center filter).buyers",
+    "denominatorSource": "sum BIDataPoint.metrics.paidBuyers over the same base platform/store/date points",
+    "codeEvidence": "lib/bi/bi.home-mapper.ts brandMetricValue",
+    "targetFormula": "brandPaidBuyers target / (GMV target / averageOrderValue target)",
+    "targetCodeEvidence": "lib/bi/target-metric-definitions.ts deriveTargetMetricValue",
+    "status": "CURRENT_LEGACY_V1_METRIC"
+  },
+  "requestedMetric": {
+    "metricKey": "brandKeywordPaidShare",
+    "uiLabel": "品牌词支付占比",
+    "actualFormula": "brand keyword paid buyers / total search-keyword paid buyers",
+    "numeratorSource": "matching brand/center rows in searchTotalKeywords",
+    "denominatorSource": "all searchTotalKeywords paid buyers in the identical platform/store/date scope after date+keyword dedup",
+    "targetFormula": null,
+    "targetDifference": "The existing geoSearchShare target denominator is total paid buyer target derived from GMV/AOV, not a total search-keyword-paid-buyers target. No compatible target denominator currently exists.",
+    "status": "PENDING_IMPLEMENTATION"
+  },
+  "formulaDifference": "The legacy denominator is all paid buyers from BI product metrics; the requested denominator is paid buyers represented in total search-keyword data.",
+  "uiLabelRisk": "Relabeling geoSearchShare as 品牌词支付占比 would display a numerically different metric under the requested name.",
+  "migrationDecision": {
+    "keepLegacyKey": "geoSearchShare",
+    "createNewKey": "brandKeywordPaidShare",
+    "keysMayAlias": false,
+    "v2MayRelabelLegacyValue": false,
+    "targetStatusForNewKey": "UNAVAILABLE_PENDING_TOTAL_SEARCH_PAID_BUYERS_TARGET_CONTRACT",
+    "missingBehavior": "--"
+  },
+  "nextImplementationTask": "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1 may add brandKeywordPaidShare through the single V2 adapter without changing geoSearchShare; any target support requires a separate formula confirmation task."
+}

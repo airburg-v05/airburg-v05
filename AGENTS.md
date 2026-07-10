@@ -1,6 +1,40 @@
-# V0.5 Project Governance
+# Project Single-Track Governance
 
-Before any V0.5 task, Codex must read:
+`docs/project/PROJECT_SSOT.json` is the only machine-readable authority for current project state.
+
+Before every task, Codex must read in this order:
+
+1. `docs/project/PROJECT_SSOT.json`
+2. `docs/project/current-task.json`
+3. the `contract` named by `docs/project/current-task.json`
+4. task-relevant specifications and historical evidence named by the SSOT or contract
+
+Authority rules:
+
+1. Exactly one `activeProductTrack` and one current task are allowed.
+2. `docs/PROJECT_CURRENT_STATE.md` is a derived summary, not an independent state source.
+3. `docs/PAGE_PROBLEM_MATRIX_V2.md` is a Legacy V1 historical problem ledger.
+4. `docs/UI_BASELINE_LOCK_V2.md` applies only to the frozen Legacy V1 fallback.
+5. `docs/product-blueprint-v2/AIRBURG_SAAS_PRODUCT_UI_BLUEPRINT_V2.md` is a specification, not runtime or completion evidence.
+6. V0.5 freeze documents are archived release evidence. They do not make every V0.5 command center route-bound.
+7. `lib/state/system-state.ts` is not the project SSOT and is currently a deprecated unbound artifact.
+8. Do not use one generic `PASS` as a product maturity state. Use `docs/project/STATUS_MODEL_V1.json`.
+9. Deployment must come from a clean identified Git commit. Dirty-worktree rsync cannot be reported as `PUBLIC_ALIGNED`.
+10. A deployment record must include commit SHA, schema version, and UI version. Until read-only build identity exists, a healthy public service with unknown commit is `PUBLIC_HEALTH_PASS_COMMIT_UNKNOWN`.
+
+Current single track:
+
+- Active product track: `SAAS_UI_V2`.
+- Current state: `STATIC_SHELL`, not data-bound, not visually accepted, and not deployed.
+- Frozen fallback: Tmall V1 public internal beta.
+- Foundation candidate: V0.5 domain/persistence.
+- Only next entry gate: `V2_HOME_REAL_DATA_VERTICAL_SLICE_V1`, after explicit user authorization.
+
+---
+
+# V0.5 Project Governance (Historical / Foundation-Specific)
+
+Before any explicitly authorized V0.5 foundation task, Codex must read:
 
 1. `docs/product/V05_PRODUCT_NORTH_STAR.md`
 2. `docs/product/V05_INFORMATION_ARCHITECTURE.md`

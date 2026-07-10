@@ -1,0 +1,161 @@
+{
+  "schemaVersion": "1.0.0",
+  "updatedAt": "2026-07-10T00:00:00+08:00",
+  "authority": {
+    "machineReadableSource": "docs/project/PROJECT_SSOT.json",
+    "derivedHumanReadableSources": [
+      "docs/PROJECT_CURRENT_STATE.md"
+    ],
+    "historicalSources": [
+      "docs/PAGE_PROBLEM_MATRIX_V2.md",
+      "docs/UI_BASELINE_LOCK_V2.md",
+      "docs/releases/v0.5-final-release-candidate-freeze.md"
+    ],
+    "specificationSources": [
+      "docs/product-blueprint-v2/AIRBURG_SAAS_PRODUCT_UI_BLUEPRINT_V2.md",
+      "docs/project/V2_HOME_DATA_FOUNDATION_DECISION.md",
+      "docs/project/V2_HOME_DATA_CONTRACT.json"
+    ]
+  },
+  "repository": {
+    "activeBranch": "feature/saas-ui-v2-shell",
+    "headCommit": "7ade2f433d7dbd90e8fd1a0df5efdb00003ec8fa",
+    "headCommitMeaning": "reconciliation evidence baseline after the immutable SaaS V2 static-shell archive commit; later governance-only commits must be descendants",
+    "workingTree": "CLEAN_AT_EVIDENCE_BASELINE",
+    "remote": "origin=https://github.com/airburg-v05/airburg-v05.git",
+    "upstream": "UNSET",
+    "fallbackComparisonRef": "origin/feature/g6-preview",
+    "fallbackComparisonAtEvidenceBaseline": {
+      "behind": 0,
+      "ahead": 1
+    }
+  },
+  "activeProductTrack": "SAAS_UI_V2",
+  "tracks": {
+    "tmallV1Data": {
+      "role": "TRUSTED_DATA_FOUNDATION",
+      "status": "DATA_E2E_PASS",
+      "verifiedAt": "2026-07-10",
+      "realSampleCount": 18,
+      "sampleFilesCommitted": false,
+      "businessDateRange": {
+        "start": "2026-06-26",
+        "end": "2026-06-30"
+      },
+      "afterSalesMayIncludeDate": "2026-07-01",
+      "afterSalesExtendsDefaultBusinessRange": false,
+      "reconciliation": {
+        "gmv": 125596,
+        "gsv": 85455.96,
+        "visitors": 143076,
+        "paidBuyers": 128,
+        "adSpend": 7625.95,
+        "clicks": 6692,
+        "refundAmount": 29602.18,
+        "adSpendRateAfterRefund": 0.1365,
+        "directTransactionShare": 0.634
+      },
+      "evidence": [
+        "scripts/private-audit/validate-tianmao-v1-refactor-pipeline-v2.ts",
+        "scripts/private-audit/validate-tmall-missing-metrics-implementation-v1.ts",
+        "scripts/private-audit/validate-tmall-after-sales-safe-aggregation-p1-v1.ts",
+        "scripts/private-audit/validate-series-product-selection-p1-5-v1.ts",
+        "scripts/private-audit/validate-target-drafts-persistence-v1-local-acceptance.ts"
+      ]
+    },
+    "tmallV1Public": {
+      "role": "FROZEN_STABLE_FALLBACK",
+      "status": "PUBLIC_HEALTH_PASS_COMMIT_UNKNOWN",
+      "deploymentIdentityStatus": "UNAVAILABLE",
+      "deploymentCommit": null,
+      "healthCheckedAt": "2026-07-10",
+      "pm2": "online",
+      "nginx": "active_and_config_valid",
+      "nodePortBinding": "127.0.0.1:3000",
+      "publicPort3000Reachable": false,
+      "publicRoutesHealthy": [
+        "/home",
+        "/series-board",
+        "/store-board",
+        "/product-board",
+        "/upload",
+        "/upload/history",
+        "/upload/quality"
+      ],
+      "changePolicy": "FROZEN_FALLBACK_NO_AD_HOC_UI_CHANGES"
+    },
+    "v05": {
+      "role": "DOMAIN_AND_PERSISTENCE_FOUNDATION_CANDIDATE",
+      "status": "FOUNDATION_CANDIDATE",
+      "releaseEvidenceCommit": "7f8db73d05f5f05599590dac77729e69775a5b9e",
+      "releaseEvidence": "docs/releases/v0.5-final-release-candidate-freeze.md",
+      "routeBinding": "PARTIAL_AND_MOST_COMMAND_CENTERS_NOT_ROUTE_BOUND",
+      "currentBindings": [
+        "/targets",
+        "/series-board/manage",
+        "/product-board/tracked",
+        "/upload/history (hybrid)",
+        "/upload/quality (hybrid)"
+      ],
+      "notCurrentRouteBound": [
+        "home command center",
+        "store board command center",
+        "series board command center",
+        "product board command center"
+      ],
+      "uniqueFoundation": false
+    },
+    "saasUiV2": {
+      "role": "ACTIVE_PRODUCT_TRACK",
+      "status": "STATIC_SHELL",
+      "archiveCommit": "7ade2f433d7dbd90e8fd1a0df5efdb00003ec8fa",
+      "routeCount": 9,
+      "componentCount": 18,
+      "dataBound": false,
+      "localRoutesValidated": true,
+      "localE2EPassed": false,
+      "visualAccepted": false,
+      "previewDeployed": false,
+      "humanAccepted": false,
+      "publicV2RouteStatus": "HTTP_404_AT_EVIDENCE_CAPTURE",
+      "businessImportsFound": 0,
+      "controlsInteractive": false
+    }
+  },
+  "canonicalSources": {
+    "dataPipeline": "lib/etl/runtime/index.ts with lib/etl runtime contracts; frozen Tmall V1 data foundation",
+    "domainModel": "lib/v05/domain/models.ts through the planned V2 compatibility adapter",
+    "metricViewModel": "lib/bi/bi.home-view-model.ts and lib/bi/bi.home-mapper.ts through one planned V2 compatibility adapter",
+    "targetOverlay": "lib/bi/target-metric-definitions.ts plus lib/persistence/target-drafts-persistence.ts; overlay only",
+    "persistence": "lib/v05 persistence foundation plus existing V1 runtime/debug/target browser adapters behind one V2 boundary",
+    "ui": "app/(workspace-v2)/v2/** and components/saas-v2/**; STATIC_SHELL until the vertical slice is data-bound"
+  },
+  "routeMatrix": "docs/project/ROUTE_DATA_SOURCE_MATRIX.json",
+  "metricSemantics": "docs/project/METRIC_SEMANTIC_RECONCILIATION_V1.json",
+  "validatorRegistry": "docs/project/VALIDATOR_REGISTRY.json",
+  "currentTask": {
+    "taskId": "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1",
+    "status": "READY_FOR_USER_AUTHORIZATION",
+    "contract": "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/task-contract.json"
+  },
+  "nextAuthorizedEntryGate": "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1",
+  "deprecatedArtifacts": [
+    {
+      "path": "lib/state/system-state.ts",
+      "classification": "DEPRECATED_UNBOUND_STATE_ARTIFACT",
+      "semanticStatus": "STALE_SEMANTICS"
+    },
+    {
+      "path": "docs/project/tasks/archive/V0.5G_6_SELECTED_TARGET_CONFIGURATION_AND_PREVIEW_DEPLOYMENT.json",
+      "classification": "SUPERSEDED_TASK"
+    }
+  ],
+  "forbiddenClaims": [
+    "SaaS UI V2 is DATA_BOUND before the real-data adapter and browser E2E pass",
+    "SaaS UI V2 is a complete product, release candidate, preview deployment, or human-accepted UI",
+    "V0.5 is the unique data foundation without the documented compatibility-adapter decision",
+    "lib/state/system-state.ts is the project SSOT",
+    "Tmall V1 public is PUBLIC_ALIGNED while the deployed Git commit is unknown",
+    "build PASS, HTTP 200, generated screenshots, Git push, or one generic PASS proves another product stage"
+  ]
+}

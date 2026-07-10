@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0.0",
+  "authority": "docs/project/PROJECT_SSOT.json",
+  "rules": [
+    "PASS is a validator result, not a standalone product maturity state.",
+    "A build result cannot establish DATA_BOUND.",
+    "HTTP 200 cannot establish LOCAL_E2E_PASS.",
+    "Screenshot generation cannot establish VISUAL_ACCEPTED.",
+    "A static page cannot establish PREVIEW_DEPLOYED.",
+    "Automated screenshots cannot establish HUMAN_ACCEPTED.",
+    "Git push cannot establish PUBLIC_ALIGNED.",
+    "PUBLIC_ALIGNED is forbidden when the deployed commit identity cannot be confirmed."
+  ],
+  "states": {
+    "SPEC_APPROVED": "A product or technical specification was explicitly approved; implementation is not implied.",
+    "FOUNDATION_CANDIDATE": "A reusable foundation exists and has evidence, but it is not yet the sole route-bound implementation.",
+    "ARCHIVED": "A historical implementation or evidence set is retained and is not the active product track.",
+    "DATA_E2E_PASS": "Real source data passed the declared end-to-end data reconciliation gate.",
+    "LOCAL_PREVIEW_READY": "A local preview can be opened; real data binding and business E2E are not implied.",
+    "STATIC_SHELL": "Routes and presentation components render with static or placeholder data only.",
+    "DATA_BOUND": "The declared canonical adapter/view model supplies real data through the full route boundary.",
+    "LOCAL_E2E_PASS": "The data-bound local workflow passed browser interaction and restore checks.",
+    "VISUAL_ACCEPTED": "The full page was compared against its approved references and accepted visually.",
+    "PREVIEW_DEPLOYED": "A preview environment was deployed from an identified clean commit and is reachable.",
+    "HUMAN_ACCEPTED": "A human explicitly accepted the declared scope after reviewing the real artifact.",
+    "PUBLIC_ALIGNED": "The public runtime is healthy and its deployed commit, schema, and UI version are identified and aligned.",
+    "PUBLIC_HEALTH_PASS_COMMIT_UNKNOWN": "The public runtime is healthy, but the deployed Git commit cannot be proven.",
+    "READY_FOR_USER_AUTHORIZATION": "A single next task contract exists but execution has not been authorized or started.",
+    "NOT_REVERIFIED_THIS_RUN": "Earlier evidence exists, but the relevant gate was not rerun in the current execution.",
+    "BLOCKED": "A declared hard gate failed and execution must stop.",
+    "SUPERSEDED": "A previous task or state record was replaced by a named newer authority."
+  },
+  "requiredSaasUiV2CurrentState": {
+    "status": "STATIC_SHELL",
+    "dataBound": false,
+    "localRoutesValidated": true,
+    "visualAccepted": false,
+    "previewDeployed": false,
+    "humanAccepted": false
+  }
+}
