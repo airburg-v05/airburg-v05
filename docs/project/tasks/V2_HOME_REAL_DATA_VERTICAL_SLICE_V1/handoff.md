@@ -1,6 +1,8 @@
 # V2 Home Real-Data Vertical Slice Handoff
 
-Status: `LOCAL_E2E_PASS`. The next and only action is user full-page visual review.
+Status: `LOCAL_E2E_PASS` with textual-reference visual refinement complete.
+Visual status remains `PENDING_HUMAN_REVIEW`. The next and only action is user
+full-page visual review.
 
 ## Completed Scope
 
@@ -39,10 +41,18 @@ real 18 files or restored active dataset
 - Real 18-file import: `17 success / 0 failed / 1 safe skipped`.
 - Reconciled GMV/GSV: `125596 / 85455.96`.
 - Refresh, close/reopen, target overlay, context, and key-series restore: `PASS`.
-- Round 1 manifest: `/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-round1-YpN1fL/manifest.json`.
-- Final candidate manifest: `/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-round2c-3U0UvR/manifest.json`.
+- Textual visual reference: `V2_HOME_TEXTUAL_VISUAL_REFERENCE_V1.md`.
+- Visual analysis: `v2-home-visual-analysis-v2.md`.
+- Round artifacts: `before-v2`, `visual-v2-round1`, `visual-v2-round2`, and
+  `visual-v2-round3`; temporary paths are reported in the completion output and
+  are not committed.
+- Final measured layout: 4 regions, 103px toolbar, 6-column KPI matrix, 148px
+  equal KPI cells, 147px key-series panel, and 398.3125px trend panel.
 - 390px page-wide overflow: `false`; console business errors: `0`.
+- Failed business requests: `0`.
 - Invalid numeric and sensitive text findings: `0`.
+- In-app Browser safe empty-state check: `PASS`, console errors `0`, overflow
+  `false`; real 18-file acceptance remains the isolated Chrome/CDP run.
 
 ## Current Limits
 
@@ -51,6 +61,11 @@ real 18 files or restored active dataset
 3. Do not deploy V2.
 4. Do not start Store, Series, Product, Upload, Data Health, Target Center, Search Assets, or Exclusion Rules binding.
 5. `VALIDATOR_REGISTRY.json` was not modified because it is outside this task contract's allowed paths; register the validator in a separate governance task.
+6. Do not treat the generated screenshots or contact sheets as
+   `VISUAL_ACCEPTED`; explicit user review is still required.
+7. Archived static-shell and pre-commit-whitelist validators may reject this
+   later authorized Home slice. Their runtime assertions were checked
+   separately; the current task and real-data validators are authoritative.
 
 ## Local Review
 

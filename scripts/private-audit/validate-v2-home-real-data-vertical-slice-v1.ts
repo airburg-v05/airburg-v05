@@ -63,6 +63,27 @@ interface BrowserResult {
   metricCount: number;
   keySeriesCount: number;
   consoleErrors: number;
+  failedBusinessRequests: number;
+  desktopLayout: {
+    regionCount: number;
+    toolbarHeight: number;
+    kpiColumnCount: number;
+    kpiRowCount: number;
+    kpiHeightMin: number;
+    kpiHeightMax: number;
+    keySeriesHeight: number;
+    chartHeight: number;
+    visibleExplanationCount: number;
+    engineeringTextCount: number;
+    shadowedKpiCount: number;
+    dataHealthCount: number;
+  };
+  mobileLayout: {
+    kpiColumnCount: number;
+    overlappingKpiCellCount: number;
+    metricDialogInViewport: boolean;
+    operatingMenuInViewport: boolean;
+  };
   screenshots: ScreenshotRecord[];
 }
 
@@ -258,6 +279,7 @@ class CdpClient {
   private nextId = 1;
   private pending = new Map<number, { resolve: (value: unknown) => void; reject: (reason?: unknown) => void }>();
   readonly consoleErrors: string[] = [];
+  readonly failedBusinessRequests: string[] = [];
 
   private constructor(private readonly socket: WebSocket) {}
 
@@ -292,6 +314,12 @@ class CdpClient {
         const text = `${params.entry.url ?? ""} ${params.entry.text ?? ""}`;
         if (!text.includes("favicon.ico")) this.consoleErrors.push("browser_log_error");
       }
+    }
+    if (message.method === "Network.responseReceived") {
+      const params = message.params as { response?: { status?: number; url?: string } } | undefined;
+      const status = params?.response?.status ?? 0;
+      const url = params?.response?.url ?? "";
+      if (status >= 400 && !url.includes("favicon.ico")) this.failedBusinessRequests.push(`http_${status}`);
     }
   }
 
@@ -622,6 +650,7 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
     await client.send("Runtime.enable");
     await client.send("Log.enable");
     await client.send("DOM.enable");
+    await client.send("Network.enable");
     await setViewport(client, 1440, 1000);
     currentStage = "login_seed";
     await client.send("Page.navigate", { url: `${BASE_URL}/login` });
@@ -683,6 +712,54 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
     check("realConfiguredKeySeriesRestored", metricState.seriesCount > 0, { count: metricState.seriesCount });
     check("chartCoversBusinessDates", ["6/26", "6/27", "6/28", "6/29", "6/30"].every((date) => metricState.chartDates.includes(date)));
 
+    const desktopLayout = await evaluate<BrowserResult["desktopLayout"]>(client, `(() => {
+      const dashboard = document.querySelector('[data-testid="v2-home-dashboard"]');
+      const toolbar = document.querySelector('[data-testid="v2-home-toolbar"]');
+      const grid = document.querySelector('[data-testid="v2-home-metric-grid"]');
+      const cells = Array.from(document.querySelectorAll('[data-kpi-cell="true"]'));
+      const heights = cells.map((cell) => cell.getBoundingClientRect().height);
+      const rowTops = Array.from(new Set(cells.map((cell) => Math.round(cell.getBoundingClientRect().top))));
+      const bodyText = document.body.innerText;
+      const engineeringTokens = ['Preview pending', 'STATIC_SHELL', 'DATA_BOUND', 'LOCAL_E2E_PASS', 'PENDING_IMPLEMENTATION', 'StoreRecord', 'ProductRecord', 'TrackedProductRecord', 'rawRows', 'previewRows', 'warning 原文'];
+      const visibleExplanations = Array.from(document.querySelectorAll('[data-home-explanation]')).filter((element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+      });
+      const shadowedKpiCount = cells.filter((cell) => {
+        const shadow = getComputedStyle(cell).boxShadow;
+        return shadow !== 'none' && shadow !== '';
+      }).length;
+      return {
+        regionCount: dashboard?.querySelectorAll(':scope > [data-home-region]').length ?? 0,
+        toolbarHeight: toolbar?.getBoundingClientRect().height ?? 0,
+        kpiColumnCount: grid ? getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length : 0,
+        kpiRowCount: rowTops.length,
+        kpiHeightMin: heights.length ? Math.min(...heights) : 0,
+        kpiHeightMax: heights.length ? Math.max(...heights) : 0,
+        keySeriesHeight: document.querySelector('[data-testid="v2-home-key-series"]')?.getBoundingClientRect().height ?? 0,
+        chartHeight: document.querySelector('[data-testid="v2-home-chart"]')?.getBoundingClientRect().height ?? 0,
+        visibleExplanationCount: visibleExplanations.length,
+        engineeringTextCount: engineeringTokens.filter((token) => bodyText.includes(token)).length,
+        shadowedKpiCount,
+        dataHealthCount: document.querySelector('[data-testid="v2-home-data-health-summary"]')?.children.length ?? 0
+      };
+    })()`);
+    check("homeHasExactlyFourPrimaryRegions", desktopLayout.regionCount === 4, desktopLayout);
+    check("desktopToolbarWithin104Px", desktopLayout.toolbarHeight <= 108, { height: desktopLayout.toolbarHeight });
+    check("desktopKpiMatrixUsesSixColumnsAndThreeRows", desktopLayout.kpiColumnCount === 6 && desktopLayout.kpiRowCount === 3, desktopLayout);
+    check("kpiCellsHaveStableHeight", desktopLayout.kpiHeightMax - desktopLayout.kpiHeightMin <= 8, desktopLayout);
+    check("keySeriesPanelIsCompact", desktopLayout.keySeriesHeight >= 120 && desktopLayout.keySeriesHeight <= 152, { height: desktopLayout.keySeriesHeight });
+    check("trendPanelUsesReferenceHeight", desktopLayout.chartHeight >= 360 && desktopLayout.chartHeight <= 450, { height: desktopLayout.chartHeight });
+    check("persistentExplanationLimitRespected", desktopLayout.visibleExplanationCount <= 2, desktopLayout);
+    check("engineeringCopyAbsentFromHome", desktopLayout.engineeringTextCount === 0, desktopLayout);
+    check("kpiCellsHaveNoIndividualShadow", desktopLayout.shadowedKpiCount === 0, desktopLayout);
+    check("dataHealthIsFourCountSummary", desktopLayout.dataHealthCount === 4, desktopLayout);
+    check("homeOmitsFullConfigurationSurfaces", await evaluate<boolean>(client, `(() => {
+      const dashboard = document.querySelector('[data-testid="v2-home-dashboard"]');
+      return Boolean(dashboard) && dashboard.querySelectorAll('form, table, textarea').length === 0;
+    })()`));
+
     const totals = await snapshotTotals(client);
     check(
       "realCoreReconciliation",
@@ -699,6 +776,7 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
 
     currentStage = "v2_home_interactions";
     await capture(client, `${VISUAL_ROUND}-home-1440`, "1440x1000");
+    await capture(client, `${VISUAL_ROUND}-first-viewport-1440`, "1440x1000", false);
     await scrollTo(client, "[data-testid='v2-home-metric-grid']");
     await capture(client, `${VISUAL_ROUND}-kpi-grid-1440`, "1440x1000", false);
     await scrollTo(client, "[data-testid='v2-home-key-series']");
@@ -730,10 +808,20 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
     await capture(client, `${VISUAL_ROUND}-metric-settings-1440`, "1440x1000", false);
     await clickText(client, "完成", "[data-testid='v2-home-metric-settings'] button");
 
+    await click(client, "[data-testid='v2-home-operating-settings'] > summary");
+    await waitForExpression(client, `document.querySelector('[data-testid="v2-home-operating-settings"]')?.hasAttribute('open') === true`);
+    const operatingActions = await evaluate<string[]>(client, `Array.from(document.querySelectorAll('[data-testid="v2-home-operating-settings"] nav a')).map((item) => item.textContent?.trim() ?? '')`);
+    check("operatingSettingsContainsFourRequiredActions", ["重点系列", "商品排除", "搜索资产", "目标中心"].every((item) => operatingActions.includes(item)), operatingActions);
+    await capture(client, `${VISUAL_ROUND}-operating-settings-1440`, "1440x1000", false);
+    await click(client, "[data-testid='v2-home-operating-settings'] > summary");
+    check("operatingSettingsCloses", await evaluate<boolean>(client, `document.querySelector('[data-testid="v2-home-operating-settings"]')?.hasAttribute('open') === false`));
+
     await clickText(client, "DLY", "[data-testid='v2-home-chart'] button");
     await waitForExpression(client, `Array.from(document.querySelectorAll('[data-testid="v2-home-chart"] button')).some((button) => button.textContent?.trim() === 'DLY' && button.className.includes('text-blue-700'))`);
     await scrollTo(client, "[data-testid='v2-home-chart']");
     await capture(client, `${VISUAL_ROUND}-dly-chart-1440`, "1440x1000", false);
+    await selectValue(client, "#v2-home-chart-primary", "adSpend");
+    await waitForExpression(client, `document.querySelector('[data-testid="v2-home-chart"]')?.textContent?.includes('推广花费') === true`);
     await selectValue(client, "#v2-home-chart-pair", "ad-spend-roi");
     await waitForExpression(client, `document.querySelector('[data-testid="v2-home-chart"]')?.textContent?.includes('推广花费') === true`);
     const pairState = await evaluate<boolean>(client, `(() => {
@@ -741,10 +829,10 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
       return text.includes('推广花费') && text.includes('ROI') && Boolean(document.querySelector('[data-testid="v2-home-chart"] svg'));
     })()`);
     check("allowedDualMetricPairWorks", pairState);
-    await clickText(client, "单指标", "[data-testid='v2-home-chart'] button");
+    await selectValue(client, "#v2-home-chart-pair", "none");
     await waitForExpression(client, `!document.querySelector('[data-testid="v2-home-chart-right-legend"]')`);
     check("singleMetricModeWorks", true);
-    await clickText(client, "双指标", "[data-testid='v2-home-chart'] button");
+    await selectValue(client, "#v2-home-chart-pair", "ad-spend-roi");
     await waitForExpression(client, `Boolean(document.querySelector('[data-testid="v2-home-chart-right-legend"]'))`);
 
     await scrollTo(client, "[data-testid='v2-home-toolbar']");
@@ -793,7 +881,45 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
     await wait(250);
     const mobileSafety = await pageSafety(client);
     check("mobile390NoHorizontalOverflow", !mobileSafety.horizontalOverflow, mobileSafety);
+    const mobileBaseLayout = await evaluate<Pick<BrowserResult["mobileLayout"], "kpiColumnCount" | "overlappingKpiCellCount">>(client, `(() => {
+      const grid = document.querySelector('[data-testid="v2-home-metric-grid"]');
+      const cards = Array.from(document.querySelectorAll('[data-kpi-cell="true"]'));
+      const overlaps = cards.filter((card) => {
+        const rows = Array.from(card.children).map((child) => child.getBoundingClientRect());
+        return rows.some((row, index) => index > 0 && row.top < rows[index - 1].bottom - 1);
+      });
+      return {
+        kpiColumnCount: grid ? getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length : 0,
+        overlappingKpiCellCount: overlaps.length
+      };
+    })()`);
+    check("mobileKpiMatrixUsesTwoColumns", mobileBaseLayout.kpiColumnCount === 2, mobileBaseLayout);
+    check("mobileKpiRowsDoNotOverlap", mobileBaseLayout.overlappingKpiCellCount === 0, mobileBaseLayout);
+    await clickText(client, "指标设置", "button");
+    await waitForExpression(client, `Boolean(document.querySelector('[data-testid="v2-home-metric-settings"]'))`);
+    const metricDialogInViewport = await evaluate<boolean>(client, `(() => {
+      const dialog = document.querySelector('[data-testid="v2-home-metric-settings"]');
+      if (!(dialog instanceof HTMLElement)) return false;
+      const rect = dialog.getBoundingClientRect();
+      return rect.left >= -1 && rect.top >= -1 && rect.right <= innerWidth + 1 && rect.bottom <= innerHeight + 1;
+    })()`);
+    check("mobileMetricDialogStaysInViewport", metricDialogInViewport);
+    await clickText(client, "完成", "[data-testid='v2-home-metric-settings'] button");
+    await click(client, "[data-testid='v2-home-operating-settings'] > summary");
+    const operatingMenuInViewport = await evaluate<boolean>(client, `(() => {
+      const menu = document.querySelector('[data-testid="v2-home-operating-settings"] nav');
+      if (!(menu instanceof HTMLElement)) return false;
+      const rect = menu.getBoundingClientRect();
+      return rect.left >= -1 && rect.top >= -1 && rect.right <= innerWidth + 1 && rect.bottom <= innerHeight + 1;
+    })()`);
+    check("mobileOperatingMenuStaysInViewport", operatingMenuInViewport);
+    await click(client, "[data-testid='v2-home-operating-settings'] > summary");
     await capture(client, `${VISUAL_ROUND}-home-390`, "390x900");
+    const mobileLayout: BrowserResult["mobileLayout"] = {
+      ...mobileBaseLayout,
+      metricDialogInViewport,
+      operatingMenuInViewport,
+    };
 
     currentStage = "duplicate_import";
     await setViewport(client, 1440, 1000);
@@ -820,6 +946,7 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
     check("pageHasNoInvalidNumericText", !finalSafety.invalidText);
     check("pageHasNoSensitiveText", !finalSafety.sensitiveText);
     check("browserConsoleBusinessErrorsZero", client.consoleErrors.length === 0, { count: client.consoleErrors.length });
+    check("failedBusinessRequestsZero", client.failedBusinessRequests.length === 0, { count: client.failedBusinessRequests.length });
 
     return {
       importCounts: firstImport,
@@ -828,6 +955,9 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
       metricCount: metricState.metricCount,
       keySeriesCount: metricState.seriesCount,
       consoleErrors: client.consoleErrors.length,
+      failedBusinessRequests: client.failedBusinessRequests.length,
+      desktopLayout,
+      mobileLayout,
       screenshots,
     };
   } finally {
@@ -858,15 +988,17 @@ const run = async () => {
   ].map(async (route) => ({ route, status: (await fetch(`${BASE_URL}${route}`)).status })));
   check("otherV2RoutesSmokeOnly", routeResults.every((item) => item.status === 200), routeResults);
 
+  const failed = checks.filter((item) => !item.pass);
   const manifestPath = path.join(ARTIFACT_DIR, "manifest.json");
   fs.writeFileSync(manifestPath, JSON.stringify({
+    status: failed.length === 0 ? "PASS" : "FAIL",
     visualRound: VISUAL_ROUND,
     realFileCount: plan.filePaths.length,
     expectedIssueCodes: plan.expectedIssueCodes,
+    checks,
     browser,
     screenshots,
   }, null, 2));
-  const failed = checks.filter((item) => !item.pass);
   console.log(JSON.stringify({
     status: failed.length === 0 ? "PASS" : "FAIL",
     checks: checks.map((item) => ({ name: item.name, pass: item.pass, details: item.details })),

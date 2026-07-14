@@ -1,20 +1,27 @@
 {
   "schemaVersion": "1.0.0",
   "taskId": "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1",
-  "capturedAt": "2026-07-15T00:13:12+08:00",
+  "capturedAt": "2026-07-15T01:30:38+08:00",
   "status": "LOCAL_E2E_PASS",
+  "visualRefinementCompleted": true,
+  "visualReferenceMode": "TEXTUAL_REFERENCE_CONTRACT",
   "visualAccepted": false,
   "visualReviewStatus": "PENDING_HUMAN_REVIEW",
   "humanReviewRequired": true,
   "modelAndTools": {
-    "actualCodexModel": "UNKNOWN",
+    "actualCodexModel": "UNKNOWN_NOT_EXPOSED_BY_RUNTIME",
     "isConfirmedGpt56": false,
     "imageUnderstanding": true,
+    "visionSupported": true,
     "reasoningEffort": "UNKNOWN_NOT_EXPOSED",
     "userReferenceScreenshotReceived": false,
     "v2VisualizationPdfReceived": false,
     "canReadPdfAndPng": true,
     "browserPlaywrightAvailable": true,
+    "browserSupported": true,
+    "visualPluginChecked": true,
+    "visualPluginUsed": false,
+    "fallbackUsed": true,
     "localScreenshotAvailable": true,
     "visualComparisonAvailable": true,
     "browserEvidenceBoundary": "In-app Browser Playwright verified the empty state and DOM boundary. Its file chooser does not support this local 18-file batch, so the authorized real-file E2E used isolated local headless Chrome through CDP."
@@ -107,29 +114,61 @@
     "mobile390": "PASS",
     "pageWideHorizontalOverflow390": false,
     "consoleBusinessErrors": 0,
+    "failedBusinessRequests": 0,
     "invalidNumericTextFound": false,
     "sensitiveTextFound": false,
-    "otherV2Routes": "HTTP_200_SMOKE_ONLY_STATIC_SHELL"
+    "otherV2Routes": "HTTP_200_SMOKE_ONLY_STATIC_SHELL",
+    "inAppBrowserCheck": {
+      "url": "http://127.0.0.1:3010/v2/home",
+      "safeEmptyState": "PASS",
+      "consoleBusinessErrors": 0,
+      "pageWideHorizontalOverflow": false,
+      "invalidOrEngineeringTextFound": false
+    },
+    "measuredLayout": {
+      "primaryRegions": 4,
+      "toolbarHeightPx": 103,
+      "desktopKpiColumns": 6,
+      "desktopKpiRows": 3,
+      "kpiCellHeightMinPx": 148,
+      "kpiCellHeightMaxPx": 148,
+      "keySeriesPanelHeightPx": 147,
+      "trendPanelHeightPx": 398.3125,
+      "visibleExplanationCount": 0,
+      "engineeringTextCount": 0,
+      "shadowedKpiCount": 0
+    }
   },
   "visualIteration": {
     "referenceBasis": [
+      "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/V2_HOME_TEXTUAL_VISUAL_REFERENCE_V1.md",
       "docs/product-blueprint-v2/AIRBURG_SAAS_PRODUCT_UI_BLUEPRINT_V2.md",
-      "current V2 Home Page Spec",
-      "approved template selection plan"
+      "approved V2 Home data contract"
     ],
-    "round1Manifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-round1-YpN1fL/manifest.json",
-    "round2FinalManifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-round2c-3U0UvR/manifest.json",
+    "referenceMode": "TEXTUAL_REFERENCE_CONTRACT",
+    "roundArtifacts": [
+      "before-v2",
+      "visual-v2-round1",
+      "visual-v2-round2",
+      "visual-v2-round3"
+    ],
+    "temporaryArtifactPathsCommitted": false,
+    "beforeAfterContactSheetGenerated": true,
+    "threeRoundContactSheetGenerated": true,
     "adjustments": [
-      "Replaced preview-only sidebar copy with product workspace copy.",
-      "Rebalanced KPI target columns so long differences remain legible.",
-      "Made the chart horizontally scroll inside its own mobile container without page-wide overflow.",
-      "Added section-level screenshots and real tooltip, settings, range, comparison, and chart-mode checks."
+      "Reduced Home to four primary regions and removed persistent explanatory and engineering copy.",
+      "Replaced detached KPI cards with one 17-cell matrix and a 6 + 6 + 5 desktop layout.",
+      "Moved operating actions into a popover and metric visibility and sorting into a drawer.",
+      "Compressed the key-series panel to 147px and retained real configured series only.",
+      "Reduced the trend panel to 398.3125px while keeping MTD, DLY, tooltip, dual metrics, and health counts.",
+      "Kept a two-column 390px KPI grid with internal chart scrolling and no page-wide overflow."
     ]
   },
   "validation": {
     "v2HomeValidator": "PASS",
     "v2HomeValidatorType": "REAL_LOGIC_DATA_AND_BROWSER_INTERACTION_E2E",
-    "finalGateManifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-final-gate2-WedpNo/manifest.json",
+    "textualReferenceVisualGate": "PASS",
+    "temporaryManifestPathCommitted": false,
     "representativeRegressionResults": [
       {
         "validator": "validate-git-baseline-sensitive-scan-policy-v2.ts",
@@ -190,7 +229,10 @@
     ],
     "historicalNonBlockingObservations": [
       "validate-project-execution-guardrails-current-state-v1.ts retains stale PAGE_PROBLEM_MATRIX V1 assertions and is not the machine-readable PROJECT_SSOT validator for this task.",
-      "validate-cross-page-debug-context-persistence-v1.ts passes adapter behavior but its pre-commit changed-path whitelist rejects this authorized V2 task; rerun after local commits."
+      "validate-project-single-track-reconciliation-and-v2-entry-gate-v1.ts is an archived entry gate that correctly rejects a later DATA_BOUND Home and the expanded validator inventory; current PROJECT_SSOT and current-task checks pass in the task validators.",
+      "validate-cross-page-debug-context-persistence-fix-v1.ts uses a stale source-string assertion for the legacy Product option merge; the current implementation still gives temporary tracked products precedence and all runtime adapter checks pass.",
+      "validate-cross-page-debug-context-persistence-v1.ts passes save, load, normalization, series and product restore behavior but its pre-commit changed-path whitelist rejects this authorized V2 task.",
+      "validate-airburg-saas-ui-v2-full-local-workspace-v1.ts is a pre-data-binding static-shell validator and rejects the authorized Home metric overlay; current eight-route HTTP smoke passes in validate-v2-home-real-data-vertical-slice-v1.ts."
     ],
     "lint": "PASS_WITH_ONE_EXISTING_UNUSED_VARIABLE_WARNING",
     "build": "PASS"
