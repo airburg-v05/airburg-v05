@@ -1,4 +1,11 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+
 export function SaasV2PageHeader() {
+  const pathname = usePathname();
+  if (pathname === "/v2/home") return null;
+
   return (
     <section className="mb-5 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">

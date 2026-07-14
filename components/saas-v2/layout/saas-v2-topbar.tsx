@@ -1,4 +1,11 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+
 export function SaasV2Topbar() {
+  const pathname = usePathname();
+  if (pathname === "/v2/home") return null;
+
   return (
     <header className="sticky top-0 z-10 max-w-full overflow-hidden border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur sm:px-6 lg:px-8">
       <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">

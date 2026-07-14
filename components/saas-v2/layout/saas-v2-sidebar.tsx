@@ -10,8 +10,8 @@ export function SaasV2Sidebar() {
           AB
         </div>
         <div>
-          <p className="text-sm font-semibold text-slate-950">Airburg SaaS V2</p>
-          <p className="text-xs text-slate-500">Preview workspace</p>
+          <p className="text-sm font-semibold text-slate-950">Airburg 经营云</p>
+          <p className="text-xs text-slate-500">品牌经营工作区</p>
         </div>
       </div>
       <nav className="mt-5 flex max-w-full gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
