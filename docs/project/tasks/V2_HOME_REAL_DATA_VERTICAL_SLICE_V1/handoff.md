@@ -4,6 +4,9 @@ Status: `LOCAL_E2E_PASS` with textual-reference visual refinement complete.
 Visual status remains `PENDING_HUMAN_REVIEW`. The next and only action is user
 full-page visual review.
 
+Latest validated executable commit:
+`8b69e46fee532379be5f5f0b2ef4fe44c87a87aa`.
+
 ## Completed Scope
 
 Only `/v2/home` was moved from `STATIC_SHELL` to `DATA_BOUND` through
@@ -29,7 +32,7 @@ real 18 files or restored active dataset
 
 1. One adapter boundary; no direct multi-layer reconciliation in the page.
 2. No ETL, BI formula, Target formula, or persistence-schema changes.
-3. No edits to Legacy V1.
+3. Legacy V1 remains frozen except for the post-task safe skipped-summary bridge; it does not change layout, ETL, BI, targets, or persistence schema.
 4. No data binding for any other `/v2/*` route.
 5. No deployment or push.
 6. Missing/unimplemented metrics show `--`, never synthetic zero.
@@ -39,6 +42,8 @@ real 18 files or restored active dataset
 ## Evidence
 
 - Real 18-file import: `17 success / 0 failed / 1 safe skipped`.
+- V2 Home data-health safe skipped count: `1`.
+- Multi-month target behavior: single-month target drafts are not reused; target values show `--` until the range returns to one month.
 - Reconciled GMV/GSV: `125596 / 85455.96`.
 - Refresh, close/reopen, target overlay, context, and key-series restore: `PASS`.
 - Textual visual reference: `V2_HOME_TEXTUAL_VISUAL_REFERENCE_V1.md`.
@@ -57,15 +62,13 @@ real 18 files or restored active dataset
 ## Current Limits
 
 1. `visualAccepted = false` and `humanAccepted = false` until the user reviews the full page.
-2. Stage B commits are local only. Do not push them.
+2. Current V2 Home commits are local only. Do not push them without a separate explicit push task.
 3. Do not deploy V2.
 4. Do not start Store, Series, Product, Upload, Data Health, Target Center, Search Assets, or Exclusion Rules binding.
-5. `VALIDATOR_REGISTRY.json` was not modified because it is outside this task contract's allowed paths; register the validator in a separate governance task.
+5. The post-task governance reconciliation has aligned `VALIDATOR_REGISTRY.json`, current task state, the SSOT schema, the status model, and the data contract. See `autonomous-e2e-reconciliation-v1.md`.
 6. Do not treat the generated screenshots or contact sheets as
    `VISUAL_ACCEPTED`; explicit user review is still required.
-7. Archived static-shell and pre-commit-whitelist validators may reject this
-   later authorized Home slice. Their runtime assertions were checked
-   separately; the current task and real-data validators are authoritative.
+7. Archived static-shell validators may still reject this later authorized Home slice. Completed current validators now inspect their recorded task range, so unrelated future edits no longer create a false scope failure.
 
 ## Local Review
 

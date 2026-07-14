@@ -56,7 +56,7 @@ Each registry record has one primary type. Notes may list secondary coverage.
 
 ## Current Tier A Minimum Gate
 
-For the current reconciliation and the next `/v2/home` entry gate, Tier A includes at least:
+For the current `/v2/home` local E2E state and its next human visual gate, Tier A includes at least:
 
 1. Sensitive Scan V2.
 2. Project SSOT/current-task/single-track validator.
@@ -65,7 +65,9 @@ For the current reconciliation and the next `/v2/home` entry gate, Tier A includ
 5. Target isolation and target draft acceptance.
 6. Runtime persistence safety.
 7. Current V0.5 completion/release evidence where used as a foundation claim.
-8. Browser E2E and human visual acceptance once `/v2/home` moves beyond `STATIC_SHELL`.
+8. `validate-v2-home-real-data-vertical-slice-v1.ts` for real-data and browser E2E.
+9. `validate-v2-home-textual-reference-visual-rebase-and-minimalism-v2.ts` for the automated textual-reference visual gate.
+10. `validate-v2-home-autonomous-e2e-reconciliation-v1.ts` for current SSOT, task, contract, registry, and implementation-state alignment.
+11. Human visual acceptance as an independent final gate; automation must keep `visualAccepted = false` until the user reviews the page.
 
-The SaaS UI V2 static-shell validator remains source/structure evidence only and cannot promote the track to `DATA_BOUND`.
-
+The SaaS UI V2 static-shell validator remains historical source/structure evidence only and cannot override the current `/v2/home` data-bound state. Completed stage validators must inspect their recorded completion range rather than treating unrelated future working-tree changes as task-scope violations.

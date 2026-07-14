@@ -5,13 +5,25 @@
 ## 单轨统一状态
 
 - 唯一 active product track：`SAAS_UI_V2`。
-- SaaS UI V2 当前状态：`STATIC_SHELL`。
-- `dataBound = false`、`visualAccepted = false`、`previewDeployed = false`。
+- SaaS UI V2 当前状态：`HOME_VERTICAL_SLICE_LOCAL_E2E_PASS`。
+- `/v2/home` 已通过一个 canonical adapter 绑定真实安全聚合数据；其余 8 个 `/v2/*` 路由仍为 `STATIC_SHELL`。
+- `dataBound = true` 仅表示 `/v2/home`；`visualAccepted = false`、`previewDeployed = false`、`humanAccepted = false`。
 - 冻结 fallback：天猫 V1 公网内测版。
 - 可信数据基础：天猫 V1 ETL / Runtime / BI 真实 18 文件链路。
 - foundation candidate：V0.5 domain / repository / persistence；当前只部分 route-bound。
-- 下一唯一入口：`V2_HOME_REAL_DATA_VERTICAL_SLICE_V1`，状态 `READY_FOR_USER_AUTHORIZATION`。
+- 当前任务：`V2_HOME_REAL_DATA_VERTICAL_SLICE_V1`，状态 `LOCAL_E2E_PASS`。
+- 下一唯一入口：`V2_HOME_HUMAN_VISUAL_REVIEW`；自动化截图不能替代用户视觉确认。
 - 当前任务和证据：`docs/project/current-task.json`、`docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/task-contract.json`。
+
+## SaaS UI V2 本地纵向切片
+
+- 当前分支：`feature/saas-ui-v2-shell`。
+- 最新已验证可执行实现：`8b69e46fee532379be5f5f0b2ef4fe44c87a87aa`。
+- `/v2/home`：17 个指标、真实 18 文件、目标 overlay、重点系列、MTD / DLY、时间范围、刷新恢复、1440px / 390px 浏览器 E2E 均通过。
+- 真实经营对账保持不变：GMV `125596`、GSV `85455.96`、访客 `143076`、支付买家 `128`、推广花费 `7625.95`、点击 `6692`、退款金额 `29602.18`。
+- 上传结果与数据健康摘要已对齐：`17 success / 0 failed / 1 safe skipped`，首页安全跳过计数为 `1`。
+- 跨月范围不会误套用单个月份目标；回到单月后目标正常恢复。
+- 当前仅本地提交，未 push、未部署；不得据此声称公网 V2 已更新。
 
 ## Legacy V1 fallback 定位
 
@@ -85,10 +97,10 @@
 
 ## 当前已知风险
 
-1. SaaS UI V2 当前只有静态路由和组件，尚未绑定真实数据，不能称为完整工作区或预览部署。
+1. SaaS UI V2 只有 `/v2/home` 完成真实数据纵向切片，其余 8 个 V2 路由仍是静态壳，不能称为完整工作区或预览部署。
 2. 页面问题一 + 二小范围 UI 修正已完成人工核查；后续新页面问题仍必须先进入 `PAGE_PROBLEM_MATRIX_V2.md`，不能凭记忆直接修 UI。
 3. UI 层存在 IA / KPI / Target 多语义叠加风险，后续 UI 任务必须先读取 `docs/UI_BASELINE_LOCK_V2.md`，并判定是否会误改 BI 或 Target。
-4. Git baseline 尚未完成，当前工作树包含大量前序 baseline 未提交变更。
+4. 当前 V2 Home 本地提交尚未 push；GitHub 远端和 ECS 不会自动获得这些更新。
 5. 长上下文中容易混淆 validator PASS 与产品成熟度；后续必须使用 `docs/project/STATUS_MODEL_V1.json`。
 6. ECS 当前健康，但部署目录无 Git 元数据，部署 commit 无法证明；状态只能是 `PUBLIC_HEALTH_PASS_COMMIT_UNKNOWN`。
 
@@ -112,7 +124,7 @@
 
 1. 先读取 `docs/project/PROJECT_SSOT.json`。
 2. 再读取 `docs/project/current-task.json` 和其中指定的 task contract。
-3. 下一步只允许在用户授权后执行 `/v2/home` 真实数据纵向切片，不继续铺其它 V2 页面。
+3. `/v2/home` 真实数据纵向切片已经 `LOCAL_E2E_PASS`；下一步是用户视觉核查，核查前不得记录 `VISUAL_ACCEPTED`。
 4. Legacy V1 UI 任务仍需读取 `docs/UI_BASELINE_LOCK_V2.md` 和 `PAGE_PROBLEM_MATRIX_V2.md`；V2 不继承其具体布局锁。
 5. 如果跨层，拆任务，不允许在页面里自行拼接或重算数据。
 6. 每次完成后使用 `STATUS_MODEL_V1.json` 中的精确状态，不能只写一个 `PASS`。

@@ -87,7 +87,7 @@
       },
       "additionalProperties": false
     },
-    "nextAuthorizedEntryGate": { "const": "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1" },
+    "nextAuthorizedEntryGate": { "const": "V2_HOME_HUMAN_VISUAL_REVIEW" },
     "deprecatedArtifacts": { "type": "array", "items": { "type": "object" } },
     "forbiddenClaims": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
   },
@@ -102,6 +102,7 @@
             "FOUNDATION_CANDIDATE",
             "DATA_E2E_PASS",
             "STATIC_SHELL",
+            "HOME_VERTICAL_SLICE_LOCAL_E2E_PASS",
             "PUBLIC_HEALTH_PASS_COMMIT_UNKNOWN",
             "PUBLIC_ALIGNED",
             "BLOCKED"

@@ -1,10 +1,15 @@
 {
   "schemaVersion": "1.0.0",
   "taskId": "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1",
-  "status": "READY_FOR_USER_AUTHORIZATION",
+  "status": "LOCAL_E2E_PASS",
   "taskMeaning": "Bind only /v2/home to one canonical typed adapter and prove the complete real-data, target-overlay, persistence, browser, responsive, and visual loop before any other V2 page is bound.",
   "baselineCommit": "af188c79ce7dda20c8b29088c205a7d56811fab1",
   "activeBranch": "feature/saas-ui-v2-shell",
+  "authorized": true,
+  "executionStarted": true,
+  "localE2EPassedAt": "2026-07-15T02:08:50+08:00",
+  "latestImplementationCommit": "8b69e46fee532379be5f5f0b2ef4fe44c87a87aa",
+  "nextGate": "V2_HOME_HUMAN_VISUAL_REVIEW",
   "requiredModelAndTools": {
     "model": "strongest available Codex model with image understanding; prefer GPT-5.6 or equivalent when actually available",
     "browserOrPlaywright": true,

@@ -1,12 +1,12 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-07-10",
+  "generatedAt": "2026-07-15",
   "sourceDirectory": "scripts/private-audit",
-  "totalValidators": 188,
+  "totalValidators": 190,
   "countsByTier": {
-    "TIER_B_MODULE_REGRESSION": 100,
+    "TIER_B_MODULE_REGRESSION": 99,
     "TIER_D_LEGACY_OR_SUPERSEDED": 9,
-    "TIER_A_RELEASE_CRITICAL": 16,
+    "TIER_A_RELEASE_CRITICAL": 19,
     "TIER_C_STAGE_ONLY": 63
   },
   "countsByValidationType": {
@@ -14,7 +14,7 @@
     "SOURCE_STRUCTURE": 74,
     "REAL_LOGIC_DATA": 73,
     "SECURITY": 2,
-    "BROWSER_INTERACTION_E2E": 10
+    "BROWSER_INTERACTION_E2E": 12
   },
   "policy": {
     "registryIsInventoryNotExecutionProof": true,
@@ -28,20 +28,6 @@
     "staticShellValidatorMaximumClaim": "STATIC_SHELL"
   },
   "validators": [
-    {
-      "file": "scripts/private-audit/lib/v05-stage-freeze-policy.ts",
-      "taskName": "V05_STAGE_FREEZE_POLICY",
-      "track": "V05_FOUNDATION",
-      "tier": "TIER_B_MODULE_REGRESSION",
-      "validationType": "STATE_GOVERNANCE",
-      "current": true,
-      "legacy": false,
-      "stageOnly": false,
-      "requiresRealSamples": false,
-      "requiresBrowser": false,
-      "requiresHumanReview": false,
-      "notes": "Shared private-audit helper; inventoried for completeness and not an independent acceptance gate."
-    },
     {
       "file": "scripts/private-audit/validate-airburg-project-agent-and-skill-system-v1.ts",
       "taskName": "AIRBURG_PROJECT_AGENT_AND_SKILL_SYSTEM_V1",
@@ -2659,6 +2645,48 @@
       "requiresBrowser": false,
       "requiresHumanReview": false,
       "notes": "Historical stage-specific validator; later valid states may intentionally differ from its frozen expectations."
+    },
+    {
+      "file": "scripts/private-audit/validate-v2-home-autonomous-e2e-reconciliation-v1.ts",
+      "taskName": "V2_HOME_AUTONOMOUS_E2E_RECONCILIATION_V1",
+      "track": "SAAS_UI_V2",
+      "tier": "TIER_A_RELEASE_CRITICAL",
+      "validationType": "STATE_GOVERNANCE",
+      "current": true,
+      "legacy": false,
+      "stageOnly": false,
+      "requiresRealSamples": false,
+      "requiresBrowser": false,
+      "requiresHumanReview": false,
+      "notes": "Current SSOT, task, contract, schema, registry, implementation-range, and non-overclaim alignment gate."
+    },
+    {
+      "file": "scripts/private-audit/validate-v2-home-real-data-vertical-slice-v1.ts",
+      "taskName": "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1",
+      "track": "SAAS_UI_V2",
+      "tier": "TIER_A_RELEASE_CRITICAL",
+      "validationType": "BROWSER_INTERACTION_E2E",
+      "current": true,
+      "legacy": false,
+      "stageOnly": false,
+      "requiresRealSamples": true,
+      "requiresBrowser": true,
+      "requiresHumanReview": true,
+      "notes": "Real 18-file, persistence, target overlay, browser interaction, responsive, safety, and route smoke gate; human visual acceptance remains independent."
+    },
+    {
+      "file": "scripts/private-audit/validate-v2-home-textual-reference-visual-rebase-and-minimalism-v2.ts",
+      "taskName": "V2_HOME_TEXTUAL_REFERENCE_VISUAL_REBASE_AND_MINIMALISM_V2",
+      "track": "SAAS_UI_V2",
+      "tier": "TIER_A_RELEASE_CRITICAL",
+      "validationType": "BROWSER_INTERACTION_E2E",
+      "current": true,
+      "legacy": false,
+      "stageOnly": false,
+      "requiresRealSamples": true,
+      "requiresBrowser": true,
+      "requiresHumanReview": true,
+      "notes": "Automated textual-reference visual and interaction gate; it cannot declare VISUAL_ACCEPTED or HUMAN_ACCEPTED."
     }
   ]
 }

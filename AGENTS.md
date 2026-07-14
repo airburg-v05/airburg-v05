@@ -25,10 +25,11 @@ Authority rules:
 Current single track:
 
 - Active product track: `SAAS_UI_V2`.
-- Current state: `STATIC_SHELL`, not data-bound, not visually accepted, and not deployed.
+- Current state: `/v2/home` is `LOCAL_E2E_PASS` and data-bound through one canonical adapter; the other eight V2 routes remain `STATIC_SHELL`.
+- Visual state: `visualAccepted = false`, `humanAccepted = false`, and `previewDeployed = false`.
 - Frozen fallback: Tmall V1 public internal beta.
 - Foundation candidate: V0.5 domain/persistence.
-- Only next entry gate: `V2_HOME_REAL_DATA_VERTICAL_SLICE_V1`, after explicit user authorization.
+- Only next entry gate: `V2_HOME_HUMAN_VISUAL_REVIEW`; automated screenshots cannot satisfy it.
 
 ---
 

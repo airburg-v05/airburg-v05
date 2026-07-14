@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "updatedAt": "2026-07-15T00:13:12+08:00",
+  "updatedAt": "2026-07-15T02:08:50+08:00",
   "authority": {
     "machineReadableSource": "docs/project/PROJECT_SSOT.json",
     "derivedHumanReadableSources": [
@@ -19,9 +19,9 @@
   },
   "repository": {
     "activeBranch": "feature/saas-ui-v2-shell",
-    "headCommit": "1311533",
-    "headCommitMeaning": "pushed single-track governance baseline; Stage B local commits remain unpushed",
-    "workingTree": "LOCAL_STAGE_B_COMMITTED_NOT_PUSHED",
+    "headCommit": "8b69e46fee532379be5f5f0b2ef4fe44c87a87aa",
+    "headCommitMeaning": "latest locally validated executable V2 Home implementation; the following governance-only reconciliation commit is intentionally not self-referenced",
+    "workingTree": "LOCAL_VALIDATED_COMMITS_NOT_PUSHED",
     "remote": "origin=https://github.com/airburg-v05/airburg-v05.git",
     "upstream": "origin/feature/saas-ui-v2-shell",
     "fallbackComparisonRef": "origin/feature/g6-preview",
@@ -129,8 +129,11 @@
       "homeVerticalSlice": {
         "status": "LOCAL_E2E_PASS",
         "adapter": "lib/v2/home/v2-home-adapter.ts",
+        "latestImplementationCommit": "8b69e46fee532379be5f5f0b2ef4fe44c87a87aa",
         "metricCount": 17,
         "realSampleCount": 18,
+        "safeSkippedCount": 1,
+        "multiMonthTargetPolicy": "NO_SINGLE_MONTH_TARGET_REUSE",
         "browserConsoleBusinessErrors": 0,
         "mobile390PageWideOverflow": false,
         "evidence": "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/evidence.json"

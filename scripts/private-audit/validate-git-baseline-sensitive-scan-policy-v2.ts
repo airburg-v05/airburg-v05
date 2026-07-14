@@ -95,6 +95,10 @@ const isProtocolDoc = (file: string): boolean =>
   file === "docs/PAGE_PROBLEM_MATRIX_V2.md" ||
   file === "docs/TASK_EXECUTION_PROTOCOL_V1.md" ||
   file === "docs/UI_BASELINE_LOCK_V2.md";
+const isTaskContractGuardrail = (file: string, line: string, category: string): boolean =>
+  category === "raw_file_path" &&
+  /^docs\/project\/tasks\/[^/]+\/task-contract\.json$/.test(file) &&
+  /^"private-samples\/\*\*",?$/.test(line.trim());
 const isAuditFile = (file: string): boolean => file.startsWith("scripts/private-audit/");
 const isComponentFile = (file: string): boolean => file.startsWith("components/");
 const isAppFile = (file: string): boolean => file.startsWith("app/");
@@ -246,6 +250,11 @@ const classifySensitiveToken = (
 
   if (isProtocolDoc(file)) {
     pushFinding(allowedSafeContextFindings, "ALLOW_SAFE_CONTEXT", category, file, "project_protocol_guardrail_text", lineNumber);
+    return;
+  }
+
+  if (isTaskContractGuardrail(file, line, category)) {
+    pushFinding(allowedSafeContextFindings, "ALLOW_SAFE_CONTEXT", category, file, "task_contract_forbidden_path_glob", lineNumber);
     return;
   }
 

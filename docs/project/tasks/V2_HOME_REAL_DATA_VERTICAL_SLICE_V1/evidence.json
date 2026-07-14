@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
   "taskId": "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1",
-  "capturedAt": "2026-07-15T01:30:38+08:00",
+  "capturedAt": "2026-07-15T02:08:50+08:00",
   "status": "LOCAL_E2E_PASS",
   "visualRefinementCompleted": true,
   "visualReferenceMode": "TEXTUAL_REFERENCE_CONTRACT",
@@ -31,6 +31,7 @@
     "stageABaselineHead": "1311533",
     "upstream": "origin/feature/saas-ui-v2-shell",
     "stageAPushAheadBehind": "0/0",
+    "latestExecutableCommit": "8b69e46fee532379be5f5f0b2ef4fe44c87a87aa",
     "stageBPush": false,
     "stageBDeploy": false
   },
@@ -94,7 +95,9 @@
     "targetChangesActual": false,
     "runtimeDatasetContainsTargets": false,
     "keySeriesGsvUsesRealDebugContextSeries": true,
-    "noSeriesStateIsSafe": true
+    "noSeriesStateIsSafe": true,
+    "multiMonthRangeReusesSingleMonthTarget": false,
+    "singleMonthTargetRestoresAfterRangeReturn": true
   },
   "interactions": {
     "mtdUsesRealData": true,
@@ -117,6 +120,7 @@
     "failedBusinessRequests": 0,
     "invalidNumericTextFound": false,
     "sensitiveTextFound": false,
+    "safeSkippedCount": 1,
     "otherV2Routes": "HTTP_200_SMOKE_ONLY_STATIC_SHELL",
     "inAppBrowserCheck": {
       "url": "http://127.0.0.1:3010/v2/home",
@@ -237,9 +241,21 @@
     "lint": "PASS_WITH_ONE_EXISTING_UNUSED_VARIABLE_WARNING",
     "build": "PASS"
   },
+  "postTaskReconciliation": {
+    "status": "PASS",
+    "completedAt": "2026-07-15T02:08:50+08:00",
+    "implementationCommit": "8b69e46fee532379be5f5f0b2ef4fe44c87a87aa",
+    "safeSkippedCount": 1,
+    "multiMonthTargetPolicy": "NO_SINGLE_MONTH_TARGET_REUSE",
+    "chromeDebugPortPolicy": "CHROME_OWNED_OS_ASSIGNED_PORT",
+    "completedTaskValidatorsForwardSafe": true,
+    "validatorRegistryAligned": true,
+    "pushExecuted": false,
+    "deployExecuted": false
+  },
   "contractConflict": {
     "requestedValidatorRegistryUpdate": true,
-    "validatorRegistryAllowedByTaskContract": false,
-    "resolution": "NOT_MODIFIED_CONTRACT_WINS_SEPARATE_GOVERNANCE_TASK_REQUIRED"
+    "validatorRegistryAllowedByOriginalTaskContract": false,
+    "resolution": "RESOLVED_BY_POST_TASK_GOVERNANCE_RECONCILIATION"
   }
 }

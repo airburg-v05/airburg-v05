@@ -19,6 +19,7 @@
     "LOCAL_PREVIEW_READY": "A local preview can be opened; real data binding and business E2E are not implied.",
     "STATIC_SHELL": "Routes and presentation components render with static or placeholder data only.",
     "DATA_BOUND": "The declared canonical adapter/view model supplies real data through the full route boundary.",
+    "HOME_VERTICAL_SLICE_LOCAL_E2E_PASS": "Only /v2/home is data-bound and has passed the declared real-data browser E2E; the remaining V2 routes stay static and visual acceptance is not implied.",
     "LOCAL_E2E_PASS": "The data-bound local workflow passed browser interaction and restore checks.",
     "VISUAL_ACCEPTED": "The full page was compared against its approved references and accepted visually.",
     "PREVIEW_DEPLOYED": "A preview environment was deployed from an identified clean commit and is reachable.",
@@ -31,11 +32,15 @@
     "SUPERSEDED": "A previous task or state record was replaced by a named newer authority."
   },
   "requiredSaasUiV2CurrentState": {
-    "status": "STATIC_SHELL",
-    "dataBound": false,
+    "status": "HOME_VERTICAL_SLICE_LOCAL_E2E_PASS",
+    "dataBound": true,
+    "dataBoundRoutes": ["/v2/home"],
+    "remainingStaticShellRouteCount": 8,
     "localRoutesValidated": true,
+    "localE2EPassed": true,
     "visualAccepted": false,
     "previewDeployed": false,
-    "humanAccepted": false
+    "humanAccepted": false,
+    "nextGate": "V2_HOME_HUMAN_VISUAL_REVIEW"
   }
 }

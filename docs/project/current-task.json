@@ -1,12 +1,17 @@
 {
   "schemaVersion": "1.0.0",
   "taskId": "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1",
-  "status": "READY_FOR_USER_AUTHORIZATION",
+  "status": "LOCAL_E2E_PASS",
   "activeProductTrack": "SAAS_UI_V2",
   "contract": "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/task-contract.json",
   "preparedAt": "2026-07-10T00:00:00+08:00",
   "baselineCommit": "7ade2f433d7dbd90e8fd1a0df5efdb00003ec8fa",
-  "authorized": false,
-  "executionStarted": false,
+  "authorized": true,
+  "executionStarted": true,
+  "authorizedAt": "2026-07-14T23:35:00+08:00",
+  "startedAt": "2026-07-14T23:35:00+08:00",
+  "localE2EPassedAt": "2026-07-15T02:08:50+08:00",
+  "latestImplementationCommit": "8b69e46fee532379be5f5f0b2ef4fe44c87a87aa",
+  "nextGate": "V2_HOME_HUMAN_VISUAL_REVIEW",
   "previousTask": "PROJECT_SINGLE_TRACK_RECONCILIATION_AND_V2_ENTRY_GATE_V1"
 }
