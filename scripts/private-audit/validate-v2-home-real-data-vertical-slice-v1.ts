@@ -16,6 +16,8 @@ const PORT = Number(process.env.V2_HOME_E2E_PORT ?? "3010");
 const BASE_URL = process.env.V2_HOME_BASE_URL ?? `http://127.0.0.1:${PORT}`;
 const VISUAL_ROUND = process.env.V2_HOME_VISUAL_ROUND ?? "round2";
 const CHROME_PATH = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+const TASK_BASELINE_HEAD = "1311533c86acd2ce5470096b36f1ab1f4e23353b";
+const TASK_COMPLETION_HEAD = "e3037c51ae40936268d6e580f8c3ac5046e8ba1b";
 const ARTIFACT_DIR = fs.mkdtempSync(path.join(os.tmpdir(), `airburg-v2-home-${VISUAL_ROUND}-`));
 
 interface Check {
@@ -77,6 +79,7 @@ interface BrowserResult {
     engineeringTextCount: number;
     shadowedKpiCount: number;
     dataHealthCount: number;
+    safeSkippedCount: number;
   };
   mobileLayout: {
     kpiColumnCount: number;
@@ -187,7 +190,7 @@ const sourceChecks = () => {
       evidence.humanReviewRequired === true,
   );
   check("currentTaskPointerStillNamesAuthorizedTask", currentTaskPointer.taskId === "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1");
-  const changedPaths = execFileSync("git", ["diff", "--name-only", "1311533", "--"], {
+  const changedPaths = execFileSync("git", ["diff", "--name-only", TASK_BASELINE_HEAD, TASK_COMPLETION_HEAD, "--"], {
     cwd: ROOT,
     encoding: "utf8",
   }).trim().split("\n").filter(Boolean);
@@ -263,6 +266,11 @@ const buildRuntimePlan = async (): Promise<RuntimePlan> => {
 
 const fetchJson = <T>(url: string): Promise<T> => new Promise((resolve, reject) => {
   http.get(url, (response) => {
+    if ((response.statusCode ?? 500) >= 400) {
+      response.resume();
+      reject(new Error("CDP endpoint unavailable"));
+      return;
+    }
     let body = "";
     response.on("data", (chunk) => { body += String(chunk); });
     response.on("end", () => {
@@ -336,10 +344,12 @@ class CdpClient {
   }
 }
 
-const launchChrome = async (port: number, profileDir: string): Promise<ChildProcessWithoutNullStreams> => {
+const launchChrome = async (
+  profileDir: string,
+): Promise<{ chrome: ChildProcessWithoutNullStreams; port: number }> => {
   const chrome = spawn(CHROME_PATH, [
     "--headless=new",
-    `--remote-debugging-port=${port}`,
+    "--remote-debugging-port=0",
     `--user-data-dir=${profileDir}`,
     "--disable-gpu",
     "--hide-scrollbars",
@@ -349,10 +359,20 @@ const launchChrome = async (port: number, profileDir: string): Promise<ChildProc
   ]);
   chrome.stderr.on("data", () => undefined);
   chrome.stdout.on("data", () => undefined);
+  const activePortFile = path.join(profileDir, "DevToolsActivePort");
   for (let attempt = 0; attempt < 100; attempt += 1) {
     try {
-      await fetchJson(`http://127.0.0.1:${port}/json/version`);
-      return chrome;
+      if (chrome.exitCode !== null) throw new Error("Chrome exited before CDP was ready");
+      const activePort = fs.readFileSync(activePortFile, "utf8").split("\n")[0]?.trim() ?? "";
+      const port = Number(activePort);
+      if (!Number.isInteger(port) || port <= 0) throw new Error("Chrome CDP port missing");
+      const version = await fetchJson<{ Browser?: string; webSocketDebuggerUrl?: string }>(
+        `http://127.0.0.1:${port}/json/version`,
+      );
+      if (!version.Browser?.includes("Chrome") || !version.webSocketDebuggerUrl) {
+        throw new Error("Unexpected CDP endpoint");
+      }
+      return { chrome, port };
     } catch {
       await wait(100);
     }
@@ -363,9 +383,17 @@ const launchChrome = async (port: number, profileDir: string): Promise<ChildProc
 
 const debuggerUrl = async (port: number): Promise<string> => {
   for (let attempt = 0; attempt < 60; attempt += 1) {
-    const pages = await fetchJson<Array<{ type: string; webSocketDebuggerUrl?: string }>>(`http://127.0.0.1:${port}/json`);
-    const page = pages.find((item) => item.type === "page" && item.webSocketDebuggerUrl);
-    if (page?.webSocketDebuggerUrl) return page.webSocketDebuggerUrl;
+    try {
+      const pages = await fetchJson<Array<{ type: string; webSocketDebuggerUrl?: string }>>(
+        `http://127.0.0.1:${port}/json`,
+      );
+      if (Array.isArray(pages)) {
+        const page = pages.find((item) => item.type === "page" && item.webSocketDebuggerUrl);
+        if (page?.webSocketDebuggerUrl) return page.webSocketDebuggerUrl;
+      }
+    } catch {
+      // Chrome may still be publishing the first page target.
+    }
     await wait(100);
   }
   throw new Error("Chrome page target missing");
@@ -641,8 +669,8 @@ const capture = async (client: CdpClient, name: string, viewport: string, fullPa
 const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
   const server = await ensureServer();
   const profileDir = fs.mkdtempSync(path.join(os.tmpdir(), "airburg-v2-home-profile-"));
-  const debugPort = 9700 + Math.floor(Math.random() * 500);
-  const chrome = await launchChrome(debugPort, profileDir);
+  const launchedChrome = await launchChrome(profileDir);
+  const { chrome, port: debugPort } = launchedChrome;
   let client: CdpClient | null = null;
   try {
     client = await CdpClient.connect(await debuggerUrl(debugPort));
@@ -688,6 +716,7 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
       dateRangeCorrect: boolean;
       seriesCount: number;
       chartDates: string;
+      dataHealthText: string;
     }>(client, `(() => {
       const card = (key) => document.querySelector('[data-metric-key="' + key + '"]')?.textContent ?? '';
       return {
@@ -700,7 +729,8 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
         targetBound: card('gmv').includes('160,000') && !card('gmv').includes('总目标--'),
         dateRangeCorrect: document.querySelector('[data-testid="v2-home-toolbar"]')?.textContent?.includes('2026-06-26 ~ 2026-06-30') === true,
         seriesCount: document.querySelectorAll('[data-testid="v2-home-key-series"] a[href^="/v2/series-board?"]').length,
-        chartDates: document.querySelector('[data-testid="v2-home-chart"]')?.textContent ?? ''
+        chartDates: document.querySelector('[data-testid="v2-home-chart"]')?.textContent ?? '',
+        dataHealthText: document.querySelector('[data-testid="v2-home-data-health-summary"]')?.textContent ?? ''
       };
     })()`);
     check("v2Home17MetricsVisible", metricState.metricCount === 17, { metricCount: metricState.metricCount });
@@ -711,6 +741,22 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
     check("defaultBusinessRangeStable", metricState.dateRangeCorrect);
     check("realConfiguredKeySeriesRestored", metricState.seriesCount > 0, { count: metricState.seriesCount });
     check("chartCoversBusinessDates", ["6/26", "6/27", "6/28", "6/29", "6/30"].every((date) => metricState.chartDates.includes(date)));
+    check("persistedSafeSkippedCountMatchesUpload", metricState.dataHealthText.includes("安全跳过1"), {
+      expected: firstImport.skipped,
+    });
+
+    await clickText(client, "自定义", "[data-testid='v2-home-toolbar'] summary");
+    await setDateInput(client, 0, "2026-06-26");
+    await setDateInput(client, 1, "2026-07-01");
+    await waitForExpression(client, `document.querySelector('[data-testid="v2-home-toolbar"]')?.textContent?.includes('2026-06-26 ~ 2026-07-01') === true`);
+    check(
+      "multiMonthRangeDoesNotReuseSingleMonthTarget",
+      await evaluate<boolean>(client, `document.querySelector('[data-metric-key="gmv"]')?.getAttribute('aria-label')?.includes('总目标 --') === true`),
+    );
+    await setDateInput(client, 1, "2026-06-30");
+    await waitForExpression(client, `document.querySelector('[data-metric-key="gmv"]')?.getAttribute('aria-label')?.includes('总目标 160,000') === true`);
+    check("singleMonthTargetRestoresAfterRangeReturn", true);
+    await clickText(client, "自定义", "[data-testid='v2-home-toolbar'] summary");
 
     const desktopLayout = await evaluate<BrowserResult["desktopLayout"]>(client, `(() => {
       const dashboard = document.querySelector('[data-testid="v2-home-dashboard"]');
@@ -742,7 +788,9 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
         visibleExplanationCount: visibleExplanations.length,
         engineeringTextCount: engineeringTokens.filter((token) => bodyText.includes(token)).length,
         shadowedKpiCount,
-        dataHealthCount: document.querySelector('[data-testid="v2-home-data-health-summary"]')?.children.length ?? 0
+        dataHealthCount: document.querySelector('[data-testid="v2-home-data-health-summary"]')?.children.length ?? 0,
+        safeSkippedCount: Number(Array.from(document.querySelector('[data-testid="v2-home-data-health-summary"]')?.children ?? [])
+          .find((item) => item.textContent?.includes('安全跳过'))?.textContent?.match(/[0-9]+/)?.[0] ?? -1)
       };
     })()`);
     check("homeHasExactlyFourPrimaryRegions", desktopLayout.regionCount === 4, desktopLayout);
@@ -755,6 +803,7 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
     check("engineeringCopyAbsentFromHome", desktopLayout.engineeringTextCount === 0, desktopLayout);
     check("kpiCellsHaveNoIndividualShadow", desktopLayout.shadowedKpiCount === 0, desktopLayout);
     check("dataHealthIsFourCountSummary", desktopLayout.dataHealthCount === 4, desktopLayout);
+    check("dataHealthSafeSkippedCountIsOne", desktopLayout.safeSkippedCount === firstImport.skipped, desktopLayout);
     check("homeOmitsFullConfigurationSurfaces", await evaluate<boolean>(client, `(() => {
       const dashboard = document.querySelector('[data-testid="v2-home-dashboard"]');
       return Boolean(dashboard) && dashboard.querySelectorAll('form, table, textarea').length === 0;

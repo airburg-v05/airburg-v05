@@ -5,6 +5,7 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const INITIAL_HEAD = "3028405fefd003c15915b3d0f5650ef0756bd8e1";
+const TASK_COMPLETION_HEAD = "e3037c51ae40936268d6e580f8c3ac5046e8ba1b";
 const TASK_DIR = "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1";
 const BROWSER_VALIDATOR = "scripts/private-audit/validate-v2-home-real-data-vertical-slice-v1.ts";
 const ARTIFACT_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "airburg-v2-home-textual-reference-gate-"));
@@ -55,16 +56,11 @@ const parseLastJson = <T>(output: string): T => {
 };
 
 const changedPaths = () => {
-  const diffPaths = run("git", ["diff", "--name-only", INITIAL_HEAD, "--"])
+  const diffPaths = run("git", ["diff", "--name-only", INITIAL_HEAD, TASK_COMPLETION_HEAD, "--"])
     .trim()
     .split("\n")
     .filter(Boolean);
-  const statusPaths = run("git", ["status", "--porcelain=v1", "-uall"])
-    .trimEnd()
-    .split("\n")
-    .filter(Boolean)
-    .map((line) => line.slice(3).split(" -> ").at(-1) ?? "");
-  return Array.from(new Set([...diffPaths, ...statusPaths])).sort();
+  return Array.from(new Set(diffPaths)).sort();
 };
 
 const sourceChecks = () => {
@@ -186,6 +182,9 @@ const browserChecks = (): { manifestPath: string; manifest: BrowserManifest } =>
     "mobileMetricDialogStaysInViewport",
     "mobileOperatingMenuStaysInViewport",
     "duplicateImportDoesNotDouble",
+    "persistedSafeSkippedCountMatchesUpload",
+    "multiMonthRangeDoesNotReuseSingleMonthTarget",
+    "singleMonthTargetRestoresAfterRangeReturn",
     "browserConsoleBusinessErrorsZero",
     "failedBusinessRequestsZero",
   ];

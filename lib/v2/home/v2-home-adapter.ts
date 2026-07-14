@@ -478,6 +478,12 @@ const stateForScopeAndRange = ({
 
 const monthForRange = (range: V2HomeTimeRange): string => range.endDate.slice(0, 7);
 
+const targetMonthForRange = (range: V2HomeTimeRange): string | null => {
+  const startMonth = range.startDate.slice(0, 7);
+  const endMonth = range.endDate.slice(0, 7);
+  return startMonth === endMonth ? endMonth : null;
+};
+
 const recordsToDraftMap = (records: TargetDraftRecord[]): Record<string, number> => {
   const values: Record<string, number> = {};
   records.forEach((record) => {
@@ -494,11 +500,13 @@ const loadPlatformTargetRecords = async (
   range: V2HomeTimeRange,
 ): Promise<TargetDraftRecord[]> => {
   if (!scope.selectedPlatform || scope.selectedStoreIds.length !== 1) return [];
+  const targetMonth = targetMonthForRange(range);
+  if (!targetMonth) return [];
   const result = await loadActiveTargetDrafts({
     scope: "platform",
     platformCode: scope.selectedPlatform,
     storeId: scope.selectedStoreIds[0],
-    month: monthForRange(range),
+    month: targetMonth,
   });
   return result.status === "ok" ? result.records : [];
 };
@@ -722,19 +730,22 @@ const seriesCards = async ({
   const actualViewModel = buildHomeBIViewModel(source, { ...state, targetDrafts: {} });
   return Promise.all(
     eligibleDefinitions.map(async (series) => {
-      const targetResult = await loadActiveTargetDrafts({
-        scope: "series",
-        platformCode: series.platformCode,
-        storeId: series.storeId,
-        seriesId: series.seriesId,
-        month: monthForRange(range),
-      });
-      const targetDrafts = targetResult.status === "ok" ? recordsToDraftMap(targetResult.records) : {};
+      const targetMonth = targetMonthForRange(range);
+      const targetResult = targetMonth
+        ? await loadActiveTargetDrafts({
+            scope: "series",
+            platformCode: series.platformCode,
+            storeId: series.storeId,
+            seriesId: series.seriesId,
+            month: targetMonth,
+          })
+        : null;
+      const targetDrafts = targetResult?.status === "ok" ? recordsToDraftMap(targetResult.records) : {};
       const targetViewModel = buildHomeBIViewModel(source, { ...state, targetDrafts });
       const actualCard = actualViewModel.kpiCards.find((card) => card.coreSeriesId === series.seriesId) ?? null;
       const targetCard = targetViewModel.kpiCards.find((card) => card.coreSeriesId === series.seriesId) ?? null;
       const totalTarget = finiteOrNull(targetDrafts.gsv);
-      const mtdTarget = mtdTargetRawValue(totalTarget, monthForRange(range), range);
+      const mtdTarget = targetMonth ? mtdTargetRawValue(totalTarget, targetMonth, range) : null;
       return {
         seriesId: series.seriesId,
         seriesName: series.seriesName,

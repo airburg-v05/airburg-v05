@@ -12,6 +12,7 @@ import {
   detectFileType,
   runETLRuntime,
   saveRuntimeDatasetSnapshot,
+  type ETLIssue,
   type ETLRuntimeResult,
   type ETLSourceType,
 } from "@/lib/etl/runtime";
@@ -211,6 +212,20 @@ const summarizeProductStatuses = (files: PendingUploadFile[]) =>
     },
     { success: 0, failed: 0, skipped: 0 },
   );
+
+const buildSafeSkippedIssues = (files: PendingUploadFile[]): ETLIssue[] =>
+  files
+    .filter((file) => productStatusFor(file) === "skipped")
+    .map((file) => ({
+      level: "warning",
+      code: file.duplicate
+        ? "upload_duplicate_file_skipped"
+        : file.fileType === "unsupported_plan_summary"
+          ? "upload_unsupported_plan_summary_skipped"
+          : "upload_unsupported_file_skipped",
+      message: "Input was safely skipped before ETL runtime.",
+      fileName: "safe_upload_input",
+    }));
 
 const hasDataSetRecords = (result: ETLRuntimeResult) =>
   result.dataset.products.length > 0 ||
@@ -592,12 +607,13 @@ export function UploadPageV1Dashboard() {
           storeName: selectedStore.storeName,
         })),
       );
+      const safeSkippedIssues = buildSafeSkippedIssues(pendingFiles);
       const hasRecords = hasDataSetRecords(runtimeResult);
       let persisted = false;
       if (hasRecords) {
         const saveResult = await saveRuntimeDatasetSnapshot(
           runtimeResult.dataset,
-          [...runtimeResult.issues, ...runtimeResult.errorQueue],
+          [...runtimeResult.issues, ...runtimeResult.errorQueue, ...safeSkippedIssues],
           runtimeResult.summary,
           {
             platformCode: selectedStore.platformCode,

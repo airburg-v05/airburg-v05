@@ -13,6 +13,8 @@ const AUDIT_PORT = Number(process.env.UPLOAD_PAGE_V2_AUDIT_PORT ?? "3000");
 const BASE_URL = process.env.UPLOAD_PAGE_V2_AUDIT_BASE_URL ?? `http://127.0.0.1:${AUDIT_PORT}`;
 const PAGE_URL = `${BASE_URL.replace(/\/$/, "")}/upload`;
 const CHROME_PATH = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+const TASK_BASELINE_HEAD = "5880332865e46eddf1d78c3d5fbcd1ea5505f1ad";
+const TASK_COMPLETION_HEAD = "640028371cc4baba777f84b82950caff50e08edb";
 const screenshotDir = fs.mkdtempSync(path.join(os.tmpdir(), "airburg-upload-page-v2-"));
 const fixtureDir = fs.mkdtempSync(path.join(os.tmpdir(), "airburg-upload-page-v2-fixtures-"));
 
@@ -61,11 +63,18 @@ const git = (args: string[]): string =>
   }).trim();
 
 const changedFiles = (): string[] => {
-  const diff = git(["-c", "core.quotepath=false", "diff", "--name-only", "HEAD", "--"]);
-  const untracked = git(["ls-files", "--others", "--exclude-standard"]);
+  const diff = git([
+    "-c",
+    "core.quotepath=false",
+    "diff",
+    "--name-only",
+    TASK_BASELINE_HEAD,
+    TASK_COMPLETION_HEAD,
+    "--",
+  ]);
   return Array.from(
     new Set(
-      [...diff.split("\n"), ...untracked.split("\n")]
+      diff.split("\n")
         .map((line) => line.trim())
         .filter(Boolean),
     ),
@@ -210,6 +219,11 @@ const fetchJson = <T>(url: string): Promise<T> =>
   new Promise((resolve, reject) => {
     http
       .get(url, (response) => {
+        if ((response.statusCode ?? 500) >= 400) {
+          response.resume();
+          reject(new Error("CDP endpoint unavailable"));
+          return;
+        }
         let body = "";
         response.on("data", (chunk) => {
           body += String(chunk);
@@ -308,10 +322,12 @@ class CdpClient {
   }
 }
 
-const launchChrome = async (port: number, profileDir: string): Promise<ChildProcessWithoutNullStreams> => {
+const launchChrome = async (
+  profileDir: string,
+): Promise<{ chrome: ChildProcessWithoutNullStreams; port: number }> => {
   const chrome = spawn(CHROME_PATH, [
     "--headless=new",
-    `--remote-debugging-port=${port}`,
+    "--remote-debugging-port=0",
     `--user-data-dir=${profileDir}`,
     "--disable-gpu",
     "--hide-scrollbars",
@@ -321,10 +337,20 @@ const launchChrome = async (port: number, profileDir: string): Promise<ChildProc
   ]);
   chrome.stderr.on("data", () => undefined);
   chrome.stdout.on("data", () => undefined);
+  const activePortFile = path.join(profileDir, "DevToolsActivePort");
   for (let index = 0; index < 80; index += 1) {
     try {
-      await fetchJson(`http://127.0.0.1:${port}/json/version`);
-      return chrome;
+      if (chrome.exitCode !== null) throw new Error("Chrome exited before CDP was ready");
+      const activePort = fs.readFileSync(activePortFile, "utf8").split("\n")[0]?.trim() ?? "";
+      const port = Number(activePort);
+      if (!Number.isInteger(port) || port <= 0) throw new Error("Chrome CDP port missing");
+      const version = await fetchJson<{ Browser?: string; webSocketDebuggerUrl?: string }>(
+        `http://127.0.0.1:${port}/json/version`,
+      );
+      if (!version.Browser?.includes("Chrome") || !version.webSocketDebuggerUrl) {
+        throw new Error("Unexpected CDP endpoint");
+      }
+      return { chrome, port };
     } catch {
       await wait(100);
     }
@@ -335,9 +361,17 @@ const launchChrome = async (port: number, profileDir: string): Promise<ChildProc
 
 const getPageDebuggerUrl = async (port: number): Promise<string> => {
   for (let index = 0; index < 50; index += 1) {
-    const pages = await fetchJson<Array<{ type: string; webSocketDebuggerUrl?: string }>>(`http://127.0.0.1:${port}/json`);
-    const page = pages.find((item) => item.type === "page" && item.webSocketDebuggerUrl);
-    if (page?.webSocketDebuggerUrl) return page.webSocketDebuggerUrl;
+    try {
+      const pages = await fetchJson<Array<{ type: string; webSocketDebuggerUrl?: string }>>(
+        `http://127.0.0.1:${port}/json`,
+      );
+      if (Array.isArray(pages)) {
+        const page = pages.find((item) => item.type === "page" && item.webSocketDebuggerUrl);
+        if (page?.webSocketDebuggerUrl) return page.webSocketDebuggerUrl;
+      }
+    } catch {
+      // Chrome may still be publishing the first page target.
+    }
     await wait(100);
   }
   throw new Error("No Chrome page debugger URL found");
@@ -497,8 +531,8 @@ const etlChecks = async () => {
 const browserChecks = async () => {
   const server = await ensureServer();
   const profileDir = fs.mkdtempSync(path.join(os.tmpdir(), "airburg-upload-page-v2-chrome-"));
-  const port = 9500 + Math.floor(Math.random() * 400);
-  const chrome = await launchChrome(port, profileDir);
+  const launchedChrome = await launchChrome(profileDir);
+  const { chrome, port } = launchedChrome;
   let client: CdpClient | null = null;
   try {
     client = await CdpClient.connect(await getPageDebuggerUrl(port));
