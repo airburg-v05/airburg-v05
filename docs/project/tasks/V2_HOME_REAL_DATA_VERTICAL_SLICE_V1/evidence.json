@@ -1,0 +1,203 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1",
+  "capturedAt": "2026-07-15T00:13:12+08:00",
+  "status": "LOCAL_E2E_PASS",
+  "visualAccepted": false,
+  "visualReviewStatus": "PENDING_HUMAN_REVIEW",
+  "humanReviewRequired": true,
+  "modelAndTools": {
+    "actualCodexModel": "UNKNOWN",
+    "isConfirmedGpt56": false,
+    "imageUnderstanding": true,
+    "reasoningEffort": "UNKNOWN_NOT_EXPOSED",
+    "userReferenceScreenshotReceived": false,
+    "v2VisualizationPdfReceived": false,
+    "canReadPdfAndPng": true,
+    "browserPlaywrightAvailable": true,
+    "localScreenshotAvailable": true,
+    "visualComparisonAvailable": true,
+    "browserEvidenceBoundary": "In-app Browser Playwright verified the empty state and DOM boundary. Its file chooser does not support this local 18-file batch, so the authorized real-file E2E used isolated local headless Chrome through CDP."
+  },
+  "repository": {
+    "branch": "feature/saas-ui-v2-shell",
+    "stageABaselineHead": "1311533",
+    "upstream": "origin/feature/saas-ui-v2-shell",
+    "stageAPushAheadBehind": "0/0",
+    "stageBPush": false,
+    "stageBDeploy": false
+  },
+  "stageA": {
+    "status": "PUSHED",
+    "forcePush": false,
+    "tagCreated": false,
+    "commits": [
+      "7ade2f4 chore(v2): archive static shell prototype before single-track reconciliation",
+      "af188c7 docs(governance): establish single-track project SSOT and route contracts",
+      "1311533 test(governance): add single-track reconciliation and entry-gate validation"
+    ]
+  },
+  "foundation": {
+    "decision": "V05_DOMAIN_WITH_V1_METRIC_COMPATIBILITY_ADAPTER",
+    "adapter": "lib/v2/home/v2-home-adapter.ts",
+    "types": "types/v2/home.ts",
+    "pageImportBoundary": "components/saas-v2/home/v2-home-dashboard.tsx -> lib/v2/home/v2-home-adapter.ts",
+    "v1FormulaChanges": false,
+    "etlChanges": false,
+    "persistenceSchemaChanges": false,
+    "newDependencies": false
+  },
+  "realData": {
+    "realFileCount": 18,
+    "importResult": {
+      "success": 17,
+      "failed": 0,
+      "skipped": 1
+    },
+    "duplicateImportDoublesTotals": false,
+    "activeDatasetRestored": true,
+    "businessDateRange": {
+      "start": "2026-06-26",
+      "end": "2026-06-30"
+    },
+    "reconciliation": {
+      "gmv": 125596,
+      "gsv": 85455.96,
+      "visitors": 143076,
+      "paidBuyers": 128,
+      "adSpend": 7625.95,
+      "clicks": 6692,
+      "refundAmount": 29602.18,
+      "adSpendRateAfterRefund": 0.1365,
+      "directTransactionShare": 0.634
+    }
+  },
+  "metricContract": {
+    "total": 17,
+    "available": 12,
+    "availableWithBrandFilter": 2,
+    "expectedEmpty": 0,
+    "unavailable": 2,
+    "pendingImplementation": 1,
+    "brandKeywordPaidShare": "PENDING_IMPLEMENTATION_AS_DASH",
+    "geoSearchShareReused": false
+  },
+  "targetAndSeries": {
+    "targetOverlayBound": true,
+    "targetChangesActual": false,
+    "runtimeDatasetContainsTargets": false,
+    "keySeriesGsvUsesRealDebugContextSeries": true,
+    "noSeriesStateIsSafe": true
+  },
+  "interactions": {
+    "mtdUsesRealData": true,
+    "dlyUsesRealData": true,
+    "singleMetricMode": true,
+    "allowedDualMetricPairs": true,
+    "dayWeekMonthCustom": true,
+    "customRangeMaxOneYear": true,
+    "invalidCustomRangePersisted": false,
+    "comparisonFabricatesData": false,
+    "metricVisibilityAndOrdering": "SESSION_ONLY_INTERACTIVE",
+    "refreshRestore": true,
+    "closeReopenRestore": true
+  },
+  "browser": {
+    "desktop1440": "PASS",
+    "mobile390": "PASS",
+    "pageWideHorizontalOverflow390": false,
+    "consoleBusinessErrors": 0,
+    "invalidNumericTextFound": false,
+    "sensitiveTextFound": false,
+    "otherV2Routes": "HTTP_200_SMOKE_ONLY_STATIC_SHELL"
+  },
+  "visualIteration": {
+    "referenceBasis": [
+      "docs/product-blueprint-v2/AIRBURG_SAAS_PRODUCT_UI_BLUEPRINT_V2.md",
+      "current V2 Home Page Spec",
+      "approved template selection plan"
+    ],
+    "round1Manifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-round1-YpN1fL/manifest.json",
+    "round2FinalManifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-round2c-3U0UvR/manifest.json",
+    "adjustments": [
+      "Replaced preview-only sidebar copy with product workspace copy.",
+      "Rebalanced KPI target columns so long differences remain legible.",
+      "Made the chart horizontally scroll inside its own mobile container without page-wide overflow.",
+      "Added section-level screenshots and real tooltip, settings, range, comparison, and chart-mode checks."
+    ]
+  },
+  "validation": {
+    "v2HomeValidator": "PASS",
+    "v2HomeValidatorType": "REAL_LOGIC_DATA_AND_BROWSER_INTERACTION_E2E",
+    "finalGateManifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-final-gate2-WedpNo/manifest.json",
+    "representativeRegressionResults": [
+      {
+        "validator": "validate-git-baseline-sensitive-scan-policy-v2.ts",
+        "tier": "TIER_A_RELEASE_CRITICAL",
+        "validationType": "SECURITY",
+        "result": "PASS",
+        "evidence": "hardBlock=0, needsReview=0, realSecret=0, realSample=0"
+      },
+      {
+        "validator": "validate-v2-home-real-data-vertical-slice-v1.ts",
+        "tier": "TIER_A_RELEASE_CRITICAL",
+        "validationType": "REAL_LOGIC_DATA_AND_BROWSER_INTERACTION_E2E",
+        "result": "PASS",
+        "evidence": "SSOT, current-task pointer, one adapter, real data, persistence, browser, responsive, safety, and other V2 route smoke"
+      },
+      {
+        "validator": "validate-tianmao-v1-refactor-pipeline-v2.ts",
+        "tier": "TIER_A_RELEASE_CRITICAL",
+        "validationType": "REAL_LOGIC_DATA",
+        "result": "PASS",
+        "evidence": "18 files, append/dedup/resolver/target isolation, 2026-06-26 through 2026-06-30 stable"
+      },
+      {
+        "validator": "validate-tmall-missing-metrics-implementation-v1.ts",
+        "tier": "TIER_A_RELEASE_CRITICAL",
+        "validationType": "REAL_LOGIC_DATA",
+        "result": "PASS",
+        "evidence": "ad spend rate after refund 13.65 percent and direct transaction share 63.4 percent"
+      },
+      {
+        "validator": "validate-tmall-after-sales-safe-aggregation-p1-v1.ts",
+        "tier": "TIER_A_RELEASE_CRITICAL",
+        "validationType": "REAL_LOGIC_DATA",
+        "result": "PASS",
+        "evidence": "safe after-sales aggregates and three return-rate lines"
+      },
+      {
+        "validator": "validate-runtime-dataset-indexeddb-safe-persistence-adapter-v1.ts",
+        "tier": "TIER_A_RELEASE_CRITICAL",
+        "validationType": "PERSISTENCE",
+        "result": "PASS",
+        "evidence": "save, load, restore, safe summary, corruption handling, no localStorage"
+      },
+      {
+        "validator": "validate-target-drafts-persistence-v1-local-acceptance.ts",
+        "tier": "TIER_A_RELEASE_CRITICAL",
+        "validationType": "REAL_LOGIC_DATA_AND_PERSISTENCE",
+        "result": "PASS",
+        "evidence": "active dataset, target overlay, target isolation, debug context, history and quality boundaries"
+      },
+      {
+        "validator": "validate-target-required-derived-metric-rules-implementation-v1.ts",
+        "tier": "TIER_A_RELEASE_CRITICAL",
+        "validationType": "TARGET_SEMANTICS",
+        "result": "PASS",
+        "evidence": "required, derived, unsupported and runtime target isolation"
+      }
+    ],
+    "historicalNonBlockingObservations": [
+      "validate-project-execution-guardrails-current-state-v1.ts retains stale PAGE_PROBLEM_MATRIX V1 assertions and is not the machine-readable PROJECT_SSOT validator for this task.",
+      "validate-cross-page-debug-context-persistence-v1.ts passes adapter behavior but its pre-commit changed-path whitelist rejects this authorized V2 task; rerun after local commits."
+    ],
+    "lint": "PASS_WITH_ONE_EXISTING_UNUSED_VARIABLE_WARNING",
+    "build": "PASS"
+  },
+  "contractConflict": {
+    "requestedValidatorRegistryUpdate": true,
+    "validatorRegistryAllowedByTaskContract": false,
+    "resolution": "NOT_MODIFIED_CONTRACT_WINS_SEPARATE_GOVERNANCE_TASK_REQUIRED"
+  }
+}

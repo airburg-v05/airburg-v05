@@ -1,12 +1,14 @@
 # V2 Home Real-Data Vertical Slice Handoff
 
-Status: `READY_FOR_USER_AUTHORIZATION`. Do not execute without a new explicit user instruction.
+Status: `LOCAL_E2E_PASS`. The next and only action is user full-page visual review.
 
-## Goal
+## Completed Scope
 
-Turn only `/v2/home` from `STATIC_SHELL` into a complete, locally proven vertical slice. Do not spread partial data binding across the remaining V2 routes.
+Only `/v2/home` was moved from `STATIC_SHELL` to `DATA_BOUND` through
+`lib/v2/home/v2-home-adapter.ts`. The remaining V2 routes are still static-shell
+smoke targets and were not data-bound.
 
-## Required Loop
+## Proven Loop
 
 ```text
 real 18 files or restored active dataset
@@ -18,7 +20,7 @@ real 18 files or restored active dataset
 -> refresh restore
 -> 1440/390 Browser E2E
 -> reference comparison and iteration
--> human full-page acceptance
+-> pending human full-page acceptance
 ```
 
 ## Hard Rules
@@ -32,12 +34,26 @@ real 18 files or restored active dataset
 7. `brandKeywordPaidShare` is not `geoSearchShare` under a new label.
 8. Target drafts remain an overlay and never enter runtime data.
 
-## Required Evidence Before Acceptance
+## Evidence
 
-- real 18-file reconciliation;
-- Browser/Playwright interactions and restore;
-- 1440px and 390px screenshots;
-- reference screenshot/PDF comparison with at least one correction cycle;
-- console, overflow, invalid-number, and sensitive-text checks;
-- explicit user visual acceptance.
+- Real 18-file import: `17 success / 0 failed / 1 safe skipped`.
+- Reconciled GMV/GSV: `125596 / 85455.96`.
+- Refresh, close/reopen, target overlay, context, and key-series restore: `PASS`.
+- Round 1 manifest: `/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-round1-YpN1fL/manifest.json`.
+- Final candidate manifest: `/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-round2c-3U0UvR/manifest.json`.
+- 390px page-wide overflow: `false`; console business errors: `0`.
+- Invalid numeric and sensitive text findings: `0`.
 
+## Current Limits
+
+1. `visualAccepted = false` and `humanAccepted = false` until the user reviews the full page.
+2. Stage B commits are local only. Do not push them.
+3. Do not deploy V2.
+4. Do not start Store, Series, Product, Upload, Data Health, Target Center, Search Assets, or Exclusion Rules binding.
+5. `VALIDATOR_REGISTRY.json` was not modified because it is outside this task contract's allowed paths; register the validator in a separate governance task.
+
+## Local Review
+
+Open `http://127.0.0.1:3010/v2/home` and review the complete page, wording,
+interactions, chart semantics, and business hierarchy. Stop after reporting the
+review result; no next page or deployment is authorized.

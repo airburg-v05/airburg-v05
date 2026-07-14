@@ -5,7 +5,7 @@
     "app/**/layout.tsx",
     "transitive first-party imports in route-owned components"
   ],
-  "capturedAt": "2026-07-10",
+  "capturedAt": "2026-07-15",
   "entryCount": 23,
   "routes": [
     {
@@ -278,20 +278,20 @@
       "route": "/v2/home",
       "track": "SAAS_UI_V2",
       "pageFile": "app/(workspace-v2)/v2/home/page.tsx",
-      "componentFiles": ["components/saas-v2/cards/metric-grid-v2.tsx", "components/saas-v2/cards/key-series-gsv-card.tsx", "components/saas-v2/charts/chart-panel-v2.tsx", "components/saas-v2/controls/platform-store-scope-control.tsx", "components/saas-v2/controls/brand-scope-control.tsx", "components/saas-v2/controls/time-range-control.tsx", "components/saas-v2/controls/compare-mode-control.tsx", "components/saas-v2/data.ts"],
+      "componentFiles": ["components/saas-v2/home/v2-home-dashboard.tsx", "components/saas-v2/home/v2-home-toolbar.tsx", "components/saas-v2/home/v2-home-metric-grid.tsx", "components/saas-v2/home/v2-home-chart.tsx"],
       "uiVersion": "SaaS UI V2",
-      "actualDataImports": [],
-      "domainImports": [],
-      "targetImports": [],
-      "persistenceImports": [],
-      "currentDataSource": "components/saas-v2/data.ts static constants",
-      "targetSource": "static rows only",
-      "persistenceSource": "NONE",
-      "isStaticShell": true,
-      "isDataBound": false,
+      "actualDataImports": ["lib/v2/home/v2-home-adapter.ts", "lib/bi/bi.data-source.ts", "lib/bi/bi.home-mapper.ts"],
+      "domainImports": ["lib/v05/domain/models.ts"],
+      "targetImports": ["lib/bi/target-metric-definitions.ts", "lib/persistence/target-drafts-persistence.ts"],
+      "persistenceImports": ["lib/persistence/runtime-dataset-persistence.ts", "lib/persistence/debug-context-persistence.ts", "lib/persistence/target-drafts-persistence.ts"],
+      "currentDataSource": "V05_DOMAIN_WITH_V1_METRIC_COMPATIBILITY_ADAPTER through lib/v2/home/v2-home-adapter.ts",
+      "targetSource": "IndexedDB target drafts as overlay only",
+      "persistenceSource": "active runtime dataset snapshot, debug context, and target drafts behind one V2 adapter",
+      "isStaticShell": false,
+      "isDataBound": true,
       "isPublic": false,
-      "status": "STATIC_SHELL",
-      "notes": "Public IP returned 404 at evidence capture; next and only implementation entry gate."
+      "status": "LOCAL_E2E_PASS",
+      "notes": "Real 18-file local browser E2E passed. Visual and human acceptance remain false; no V2 deployment or Stage B push."
     },
     {
       "route": "/v2/series-board",

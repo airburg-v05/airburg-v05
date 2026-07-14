@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "updatedAt": "2026-07-10T00:00:00+08:00",
+  "updatedAt": "2026-07-15T00:13:12+08:00",
   "authority": {
     "machineReadableSource": "docs/project/PROJECT_SSOT.json",
     "derivedHumanReadableSources": [
@@ -19,11 +19,11 @@
   },
   "repository": {
     "activeBranch": "feature/saas-ui-v2-shell",
-    "headCommit": "af188c79ce7dda20c8b29088c205a7d56811fab1",
-    "headCommitMeaning": "committed governance and SSOT snapshot; the final validator-only commit must be a descendant",
-    "workingTree": "CLEAN_GOVERNANCE_SNAPSHOT",
+    "headCommit": "1311533",
+    "headCommitMeaning": "pushed single-track governance baseline; Stage B local commits remain unpushed",
+    "workingTree": "LOCAL_STAGE_B_COMMITTED_NOT_PUSHED",
     "remote": "origin=https://github.com/airburg-v05/airburg-v05.git",
-    "upstream": "UNSET",
+    "upstream": "origin/feature/saas-ui-v2-shell",
     "fallbackComparisonRef": "origin/feature/g6-preview",
     "fallbackComparisonAtEvidenceBaseline": {
       "behind": 0,
@@ -107,38 +107,53 @@
     },
     "saasUiV2": {
       "role": "ACTIVE_PRODUCT_TRACK",
-      "status": "STATIC_SHELL",
+      "status": "HOME_VERTICAL_SLICE_LOCAL_E2E_PASS",
       "archiveCommit": "7ade2f433d7dbd90e8fd1a0df5efdb00003ec8fa",
       "routeCount": 9,
       "componentCount": 18,
-      "dataBound": false,
+      "dataBound": true,
+      "dataBoundRoutes": [
+        "/v2/home"
+      ],
+      "remainingStaticShellRouteCount": 8,
       "localRoutesValidated": true,
-      "localE2EPassed": false,
+      "localE2EPassed": true,
       "visualAccepted": false,
       "previewDeployed": false,
       "humanAccepted": false,
       "publicV2RouteStatus": "HTTP_404_AT_EVIDENCE_CAPTURE",
-      "businessImportsFound": 0,
-      "controlsInteractive": false
+      "businessImportsFound": 1,
+      "controlsInteractive": true,
+      "visualReviewStatus": "PENDING_HUMAN_REVIEW",
+      "humanReviewRequired": true,
+      "homeVerticalSlice": {
+        "status": "LOCAL_E2E_PASS",
+        "adapter": "lib/v2/home/v2-home-adapter.ts",
+        "metricCount": 17,
+        "realSampleCount": 18,
+        "browserConsoleBusinessErrors": 0,
+        "mobile390PageWideOverflow": false,
+        "evidence": "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/evidence.json"
+      }
     }
   },
   "canonicalSources": {
     "dataPipeline": "lib/etl/runtime/index.ts with lib/etl runtime contracts; frozen Tmall V1 data foundation",
-    "domainModel": "lib/v05/domain/models.ts through the planned V2 compatibility adapter",
-    "metricViewModel": "lib/bi/bi.home-view-model.ts and lib/bi/bi.home-mapper.ts through one planned V2 compatibility adapter",
+    "domainModel": "lib/v05/domain/models.ts through lib/v2/home/v2-home-adapter.ts for /v2/home",
+    "metricViewModel": "lib/bi/bi.home-view-model.ts and lib/bi/bi.home-mapper.ts through lib/v2/home/v2-home-adapter.ts",
     "targetOverlay": "lib/bi/target-metric-definitions.ts plus lib/persistence/target-drafts-persistence.ts; overlay only",
     "persistence": "lib/v05 persistence foundation plus existing V1 runtime/debug/target browser adapters behind one V2 boundary",
-    "ui": "app/(workspace-v2)/v2/** and components/saas-v2/**; STATIC_SHELL until the vertical slice is data-bound"
+    "ui": "app/(workspace-v2)/v2/** and components/saas-v2/**; /v2/home is DATA_BOUND and the remaining eight routes are STATIC_SHELL"
   },
   "routeMatrix": "docs/project/ROUTE_DATA_SOURCE_MATRIX.json",
   "metricSemantics": "docs/project/METRIC_SEMANTIC_RECONCILIATION_V1.json",
   "validatorRegistry": "docs/project/VALIDATOR_REGISTRY.json",
   "currentTask": {
     "taskId": "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1",
-    "status": "READY_FOR_USER_AUTHORIZATION",
+    "status": "LOCAL_E2E_PASS",
     "contract": "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/task-contract.json"
   },
-  "nextAuthorizedEntryGate": "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1",
+  "nextAuthorizedEntryGate": "V2_HOME_HUMAN_VISUAL_REVIEW",
   "deprecatedArtifacts": [
     {
       "path": "lib/state/system-state.ts",
@@ -151,7 +166,8 @@
     }
   ],
   "forbiddenClaims": [
-    "SaaS UI V2 is DATA_BOUND before the real-data adapter and browser E2E pass",
+    "All SaaS UI V2 routes are DATA_BOUND because the /v2/home vertical slice passed",
+    "/v2/home is VISUAL_ACCEPTED or HUMAN_ACCEPTED before explicit user full-page review",
     "SaaS UI V2 is a complete product, release candidate, preview deployment, or human-accepted UI",
     "V0.5 is the unique data foundation without the documented compatibility-adapter decision",
     "lib/state/system-state.ts is the project SSOT",
