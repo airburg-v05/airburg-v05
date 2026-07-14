@@ -82,78 +82,46 @@ function V2HomeEmptyState({ message, uploadHref }: { message: string; uploadHref
 
 function KeySeriesSection({ viewModel }: { viewModel: V2HomeViewModel }) {
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm" data-testid="v2-home-key-series">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h2 className="text-base font-semibold text-slate-950">重点系列 GSV</h2>
-          <p className="mt-1 text-xs text-slate-500">读取当前已维护系列配置，不自动创建系列。</p>
-        </div>
-        <a className="shrink-0 text-xs font-semibold text-blue-700 hover:text-blue-800" href="/v2/series-board">查看系列</a>
+    <section
+      className="overflow-hidden rounded-xl border border-slate-200 bg-white"
+      data-home-region="series"
+      data-testid="v2-home-key-series"
+    >
+      <div className="flex h-10 items-center justify-between gap-3 px-4">
+        <h2 className="text-base font-semibold text-slate-900">重点系列</h2>
+        <a className="shrink-0 text-xs font-semibold text-blue-700 hover:text-blue-800" href="/v2/series-board">管理</a>
       </div>
       {viewModel.keySeries.length === 0 ? (
-        <div className="mt-3 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center">
-          <p className="text-sm font-semibold text-slate-800">尚未维护重点系列</p>
-          <p className="mt-1 text-xs text-slate-500">配置系列后，这里只展示 3-5 个系列的 GSV 目标状态。</p>
-        </div>
+        <div className="flex h-24 items-center justify-center border-t border-slate-100 text-sm text-slate-500">暂未设置重点系列</div>
       ) : (
-        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+        <div className="flex min-w-0 overflow-x-auto border-t border-slate-100">
           {viewModel.keySeries.map((series) => (
             <a
               key={series.seriesId}
-              className="min-w-0 rounded-lg border border-slate-200 bg-slate-50 p-3 transition hover:border-slate-300 hover:bg-white"
+              className="flex h-[104px] w-[220px] shrink-0 flex-col border-r border-slate-100 px-4 py-2 transition hover:bg-slate-50"
               href={series.href}
             >
-              <p className="truncate text-sm font-semibold text-slate-800" title={series.seriesName}>{series.seriesName}</p>
-              <p className="mt-2 text-lg font-semibold text-slate-950">{series.actual}</p>
-              <dl className="mt-2 grid grid-cols-2 gap-2 text-[11px]">
-                <div><dt className="text-slate-400">MTD目标</dt><dd className="mt-0.5 truncate font-semibold text-slate-700">{series.mtdTarget}</dd></div>
-                <div><dt className="text-slate-400">总目标</dt><dd className="mt-0.5 truncate font-semibold text-slate-700">{series.totalTarget}</dd></div>
-                <div><dt className="text-slate-400">差值</dt><dd className="mt-0.5 truncate font-semibold text-slate-700">{series.difference}</dd></div>
-                <div><dt className="text-slate-400">完成率</dt><dd className="mt-0.5 truncate font-semibold text-slate-700">{series.completionRate}</dd></div>
+              <div className="flex min-w-0 items-baseline justify-between gap-3">
+                <p className="min-w-0 truncate text-sm font-semibold leading-5 text-slate-800" title={series.seriesName}>{series.seriesName}</p>
+                <div className="flex shrink-0 items-baseline gap-1">
+                  <span className="text-[9px] text-slate-400">GSV</span>
+                  <strong className="text-lg leading-5 text-slate-950">{series.actual}</strong>
+                </div>
+              </div>
+              <dl className="mt-1 grid grid-cols-3 gap-1 text-[9px]">
+                <div className="min-w-0"><dt className="text-slate-400">MTD</dt><dd className="mt-0.5 truncate font-semibold text-slate-700">{series.mtdTarget}</dd></div>
+                <div className="min-w-0"><dt className="text-slate-400">目标</dt><dd className="mt-0.5 truncate font-semibold text-slate-700">{series.totalTarget}</dd></div>
+                <div className="min-w-0"><dt className="text-slate-400">差值</dt><dd className="mt-0.5 truncate font-semibold text-slate-700">{series.difference}</dd></div>
               </dl>
-              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white">
-                {series.progress !== null ? <div className="h-full rounded-full bg-emerald-500" style={{ width: `${series.progress}%` }} /> : null}
+              <div className="mt-auto flex items-center justify-end text-[9px] font-semibold tabular-nums text-slate-600">{series.completionRate}</div>
+              <div className="mt-0.5 h-1 overflow-hidden rounded-full bg-slate-100">
+                {series.progress !== null ? <div className="h-full rounded-full bg-blue-600" style={{ width: `${series.progress}%` }} /> : null}
               </div>
             </a>
           ))}
         </div>
       )}
     </section>
-  );
-}
-
-function DataHealthSection({ viewModel }: { viewModel: V2HomeViewModel }) {
-  const health = viewModel.dataHealth;
-  const rows = [
-    { label: "数据缺失", value: health.missingSourceCount },
-    { label: "安全跳过", value: health.safeSkippedCount },
-    { label: "重复隔离", value: health.dedupedRecordCount },
-    { label: "不可计算", value: health.nonComputableMetricCount },
-  ];
-  return (
-    <aside className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm" data-testid="v2-home-data-health">
-      <div className="flex items-center justify-between gap-2">
-        <div>
-          <h2 className="text-base font-semibold text-slate-950">数据摘要</h2>
-          <p className="mt-1 text-xs text-slate-500">仅显示安全聚合状态。</p>
-        </div>
-        <a className="text-xs font-semibold text-blue-700 hover:text-blue-800" href="/v2/data-health">详情</a>
-      </div>
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        {rows.map((row) => (
-          <div key={row.label} className="rounded-lg bg-slate-50 p-3">
-            <p className="text-xs text-slate-500">{row.label}</p>
-            <p className="mt-1 text-xl font-semibold text-slate-900">{row.value}</p>
-          </div>
-        ))}
-      </div>
-      <div className="mt-3 border-t border-slate-100 pt-3 text-xs text-slate-500">
-        <p>解析成功 {health.filesParsed} · 失败 {health.filesFailed}</p>
-        {health.safeIssueCodes.length > 0 ? (
-          <p className="mt-1 truncate" title={health.safeIssueCodes.join(" / ")}>安全 issue：{health.safeIssueCodes.join(" / ")}</p>
-        ) : null}
-      </div>
-    </aside>
   );
 }
 
@@ -268,11 +236,9 @@ export function V2HomeDashboard() {
       <V2HomeToolbar
         busy={busy}
         comparisonMode={readyViewModel.comparison.mode}
-        dataStatusLabel={readyViewModel.dataStatusLabel}
-        datasetRange={readyViewModel.dataset.dateRange!}
+        interactionError={interactionError}
         onComparisonModeChange={(comparisonMode: V2HomeComparisonMode) => updateOptions({ comparisonMode })}
         onCustomRangeChange={changeCustomRange}
-        onOpenMetricSettings={() => setSettingsOpen(true)}
         onPlatformChange={(selectedPlatform) => updateOptions({ selectedPlatform, selectedStoreIds: [] }, true)}
         onStoresChange={(selectedStoreIds) => updateOptions({ selectedStoreIds }, true)}
         onTimeModeChange={changeTimeMode}
@@ -280,38 +246,42 @@ export function V2HomeDashboard() {
         timeRange={readyViewModel.timeRange}
       />
 
-      {interactionError ? (
-        <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800">{interactionError}</div>
-      ) : null}
-
-      <section className="min-w-0">
-        <div className="mb-3 flex items-end justify-between gap-3">
-          <div>
-            <h2 className="text-base font-semibold text-slate-950">经营指标</h2>
-            <p className="mt-1 text-xs text-slate-500">默认展示全部 17 项，目标仅作为展示叠加，不改变实际值。</p>
+      <section
+        className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white"
+        data-home-region="metrics"
+      >
+        <div className="flex h-11 items-center justify-between gap-3 px-4">
+          <h2 className="text-base font-semibold text-slate-900">经营指标</h2>
+          <div className="flex items-center gap-2">
+            {busy ? <span className="sr-only" aria-live="polite">正在更新</span> : null}
+            <button
+              className="text-xs font-semibold text-blue-700 hover:text-blue-800"
+              onClick={() => setSettingsOpen(true)}
+              type="button"
+            >
+              指标设置
+            </button>
           </div>
-          {busy ? <span className="text-xs font-medium text-blue-700">正在更新…</span> : null}
         </div>
         <V2HomeMetricGrid
           metrics={readyViewModel.metrics}
           order={preference.order}
+          selectedMetricKey={readyViewModel.chart.pair.leftMetricKey}
           visibleKeys={preference.visibleKeys}
         />
       </section>
 
       <KeySeriesSection viewModel={readyViewModel} />
 
-      <section className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(220px,1fr)]">
-        <V2HomeChart
-          comparisonMessage={comparisonMessage}
-          displayMode={preference.chartDisplayMode}
-          model={readyViewModel.chart}
-          onDisplayModeChange={(chartDisplayMode) => setPreference((current) => ({ ...current, chartDisplayMode }))}
-          onModeChange={(chartMode) => updateOptions({ chartMode }, true)}
-          onPairChange={(chartPairId) => updateOptions({ chartPairId }, true)}
-        />
-        <DataHealthSection viewModel={readyViewModel} />
-      </section>
+      <V2HomeChart
+        comparisonMessage={comparisonMessage}
+        dataHealth={readyViewModel.dataHealth}
+        displayMode={preference.chartDisplayMode}
+        model={readyViewModel.chart}
+        onDisplayModeChange={(chartDisplayMode) => setPreference((current) => ({ ...current, chartDisplayMode }))}
+        onModeChange={(chartMode) => updateOptions({ chartMode }, true)}
+        onPairChange={(chartPairId) => updateOptions({ chartPairId }, true)}
+      />
 
       {settingsOpen ? (
         <V2HomeMetricSettings
