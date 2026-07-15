@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "V2_HOME_PREVIEW_REMOTE_DEPLOY_AND_PUBLIC_HUMAN_REVIEW_GATE_V1",
+  "recordedAt": "2026-07-15T08:44:17+08:00",
+  "status": "PRE_DEPLOY_AUDIT",
+  "actualCodexModel": "UNKNOWN_NOT_EXPOSED_BY_RUNTIME",
+  "visionSupported": true,
+  "browserPlaywrightSupported": false,
+  "chromeCdpSupported": true,
+  "screenshotSupported": true,
+  "reasoningEffort": "UNKNOWN_NOT_EXPOSED_BY_RUNTIME",
+  "currentBranch": "feature/saas-ui-v2-shell",
+  "initialHead": "803f7c19ec1c6a1affdcd6623f67b6f2de97b8bc",
+  "initialWorkingTree": "clean",
+  "remote": "origin (github.com/airburg-v05/airburg-v05.git; credentials redacted)",
+  "upstream": "origin/feature/saas-ui-v2-shell",
+  "initialAheadBehind": {
+    "behind": 0,
+    "ahead": 7
+  },
+  "gatekeeper": {
+    "manifest": "docs/project/tasks/V2_HOME_PREVIEW_REMOTE_DEPLOY_AND_PUBLIC_HUMAN_REVIEW_GATE_V1/gate-manifest.json",
+    "status": "PASS",
+    "requiredFieldCount": 6
+  },
+  "prePushDiffAudit": {
+    "status": "PASS_WITH_REVIEWED_LEGACY_UPLOAD_INTERNAL_BRIDGE",
+    "commitCount": 7,
+    "changedFileCount": 33,
+    "commits": [
+      "1f73c165df71945aaa3d6b0f15ab1d37424d19bd feat(v2-home): add canonical real-data adapter",
+      "fdf5268d0a111c07ea85e90a98ce0269d1726a07 feat(v2-home): bind dashboard to real operating data",
+      "3028405fefd003c15915b3d0f5650ef0756bd8e1 test(v2-home): record real-data e2e evidence",
+      "aa4146289369f405911dc89bf7cc5965b785b322 fix(v2-home): rebuild concise metric matrix and visual hierarchy",
+      "e3037c51ae40936268d6e580f8c3ac5046e8ba1b test(v2-home): add textual-reference visual regression gate",
+      "8b69e46fee532379be5f5f0b2ef4fe44c87a87aa fix(v2-home): reconcile data health and target month boundaries",
+      "803f7c19ec1c6a1affdcd6623f67b6f2de97b8bc docs(governance): reconcile V2 Home state and validation gates"
+    ],
+    "changedFiles": [
+      "AGENTS.md",
+      "app/(workspace-v2)/v2/home/page.tsx",
+      "components/saas-v2/home/v2-home-chart.tsx",
+      "components/saas-v2/home/v2-home-dashboard.tsx",
+      "components/saas-v2/home/v2-home-metric-grid.tsx",
+      "components/saas-v2/home/v2-home-toolbar.tsx",
+      "components/saas-v2/layout/saas-v2-page-header.tsx",
+      "components/saas-v2/layout/saas-v2-sidebar.tsx",
+      "components/saas-v2/layout/saas-v2-topbar.tsx",
+      "components/upload/v1/upload-page-v1-dashboard.tsx",
+      "docs/PROJECT_CURRENT_STATE.md",
+      "docs/project/PROJECT_SSOT.json",
+      "docs/project/PROJECT_SSOT.schema.json",
+      "docs/project/ROUTE_DATA_SOURCE_MATRIX.json",
+      "docs/project/STATUS_MODEL_V1.json",
+      "docs/project/V2_HOME_DATA_CONTRACT.json",
+      "docs/project/VALIDATION_STRATEGY_V1.md",
+      "docs/project/VALIDATOR_REGISTRY.json",
+      "docs/project/current-task.json",
+      "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/V2_HOME_TEXTUAL_VISUAL_REFERENCE_V1.md",
+      "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/autonomous-e2e-reconciliation-v1.md",
+      "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/evidence.json",
+      "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/handoff.md",
+      "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/task-contract.json",
+      "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/v2-home-visual-analysis-v2.md",
+      "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/visual-review.md",
+      "lib/v2/home/v2-home-adapter.ts",
+      "scripts/private-audit/validate-git-baseline-sensitive-scan-policy-v2.ts",
+      "scripts/private-audit/validate-upload-page-v2-unified-batch-etl-entry.ts",
+      "scripts/private-audit/validate-v2-home-autonomous-e2e-reconciliation-v1.ts",
+      "scripts/private-audit/validate-v2-home-real-data-vertical-slice-v1.ts",
+      "scripts/private-audit/validate-v2-home-textual-reference-visual-rebase-and-minimalism-v2.ts",
+      "types/v2/home.ts"
+    ],
+    "legacyV1Change": {
+      "present": true,
+      "path": "components/upload/v1/upload-page-v1-dashboard.tsx",
+      "classification": "KNOWN_LIMITED_SAFE_AGGREGATE_BRIDGE_REQUIRES_REGRESSION",
+      "oldV1VisualOrRouteChange": false,
+      "summary": "The existing 8b69e46 commit adds safe skipped issue codes to the already-safe runtime snapshot. It does not change legacy V1 route ownership, visual layout, ETL formulas, raw-file retention, or sensitive-detail display. This task will not modify the file further, and any legacy regression triggers rollback."
+    },
+    "etlChanged": false,
+    "biFormulaChanged": false,
+    "targetFormulaChanged": false,
+    "persistenceSchemaChanged": false,
+    "packageManifestChanged": false,
+    "dependenciesAdded": false,
+    "sensitiveScanPolicyChanged": true,
+    "validatorScopeChanged": true,
+    "sensitiveScanPolicyAudit": "The change only classifies the exact private-samples forbidden glob inside task-contract.json as safe guardrail context. Real-secret, real-sample, forbidden-path, runtime-storage, and private-key hard blocks remain active.",
+    "validatorScopeAudit": "The historical upload validator is pinned to its original baseline/completion commit pair and its CDP launch is made deterministic. Current V2 Home real-data Browser E2E, autonomous governance, sensitive scan, and data validators remain independent and required.",
+    "securityOrBusinessGateWeakened": false,
+    "highConfidenceDiffScan": {
+      "aliyunAccessKey": 0,
+      "privateKeyBody": 0,
+      "tokenAssignment": 0,
+      "passwordAssignment": 0,
+      "realSampleFilePath": 0,
+      "rawRowsOrPreviewRowsRuntimeStorage": 0,
+      "safeNegativeAssertionOccurrences": 2
+    },
+    "realSamplesSecretsOrForbiddenPaths": false,
+    "scopeConclusion": "The seven source commits are limited to V2 Home, its typed adapter/types, shared V2 shell presentation, validators, governance evidence, and one reviewed non-visual legacy upload safe-summary bridge. No ETL, BI formula, Target formula, persistence schema, package, dependency, or forbidden sample path change is present."
+  },
+  "localValidation": {
+    "sensitiveScanV2": {
+      "status": "PASS",
+      "hardBlockCount": 0,
+      "needsReviewCount": 0,
+      "realSecretFindings": 0,
+      "realSampleFindings": 0,
+      "forbiddenPathFindings": 0
+    }
+  },
+  "gitPush": {},
+  "deployment": {},
+  "publicRegression": {},
+  "stateRecord": {
+    "visualAccepted": false,
+    "humanAccepted": false,
+    "visualReviewStatus": "PENDING_HUMAN_REVIEW",
+    "humanReviewRequired": true
+  }
+}

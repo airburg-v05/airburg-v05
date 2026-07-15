@@ -1,0 +1,26 @@
+{
+  "task_type": "data_dashboard",
+  "business_purpose": "Deploy the already data-bound and locally validated /v2/home as a public preview without replacing the frozen V1 fallback, then stop at the public human visual-review gate.",
+  "raw_data_files": [
+    "Authorized local 18-file Tmall sample set, browser-only and never copied into Git or the ECS project directory"
+  ],
+  "field_map": [
+    "docs/project/V2_HOME_DATA_CONTRACT.json",
+    "docs/project/METRIC_SEMANTIC_RECONCILIATION_V1.json",
+    "lib/v2/home/v2-home-adapter.ts"
+  ],
+  "decision_questions": [
+    "Does the exact pushed commit preserve the reconciled 2026-06-26 through 2026-06-30 data values?",
+    "Does public /v2/home restore the browser-local dataset and remain separate from legacy /home?",
+    "Does the deployment stop with visualAccepted and humanAccepted still false?"
+  ],
+  "validation_plan": [
+    "Pre-push diff and sensitive-data audit",
+    "Representative data, persistence, target-isolation, route, browser, lint, and build gates",
+    "Exact git-archive deployment with rollback snapshot",
+    "Legacy V1 and V2 public route regression",
+    "Browser-only real 18-file upload, refresh, reopen, duplicate-import, interaction, responsive, console, network, and screenshot evidence"
+  ],
+  "archive_target": "docs/project/tasks/V2_HOME_PREVIEW_REMOTE_DEPLOY_AND_PUBLIC_HUMAN_REVIEW_GATE_V1",
+  "deliverable_status": "in_progress"
+}
