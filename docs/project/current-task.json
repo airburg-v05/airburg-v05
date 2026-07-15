@@ -1,17 +1,17 @@
 {
   "schemaVersion": "1.0.0",
-  "taskId": "V2_HOME_REAL_DATA_VERTICAL_SLICE_V1",
-  "status": "LOCAL_E2E_PASS",
+  "taskId": "ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1",
+  "status": "BLOCKED",
   "activeProductTrack": "SAAS_UI_V2",
-  "contract": "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/task-contract.json",
-  "preparedAt": "2026-07-10T00:00:00+08:00",
-  "baselineCommit": "7ade2f433d7dbd90e8fd1a0df5efdb00003ec8fa",
+  "contract": "docs/project/tasks/ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1/task-contract.json",
+  "preparedAt": "2026-07-15T18:48:55+08:00",
+  "baselineCommit": "388a57c6f2ece2416e5f921a69317e258f3c208c",
   "authorized": true,
   "executionStarted": true,
-  "authorizedAt": "2026-07-14T23:35:00+08:00",
-  "startedAt": "2026-07-14T23:35:00+08:00",
-  "localE2EPassedAt": "2026-07-15T02:08:50+08:00",
-  "latestImplementationCommit": "8b69e46fee532379be5f5f0b2ef4fe44c87a87aa",
-  "nextGate": "V2_HOME_HUMAN_VISUAL_REVIEW",
-  "previousTask": "PROJECT_SINGLE_TRACK_RECONCILIATION_AND_V2_ENTRY_GATE_V1"
+  "authorizedAt": "2026-07-15T18:48:55+08:00",
+  "startedAt": "2026-07-15T18:48:55+08:00",
+  "latestImplementationCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
+  "nextGate": "ECS_SSH_RECOVERY",
+  "blocker": "SSH closes before authentication; out-of-band diagnosis required",
+  "previousTask": "V2_HOME_PREVIEW_REMOTE_DEPLOY_AND_PUBLIC_HUMAN_REVIEW_GATE_V1"
 }

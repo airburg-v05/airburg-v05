@@ -1,0 +1,25 @@
+{
+  "task_type": "data_dashboard",
+  "business_purpose": "Restore trusted ECS SSH access through an authenticated out-of-band Alibaba Cloud channel, then deploy only the validated V2 Home runtime commit for public human review while preserving the frozen V1 fallback.",
+  "raw_data_files": [
+    "Authorized local 18-file Tmall set used only through a local browser file picker after deployment"
+  ],
+  "field_map": [
+    "docs/project/V2_HOME_DATA_CONTRACT.json",
+    "docs/project/METRIC_SEMANTIC_RECONCILIATION_V1.json",
+    "lib/v2/home/v2-home-adapter.ts"
+  ],
+  "decision_questions": [
+    "What evidence-backed ECS condition closes SSH before authentication?",
+    "Does the minimum reversible recovery restore three consecutive BatchMode connections without weakening host security?",
+    "Does the exact validated commit deploy without changing legacy V1 or overstating visual acceptance?"
+  ],
+  "validation_plan": [
+    "Read-only out-of-band system, SSH, resource, firewall, and security-control diagnosis",
+    "Configuration backup before any edit, sshd -t before reload, and three rate-limited external BatchMode checks",
+    "Exact git-archive deployment with rollback point, remote build, PM2, Nginx, and port checks",
+    "Legacy V1 route regression plus public V2 Home real-data, restore, interaction, responsive, console, network, and screenshot checks"
+  ],
+  "archive_target": "docs/project/tasks/ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1",
+  "deliverable_status": "in_progress"
+}

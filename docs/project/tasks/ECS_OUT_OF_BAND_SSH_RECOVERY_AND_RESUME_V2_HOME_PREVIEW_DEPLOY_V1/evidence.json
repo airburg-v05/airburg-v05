@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1",
+  "recordedAt": "2026-07-15T18:48:55+08:00",
+  "status": "BLOCKED_PENDING_OUT_OF_BAND_DIAGNOSIS",
+  "proposalAudit": {
+    "overall": "ACCEPTED_WITH_FIVE_EXECUTION_CORRECTIONS",
+    "correct": [
+      "Use a trusted out-of-band Alibaba Cloud channel before touching SSH configuration",
+      "Require evidence-backed minimum reversible repair and preserve all existing host protections",
+      "Require three rate-limited BatchMode passes before deployment",
+      "Deploy only the already validated runtime commit and protect legacy V1",
+      "Keep visual and human acceptance false until explicit user review"
+    ],
+    "corrections": [
+      "Do not infer MaxStartups or any other root cause from Connection closed alone",
+      "Treat ssh-keyscan as listener and banner evidence only, not authentication evidence",
+      "Update previewDeployed only after deployment and public regression, not after SSH recovery or HTTP 200 alone",
+      "Create SSH configuration backup after obtaining a trusted command channel and immediately before any edit",
+      "Discover the instance's actual Cloud Assistant, Workbench, and VNC capabilities instead of assuming a generic Session Manager product name"
+    ]
+  },
+  "initialFacts": {
+    "branch": "feature/saas-ui-v2-shell",
+    "branchHead": "388a57c6f2ece2416e5f921a69317e258f3c208c",
+    "upstream": "origin/feature/saas-ui-v2-shell",
+    "ahead": 0,
+    "behind": 0,
+    "workingTree": "clean",
+    "deployCandidateCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
+    "deployArchiveSha256": "8790c30cadcc7579cfdfe205d70e1e383b1e30ead30dd67045fdda5d9e2747b8",
+    "publicV2Home": 404,
+    "remoteMutationFromPriorTask": false
+  },
+  "gatekeeper": {
+    "manifest": "docs/project/tasks/ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1/gate-manifest.json",
+    "status": "PASS"
+  },
+  "sensitiveScanV2": {
+    "status": "PASS",
+    "hardBlockCount": 0,
+    "needsReviewCount": 0,
+    "realSecretFindings": 0,
+    "realSampleFindings": 0,
+    "forbiddenPathFindings": 0
+  },
+  "outOfBandConnection": {
+    "status": "NOT_STARTED",
+    "method": null,
+    "consoleAuthenticationRequired": null
+  },
+  "sshRootCauseReport": {
+    "status": "UNCONFIRMED",
+    "rootCause": null,
+    "supportingEvidence": [],
+    "rejectedHypotheses": [],
+    "minimalFix": null,
+    "rollbackPlan": null
+  },
+  "sshRecovery": {
+    "configurationBackup": null,
+    "modifiedSystemFiles": [],
+    "wholeInstanceRebooted": false,
+    "batchModeStatus": "BLOCKED",
+    "consecutivePasses": 0
+  },
+  "deployment": {
+    "status": "NOT_STARTED",
+    "deploymentCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0"
+  },
+  "publicRegression": {
+    "status": "NOT_STARTED",
+    "screenshotManifest": null
+  },
+  "stateBoundary": {
+    "previewDeployed": false,
+    "visualAccepted": false,
+    "humanAccepted": false,
+    "visualReviewStatus": "PENDING_HUMAN_REVIEW",
+    "humanReviewRequired": true
+  }
+}

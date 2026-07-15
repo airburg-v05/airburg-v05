@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1",
+  "status": "AUTHORIZED_BLOCKED_ON_SSH",
+  "taskMeaning": "Use an authenticated Alibaba Cloud out-of-band channel to establish the evidence-backed SSH root cause, apply only the minimum reversible recovery, restore BatchMode, and resume the public V2 Home preview deployment from the already validated runtime commit.",
+  "baselineCommit": "388a57c6f2ece2416e5f921a69317e258f3c208c",
+  "deployCandidateCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
+  "activeBranch": "feature/saas-ui-v2-shell",
+  "authorized": true,
+  "authorizedAt": "2026-07-15T18:48:55+08:00",
+  "allowedActions": [
+    "Read current SSOT, blocker evidence, Git facts, SSH client configuration, and existing deployment evidence",
+    "Use an existing authenticated Alibaba Cloud console session through Cloud Assistant or Session Manager, Workbench, or VNC",
+    "Run read-only ECS operating-system, SSH, resource, firewall, security-agent, and log diagnosis",
+    "Back up SSH configuration immediately before an evidence-backed configuration edit",
+    "Apply one minimum reversible SSH recovery, validate with sshd -t, and reload or restart only the SSH service",
+    "Run three rate-limited external BatchMode tests",
+    "Create an exact git-archive deployment package from the validated pushed runtime commit",
+    "Create a remote rollback point, deploy, run npm ci and build, and validate PM2, Nginx, and port boundaries",
+    "Run public legacy V1 and V2 route, real-data browser, persistence, interaction, responsive, console, network, and screenshot regression",
+    "Update task evidence, handoff, current-task, PROJECT_SSOT, and derived state only after the corresponding gates pass",
+    "Create and ordinarily push governance-only evidence commits"
+  ],
+  "forbiddenActions": [
+    "Guess the SSH root cause from Connection closed alone",
+    "Bypass Alibaba Cloud login, MFA, QR confirmation, CAPTCHA, or operating-system authentication",
+    "Reset the root login credential or reboot the ECS without separate user authorization",
+    "Enable credential-free login or public root credential login",
+    "Permanently disable firewall, SELinux, AppArmor, Fail2ban, sshguard, or Alibaba Cloud host protection",
+    "Open SSH permanently to all sources as the recovery method or set extreme MaxStartups values",
+    "Modify or expose SSH private keys, login secrets, authorized_keys, source IP lists, or sensitive logs",
+    "Modify business code, ETL, BI formulas, Target formulas, persistence schema, dependencies, or package manifests",
+    "Replace legacy /home, open public port 3000, deploy other V2 pages as data-bound, or upload real samples to the server",
+    "Use force push, merge, rebase, or claim VISUAL_ACCEPTED, HUMAN_ACCEPTED, or whole-product PUBLIC_ALIGNED"
+  ],
+  "requiredEvidence": [
+    "Gate manifest PASS and GPT proposal audit with corrections",
+    "Authenticated out-of-band connection method or exact console-auth blocker",
+    "Read-only ECS system snapshot and SSH root-cause report with rejected hypotheses",
+    "Backup path and safe configuration diff for any SSH edit",
+    "sshd -t, active SSH service, port 22 listener, server banner, completed key authentication, and three consecutive BatchMode passes",
+    "Exact pushed deployment commit, git-archive digest, file inventory, and forbidden-file count",
+    "Rollback identity, remote npm ci/build, PM2, Nginx, loopback port, and public-port evidence",
+    "Legacy V1 seven-route and V2 nine-route public checks",
+    "Public browser-only real 18-file reconciliation, restore, duplicate import, interaction, responsive, console, network, safety, and screenshot evidence"
+  ],
+  "recoveryCriteria": {
+    "rootCauseEvidenceRequired": true,
+    "sshdConfigTestRequired": true,
+    "serverBannerRequired": true,
+    "batchModeAuthenticationRequired": true,
+    "consecutiveExternalPasses": 3,
+    "minimumSecondsBetweenTests": 5,
+    "wholeInstanceRebootAllowed": false
+  },
+  "deployCriteria": {
+    "deploymentCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
+    "sourceType": "git_archive",
+    "requirePushedCommit": true,
+    "requireCleanWorkingTree": true,
+    "requireRollbackPoint": true,
+    "requireLegacyV1Protection": true,
+    "requirePublicRealDataRegression": true,
+    "requireHumanReviewAfterDeployment": true
+  },
+  "rollbackCriteria": [
+    "Remote npm ci or build fails",
+    "PM2 is offline, Nginx is inactive or invalid, or public port 3000 becomes reachable",
+    "Any legacy V1 core route or upload flow regresses",
+    "/v2/home has a critical route or asset failure",
+    "Public real-data reconciliation, persistence, or duplicate-import idempotence fails",
+    "Sensitive data is exposed or the deployed source cannot be proven"
+  ],
+  "gitPolicy": {
+    "remote": "origin",
+    "branch": "feature/saas-ui-v2-shell",
+    "ordinaryPushAllowed": true,
+    "docsOnlyCommitAllowed": true,
+    "forcePushAllowed": false,
+    "mergeAllowed": false,
+    "rebaseAllowed": false,
+    "requireBehindZero": true,
+    "requireCleanWorkingTreeBeforeDeploy": true
+  },
+  "deployPolicy": {
+    "hostAlias": "airburg-tmall-v1",
+    "publicIp": "123.57.49.121",
+    "sshUser": "root",
+    "remoteAppDirectory": "/opt/airburg/ecommerce-platform-optimized",
+    "pm2App": "airburg-tmall-v1",
+    "realSamplesBrowserOnly": true,
+    "publicPort3000Allowed": false,
+    "legacyHomeReplacementAllowed": false
+  }
+}
