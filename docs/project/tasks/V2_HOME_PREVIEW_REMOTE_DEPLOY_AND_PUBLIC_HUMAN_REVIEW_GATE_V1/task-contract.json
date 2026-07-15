@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
   "taskId": "V2_HOME_PREVIEW_REMOTE_DEPLOY_AND_PUBLIC_HUMAN_REVIEW_GATE_V1",
-  "status": "PRE_DEPLOY_AUDIT",
+  "status": "READY_TO_PUSH",
   "taskMeaning": "Deploy /v2/home, which already has DATA_BOUND and LOCAL_E2E_PASS evidence, as a public preview for user visual review while preserving legacy V1 as the frozen fallback and keeping every other V2 route a static shell.",
   "baselineCommit": "803f7c19ec1c6a1affdcd6623f67b6f2de97b8bc",
   "activeBranch": "feature/saas-ui-v2-shell",

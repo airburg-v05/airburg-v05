@@ -1,8 +1,8 @@
 {
   "schemaVersion": "1.0.0",
   "taskId": "V2_HOME_PREVIEW_REMOTE_DEPLOY_AND_PUBLIC_HUMAN_REVIEW_GATE_V1",
-  "recordedAt": "2026-07-15T08:44:17+08:00",
-  "status": "PRE_DEPLOY_AUDIT",
+  "recordedAt": "2026-07-15T08:52:28+08:00",
+  "status": "READY_TO_PUSH",
   "actualCodexModel": "UNKNOWN_NOT_EXPOSED_BY_RUNTIME",
   "visionSupported": true,
   "browserPlaywrightSupported": false,
@@ -122,7 +122,94 @@
         "v2HomeRoutesAndBrowser": "validate-v2-home-real-data-vertical-slice-v1.ts and validate-v2-home-textual-reference-visual-rebase-and-minimalism-v2.ts",
         "debugContextPersistence": "validate-cross-page-debug-context-persistence-v1.ts"
       }
-    }
+    },
+    "currentSingleTrackGovernance": {
+      "validator": "validate-v2-home-autonomous-e2e-reconciliation-v1.ts",
+      "status": "PASS",
+      "checksPassed": 24,
+      "historicalEntryGateValidator": "EXECUTED_EXPECTED_STAGE_MISMATCH_RECLASSIFIED_NON_CURRENT"
+    },
+    "v1Pipeline": {
+      "status": "PASS",
+      "stableRange": "2026-06-26~2026-06-30",
+      "fullyStable": true,
+      "allAtOnceAndAppendConsistent": true,
+      "duplicateImportDoesNotDouble": true
+    },
+    "missingMetrics": {
+      "status": "PASS",
+      "refundFeeRatio": 0.13653417906540968,
+      "directTransactionShare": 0.6340086159245754
+    },
+    "afterSales": {
+      "status": "PASS",
+      "refundAmount": 29602.18,
+      "refundCount": 38
+    },
+    "targetRulesAndIsolation": {
+      "status": "PASS",
+      "runtimeDatasetHasTargetsField": false
+    },
+    "persistence": {
+      "runtimeDatasetAdapter": "PASS",
+      "debugContext": "PASS",
+      "targetDrafts": "PASS",
+      "localStorageWrites": false
+    },
+    "v2HomeRealDataBrowserE2E": {
+      "status": "PASS",
+      "manifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-round2-RLolKT/manifest.json",
+      "realFileCount": 18,
+      "importCounts": {
+        "success": 17,
+        "failed": 0,
+        "skipped": 1
+      },
+      "metricCount": 17,
+      "totals": {
+        "gmv": 125596,
+        "gsv": 85455.96,
+        "visitors": 143076,
+        "paidBuyers": 128,
+        "adSpend": 7625.95,
+        "clicks": 6692,
+        "refundAmount": 29602.18
+      },
+      "businessRange": {
+        "start": "2026-06-26",
+        "end": "2026-06-30"
+      },
+      "brandKeywordPaidShare": "--",
+      "geoSearchShareReused": false,
+      "refreshRestore": true,
+      "reopenRestore": true,
+      "duplicateImportDoesNotDouble": true,
+      "mobile390HorizontalOverflow": false,
+      "consoleBusinessErrors": 0,
+      "failedBusinessRequests": 0
+    },
+    "v2HomeTextualVisualGate": {
+      "status": "PASS",
+      "browserManifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-visual-v2-round3-final-4ZKuYB/manifest.json",
+      "gateManifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-textual-reference-gate-C5n1uP/manifest.json",
+      "visualAccepted": false,
+      "humanAccepted": false
+    },
+    "lint": {
+      "status": "PASS",
+      "errors": 0,
+      "existingWarnings": 1
+    },
+    "build": {
+      "status": "PASS",
+      "v2HomeRouteBuilt": true,
+      "legacyRoutesBuilt": true
+    },
+    "generatedNoise": {
+      "nextEnvClean": true,
+      "tsconfigBuildInfoTracked": false
+    },
+    "prePushWorkingTree": "clean"
   },
   "gitPush": {},
   "deployment": {},

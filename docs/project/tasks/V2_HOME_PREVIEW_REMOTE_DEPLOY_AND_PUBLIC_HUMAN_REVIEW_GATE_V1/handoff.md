@@ -3,7 +3,7 @@
 ## Current Gate
 
 - Task: `V2_HOME_PREVIEW_REMOTE_DEPLOY_AND_PUBLIC_HUMAN_REVIEW_GATE_V1`
-- State: `PRE_DEPLOY_AUDIT`
+- State: `READY_TO_PUSH`
 - Branch: `feature/saas-ui-v2-shell`
 - Initial HEAD: `803f7c19ec1c6a1affdcd6623f67b6f2de97b8bc`
 - Initial divergence: behind `0`, ahead `7`
@@ -32,3 +32,16 @@ The unpushed `8b69e46` commit touches `components/upload/v1/upload-page-v1-dashb
 ## Validation And Archive
 
 All audit, local, Git, deployment, public browser, real-data, screenshot, and rollback evidence is written to this task directory. Final state must keep `visualAccepted=false`, `humanAccepted=false`, and `visualReviewStatus=PENDING_HUMAN_REVIEW`.
+
+## Local Gate Result
+
+- Sensitive Scan V2: PASS; hard blocks, real secrets, real samples, and forbidden paths are all zero.
+- Current single-track/current-state validator: PASS (`24/24`).
+- Real 18-file browser E2E: PASS (`17 success / 0 failed / 1 safe skipped`).
+- Reconciled totals: GMV `125596`, GSV `85455.96`, visitors `143076`, paid buyers `128`, ad spend `7625.95`, clicks `6692`, refund `29602.18`.
+- Missing metrics: refund-fee ratio `13.65%`; direct transaction share `63.4%`.
+- Runtime, after-sales, target isolation, active-dataset persistence, debug-context persistence, and target-draft persistence: PASS.
+- Textual-reference visual automation: PASS, but human visual acceptance remains pending.
+- Lint: PASS with one existing warning. Build: PASS. Generated Git noise: none.
+
+The next action is an ordinary push of the clean branch, followed by a git-archive deployment from the exact pushed commit.
