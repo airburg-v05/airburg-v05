@@ -1,8 +1,8 @@
 {
   "schemaVersion": "1.0.0",
   "taskId": "V2_HOME_PREVIEW_REMOTE_DEPLOY_AND_PUBLIC_HUMAN_REVIEW_GATE_V1",
-  "recordedAt": "2026-07-15T08:52:28+08:00",
-  "status": "READY_TO_PUSH",
+  "recordedAt": "2026-07-15T09:05:04+08:00",
+  "status": "BLOCKED",
   "postPushAuditEnhancement": {
     "reason": "The deployment task requires a distinct 390px KPI-region screenshot in addition to the 390px full-page screenshot.",
     "scope": "Audit-only capture added to the existing real-data Browser E2E; no business logic, formula, persistence, package, or runtime behavior changed.",
@@ -220,10 +220,87 @@
     },
     "prePushWorkingTree": "clean"
   },
-  "gitPush": {},
-  "deployment": {},
-  "publicRegression": {},
+  "gitPush": {
+    "status": "PASS",
+    "executed": true,
+    "ordinaryPushOnly": true,
+    "forcePushExecuted": false,
+    "remote": "origin",
+    "branch": "feature/saas-ui-v2-shell",
+    "initialAheadBehind": {
+      "behind": 0,
+      "ahead": 7
+    },
+    "validatedRuntimeCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
+    "remoteHeadAtDeploymentGate": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
+    "postPushAheadBehind": {
+      "behind": 0,
+      "ahead": 0
+    },
+    "postPushWorkingTree": "clean"
+  },
+  "deploymentPackage": {
+    "status": "PASS",
+    "sourceType": "git_archive",
+    "sourceCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
+    "localExtractionDirectory": "/tmp/airburg-v2-home-deploy.AwYsSE",
+    "fileCount": 769,
+    "forbiddenFileCount": 0,
+    "archiveSha256": "8790c30cadcc7579cfdfe205d70e1e383b1e30ead30dd67045fdda5d9e2747b8"
+  },
+  "sshGate": {
+    "status": "BLOCKED",
+    "attemptCount": 13,
+    "tcpPort22Reachable": true,
+    "batchModePassed": false,
+    "failureStage": "PRE_AUTHENTICATION_SERVER_IDENTIFICATION",
+    "safeErrorSummary": "The server closed port 22 before SSH authentication and before any remote command ran.",
+    "explicitIdentityUsed": true,
+    "remoteCommandExecuted": false,
+    "remoteFilesystemChanged": false
+  },
+  "deployment": {
+    "status": "NOT_STARTED_BLOCKED_BY_SSH",
+    "deployed": false,
+    "remoteSyncExecuted": false,
+    "remoteNpmCiExecuted": false,
+    "remoteBuildExecuted": false,
+    "pm2RestartExecuted": false,
+    "nginxChanged": false,
+    "rollbackSnapshotCreated": false,
+    "rollbackRequired": false,
+    "rollbackReason": "No remote mutation occurred before the SSH gate failed."
+  },
+  "publicRegression": {
+    "status": "PREDEPLOY_HEALTH_ONLY",
+    "checkedAfterSshBlocker": true,
+    "legacyRoutes": {
+      "/home": 200,
+      "/series-board": 200,
+      "/store-board": 200,
+      "/product-board": 200,
+      "/upload": 200,
+      "/upload/history": 200,
+      "/upload/quality": 200
+    },
+    "v2Home": 404,
+    "publicPort3000Reachable": false,
+    "pm2Status": "NOT_VERIFIED_SSH_BLOCKED",
+    "nginxStatus": "NOT_VERIFIED_SSH_BLOCKED",
+    "publicReal18FileUpload": "NOT_RUN",
+    "activeDatasetRestore": "NOT_RUN",
+    "publicScreenshotManifest": null
+  },
+  "blocker": {
+    "category": "REMOTE_SSH_INFRASTRUCTURE",
+    "hardBlocker": true,
+    "summary": "SSH port 22 is reachable but the ECS closes the connection before sending a usable SSH server identification or accepting authentication.",
+    "unblockAction": "Use the Aliyun console Workbench or VNC to verify sshd service health, connection-rate or MaxStartups limits, host firewall and security controls, then restore SSH BatchMode access and rerun this deployment task from the validated runtime commit.",
+    "projectSsotAdvanced": false,
+    "currentTaskAdvanced": false
+  },
   "stateRecord": {
+    "previewDeployed": false,
     "visualAccepted": false,
     "humanAccepted": false,
     "visualReviewStatus": "PENDING_HUMAN_REVIEW",
