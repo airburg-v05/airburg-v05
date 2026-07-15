@@ -4,10 +4,10 @@
   "sourceDirectory": "scripts/private-audit",
   "totalValidators": 190,
   "countsByTier": {
-    "TIER_B_MODULE_REGRESSION": 99,
+    "TIER_B_MODULE_REGRESSION": 97,
     "TIER_D_LEGACY_OR_SUPERSEDED": 9,
-    "TIER_A_RELEASE_CRITICAL": 19,
-    "TIER_C_STAGE_ONLY": 63
+    "TIER_A_RELEASE_CRITICAL": 18,
+    "TIER_C_STAGE_ONLY": 66
   },
   "countsByValidationType": {
     "STATE_GOVERNANCE": 29,
@@ -74,15 +74,15 @@
       "file": "scripts/private-audit/validate-airburg-saas-ui-v2-full-local-workspace-v1.ts",
       "taskName": "AIRBURG_SAAS_UI_V2_FULL_LOCAL_WORKSPACE_V1",
       "track": "SAAS_UI_V2",
-      "tier": "TIER_B_MODULE_REGRESSION",
+      "tier": "TIER_C_STAGE_ONLY",
       "validationType": "SOURCE_STRUCTURE",
-      "current": true,
+      "current": false,
       "legacy": false,
-      "stageOnly": false,
+      "stageOnly": true,
       "requiresRealSamples": false,
       "requiresBrowser": false,
       "requiresHumanReview": false,
-      "notes": "Proves route/component static-shell structure only; cannot establish DATA_BOUND, LOCAL_E2E_PASS, VISUAL_ACCEPTED, or deployment."
+      "notes": "Historical static-shell stage validator retained for evidence; /v2/home has since advanced to DATA_BOUND + LOCAL_E2E_PASS, so this validator must not block the current preview gate."
     },
     {
       "file": "scripts/private-audit/validate-board-top-control-compact-toolbar-sync-from-home-v1.ts",
@@ -298,15 +298,15 @@
       "file": "scripts/private-audit/validate-cross-page-debug-context-persistence-fix-v1.ts",
       "taskName": "CROSS_PAGE_DEBUG_CONTEXT_PERSISTENCE_FIX_V1",
       "track": "TMALL_V1_DATA_AND_FALLBACK",
-      "tier": "TIER_B_MODULE_REGRESSION",
+      "tier": "TIER_C_STAGE_ONLY",
       "validationType": "REAL_LOGIC_DATA",
-      "current": true,
+      "current": false,
       "legacy": false,
-      "stageOnly": false,
+      "stageOnly": true,
       "requiresRealSamples": false,
       "requiresBrowser": false,
       "requiresHumanReview": false,
-      "notes": "Current module regression evidence; cannot substitute release-critical, browser, or human gates."
+      "notes": "Historical fix-task validator retained for evidence; its frozen product-option UI assertion was superseded, while validate-cross-page-debug-context-persistence-v1.ts remains the current persistence capability gate."
     },
     {
       "file": "scripts/private-audit/validate-cross-page-debug-context-persistence-v1.ts",
@@ -760,15 +760,15 @@
       "file": "scripts/private-audit/validate-project-single-track-reconciliation-and-v2-entry-gate-v1.ts",
       "taskName": "PROJECT_SINGLE_TRACK_RECONCILIATION_AND_V2_ENTRY_GATE_V1",
       "track": "PROJECT_GOVERNANCE",
-      "tier": "TIER_A_RELEASE_CRITICAL",
+      "tier": "TIER_C_STAGE_ONLY",
       "validationType": "STATE_GOVERNANCE",
-      "current": true,
+      "current": false,
       "legacy": false,
-      "stageOnly": false,
+      "stageOnly": true,
       "requiresRealSamples": false,
       "requiresBrowser": false,
       "requiresHumanReview": false,
-      "notes": "Current release-critical gate; use with the independent validation layers required by its contract."
+      "notes": "Historical entry-gate validator retained for evidence; it correctly expects STATIC_SHELL + READY_FOR_USER_AUTHORIZATION and is superseded by validate-v2-home-autonomous-e2e-reconciliation-v1.ts after the authorized vertical slice advanced."
     },
     {
       "file": "scripts/private-audit/validate-raw-data-safe-inspection-center.ts",

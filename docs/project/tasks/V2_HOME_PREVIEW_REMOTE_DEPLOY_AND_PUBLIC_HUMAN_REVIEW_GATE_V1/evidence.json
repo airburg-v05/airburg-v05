@@ -109,6 +109,19 @@
       "realSecretFindings": 0,
       "realSampleFindings": 0,
       "forbiddenPathFindings": 0
+    },
+    "validatorApplicabilityAudit": {
+      "historicalStageFailuresObserved": [
+        "validate-project-single-track-reconciliation-and-v2-entry-gate-v1.ts expects the pre-implementation STATIC_SHELL entry state",
+        "validate-airburg-saas-ui-v2-full-local-workspace-v1.ts expects the pre-binding static Home shell",
+        "validate-cross-page-debug-context-persistence-fix-v1.ts contains a superseded product-option UI assertion"
+      ],
+      "action": "Reclassified the three frozen stage validators as non-current TIER_C_STAGE_ONLY evidence without changing their code or weakening their checks.",
+      "currentSuccessors": {
+        "singleTrackAndCurrentState": "validate-v2-home-autonomous-e2e-reconciliation-v1.ts",
+        "v2HomeRoutesAndBrowser": "validate-v2-home-real-data-vertical-slice-v1.ts and validate-v2-home-textual-reference-visual-rebase-and-minimalism-v2.ts",
+        "debugContextPersistence": "validate-cross-page-debug-context-persistence-v1.ts"
+      }
     }
   },
   "gitPush": {},
