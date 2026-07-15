@@ -26,6 +26,12 @@ The GPT plan is directionally correct. Execution uses five corrections: no specu
 - SSH: port 22 reachable, connection closed before authentication; root cause unconfirmed
 - `/v2/home`: not deployed
 
+## Console Authentication Blocker
+
+Both the Codex in-app browser and the user's Chrome reached the official Alibaba Cloud login page. No authenticated ECS console session is currently available, so instance identity, Cloud Assistant support, Workbench, VNC, and the SSH root cause cannot yet be inspected.
+
+Required user action: complete Alibaba Cloud console sign-in and any MFA or QR confirmation in the retained Chrome login tab, leave the ECS console open, and tell Codex that authentication is complete. Do not enter credentials into this task or send them in chat.
+
 ## Unsafe Shortcuts Avoided
 
 No guessed login secret, authentication bypass, broad firewall relaxation, extreme SSH limit change, whole-instance reboot, dirty-worktree deployment, sample upload to ECS, legacy `/home` replacement, or automatic visual acceptance.

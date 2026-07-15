@@ -156,7 +156,7 @@
     "status": "BLOCKED",
     "contract": "docs/project/tasks/ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1/task-contract.json"
   },
-  "nextAuthorizedEntryGate": "ECS_SSH_RECOVERY",
+  "nextAuthorizedEntryGate": "ALIYUN_CONSOLE_AUTHENTICATION",
   "deprecatedArtifacts": [
     {
       "path": "lib/state/system-state.ts",

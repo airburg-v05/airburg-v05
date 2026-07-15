@@ -1,8 +1,8 @@
 {
   "schemaVersion": "1.0.0",
   "taskId": "ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1",
-  "recordedAt": "2026-07-15T18:48:55+08:00",
-  "status": "BLOCKED_PENDING_OUT_OF_BAND_DIAGNOSIS",
+  "recordedAt": "2026-07-15T18:53:03+08:00",
+  "status": "BLOCKED_ALIYUN_CONSOLE_AUTH_REQUIRED",
   "proposalAudit": {
     "overall": "ACCEPTED_WITH_FIVE_EXECUTION_CORRECTIONS",
     "correct": [
@@ -45,9 +45,23 @@
     "forbiddenPathFindings": 0
   },
   "outOfBandConnection": {
-    "status": "NOT_STARTED",
+    "status": "BLOCKED_BEFORE_INSTANCE_ACCESS",
     "method": null,
-    "consoleAuthenticationRequired": null
+    "sessionManagerUsed": false,
+    "vncUsed": false,
+    "workbenchUsed": false,
+    "consoleAuthenticationRequired": true,
+    "browserChecks": [
+      {
+        "browser": "Codex in-app browser",
+        "result": "OFFICIAL_ALIYUN_LOGIN_PAGE"
+      },
+      {
+        "browser": "User Chrome",
+        "result": "OFFICIAL_ALIYUN_LOGIN_PAGE"
+      }
+    ],
+    "requiredUserAction": "Complete Alibaba Cloud console sign-in and any MFA or QR confirmation in the retained Chrome login tab, leave the ECS console open, and report that authentication is complete."
   },
   "sshRootCauseReport": {
     "status": "UNCONFIRMED",
@@ -56,6 +70,13 @@
     "rejectedHypotheses": [],
     "minimalFix": null,
     "rollbackPlan": null
+  },
+  "authenticationBoundary": {
+    "bypassAttempted": false,
+    "credentialReadOrStored": false,
+    "serverCommandExecuted": false,
+    "serverConfigurationChanged": false,
+    "wholeInstanceRebooted": false
   },
   "sshRecovery": {
     "configurationBackup": null,

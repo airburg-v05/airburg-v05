@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
   "taskId": "ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1",
-  "status": "AUTHORIZED_BLOCKED_ON_SSH",
+  "status": "BLOCKED_ALIYUN_CONSOLE_AUTH_REQUIRED",
   "taskMeaning": "Use an authenticated Alibaba Cloud out-of-band channel to establish the evidence-backed SSH root cause, apply only the minimum reversible recovery, restore BatchMode, and resume the public V2 Home preview deployment from the already validated runtime commit.",
   "baselineCommit": "388a57c6f2ece2416e5f921a69317e258f3c208c",
   "deployCandidateCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
