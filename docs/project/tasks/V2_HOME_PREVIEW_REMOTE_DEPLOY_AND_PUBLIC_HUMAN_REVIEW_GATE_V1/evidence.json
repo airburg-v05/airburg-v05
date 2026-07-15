@@ -3,6 +3,15 @@
   "taskId": "V2_HOME_PREVIEW_REMOTE_DEPLOY_AND_PUBLIC_HUMAN_REVIEW_GATE_V1",
   "recordedAt": "2026-07-15T08:52:28+08:00",
   "status": "READY_TO_PUSH",
+  "postPushAuditEnhancement": {
+    "reason": "The deployment task requires a distinct 390px KPI-region screenshot in addition to the 390px full-page screenshot.",
+    "scope": "Audit-only capture added to the existing real-data Browser E2E; no business logic, formula, persistence, package, or runtime behavior changed.",
+    "requiresRepushBeforeDeploy": true,
+    "localBrowserE2EStatus": "PASS",
+    "screenshotCount": 10,
+    "mobileKpiScreenshotPresent": true,
+    "manifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-round2-CQ5GDA/manifest.json"
+  },
   "actualCodexModel": "UNKNOWN_NOT_EXPOSED_BY_RUNTIME",
   "visionSupported": true,
   "browserPlaywrightSupported": false,
@@ -158,7 +167,7 @@
     },
     "v2HomeRealDataBrowserE2E": {
       "status": "PASS",
-      "manifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-round2-RLolKT/manifest.json",
+      "manifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-round2-CQ5GDA/manifest.json",
       "realFileCount": 18,
       "importCounts": {
         "success": 17,

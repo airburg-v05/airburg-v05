@@ -29,6 +29,7 @@
     "docs/project/VALIDATOR_REGISTRY.json",
     "docs/project/V2_HOME_DATA_FOUNDATION_DECISION.md",
     "docs/PROJECT_CURRENT_STATE.md",
+    "scripts/private-audit/validate-v2-home-real-data-vertical-slice-v1.ts",
     "scripts/private-audit/validate-v2-home-preview-remote-deploy-record-v1.ts"
   ],
   "forbiddenActions": [

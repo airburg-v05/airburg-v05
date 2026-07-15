@@ -964,6 +964,8 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
     check("mobileOperatingMenuStaysInViewport", operatingMenuInViewport);
     await click(client, "[data-testid='v2-home-operating-settings'] > summary");
     await capture(client, `${VISUAL_ROUND}-home-390`, "390x900");
+    await scrollTo(client, "[data-testid='v2-home-metric-grid']");
+    await capture(client, `${VISUAL_ROUND}-kpi-grid-390`, "390x900", false);
     const mobileLayout: BrowserResult["mobileLayout"] = {
       ...mobileBaseLayout,
       metricDialogInViewport,
