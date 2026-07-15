@@ -23,6 +23,7 @@
     "LOCAL_E2E_PASS": "The data-bound local workflow passed browser interaction and restore checks.",
     "VISUAL_ACCEPTED": "The full page was compared against its approved references and accepted visually.",
     "PREVIEW_DEPLOYED": "A preview environment was deployed from an identified clean commit and is reachable.",
+    "PENDING_HUMAN_REVIEW": "The declared preview is deployed and automated gates passed, but visual and human acceptance remain false until explicit review.",
     "HUMAN_ACCEPTED": "A human explicitly accepted the declared scope after reviewing the real artifact.",
     "PUBLIC_ALIGNED": "The public runtime is healthy and its deployed commit, schema, and UI version are identified and aligned.",
     "PUBLIC_HEALTH_PASS_COMMIT_UNKNOWN": "The public runtime is healthy, but the deployed Git commit cannot be proven.",
@@ -39,7 +40,7 @@
     "localRoutesValidated": true,
     "localE2EPassed": true,
     "visualAccepted": false,
-    "previewDeployed": false,
+    "previewDeployed": true,
     "humanAccepted": false,
     "nextGate": "V2_HOME_HUMAN_VISUAL_REVIEW"
   }

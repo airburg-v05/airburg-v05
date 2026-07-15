@@ -5,25 +5,29 @@
 ## 单轨统一状态
 
 - 唯一 active product track：`SAAS_UI_V2`。
-- SaaS UI V2 当前状态：`HOME_VERTICAL_SLICE_LOCAL_E2E_PASS`。
-- `/v2/home` 已通过一个 canonical adapter 绑定真实安全聚合数据；其余 8 个 `/v2/*` 路由仍为 `STATIC_SHELL`。
-- `dataBound = true` 仅表示 `/v2/home`；`visualAccepted = false`、`previewDeployed = false`、`humanAccepted = false`。
+- SaaS UI V2 当前状态：`/v2/home = PREVIEW_DEPLOYED_PENDING_HUMAN_REVIEW`；整个 V2 不得据此称为完成。
+- `/v2/home` 已通过一个 canonical adapter 绑定真实安全聚合数据并部署公网预览；其余 8 个 `/v2/*` 路由仅为 `STATIC_SHELL_ROUTE_200`。
+- `dataBound = true` 仅表示 `/v2/home`；`visualAccepted = false`、`previewDeployed = true`、`humanAccepted = false`。
 - 冻结 fallback：天猫 V1 公网内测版。
 - 可信数据基础：天猫 V1 ETL / Runtime / BI 真实 18 文件链路。
 - foundation candidate：V0.5 domain / repository / persistence；当前只部分 route-bound。
-- 当前任务：`V2_HOME_REAL_DATA_VERTICAL_SLICE_V1`，状态 `LOCAL_E2E_PASS`。
+- 当前任务：`ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1`，状态 `PENDING_HUMAN_REVIEW`。
 - 下一唯一入口：`V2_HOME_HUMAN_VISUAL_REVIEW`；自动化截图不能替代用户视觉确认。
-- 当前任务和证据：`docs/project/current-task.json`、`docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/task-contract.json`。
+- 当前任务和证据：`docs/project/current-task.json`、`docs/project/tasks/ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1/`。
 
-## SaaS UI V2 本地纵向切片
+## SaaS UI V2 Home 公网预览
 
 - 当前分支：`feature/saas-ui-v2-shell`。
-- 最新已验证可执行实现：`8b69e46fee532379be5f5f0b2ef4fe44c87a87aa`。
-- `/v2/home`：17 个指标、真实 18 文件、目标 overlay、重点系列、MTD / DLY、时间范围、刷新恢复、1440px / 390px 浏览器 E2E 均通过。
+- 最新已验证业务实现：`8b69e46fee532379be5f5f0b2ef4fe44c87a87aa`。
+- 公网部署源：精确 `git archive` commit `a293db7e75b14853d68d9711e131cc348d2f3ea0`。
+- 公网预览：[V2 Home](http://123.57.49.121/v2/home)。
+- `/v2/home`：17 个指标、真实 18 文件、目标 overlay、重点系列、MTD / DLY、时间范围、刷新恢复、关闭重开恢复、1440px / 390px 浏览器 E2E 均通过。
 - 真实经营对账保持不变：GMV `125596`、GSV `85455.96`、访客 `143076`、支付买家 `128`、推广花费 `7625.95`、点击 `6692`、退款金额 `29602.18`。
 - 上传结果与数据健康摘要已对齐：`17 success / 0 failed / 1 safe skipped`，首页安全跳过计数为 `1`。
 - 跨月范围不会误套用单个月份目标；回到单月后目标正常恢复。
-- 当前仅本地提交，未 push、未部署；不得据此声称公网 V2 已更新。
+- 公网回归为 `17 success / 0 failed / 1 safe skipped`，重复导入不翻倍，console 业务错误与 failed business requests 均为 `0`。
+- `visualAccepted=false`、`humanAccepted=false`、`visualReviewStatus=PENDING_HUMAN_REVIEW`；当前只等待用户打开公网 `/v2/home` 核查。
+- 其它八个 V2 路由虽然 HTTP 200，但仍是静态壳，不得称为 data-bound 或已验收。
 
 ## Legacy V1 fallback 定位
 
@@ -97,12 +101,12 @@
 
 ## 当前已知风险
 
-1. SaaS UI V2 只有 `/v2/home` 完成真实数据纵向切片，其余 8 个 V2 路由仍是静态壳，不能称为完整工作区或预览部署。
+1. SaaS UI V2 只有 `/v2/home` 完成真实数据纵向切片并部署预览，其余 8 个 V2 路由仍是静态壳，不能把整个 V2 称为完整工作区或已验收产品。
 2. 页面问题一 + 二小范围 UI 修正已完成人工核查；后续新页面问题仍必须先进入 `PAGE_PROBLEM_MATRIX_V2.md`，不能凭记忆直接修 UI。
 3. UI 层存在 IA / KPI / Target 多语义叠加风险，后续 UI 任务必须先读取 `docs/UI_BASELINE_LOCK_V2.md`，并判定是否会误改 BI 或 Target。
-4. 当前 V2 Home 本地提交尚未 push；GitHub 远端和 ECS 不会自动获得这些更新。
+4. `/v2/home` 已公网预览部署，但尚未通过用户视觉核查；禁止把自动化截图结果写成视觉验收。
 5. 长上下文中容易混淆 validator PASS 与产品成熟度；后续必须使用 `docs/project/STATUS_MODEL_V1.json`。
-6. ECS 当前健康，但部署目录无 Git 元数据，部署 commit 无法证明；状态只能是 `PUBLIC_HEALTH_PASS_COMMIT_UNKNOWN`。
+6. ECS 当前健康，部署源由本地精确 `git archive` SHA 和 release path 证明；服务器 release 目录仍不包含 `.git`，这是预期安全边界。
 
 ## 当前禁止事项
 
@@ -124,7 +128,7 @@
 
 1. 先读取 `docs/project/PROJECT_SSOT.json`。
 2. 再读取 `docs/project/current-task.json` 和其中指定的 task contract。
-3. `/v2/home` 真实数据纵向切片已经 `LOCAL_E2E_PASS`；下一步是用户视觉核查，核查前不得记录 `VISUAL_ACCEPTED`。
+3. `/v2/home` 已 `PREVIEW_DEPLOYED` 且公网真实数据 E2E PASS；下一步是用户视觉核查，核查前不得记录 `VISUAL_ACCEPTED` 或 `HUMAN_ACCEPTED`。
 4. Legacy V1 UI 任务仍需读取 `docs/UI_BASELINE_LOCK_V2.md` 和 `PAGE_PROBLEM_MATRIX_V2.md`；V2 不继承其具体布局锁。
 5. 如果跨层，拆任务，不允许在页面里自行拼接或重算数据。
 6. 每次完成后使用 `STATUS_MODEL_V1.json` 中的精确状态，不能只写一个 `PASS`。

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "updatedAt": "2026-07-15T18:48:55+08:00",
+  "updatedAt": "2026-07-15T19:27:34+08:00",
   "authority": {
     "machineReadableSource": "docs/project/PROJECT_SSOT.json",
     "derivedHumanReadableSources": [
@@ -19,9 +19,9 @@
   },
   "repository": {
     "activeBranch": "feature/saas-ui-v2-shell",
-    "headCommit": "8b69e46fee532379be5f5f0b2ef4fe44c87a87aa",
-    "headCommitMeaning": "latest locally validated executable V2 Home implementation; the following governance-only reconciliation commit is intentionally not self-referenced",
-    "workingTree": "LOCAL_VALIDATED_COMMITS_NOT_PUSHED",
+    "headCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
+    "headCommitMeaning": "exact validated runtime deployment source; subsequent governance-only evidence commits are intentionally not self-referenced",
+    "workingTree": "CLEAN_AFTER_GOVERNANCE_RECORD",
     "remote": "origin=https://github.com/airburg-v05/airburg-v05.git",
     "upstream": "origin/feature/saas-ui-v2-shell",
     "fallbackComparisonRef": "origin/feature/g6-preview",
@@ -119,15 +119,19 @@
       "localRoutesValidated": true,
       "localE2EPassed": true,
       "visualAccepted": false,
-      "previewDeployed": false,
+      "previewDeployed": true,
       "humanAccepted": false,
-      "publicV2RouteStatus": "HTTP_404_AT_EVIDENCE_CAPTURE",
+      "publicV2RouteStatus": "V2_HOME_PREVIEW_HTTP_200_OTHER_EIGHT_STATIC_SHELL_ROUTE_200",
+      "deploymentCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
+      "deployedAt": "2026-07-15T19:15:51+08:00",
+      "publicPreviewRoute": "http://123.57.49.121/v2/home",
+      "publicScreenshotManifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-public-preview-20260715-17qerU/manifest.json",
       "businessImportsFound": 1,
       "controlsInteractive": true,
       "visualReviewStatus": "PENDING_HUMAN_REVIEW",
       "humanReviewRequired": true,
       "homeVerticalSlice": {
-        "status": "LOCAL_E2E_PASS",
+        "status": "PREVIEW_DEPLOYED_PENDING_HUMAN_REVIEW",
         "adapter": "lib/v2/home/v2-home-adapter.ts",
         "latestImplementationCommit": "8b69e46fee532379be5f5f0b2ef4fe44c87a87aa",
         "metricCount": 17,
@@ -136,7 +140,11 @@
         "multiMonthTargetPolicy": "NO_SINGLE_MONTH_TARGET_REUSE",
         "browserConsoleBusinessErrors": 0,
         "mobile390PageWideOverflow": false,
-        "evidence": "docs/project/tasks/V2_HOME_REAL_DATA_VERTICAL_SLICE_V1/evidence.json"
+        "publicE2EPassed": true,
+        "previewDeployed": true,
+        "visualAccepted": false,
+        "humanAccepted": false,
+        "evidence": "docs/project/tasks/ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1/evidence.json"
       }
     }
   },
@@ -153,10 +161,10 @@
   "validatorRegistry": "docs/project/VALIDATOR_REGISTRY.json",
   "currentTask": {
     "taskId": "ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1",
-    "status": "BLOCKED",
+    "status": "PENDING_HUMAN_REVIEW",
     "contract": "docs/project/tasks/ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1/task-contract.json"
   },
-  "nextAuthorizedEntryGate": "ALIYUN_CONSOLE_AUTHENTICATION",
+  "nextAuthorizedEntryGate": "V2_HOME_HUMAN_VISUAL_REVIEW",
   "deprecatedArtifacts": [
     {
       "path": "lib/state/system-state.ts",
@@ -171,7 +179,7 @@
   "forbiddenClaims": [
     "All SaaS UI V2 routes are DATA_BOUND because the /v2/home vertical slice passed",
     "/v2/home is VISUAL_ACCEPTED or HUMAN_ACCEPTED before explicit user full-page review",
-    "SaaS UI V2 is a complete product, release candidate, preview deployment, or human-accepted UI",
+    "SaaS UI V2 as a whole is a complete product, release candidate, or human-accepted UI because only /v2/home is preview-deployed",
     "V0.5 is the unique data foundation without the documented compatibility-adapter decision",
     "lib/state/system-state.ts is the project SSOT",
     "Tmall V1 public is PUBLIC_ALIGNED while the deployed Git commit is unknown",

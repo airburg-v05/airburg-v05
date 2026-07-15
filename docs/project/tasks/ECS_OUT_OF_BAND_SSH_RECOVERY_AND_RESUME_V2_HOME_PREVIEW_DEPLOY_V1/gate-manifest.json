@@ -21,5 +21,5 @@
     "Legacy V1 route regression plus public V2 Home real-data, restore, interaction, responsive, console, network, and screenshot checks"
   ],
   "archive_target": "docs/project/tasks/ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1",
-  "deliverable_status": "blocked"
+  "deliverable_status": "complete"
 }

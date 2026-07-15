@@ -289,9 +289,9 @@
       "persistenceSource": "active runtime dataset snapshot, debug context, and target drafts behind one V2 adapter",
       "isStaticShell": false,
       "isDataBound": true,
-      "isPublic": false,
-      "status": "LOCAL_E2E_PASS",
-      "notes": "Real 18-file local browser E2E passed. Visual and human acceptance remain false; no V2 deployment or Stage B push."
+      "isPublic": true,
+      "status": "PREVIEW_DEPLOYED",
+      "notes": "Public real 18-file browser E2E passed from deployment commit a293db7e75b14853d68d9711e131cc348d2f3ea0. Visual and human acceptance remain false."
     },
     {
       "route": "/v2/series-board",
@@ -301,8 +301,8 @@
       "uiVersion": "SaaS UI V2",
       "actualDataImports": [], "domainImports": [], "targetImports": [], "persistenceImports": [],
       "currentDataSource": "components/saas-v2/data.ts static constants", "targetSource": "NONE", "persistenceSource": "NONE",
-      "isStaticShell": true, "isDataBound": false, "isPublic": false, "status": "STATIC_SHELL",
-      "notes": "Do not data-bind before /v2/home vertical slice is accepted."
+      "isStaticShell": true, "isDataBound": false, "isPublic": true, "status": "STATIC_SHELL_ROUTE_200",
+      "notes": "Public route smoke passed; still a static shell and not data-bound. Do not data-bind before /v2/home human review."
     },
     {
       "route": "/v2/store-board",
@@ -312,8 +312,8 @@
       "uiVersion": "SaaS UI V2",
       "actualDataImports": [], "domainImports": [], "targetImports": [], "persistenceImports": [],
       "currentDataSource": "components/saas-v2/data.ts static constants", "targetSource": "NONE", "persistenceSource": "NONE",
-      "isStaticShell": true, "isDataBound": false, "isPublic": false, "status": "STATIC_SHELL",
-      "notes": "Do not data-bind before /v2/home vertical slice is accepted."
+      "isStaticShell": true, "isDataBound": false, "isPublic": true, "status": "STATIC_SHELL_ROUTE_200",
+      "notes": "Public route smoke passed; still a static shell and not data-bound. Do not data-bind before /v2/home human review."
     },
     {
       "route": "/v2/product-board",
@@ -323,8 +323,8 @@
       "uiVersion": "SaaS UI V2",
       "actualDataImports": [], "domainImports": [], "targetImports": [], "persistenceImports": [],
       "currentDataSource": "components/saas-v2/data.ts static constants", "targetSource": "NONE", "persistenceSource": "NONE",
-      "isStaticShell": true, "isDataBound": false, "isPublic": false, "status": "STATIC_SHELL",
-      "notes": "Do not data-bind before /v2/home vertical slice is accepted."
+      "isStaticShell": true, "isDataBound": false, "isPublic": true, "status": "STATIC_SHELL_ROUTE_200",
+      "notes": "Public route smoke passed; still a static shell and not data-bound. Do not data-bind before /v2/home human review."
     },
     {
       "route": "/v2/upload",
@@ -334,8 +334,8 @@
       "uiVersion": "SaaS UI V2",
       "actualDataImports": [], "domainImports": [], "targetImports": [], "persistenceImports": [],
       "currentDataSource": "components/saas-v2/data.ts static constants", "targetSource": "NONE", "persistenceSource": "NONE",
-      "isStaticShell": true, "isDataBound": false, "isPublic": false, "status": "STATIC_SHELL",
-      "notes": "No browser upload workflow is bound."
+      "isStaticShell": true, "isDataBound": false, "isPublic": true, "status": "STATIC_SHELL_ROUTE_200",
+      "notes": "Public route smoke passed; no browser upload workflow is bound."
     },
     {
       "route": "/v2/data-health",
@@ -345,8 +345,8 @@
       "uiVersion": "SaaS UI V2",
       "actualDataImports": [], "domainImports": [], "targetImports": [], "persistenceImports": [],
       "currentDataSource": "components/saas-v2/data.ts static constants", "targetSource": "NONE", "persistenceSource": "NONE",
-      "isStaticShell": true, "isDataBound": false, "isPublic": false, "status": "STATIC_SHELL",
-      "notes": "No runtime snapshot or V0.5 data-quality view model is bound."
+      "isStaticShell": true, "isDataBound": false, "isPublic": true, "status": "STATIC_SHELL_ROUTE_200",
+      "notes": "Public route smoke passed; no runtime snapshot or V0.5 data-quality view model is bound."
     },
     {
       "route": "/v2/target-center",
@@ -356,8 +356,8 @@
       "uiVersion": "SaaS UI V2",
       "actualDataImports": [], "domainImports": [], "targetImports": [], "persistenceImports": [],
       "currentDataSource": "components/saas-v2/data.ts static constants", "targetSource": "static target rows only", "persistenceSource": "NONE",
-      "isStaticShell": true, "isDataBound": false, "isPublic": false, "status": "STATIC_SHELL",
-      "notes": "No target view model or drafts are bound."
+      "isStaticShell": true, "isDataBound": false, "isPublic": true, "status": "STATIC_SHELL_ROUTE_200",
+      "notes": "Public route smoke passed; no target view model or drafts are bound."
     },
     {
       "route": "/v2/search-assets",
@@ -367,8 +367,8 @@
       "uiVersion": "SaaS UI V2",
       "actualDataImports": [], "domainImports": [], "targetImports": [], "persistenceImports": [],
       "currentDataSource": "components/saas-v2/data.ts static constants", "targetSource": "NONE", "persistenceSource": "NONE",
-      "isStaticShell": true, "isDataBound": false, "isPublic": false, "status": "STATIC_SHELL",
-      "notes": "No brand/center semantic resolver is bound."
+      "isStaticShell": true, "isDataBound": false, "isPublic": true, "status": "STATIC_SHELL_ROUTE_200",
+      "notes": "Public route smoke passed; no brand/center semantic resolver is bound."
     },
     {
       "route": "/v2/exclusion-rules",
@@ -378,8 +378,8 @@
       "uiVersion": "SaaS UI V2",
       "actualDataImports": [], "domainImports": [], "targetImports": [], "persistenceImports": [],
       "currentDataSource": "components/saas-v2/data.ts static constants", "targetSource": "NONE", "persistenceSource": "NONE",
-      "isStaticShell": true, "isDataBound": false, "isPublic": false, "status": "STATIC_SHELL",
-      "notes": "No real rule repository is bound."
+      "isStaticShell": true, "isDataBound": false, "isPublic": true, "status": "STATIC_SHELL_ROUTE_200",
+      "notes": "Public route smoke passed; no real rule repository is bound."
     }
   ],
   "v05NotRouteBoundEntrypoints": [

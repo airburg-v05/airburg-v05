@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
   "taskId": "ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1",
-  "status": "BLOCKED",
+  "status": "PENDING_HUMAN_REVIEW",
   "activeProductTrack": "SAAS_UI_V2",
   "contract": "docs/project/tasks/ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1/task-contract.json",
   "preparedAt": "2026-07-15T18:48:55+08:00",
@@ -10,8 +10,12 @@
   "executionStarted": true,
   "authorizedAt": "2026-07-15T18:48:55+08:00",
   "startedAt": "2026-07-15T18:48:55+08:00",
+  "completedAt": "2026-07-15T19:27:34+08:00",
   "latestImplementationCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
-  "nextGate": "ALIYUN_CONSOLE_AUTHENTICATION",
-  "blocker": "Alibaba Cloud console authentication is required before out-of-band ECS diagnosis",
+  "businessImplementationCommit": "8b69e46fee532379be5f5f0b2ef4fe44c87a87aa",
+  "deploymentCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
+  "previewRoute": "http://123.57.49.121/v2/home",
+  "nextGate": "V2_HOME_HUMAN_VISUAL_REVIEW",
+  "blocker": null,
   "previousTask": "V2_HOME_PREVIEW_REMOTE_DEPLOY_AND_PUBLIC_HUMAN_REVIEW_GATE_V1"
 }

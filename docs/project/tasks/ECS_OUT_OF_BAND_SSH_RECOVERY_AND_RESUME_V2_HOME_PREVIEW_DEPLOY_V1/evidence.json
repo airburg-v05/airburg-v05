@@ -1,8 +1,8 @@
 {
   "schemaVersion": "1.0.0",
   "taskId": "ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1",
-  "recordedAt": "2026-07-15T18:53:03+08:00",
-  "status": "BLOCKED_ALIYUN_CONSOLE_AUTH_REQUIRED",
+  "recordedAt": "2026-07-15T19:27:34+08:00",
+  "status": "PASS",
   "proposalAudit": {
     "overall": "ACCEPTED_WITH_FIVE_EXECUTION_CORRECTIONS",
     "correct": [
@@ -16,88 +16,223 @@
       "Do not infer MaxStartups or any other root cause from Connection closed alone",
       "Treat ssh-keyscan as listener and banner evidence only, not authentication evidence",
       "Update previewDeployed only after deployment and public regression, not after SSH recovery or HTTP 200 alone",
-      "Create SSH configuration backup after obtaining a trusted command channel and immediately before any edit",
+      "Create an SSH configuration backup only immediately before an evidence-backed edit; no backup is necessary when no SSH file is changed",
       "Discover the instance's actual Cloud Assistant, Workbench, and VNC capabilities instead of assuming a generic Session Manager product name"
     ]
   },
   "initialFacts": {
     "branch": "feature/saas-ui-v2-shell",
-    "branchHead": "388a57c6f2ece2416e5f921a69317e258f3c208c",
+    "initialHead": "388a57c6f2ece2416e5f921a69317e258f3c208c",
+    "resumeHead": "e46a412203c501b7eeb983de9264c10dcc364572",
     "upstream": "origin/feature/saas-ui-v2-shell",
     "ahead": 0,
     "behind": 0,
     "workingTree": "clean",
-    "deployCandidateCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
+    "deploymentCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
     "deployArchiveSha256": "8790c30cadcc7579cfdfe205d70e1e383b1e30ead30dd67045fdda5d9e2747b8",
-    "publicV2Home": 404,
+    "publicV2HomeBeforeRecovery": 404,
     "remoteMutationFromPriorTask": false
   },
   "gatekeeper": {
     "manifest": "docs/project/tasks/ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1/gate-manifest.json",
     "status": "PASS"
   },
-  "sensitiveScanV2": {
-    "status": "PASS",
-    "hardBlockCount": 0,
-    "needsReviewCount": 0,
-    "realSecretFindings": 0,
-    "realSampleFindings": 0,
-    "forbiddenPathFindings": 0
-  },
   "outOfBandConnection": {
-    "status": "BLOCKED_BEFORE_INSTANCE_ACCESS",
-    "method": null,
+    "status": "PASS",
+    "instanceId": "i-2ze2arwqe6zubsf1ogco",
+    "region": "cn-beijing",
+    "operatingSystem": "Ubuntu 22.04.5 LTS",
+    "method": "ALIYUN_WORKBENCH",
+    "sessionManagerAvailable": false,
     "sessionManagerUsed": false,
+    "vncAvailable": true,
     "vncUsed": false,
-    "workbenchUsed": false,
-    "consoleAuthenticationRequired": true,
-    "browserChecks": [
-      {
-        "browser": "Codex in-app browser",
-        "result": "OFFICIAL_ALIYUN_LOGIN_PAGE"
-      },
-      {
-        "browser": "User Chrome",
-        "result": "OFFICIAL_ALIYUN_LOGIN_PAGE"
-      }
-    ],
-    "requiredUserAction": "Complete Alibaba Cloud console sign-in and any MFA or QR confirmation in the retained Chrome login tab, leave the ECS console open, and report that authentication is complete."
+    "workbenchAvailable": true,
+    "workbenchUsed": true,
+    "consoleAuthenticationRequired": false,
+    "additionalUserActionRequired": false
+  },
+  "systemSnapshot": {
+    "status": "PASS",
+    "uptimeSummary": "approximately 14 days",
+    "loadSummary": "normal",
+    "rootDiskUsedPercent": 12,
+    "rootInodeUsedPercent": 5,
+    "availableMemoryGiB": 2.7,
+    "failedSystemdUnits": 0,
+    "sshService": "active",
+    "sshPort22Listener": true,
+    "sshdConfigTest": "PASS",
+    "hostFirewall": "UNCHANGED_UFW_INACTIVE_NO_BLOCKING_RULE",
+    "securityAgents": "FAIL2BAN_SSHGUARD_CROWDSEC_INACTIVE_OR_NOT_INSTALLED",
+    "resourceExhaustion": false
   },
   "sshRootCauseReport": {
-    "status": "UNCONFIRMED",
-    "rootCause": null,
-    "supportingEvidence": [],
-    "rejectedHypotheses": [],
-    "minimalFix": null,
-    "rollbackPlan": null
+    "status": "CONFIRMED",
+    "rootCause": "ALIYUN_SECURITY_CONTROL",
+    "supportingEvidence": [
+      "Workbench obtained a root shell while direct external SSH stopped before the server banner",
+      "sshd was active, configuration-valid, and listening on port 22 with zero startup saturation",
+      "The controlled external attempt did not reach sshd logs",
+      "The security group allowed SSH only from an obsolete single-address source plus the temporary Workbench management range",
+      "A direct HTTP probe correlated with the Nginx access log established the current legitimate management source without recording it in Git",
+      "After adding one priority-one TCP 22 rule for that current single-address source, three external BatchMode sessions completed"
+    ],
+    "rejectedHypotheses": [
+      "SSH_SERVICE_INACTIVE",
+      "SSH_CONFIG_INVALID",
+      "SSH_NOT_LISTENING_ON_EXPECTED_ADDRESS",
+      "MAXSTARTUPS_OR_UNAUTHENTICATED_CONNECTION_LIMIT",
+      "PER_SOURCE_CONNECTION_LIMIT",
+      "FAIL2BAN_OR_SSHGUARD_BLOCK",
+      "HOST_FIREWALL_OR_TCP_WRAPPER_BLOCK",
+      "RESOURCE_EXHAUSTION",
+      "DISK_OR_INODE_EXHAUSTION",
+      "SOCKET_ACTIVATION_CONFLICT"
+    ],
+    "minimalFix": "Added one Alibaba Cloud security-group ingress rule limited to TCP 22 and the currently verified legitimate management source as a single-address rule.",
+    "rollbackPlan": "Remove only the newly added single-address security-group ingress rule after replacing it with the next approved management-access policy. No guest operating-system rollback is required."
   },
   "authenticationBoundary": {
     "bypassAttempted": false,
     "credentialReadOrStored": false,
-    "serverCommandExecuted": false,
+    "serverCommandExecuted": true,
     "serverConfigurationChanged": false,
+    "cloudSecurityGroupChanged": true,
     "wholeInstanceRebooted": false
   },
   "sshRecovery": {
-    "configurationBackup": null,
+    "status": "PASS",
+    "configurationBackup": "NOT_APPLICABLE_NO_SSH_CONFIGURATION_EDIT",
     "modifiedSystemFiles": [],
+    "sshServiceReloadedOrRestarted": false,
     "wholeInstanceRebooted": false,
-    "batchModeStatus": "BLOCKED",
-    "consecutivePasses": 0
+    "sshdConfigTest": "PASS",
+    "sshServiceStatus": "active",
+    "port22Listening": true,
+    "maxStartupsBefore": "50:30:200",
+    "maxStartupsAfter": "50:30:200",
+    "fail2banOrSshguardAction": "NONE",
+    "hostFirewallAction": "NONE",
+    "batchModeStatus": "PASS",
+    "serverBannerReceived": true,
+    "authenticationCompleted": true,
+    "minimumSecondsBetweenTests": 5,
+    "consecutivePasses": 3
   },
   "deployment": {
-    "status": "NOT_STARTED",
-    "deploymentCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0"
+    "status": "PASS",
+    "deployedAt": "2026-07-15T19:15:51+08:00",
+    "deploymentCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
+    "branchHeadAtEvidencePreparation": "e46a412203c501b7eeb983de9264c10dcc364572",
+    "sourceType": "git_archive",
+    "packageFileCount": 769,
+    "packageEntryCount": 902,
+    "packageSha256": "8790c30cadcc7579cfdfe205d70e1e383b1e30ead30dd67045fdda5d9e2747b8",
+    "forbiddenFileCount": 0,
+    "remoteReleasePath": "/opt/airburg/releases/v2-home-a293db7-20260715T1915",
+    "rollbackCodePath": "/opt/airburg/ecommerce-platform-optimized",
+    "rollbackPm2Snapshot": "/opt/airburg/rollback/airburg-tmall-v1-pre-v2-home-20260715T1915.pm2.json",
+    "remoteNpmCi": "PASS",
+    "remoteBuild": "PASS",
+    "pm2": "online",
+    "pm2RestartCount": 0,
+    "nginx": "active_and_config_valid",
+    "nodePortBinding": "127.0.0.1:3000",
+    "publicPort3000Reachable": false,
+    "realSamplesCopiedToServer": false,
+    "rollbackExecuted": false
   },
   "publicRegression": {
-    "status": "NOT_STARTED",
-    "screenshotManifest": null
+    "status": "PASS",
+    "legacyV1Routes": {
+      "/home": 200,
+      "/series-board": 200,
+      "/store-board": 200,
+      "/product-board": 200,
+      "/upload": 200,
+      "/upload/history": 200,
+      "/upload/quality": 200
+    },
+    "legacyHomeRedirected": false,
+    "legacyBrowserRuntime": {
+      "status": "PASS_WITH_STALE_SOURCE_ASSERTION_NOTED",
+      "manifest": "/tmp/airburg-page-problem-v1-v2-layout-UiOAtr/manifest.json",
+      "screenshotCount": 14,
+      "consoleBusinessErrors": 0,
+      "mobile390HorizontalOverflow": false,
+      "forbiddenOrSensitiveText": false,
+      "staleAssertion": "The historical validator process exited nonzero only because it expects the literal source marker productId-first; all seven public-route browser checks passed."
+    },
+    "v2Routes": {
+      "/v2/home": 200,
+      "/v2/series-board": 200,
+      "/v2/store-board": 200,
+      "/v2/product-board": 200,
+      "/v2/upload": 200,
+      "/v2/data-health": 200,
+      "/v2/target-center": 200,
+      "/v2/search-assets": 200,
+      "/v2/exclusion-rules": 200
+    },
+    "v2HomeRedirectedToLegacy": false,
+    "otherV2RouteStatus": "STATIC_SHELL_ROUTE_200",
+    "realFileCount": 18,
+    "importCounts": {
+      "success": 17,
+      "failed": 0,
+      "skipped": 1
+    },
+    "activeDatasetSaved": true,
+    "refreshRestore": true,
+    "reopenRestore": true,
+    "duplicateImportDoesNotDouble": true,
+    "totals": {
+      "gmv": 125596,
+      "gsv": 85455.96,
+      "visitors": 143076,
+      "paidBuyers": 128,
+      "adSpend": 7625.95,
+      "clicks": 6692,
+      "refundAmount": 29602.18
+    },
+    "adSpendRateAfterRefund": "13.65%",
+    "directTransactionShare": "63.4%",
+    "brandKeywordPaidShare": "--",
+    "geoSearchShareReused": false,
+    "runtimeDatasetHasTargets": false,
+    "businessDateRange": {
+      "start": "2026-06-26",
+      "end": "2026-06-30"
+    },
+    "afterSalesDateExtendsBusinessRange": false,
+    "mtdAndDly": "PASS",
+    "dualAndSingleMetricModes": "PASS",
+    "comparisonDoesNotFabricate": true,
+    "chartTooltip": "PASS",
+    "desktop1440": "PASS",
+    "mobile390": "PASS",
+    "mobile390HorizontalOverflow": false,
+    "mobile390TextOverlap": false,
+    "consoleBusinessErrors": 0,
+    "failedBusinessRequests": 0,
+    "invalidNumericText": false,
+    "sensitiveText": false,
+    "screenshotCount": 10,
+    "screenshotManifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-public-preview-20260715-17qerU/manifest.json"
   },
   "stateBoundary": {
-    "previewDeployed": false,
+    "activeProductTrack": "SAAS_UI_V2",
+    "dataBoundRoutes": [
+      "/v2/home"
+    ],
+    "remainingStaticShellRouteCount": 8,
+    "previewDeployed": true,
     "visualAccepted": false,
     "humanAccepted": false,
     "visualReviewStatus": "PENDING_HUMAN_REVIEW",
-    "humanReviewRequired": true
+    "humanReviewRequired": true,
+    "otherV2DevelopmentAuthorized": false,
+    "legacyHomeReplacementAuthorized": false
   }
 }
