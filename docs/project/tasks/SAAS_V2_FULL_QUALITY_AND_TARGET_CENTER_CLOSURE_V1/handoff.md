@@ -1,18 +1,11 @@
 # Handoff
 
-Status: `XLSX_0203_LOCAL_PASS_DEPLOY_PENDING`
+Status: `PENDING_POST_DEPLOY_OWNER_REVIEW`
 
-Current next action for Codex:
-
-- Create the xlsx0203 implementation commit.
-- Deploy it through the existing Aliyun release flow.
-- Run public 18+4+target, ten-route, cleanup, and service/log checks.
-- Then update SSOT/result/validation/handoff to `PENDING_POST_DEPLOY_OWNER_REVIEW`.
-
-Current next action for 宗骥 after deployment:
+Current next action for 宗骥:
 
 - Open `http://123.57.49.121/v2/home` and complete final post-deploy owner review.
-- Owner acceptance is not auto-written.
+- Deployment and automated regression are complete; owner acceptance is not auto-written.
 
 Xlsx0203 local status:
 
@@ -29,12 +22,12 @@ Xlsx0203 local status:
   - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-local-xlsx0203-final-2026-07-20/`
   - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-xlsx0203-final-2026-07-20/`
 
-Previous deployed implementation before xlsx0203 continuation:
+Final deployed implementation:
 
-- Commit: `bf76c174d12f1bc27b7ca73b9603df4cfa1c8f4a`
-- Release: `/opt/airburg/releases/saas-v2-home-boundary-bf76c17-20260720T232834`
+- Commit: `4812e4db4d3398c2767c6e5449344ec1434f18f0`
+- Release: `/opt/airburg/releases/saas-v2-xlsx0203-4812e4d-20260720T234805`
 - Active app path: `/opt/airburg/ecommerce-platform-optimized`
-- Rollback material: `/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-home-boundary-bf76c17-20260720T232834.pm2.json`
+- Rollback material: `/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-xlsx0203-4812e4d-20260720T234805.pm2.json`
 - Public URL: `http://123.57.49.121/v2/home`
 
 Local evidence already captured:
@@ -56,6 +49,12 @@ Public root-cause note:
 
 Public evidence:
 
+- Public xlsx0203 upload18 + target-center:
+  - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-public-xlsx0203-4812e4d-2026-07-20/`
+  - Result: `18 success / 0 failed / 0 skipped`; four-source target foundation import PASS; target save/readback/pause/reactivate PASS.
+- Public xlsx0203 ten-route + cleanup:
+  - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-public-xlsx0203-4812e4d-2026-07-20/summary.json`
+  - Result: ten V2 routes desktop/mobile PASS; console/network business errors 0; final `/v2/home` empty state and CTA `/v2/upload`.
 - Public upload18 + target-center:
   - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-public-bf76c17-2026-07-20/`
   - Result: `18 success / 0 failed / 0 skipped`; four-source target foundation import PASS; target save/readback/pause/reactivate PASS.

@@ -1,6 +1,6 @@
 # Issue Matrix
 
-Status: `IMPLEMENTATION_AUDIT_IN_PROGRESS`
+Status: `PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW`
 
 | ID | Route / Layer | Issue / finding | Evidence | Treatment |
 |---|---|---|---|---|

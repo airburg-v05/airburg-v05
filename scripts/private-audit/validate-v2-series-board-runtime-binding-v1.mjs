@@ -57,7 +57,7 @@ const checks = [
   {
     name: "currentTaskPointerMovedToFullQualityClosureTask",
     pass: currentTask.taskId === "SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1" &&
-      currentTask.status === "IN_PROGRESS" &&
+      ["IN_PROGRESS", "PENDING_POST_DEPLOY_OWNER_REVIEW"].includes(currentTask.status) &&
       ssot.currentTask.taskId === currentTask.taskId,
   },
   {
