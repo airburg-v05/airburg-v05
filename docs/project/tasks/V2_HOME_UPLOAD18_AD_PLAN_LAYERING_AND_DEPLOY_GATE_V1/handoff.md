@@ -22,3 +22,10 @@ Do not redo locally unless the code changes again:
 - `npm run build`: already PASS
 
 Deployment and rollback evidence are recorded in `DEPLOYMENT_EVIDENCE_20260720.json`.
+
+Dispatch rule for later turns:
+
+- Treat the 2026-07-20 deployed-state handoff, `docs/project/PROJECT_SSOT.json`, and `docs/project/current-task.json` as the current authority.
+- Do not redispatch SSH recovery for this slice.
+- Do not redispatch upload18 deployment for this slice.
+- Reopen either route only if newer direct owner instruction or newer contradictory runtime evidence appears.
