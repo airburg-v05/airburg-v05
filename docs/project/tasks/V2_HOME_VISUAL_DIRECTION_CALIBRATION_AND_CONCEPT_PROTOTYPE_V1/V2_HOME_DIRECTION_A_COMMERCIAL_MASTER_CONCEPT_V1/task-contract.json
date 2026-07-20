@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "V2_HOME_DIRECTION_A_COMMERCIAL_MASTER_CONCEPT_V1",
+  "parentTaskId": "V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1",
+  "status": "HUMAN_VISUAL_REJECTED_REBASE_REQUIRED",
+  "activeProductTrack": "SAAS_UI_V2",
+  "selectedDirection": "A_CLEAR_OPERATING_CENTER",
+  "selectionMeaning": "The owner considers A promising and requests a materially more commercial, premium, top-tier aesthetic direction. This authorizes concept refinement, not production implementation.",
+  "taskMeaning": "Turn the promising A hierarchy into a coherent commercial visual master with a distinctive Airburg product identity and measurable implementation gates.",
+  "allowedPaths": [
+    "docs/project/tasks/V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1/V2_HOME_DIRECTION_A_COMMERCIAL_MASTER_CONCEPT_V1/**",
+    "/Users/zongji/.codex/visualizations/2026/07/16/019f6a64-ea9f-7032-aa77-0bbd20978567/**"
+  ],
+  "allowedActions": [
+    "Read current /v2/home contracts, implementation, screenshots, and prior direction evidence",
+    "Use current first-party design references to extract commercial-grade principles without copying another brand",
+    "Create one A+ high-fidelity desktop/mobile concept and a commercial design specification",
+    "Create validation evidence and a human-review handoff"
+  ],
+  "forbiddenActions": [
+    "Modify app/**, components/**, lib/**, types/**, package files, deployment configuration, or production routes",
+    "Modify formulas, metric semantics, persistence, ETL, or real-data adapters",
+    "Change current PROJECT_SSOT.json or current-task.json",
+    "Deploy, push, redirect /home, or bind another V2 route",
+    "Set visualAccepted=true, humanAccepted=true, or COMMERCIAL_READY without explicit human review and production validation"
+  ],
+  "requiredOutputs": [
+    "gate-manifest.json",
+    "task-contract.json",
+    "plan.md",
+    "benchmark-notes.md",
+    "commercial-master-spec.json",
+    "validation-report.md",
+    "handoff.md",
+    "desktop and 390px screenshot evidence"
+  ],
+  "acceptance": {
+    "oneCoherentAPlusMaster": true,
+    "all17KpiPresent": true,
+    "missingMetricDisplay": "--",
+    "desktopReviewRequired": true,
+    "mobile390ReviewRequired": true,
+    "maskedDemoOnly": true,
+    "commercialDesignScorecardRequired": true,
+    "humanApprovalRequiredBeforeImplementation": true
+  },
+  "acceptanceState": {
+    "conceptSelectedForRefinement": true,
+    "conceptPrototypeValidationPassed": true,
+    "technicalValidationPassed": false,
+    "commercialReady": false,
+    "implementationAuthorized": false,
+    "visualAccepted": false,
+    "humanAccepted": false,
+    "aPlusV1HumanAccepted": false,
+    "humanFeedback": "Still not visually attractive enough; requires a full aesthetic rebase rather than incremental polish.",
+    "visualReviewStatus": "HUMAN_VISUAL_REJECTED_REBASE_REQUIRED",
+    "humanReviewRequired": true
+  },
+  "stopRule": "Stop after delivering and validating the A+ commercial master concept. Do not modify production UI until the owner explicitly approves the master and authorizes a separate implementation task."
+}

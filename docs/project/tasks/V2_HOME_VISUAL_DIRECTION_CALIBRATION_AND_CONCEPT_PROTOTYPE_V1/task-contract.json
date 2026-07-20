@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1",
+  "parentTaskId": "ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1",
+  "status": "DRAFT_ONLY_AWAITING_HUMAN_DIRECTION_SELECTION",
+  "activeProductTrack": "SAAS_UI_V2",
+  "authorized": true,
+  "authorizedAt": "2026-07-16T00:00:00+08:00",
+  "authorizationMeaning": "The owner approved starting the previously proposed next step: aesthetic calibration and three-direction concept prototyping before production UI changes.",
+  "taskMeaning": "Create three comparable visual directions for the data-bound /v2/home route so the owner can select an aesthetic and information hierarchy with evidence before any implementation task is opened.",
+  "problemIds": [
+    "PVM2-001",
+    "PVM2-002",
+    "PVM2-004"
+  ],
+  "allowedPaths": [
+    "docs/project/tasks/V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1/**",
+    "/Users/zongji/.codex/visualizations/2026/07/16/019f6a64-ea9f-7032-aa77-0bbd20978567/**"
+  ],
+  "allowedActions": [
+    "Read current SSOT, contracts, current /v2/home visual implementation, and visual-review evidence",
+    "Create three concept-only visual directions with the same masked demonstration dataset",
+    "Create desktop and mobile review views, design tokens, annotations, screenshots, and a human-selection handoff",
+    "Use Figma only after a target file is available and only as a design carrier; Figma output cannot satisfy human acceptance"
+  ],
+  "forbiddenActions": [
+    "Modify app/**, components/**, lib/**, types/**, package files, deployment configuration, or any production route",
+    "Modify ETL, BI formulas, Target formulas, persistence schema, search semantics, or metric definitions",
+    "Hide, remove, rename, or synthesize any of the 17 KPI",
+    "Expose raw rows, source filenames, order identifiers, refund identifiers, phone, address, logistics details, buyer notes, or merchant remarks",
+    "Deploy, push, replace legacy /home, or bind another V2 route",
+    "Set visualAccepted=true or humanAccepted=true without explicit owner selection and full-page review"
+  ],
+  "requiredOutputs": [
+    "gate-manifest.json",
+    "plan.md",
+    "execution-log.md",
+    "concept-directions.json",
+    "validation-report.md",
+    "handoff.md",
+    "permanent desktop and mobile screenshot evidence"
+  ],
+  "acceptance": {
+    "conceptCount": 3,
+    "desktopReviewRequired": true,
+    "mobileReviewRequired": true,
+    "all17KpiPresent": true,
+    "missingMetricDisplay": "--",
+    "maskedDemoOnly": true,
+    "humanDirectionSelectionRequired": true
+  },
+  "result": {
+    "conceptPackageStatus": "PASS_FOR_HUMAN_DIRECTION_REVIEW_ONLY",
+    "technicalValidationPassed": true,
+    "appCodeModified": false,
+    "implementationAuthorized": false,
+    "visualAccepted": false,
+    "humanAccepted": false,
+    "visualReviewStatus": "PENDING_HUMAN_DIRECTION_SELECTION",
+    "humanReviewRequired": true
+  },
+  "stopRule": "Stop after delivering the three-direction review package. Do not touch production UI until the owner chooses a direction and separately authorizes implementation."
+}

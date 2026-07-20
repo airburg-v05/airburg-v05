@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0.0",
+  "packetId": "v2-home-human-review-refresh-2026-07-16",
+  "project": "ecommerce-platform-optimized",
+  "activeTrack": "SAAS_UI_V2",
+  "currentTask": "ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1",
+  "nextGate": "V2_HOME_HUMAN_VISUAL_REVIEW",
+  "status": "PACKET_READY_PENDING_OWNER_REVIEW",
+  "observedShellClock": "2026-07-17T07:20:01+0800",
+  "remotePreview": {
+    "url": "http://123.57.49.121/v2/home",
+    "title": "Airburg Data · 电商数据分析平台",
+    "reachability": "REACHABLE",
+    "visibleState": "EMPTY_STATE_REQUIRES_UPLOAD",
+    "visibleText": [
+      "当前尚未导入经营数据",
+      "请从统一批量上传入口导入天猫经营文件；页面仅读取安全聚合数据，不展示原始行或敏感明细。",
+      "前往上传"
+    ],
+    "browserWarningsOrErrors": [],
+    "screenshots": [
+      {
+        "kind": "desktop",
+        "path": "screenshots/remote-preview-desktop.png",
+        "pixelWidth": 1280,
+        "pixelHeight": 720,
+        "bytes": 31401,
+        "sha256": "87b6a43234690c2a105cac0d1532d43ca9f7033f721ce36069b68bd9b3c127f5",
+        "capturedAt": "2026-07-17T07:19:54+0800"
+      },
+      {
+        "kind": "mobile",
+        "requestedViewport": {
+          "width": 390,
+          "height": 844
+        },
+        "path": "screenshots/remote-preview-mobile-390.png",
+        "pixelWidth": 390,
+        "pixelHeight": 844,
+        "bytes": 21162,
+        "sha256": "cddca01f98081cb2644edc5bcb078c0a693a99714d897e93c15c66bedf1e9f52",
+        "capturedAt": "2026-07-17T07:19:54+0800"
+      }
+    ]
+  },
+  "localPreview": {
+    "url": "http://127.0.0.1:3010/v2/home",
+    "reachability": "UNREACHABLE",
+    "error": "ERR_CONNECTION_REFUSED"
+  },
+  "ownerReviewBoundary": {
+    "visualAccepted": false,
+    "humanAccepted": false,
+    "visualReviewStatus": "PENDING_HUMAN_REVIEW",
+    "humanReviewRequired": true,
+    "note": "This packet lowers review cost only for the current visible state. It does not close the human visual review gate."
+  },
+  "realDataPrecondition": {
+    "required": true,
+    "reason": "The current browser session has no active imported dataset for /v2/home.",
+    "action": "Upload data in the same browser session, then reopen /v2/home for a separate real-data review."
+  },
+  "conceptContext": {
+    "status": "OPTIONAL_REFERENCE_ONLY",
+    "sourceManifest": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1/screenshot-manifest.json",
+    "sourceDirections": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1/concept-directions.json"
+  }
+}

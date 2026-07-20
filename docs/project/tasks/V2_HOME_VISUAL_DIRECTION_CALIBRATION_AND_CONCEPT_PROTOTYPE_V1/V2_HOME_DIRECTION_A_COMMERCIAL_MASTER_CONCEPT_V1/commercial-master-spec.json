@@ -1,0 +1,277 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "V2_HOME_DIRECTION_A_COMMERCIAL_MASTER_CONCEPT_V1",
+  "status": "CONCEPT_REVIEW_READY_PENDING_HUMAN_APPROVAL",
+  "route": "/v2/home",
+  "master": {
+    "id": "A_PLUS_1_PORCELAIN_TITANIUM",
+    "chineseName": "瓷白钛影",
+    "englishName": "Porcelain Titanium",
+    "productLanguage": "Quiet Precision Commerce",
+    "brandStatement": "A precise operating system built by a premium air-product company for its own daily decisions.",
+    "keywords": [
+      "clear",
+      "precise",
+      "quiet",
+      "confident",
+      "restrained vitality"
+    ],
+    "antiPatterns": [
+      "generic blue SaaS",
+      "AI purple gradient",
+      "all-dark BI wall",
+      "glass card wall",
+      "fake technology glow",
+      "equal-weight metric wall",
+      "readability sacrificed for luxury"
+    ]
+  },
+  "evidenceBoundary": {
+    "datasetKind": "MASKED_DETERMINISTIC_DEMO",
+    "realBusinessEvidence": false,
+    "rawRowsIncluded": false,
+    "personalOrBuyerDataIncluded": false,
+    "visibleLabel": "MASKED DEMO · 非真实经营数据",
+    "missingMetricDisplay": "--",
+    "syntheticZeroAllowed": false
+  },
+  "informationArchitecture": {
+    "decisionQuestion": "本月经营结果是否接近目标，差距主要来自哪里？",
+    "featuredMetrics": [
+      "gmv",
+      "gsv",
+      "adRoi",
+      "adSpendRateAfterRefund"
+    ],
+    "trendQuestion": "本月 GMV 相对目标的推进节奏如何？",
+    "remainingGroups": [
+      {
+        "name": "成交与品牌",
+        "keys": [
+          "directTransactionShare",
+          "brandVisitors",
+          "brandPaidBuyers",
+          "brandKeywordPaidShare"
+        ]
+      },
+      {
+        "name": "转化与投放",
+        "keys": [
+          "averageOrderValue",
+          "conversionRate",
+          "adSpend",
+          "cpc"
+        ]
+      },
+      {
+        "name": "售后与履约",
+        "keys": [
+          "refundRate",
+          "shippedRefundRate",
+          "signedRefundRate",
+          "mtdTurnover",
+          "regionalFulfillmentRate"
+        ]
+      }
+    ],
+    "all17KpiRemainVisible": true,
+    "visualPriorityIsNotFormulaPriority": true,
+    "visualContractAmendmentRequiredBeforeImplementation": true
+  },
+  "metricContract": [
+    { "key": "gmv", "label": "GMV", "unit": "元" },
+    { "key": "gsv", "label": "GSV", "unit": "元" },
+    { "key": "adRoi", "label": "投入产出比", "unit": "倍" },
+    { "key": "adSpendRateAfterRefund", "label": "去退费比", "unit": "%" },
+    { "key": "directTransactionShare", "label": "直接成交占比", "unit": "%" },
+    { "key": "brandVisitors", "label": "品牌词访客", "unit": "人" },
+    { "key": "brandPaidBuyers", "label": "品牌词支付人数", "unit": "人" },
+    { "key": "brandKeywordPaidShare", "label": "品牌词支付占比", "unit": "%" },
+    { "key": "refundRate", "label": "退货率（总）", "unit": "%" },
+    { "key": "shippedRefundRate", "label": "发货退货率", "unit": "%" },
+    { "key": "signedRefundRate", "label": "已签收退货率", "unit": "%" },
+    { "key": "averageOrderValue", "label": "客单价", "unit": "元" },
+    { "key": "conversionRate", "label": "转化率", "unit": "%" },
+    { "key": "adSpend", "label": "推广花费", "unit": "元" },
+    { "key": "cpc", "label": "推广点击单价", "unit": "元" },
+    { "key": "mtdTurnover", "label": "MTD周转", "unit": "天" },
+    { "key": "regionalFulfillmentRate", "label": "同区履约率", "unit": "%" }
+  ],
+  "desktopComposition": {
+    "referenceWidth": 1440,
+    "grid": "12 columns with a 4px spacing base",
+    "primaryRegionsMaximum": 4,
+    "regions": [
+      "quiet product navigation and context bar",
+      "editorial GMV summary with three supporting featured metrics",
+      "dominant target-versus-actual trend with direct labels",
+      "complete three-group operating ledger plus data-health entry"
+    ],
+    "dominantVisualMinimumShare": "60% of analysis width",
+    "toolAreaMaximumHeight": 100
+  },
+  "mobileComposition": {
+    "primaryWidth": 390,
+    "additionalWidths": [
+      375,
+      360,
+      320
+    ],
+    "reflow": "single-column shell; compact range controls; GMV first; featured metrics in two columns; trend; all three KPI groups",
+    "all17KpiRemainVisible": true,
+    "pageHorizontalOverflowAllowed": false,
+    "internalTwoDimensionalChartOverflowAllowed": true,
+    "targetTouchSize": "44x44 CSS px",
+    "minimumWcagTargetSize": "24x24 CSS px"
+  },
+  "proposedProductionTokens": {
+    "note": "Proposal only. Tokens must be mapped to the production theme system and contrast-tested before implementation.",
+    "color": {
+      "canvas": "#F2F4F2",
+      "surface": "#FCFDFB",
+      "surfaceElevated": "#FFFFFF",
+      "ink": "#15201D",
+      "mutedInk": "#5C6864",
+      "titaniumRule": "#D7DDD9",
+      "airburgAction": "#0B6B62",
+      "airburgActionSoft": "#DDEBE7",
+      "targetSeries": "#7D8985",
+      "risk": "#A13A32",
+      "warning": "#856215"
+    },
+    "colorRatio": "85 neutral / 10 material / 5 brand",
+    "surfaceLevels": [
+      "canvas",
+      "stationary surface",
+      "temporary elevated layer"
+    ],
+    "radius": [
+      8,
+      12,
+      16
+    ],
+    "spacingBase": 4,
+    "fontRoles": [
+      "Chinese UI sans",
+      "tabular numeric sans"
+    ],
+    "weights": [
+      400,
+      500,
+      650
+    ],
+    "bodyMinimumPx": 13,
+    "ordinaryPanelShadowAllowed": false,
+    "glassSurfacesPerViewportMaximum": 1
+  },
+  "airburgSignature": {
+    "name": "air flow line",
+    "countPerViewport": 1,
+    "description": "A restrained 2px line links the selected featured KPI with the primary trend. It is the only decorative brand gesture.",
+    "loopingAnimationAllowed": false
+  },
+  "chartRules": {
+    "questionPerChart": 1,
+    "seriesMaximum": 2,
+    "actualLine": "solid",
+    "targetOrComparisonLine": "dashed",
+    "importantValuesDirectlyLabeled": true,
+    "axesAndUnitsRequired": true,
+    "missingPointsInterpolated": false,
+    "syntheticZeroAllowed": false,
+    "decorativeGaugeAllowed": false,
+    "pseudo3dAllowed": false
+  },
+  "interaction": {
+    "nativeControls": true,
+    "keyboardOperable": true,
+    "visibleFocusRequired": true,
+    "stateFeedbackMs": [
+      160,
+      220
+    ],
+    "panelTransitionMs": [
+      240,
+      320
+    ],
+    "prefersReducedMotionSupported": true,
+    "loopingOrDecorativeMotionAllowed": false,
+    "selectionUsesColorOnly": false
+  },
+  "requiredStates": [
+    "normal",
+    "empty",
+    "missing",
+    "pending integration",
+    "no source",
+    "read failure",
+    "long value",
+    "loading without layout shift",
+    "disabled",
+    "hover",
+    "focus",
+    "selected"
+  ],
+  "accessibilityGate": {
+    "target": "WCAG 2.2 AA",
+    "normalTextContrast": "4.5:1",
+    "largeTextContrast": "3:1",
+    "meaningfulGraphicAndControlContrast": "3:1",
+    "textResize": "200% without functional loss",
+    "keyboardAndFocusManualReviewRequired": true,
+    "chartTextAlternativeRequired": true,
+    "colorOnlyMeaningAllowed": false
+  },
+  "futurePerformanceGate": {
+    "appliesAfterImplementation": true,
+    "lcpSecondsMaximum": 2.5,
+    "inpMillisecondsMaximum": 200,
+    "clsMaximum": 0.1,
+    "fieldPercentile": 75,
+    "fieldPerformancePendingIfTrafficInsufficient": true
+  },
+  "reviewScorecard": {
+    "scale": "0-4 anchored",
+    "weights": {
+      "decisionHierarchy": 20,
+      "informationAndDataTrust": 15,
+      "compositionDensityRhythm": 15,
+      "typographyAndReadability": 10,
+      "colorBrandAndSemantics": 10,
+      "componentAndInteractionPrecision": 10,
+      "responsiveAndMobile": 10,
+      "darkMotionAndStateCompleteness": 10
+    },
+    "conceptDirectionAcceptedThreshold": {
+      "weightedScoreMinimum": 88,
+      "eachDimensionMinimum": 3,
+      "decisionHierarchyScore": 4,
+      "informationAndDataTrustScore": 4,
+      "p0Maximum": 0,
+      "p1Maximum": 0,
+      "explicitOwnerSelectionRequired": true
+    },
+    "commercialVisualAcceptedThreshold": {
+      "appliesOnlyToRealPreview": true,
+      "weightedScoreMinimum": 92,
+      "eachDimensionMinimum": 3,
+      "decisionDataResponsiveInteractionScore": 4,
+      "p0Maximum": 0,
+      "p1Maximum": 0,
+      "p2Maximum": 5,
+      "fullHumanPageReviewRequired": true
+    }
+  },
+  "acceptanceState": {
+    "conceptSelectedForRefinement": true,
+    "conceptPrototypeValidationPassed": true,
+    "conceptDirectionAccepted": false,
+    "designSystemLockedForImplementation": false,
+    "implementationAuthorized": false,
+    "technicalValidationPassed": false,
+    "visualAccepted": false,
+    "humanAccepted": false,
+    "commercialReady": false,
+    "humanReviewRequired": true
+  }
+}

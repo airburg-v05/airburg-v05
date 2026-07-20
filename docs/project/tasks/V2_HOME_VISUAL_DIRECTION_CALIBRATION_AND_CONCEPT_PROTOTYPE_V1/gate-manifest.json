@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0.0",
+  "task_type": "data_dashboard",
+  "task_id": "V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1",
+  "deliverable_status": "draft_only",
+  "business_purpose": "Compare three evidence-backed visual directions for /v2/home so the owner can choose a coherent aesthetic and information hierarchy before any production UI code changes.",
+  "raw_data_files": [
+    "docs/project/PROJECT_SSOT.json",
+    "docs/project/V2_HOME_DATA_CONTRACT.json"
+  ],
+  "raw_data_boundary": "No raw merchant files, buyer data, order rows, addresses, phone numbers, or after-sales details are used. The concepts use clearly marked masked demonstration values based only on the approved 17-metric contract.",
+  "field_map": [
+    "docs/project/V2_HOME_DATA_CONTRACT.json",
+    "docs/project/METRIC_SEMANTIC_RECONCILIATION_V1.json"
+  ],
+  "decision_questions": [
+    "Can the owner identify the current operating state within 10 seconds?",
+    "Can the owner find the most important gap and its supporting metric within 30 seconds?",
+    "Can the owner distinguish operating performance from data-health status without exposing raw data?",
+    "Which visual direction best expresses Airburg as quiet, precise, trustworthy, and commercially useful?"
+  ],
+  "problem_ids": [
+    "PVM2-001",
+    "PVM2-002",
+    "PVM2-004"
+  ],
+  "scope": {
+    "allowed": [
+      "Concept-only visual hierarchy for /v2/home",
+      "Three comparable desktop and mobile directions",
+      "Masked demonstration values and contract-approved metric names",
+      "Design tokens, state matrix, annotations, screenshots, and human-selection handoff"
+    ],
+    "forbidden": [
+      "Production UI code edits",
+      "ETL, BI, Target, persistence, metric formula, or route changes",
+      "Hiding or removing any of the 17 KPI by default",
+      "Synthetic zero for unavailable metrics",
+      "Deployment, push, or replacement of legacy /home",
+      "Claiming VISUAL_ACCEPTED or HUMAN_ACCEPTED from generated concepts"
+    ]
+  },
+  "unknowns": [
+    "Final Airburg logo asset and formal brand color specification are not yet provided.",
+    "The owner has not yet selected one of the three visual directions.",
+    "The concepts have not yet been compared against an approved Figma master.",
+    "Normal-state values are masked demonstration data and are not business evidence."
+  ],
+  "validation_plan": [
+    "Render and inspect all three directions at desktop and mobile widths.",
+    "Confirm all 17 KPI labels remain present and unavailable metrics display --.",
+    "Confirm no NaN, Infinity, undefined, rawRows, previewRows, order number, phone, address, or buyer note appears.",
+    "Confirm the comparison control changes the active direction and first render is useful.",
+    "Keep visualAccepted=false, humanAccepted=false, and humanReviewRequired=true until explicit owner selection."
+  ],
+  "archive_target": "docs/project/tasks/V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1",
+  "human_review_required": true
+}

@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Airburg Commerce OS · 墨钛空气舱</title>
+  <link rel="stylesheet" href="tokens.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="产品导航">
+      <a class="brand" href="#overview" aria-label="Airburg Commerce OS 首页">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="brand-type"><strong>AIRBURG</strong><small>COMMERCE OS</small></span>
+      </a>
+
+      <nav class="primary-nav" aria-label="主要导航">
+        <a class="nav-item is-active" href="#overview" aria-current="page">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z"/></svg>
+          <span>经营总览</span>
+          <i aria-hidden="true"></i>
+        </a>
+        <a class="nav-item" href="#ledger">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M4 12h16M4 19h16M7 5v14"/></svg>
+          <span>指标全景</span>
+        </a>
+        <button class="nav-item" id="health-open" type="button" aria-controls="health-panel" aria-expanded="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="7" ry="3"/><path d="M5 5v7c0 1.7 3.1 3 7 3s7-1.3 7-3V5M5 12v7c0 1.7 3.1 3 7 3s7-1.3 7-3v-7"/></svg>
+          <span>数据健康</span>
+          <b>3</b>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-light"><span aria-hidden="true"></span><strong>系统正常</strong></div>
+        <small>V2 · 审美校准母版</small>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div class="mobile-brand" aria-hidden="true">
+          <span class="brand-mark"><span></span><span></span><span></span></span>
+          <strong>AIRBURG</strong>
+        </div>
+        <div class="scope">
+          <span class="scope-kicker">CURRENT SCOPE</span>
+          <strong>全平台 · 全店</strong>
+        </div>
+        <div class="topbar-actions">
+          <span class="masked-label"><i aria-hidden="true"></i>MASKED DEMO</span>
+          <button class="date-control" type="button" aria-label="当前数据周期：2026年7月">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z"/></svg>
+            <span>2026 年 7 月</span>
+            <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg>
+          </button>
+          <button class="avatar" type="button" aria-label="打开账户菜单">ZJ</button>
+        </div>
+      </header>
+
+      <main class="content" id="overview">
+        <section class="page-heading" aria-labelledby="page-title">
+          <div>
+            <p class="eyebrow">OPERATING OVERVIEW</p>
+            <h1 id="page-title">经营总览</h1>
+          </div>
+          <div class="heading-context">
+            <span>2026-07-01 — 2026-07-31</span>
+            <i aria-hidden="true"></i>
+            <span>更新于 10:24</span>
+          </div>
+        </section>
+
+        <section class="cockpit-grid" aria-label="核心经营概览">
+          <article class="core-chamber" aria-labelledby="gmv-title">
+            <div class="intake-grid" aria-hidden="true"></div>
+            <header class="chamber-header">
+              <div>
+                <p>JULY OPERATING SIGNAL</p>
+                <span>MTD · 单位：万元</span>
+              </div>
+              <div class="period-switch" aria-label="趋势粒度">
+                <button type="button" data-period="daily" aria-pressed="true">日</button>
+                <button type="button" data-period="weekly" aria-pressed="false">周</button>
+                <button type="button" data-period="monthly" aria-pressed="false">月</button>
+              </div>
+            </header>
+
+            <div class="chamber-body">
+              <section class="gmv-summary" data-kpi="gmv">
+                <p id="gmv-title">GMV</p>
+                <strong>¥1,284.0<span>万</span></strong>
+                <div class="target-status"><span aria-hidden="true">↗</span><b>领先目标 1.9%</b></div>
+                <div class="target-row"><span>月目标</span><b>¥1,260.0万</b></div>
+                <div class="progress" aria-label="GMV 目标完成度 101.9%"><span style="width: 100%"></span></div>
+              </section>
+
+              <figure class="trend-figure">
+                <figcaption>
+                  <span>实际</span>
+                  <i></i>
+                  <span class="target-caption">目标节奏</span>
+                </figcaption>
+                <svg id="trend-chart" viewBox="0 0 450 168" role="img" aria-labelledby="trend-title trend-description" preserveAspectRatio="none">
+                  <title id="trend-title">GMV 实际与目标推进趋势</title>
+                  <desc id="trend-description">当前为日粒度。氧气绿实线为实际 GMV，灰色虚线为目标节奏；缺失点不连接。</desc>
+                  <defs>
+                    <linearGradient id="area-gradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stop-color="#7DE2CF" stop-opacity=".22"/>
+                      <stop offset="1" stop-color="#7DE2CF" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <g class="chart-grid" aria-hidden="true">
+                    <line x1="0" y1="20" x2="450" y2="20"/>
+                    <line x1="0" y1="76" x2="450" y2="76"/>
+                    <line x1="0" y1="132" x2="450" y2="132"/>
+                  </g>
+                  <path id="actual-area" class="actual-area" d=""></path>
+                  <path id="target-line" class="target-line" d=""></path>
+                  <path id="actual-line" class="actual-line" d=""></path>
+                  <circle id="actual-point" class="actual-point" r="4" cx="0" cy="0"></circle>
+                  <g id="actual-label" class="actual-label" transform="translate(0 0)">
+                    <rect x="-55" y="-30" width="55" height="22" rx="6"></rect>
+                    <text x="-48" y="-15">1,284</text>
+                  </g>
+                  <g id="target-label" class="target-label" transform="translate(0 0)">
+                    <text x="-66" y="15">目标 1,260</text>
+                  </g>
+                </svg>
+                <div class="chart-axis" id="chart-axis" aria-hidden="true"><span>07-01</span><span>07-10</span><span>07-20</span><span>07-31</span></div>
+                <span class="sr-only" id="chart-live" aria-live="polite"></span>
+              </figure>
+            </div>
+
+            <div class="featured-strip" aria-label="一级经营指标">
+              <div data-kpi="gsv"><span>GSV</span><strong>¥1,462.0万</strong><small>目标上方 0.8%</small></div>
+              <div data-kpi="adRoi"><span>投入产出比</span><strong>4.82<span>倍</span></strong><small>高于目标 0.32</small></div>
+              <div data-kpi="adSpendRateAfterRefund"><span>去退费比</span><strong>11.6<span>%</span></strong><small>目标内 · 达标</small></div>
+            </div>
+          </article>
+
+          <aside class="judgement" aria-labelledby="judgement-title">
+            <div class="judgement-top">
+              <p class="eyebrow">OPERATING JUDGEMENT</p>
+              <span class="status-pill"><i aria-hidden="true"></i>目标上方运行</span>
+            </div>
+            <h2 id="judgement-title">增长健康，<br>优先守住投放效率。</h2>
+            <p class="judgement-copy">GMV 已领先月目标 1.9%，增长主要由品牌词访客和转化率共同推动。</p>
+            <div class="signal-list">
+              <div><i class="signal-icon positive" aria-hidden="true">↗</i><span><b>结果</b><small>GMV 领先目标 ¥24.0万</small></span></div>
+              <div><i class="signal-icon positive" aria-hidden="true">＋</i><span><b>驱动</b><small>品牌词访客较上期 +8.4%</small></span></div>
+              <div><i class="signal-icon warning" aria-hidden="true">!</i><span><b>关注</b><small>推广预算已使用 82.6%</small></span></div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="ledger" id="ledger" aria-labelledby="ledger-title">
+          <header class="ledger-header">
+            <div>
+              <p class="eyebrow">OPERATING LEDGER</p>
+              <h2 id="ledger-title">经营指标全景</h2>
+            </div>
+            <div class="ledger-health"><span><b>14 / 17</b> 已接入</span><i aria-hidden="true"></i><span>3 项待接入</span></div>
+          </header>
+
+          <div class="ledger-columns">
+            <section class="ledger-group" aria-labelledby="brand-group-title">
+              <header><div><span>01</span><h3 id="brand-group-title">成交与品牌</h3></div><small>流量质量与品牌成交</small></header>
+              <div class="metric-row" data-kpi="directTransactionShare"><span>直接成交占比<small>较上期 +1.6pp</small></span><strong>42.8%</strong></div>
+              <div class="metric-row" data-kpi="brandVisitors"><span>品牌词访客<small>较上期 +8.4%</small></span><strong>18,420<em>人</em></strong></div>
+              <div class="metric-row" data-kpi="brandPaidBuyers"><span>品牌词支付人数<small>较上期 +5.1%</small></span><strong>1,286<em>人</em></strong></div>
+              <div class="metric-row missing" data-kpi="brandKeywordPaidShare" data-value-state="missing"><span>品牌词支付占比<small>待接入 · 不补零</small></span><strong>--</strong></div>
+            </section>
+
+            <section class="ledger-group" aria-labelledby="conversion-group-title">
+              <header><div><span>02</span><h3 id="conversion-group-title">转化与投放</h3></div><small>购买效率与获客成本</small></header>
+              <div class="metric-row" data-kpi="averageOrderValue"><span>客单价<small>较上期 +2.3%</small></span><strong>¥3,286</strong></div>
+              <div class="metric-row" data-kpi="conversionRate"><span>转化率<small>较上期 +0.42pp</small></span><strong>6.98%</strong></div>
+              <div class="metric-row" data-kpi="adSpend"><span>推广花费<small>预算使用 82.6%</small></span><strong>¥266.4<em>万</em></strong></div>
+              <div class="metric-row" data-kpi="cpc"><span>推广点击单价<small>较上期 -0.18</small></span><strong>¥3.72</strong></div>
+            </section>
+
+            <section class="ledger-group" aria-labelledby="service-group-title">
+              <header><div><span>03</span><h3 id="service-group-title">售后与履约</h3></div><small>退款结构与交付质量</small></header>
+              <div class="metric-row" data-kpi="refundRate"><span>退货率（总）<small>目标 ≤ 8.0%</small></span><strong>7.4%</strong></div>
+              <div class="metric-row" data-kpi="shippedRefundRate"><span>发货退货率<small>较上期 -0.3pp</small></span><strong>3.1%</strong></div>
+              <div class="metric-row" data-kpi="signedRefundRate"><span>已签收退货率<small>较上期 -0.1pp</small></span><strong>2.2%</strong></div>
+              <div class="metric-row missing" data-kpi="mtdTurnover" data-value-state="missing"><span>MTD周转<small>暂无数据源</small></span><strong>--</strong></div>
+              <div class="metric-row missing" data-kpi="regionalFulfillmentRate" data-value-state="missing"><span>同区履约率<small>待接入 · 不补零</small></span><strong>--</strong></div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <nav class="mobile-bottom-nav" aria-label="移动端导航">
+    <a class="is-active" href="#overview" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z"/></svg><span>总览</span></a>
+    <a href="#ledger"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M4 12h16M4 19h16M7 5v14"/></svg><span>指标</span></a>
+    <button id="mobile-health-open" type="button" aria-controls="health-panel" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="7" ry="3"/><path d="M5 5v7c0 1.7 3.1 3 7 3s7-1.3 7-3V5M5 12v7c0 1.7 3.1 3 7 3s7-1.3 7-3v-7"/></svg><span>数据健康</span><i>3</i></button>
+    <button type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg><span>更多</span></button>
+  </nav>
+
+  <div class="scrim" id="health-scrim" hidden></div>
+  <aside class="health-panel" id="health-panel" aria-labelledby="health-title" aria-hidden="true">
+    <header>
+      <div><p class="eyebrow">DATA HEALTH</p><h2 id="health-title">数据接入状态</h2></div>
+      <button id="health-close" type="button" aria-label="关闭数据健康面板">×</button>
+    </header>
+    <div class="health-score"><strong>14<span>/17</span></strong><p>指标已接入<br><small>无读取失败</small></p></div>
+    <div class="health-progress" aria-label="17项指标中14项已接入"><span></span></div>
+    <section><h3>待接入指标</h3><ul><li><span>品牌词支付占比</span><b>待接入</b></li><li><span>MTD周转</span><b>无数据源</b></li><li><span>同区履约率</span><b>待接入</b></li></ul></section>
+    <p class="health-note">缺失值保持为 <b>--</b>，不插值、不补零、不借用其他口径。</p>
+  </aside>
+
+  <script src="prototype.js"></script>
+</body>
+</html>

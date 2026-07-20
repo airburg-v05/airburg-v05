@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "V2_HOME_DIRECTION_A_AESTHETIC_REBASE_V2",
+  "status": "CONCEPT_REVIEW_READY_PENDING_HUMAN_APPROVAL",
+  "route": "/v2/home",
+  "direction": {
+    "id": "A_PLUS_PLUS_TITANIUM_AIR_CHAMBER",
+    "chineseName": "墨钛空气舱",
+    "englishName": "Titanium Air Chamber",
+    "statement": "把空气堡高端空气硬件的工业设计语言，转译成一套日常经营系统：矿物画布、瓷白外壳、墨钛核心与氧气绿数据流。",
+    "not": [
+      "generic blue SaaS",
+      "all-dark BI wall",
+      "glass card wall",
+      "terminal-style dashboard",
+      "decorative technology glow"
+    ]
+  },
+  "evidenceBoundary": {
+    "datasetKind": "MASKED_DETERMINISTIC_DEMO",
+    "realBusinessEvidence": false,
+    "visibleLabel": "MASKED DEMO · 非真实经营数据",
+    "officialBrandTokens": false,
+    "fontFidelity": "HOLD_PENDING_LICENSED_BRAND_FONT",
+    "logoFidelity": "HOLD_PENDING_OFFICIAL_LOGO_ASSET",
+    "missingMetricDisplay": "--",
+    "syntheticZeroAllowed": false
+  },
+  "desktop": {
+    "referenceViewport": "1440x900",
+    "navigationWidthPx": 216,
+    "topbarHeightPx": 72,
+    "content": "x=248..1408; width=1160",
+    "header": "y=96..160",
+    "primaryCockpit": "x=248..1008; y=184..504; 760x320",
+    "operatingJudgement": "x=1028..1408; y=184..504; 380x320",
+    "ledger": "x=248..1408; y=528..852; 1160x324",
+    "majorSurfaceMaximum": 3
+  },
+  "mobile": {
+    "referenceViewportWidthPx": 390,
+    "contentMarginPx": 16,
+    "topbarHeightPx": 56,
+    "primaryCockpit": "358x392",
+    "bottomNavigationHeightPx": 64,
+    "minimumTouchTargetPx": 44,
+    "all17KpiVisible": true,
+    "horizontalOverflowAllowed": false
+  },
+  "candidateTokens": {
+    "note": "Candidate prototype tokens only; not official Airburg brand tokens.",
+    "color": {
+      "mineralCanvas": "#F1F0EB",
+      "porcelain": "#FFFEFB",
+      "porcelainMuted": "#F7F6F1",
+      "titanium": "#D8D9D4",
+      "graphite": "#0D1413",
+      "graphiteElevated": "#151D1B",
+      "ink": "#14201D",
+      "mutedInk": "#66716D",
+      "subtleInk": "#6D7773",
+      "oxygenOnDark": "#7DE2CF",
+      "airburgCandidate": "#0C7065",
+      "target": "#9EA8A4",
+      "risk": "#B64D46",
+      "warning": "#9C661A"
+    },
+    "ratio": "66 porcelain/mineral, 24 graphite, 7 titanium, 3 brand and semantic color",
+    "radiusPx": {
+      "cockpit": 24,
+      "surface": 16,
+      "control": 12
+    },
+    "shadow": "No ordinary panel shadow; overlay only",
+    "fontStack": "PingFang SC, SF Pro Display, Inter, system-ui, sans-serif"
+  },
+  "typeScale": {
+    "pageTitle": "30/38 600",
+    "gmvDesktop": "52/56 600",
+    "gmvMobile": "40/44 600",
+    "featuredMetric": "24/30 600",
+    "sectionTitle": "18/26 600",
+    "ledgerValue": "16/22 600",
+    "body": "14/22 400",
+    "meta": "12/18 500"
+  },
+  "informationArchitecture": {
+    "featuredKpi": ["GMV", "GSV", "投入产出比", "去退费比"],
+    "judgementQuestions": [
+      "本月是否完成目标",
+      "增长主要由什么推动",
+      "当前最需要关注什么风险"
+    ],
+    "ledgerGroups": {
+      "成交与品牌": 4,
+      "转化与投放": 4,
+      "售后与履约": 5
+    },
+    "dataHealth": "14 / 17 已接入 · 3 项待接入"
+  },
+  "motion": {
+    "rowHoverMs": 140,
+    "periodSwitchMs": 160,
+    "drawerMs": 220,
+    "mobileSheetMs": 240,
+    "loopingMotionAllowed": false,
+    "reducedMotionSupported": true
+  },
+  "acceptance": {
+    "conceptDirectionAccepted": false,
+    "implementationAuthorized": false,
+    "visualAccepted": false,
+    "humanAccepted": false,
+    "commercialReady": false,
+    "humanReviewRequired": true
+  }
+}

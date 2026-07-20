@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0.0",
+  "task_type": "data_dashboard",
+  "task_id": "V2_HOME_DIRECTION_A_AESTHETIC_REBASE_V2",
+  "deliverable_status": "draft_only",
+  "business_purpose": "Respond to the owner's explicit visual rejection by replacing the washed-out wireframe-like A+ V1 with a materially stronger, brand-specific, commercial-grade art direction for /v2/home before any production implementation is authorized.",
+  "raw_data_files": [
+    "docs/project/PROJECT_SSOT.json",
+    "docs/project/V2_HOME_DATA_CONTRACT.json",
+    "docs/project/tasks/V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1/concept-directions.json",
+    "docs/project/tasks/V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1/V2_HOME_DIRECTION_A_COMMERCIAL_MASTER_CONCEPT_V1/screenshots/a-plus-desktop-1440.png",
+    "docs/project/tasks/V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1/V2_HOME_DIRECTION_A_COMMERCIAL_MASTER_CONCEPT_V1/screenshots/a-plus-mobile-390.png"
+  ],
+  "raw_data_boundary": "No merchant raw rows, buyer data, orders, addresses, phone numbers, after-sales notes, source filenames, or live credentials are used. The isolated prototype uses deterministic masked values and must visibly state that it is not business evidence.",
+  "field_map": [
+    "docs/project/V2_HOME_DATA_CONTRACT.json",
+    "docs/project/METRIC_SEMANTIC_RECONCILIATION_V1.json"
+  ],
+  "decision_questions": [
+    "Does the new composition feel like a premium Airburg product rather than a sparse wireframe or generic SaaS template?",
+    "Does the first screen establish strong visual tension, decision hierarchy, and material contrast without becoming an all-dark BI wall?",
+    "Can the operator still locate all 17 KPI and distinguish missing data from zero?",
+    "Is the new art direction strong enough for the owner to authorize a separate production design-system and implementation task?"
+  ],
+  "problem_ids": [
+    "A_PLUS_V1_HUMAN_VISUAL_REJECTION",
+    "WASHED_OUT_WIREFRAME_APPEARANCE",
+    "GENERIC_HOST_BLUE_SKIN",
+    "WEAK_BRAND_MATERIALITY",
+    "OVERSTRETCHED_1440_COMPOSITION",
+    "INSUFFICIENT_TYPOGRAPHIC_TENSION"
+  ],
+  "scope": {
+    "allowed": [
+      "A full aesthetic rebase for /v2/home only",
+      "One isolated high-fidelity standalone prototype with exact draft brand tokens",
+      "Desktop 1440 and mobile 390 screenshot evidence",
+      "The approved 17 KPI labels and missing-value behavior",
+      "Root-cause critique, art-direction specification, validation report, and handoff"
+    ],
+    "forbidden": [
+      "Production app, component, library, type, package, deployment, or route edits",
+      "Formula, metric semantic, ETL, persistence, real-data adapter, or SSOT changes",
+      "Hiding, renaming, fabricating, or silently deprioritizing required KPI",
+      "Synthetic zero for unavailable metrics",
+      "Using the rejected A+ V1 as an accepted visual reference",
+      "Deploying, pushing, redirecting /home, or claiming commercial or human acceptance"
+    ]
+  },
+  "unknowns": [
+    "The final Airburg SaaS logo asset and licensed product typeface are still unavailable; the prototype must use a clearly provisional wordmark.",
+    "The four-featured-metric hierarchy still requires a visual-contract amendment before implementation.",
+    "Top-tier aesthetic quality remains a human judgment and cannot be proven by DOM or screenshot checks.",
+    "The prototype will not prove real-route accessibility, performance, permissions, localization, empty, loading, or error behavior."
+  ],
+  "validation_plan": [
+    "Render the isolated prototype directly at 1440x900 and a 390px review surface using its exact draft palette and material system.",
+    "Confirm 17 unique KPI, three unavailable KPI displayed as --, visible masked-demo disclosure, and no unsafe token leakage.",
+    "Confirm no root horizontal overflow at 1440, 390, and 320 review widths.",
+    "Confirm primary view switching and data-health detail interaction update accessible states without console errors.",
+    "Separate aesthetic review readiness from production, accessibility, performance, human acceptance, and commercial release."
+  ],
+  "archive_target": "docs/project/tasks/V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1/V2_HOME_DIRECTION_A_AESTHETIC_REBASE_V2",
+  "human_review_required": true
+}

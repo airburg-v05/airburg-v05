@@ -1,0 +1,150 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1",
+  "status": "DRAFT_ONLY_AWAITING_HUMAN_DIRECTION_SELECTION",
+  "route": "/v2/home",
+  "purpose": "Compare three materially different visual systems before any production UI implementation is authorized.",
+  "businessQuestions": [
+    "Can the operator understand current operating status within 10 seconds?",
+    "Can the operator identify the most important gap within 30 seconds?",
+    "Can the operator distinguish business performance from data health?",
+    "Which visual language should become the Airburg SaaS identity?"
+  ],
+  "evidenceBoundary": {
+    "datasetKind": "MASKED_DETERMINISTIC_DEMO",
+    "realBusinessEvidence": false,
+    "rawRowsIncluded": false,
+    "sourceFilenamesIncluded": false,
+    "personalOrBuyerDataIncluded": false,
+    "missingMetricDisplay": "--",
+    "note": "All values exist only to make layout and hierarchy comparable. They cannot be used for business conclusions."
+  },
+  "sharedConstraints": {
+    "all17KpiVisible": true,
+    "metricRenameAllowed": false,
+    "metricFormulaChangeAllowed": false,
+    "syntheticZeroAllowed": false,
+    "legacyHomeChangeAllowed": false,
+    "otherV2RoutesAllowed": false,
+    "productionCodeChangeAllowed": false,
+    "deploymentAllowed": false
+  },
+  "metricContract": [
+    { "key": "gmv", "label": "GMV", "unit": "元" },
+    { "key": "gsv", "label": "GSV", "unit": "元" },
+    { "key": "adRoi", "label": "投入产出比", "unit": "倍" },
+    { "key": "adSpendRateAfterRefund", "label": "去退费比", "unit": "%" },
+    { "key": "directTransactionShare", "label": "直接成交占比", "unit": "%" },
+    { "key": "brandVisitors", "label": "品牌词访客", "unit": "人" },
+    { "key": "brandPaidBuyers", "label": "品牌词支付人数", "unit": "人" },
+    { "key": "brandKeywordPaidShare", "label": "品牌词支付占比", "unit": "%" },
+    { "key": "refundRate", "label": "退货率（总）", "unit": "%" },
+    { "key": "shippedRefundRate", "label": "发货退货率", "unit": "%" },
+    { "key": "signedRefundRate", "label": "已签收退货率", "unit": "%" },
+    { "key": "averageOrderValue", "label": "客单价", "unit": "元" },
+    { "key": "conversionRate", "label": "转化率", "unit": "%" },
+    { "key": "adSpend", "label": "推广花费", "unit": "元" },
+    { "key": "cpc", "label": "推广点击单价", "unit": "元" },
+    { "key": "mtdTurnover", "label": "MTD周转", "unit": "天" },
+    { "key": "regionalFulfillmentRate", "label": "同区履约率", "unit": "%" }
+  ],
+  "directions": [
+    {
+      "id": "A",
+      "name": "清透经营中枢",
+      "englishName": "Quiet Commerce Intelligence",
+      "thesis": "用空气感、仪器感和清晰的优先级，让经营者先看结果与效率，再读完整经营台账。",
+      "bestFor": "希望摆脱通用后台感，并愿意明确经营指标优先级的产品方向。",
+      "informationArchitecture": {
+        "featuredMetrics": ["gmv", "gsv", "adRoi", "adSpendRateAfterRefund"],
+        "remainingGroups": [
+          { "name": "成交与品牌", "keys": ["directTransactionShare", "brandVisitors", "brandPaidBuyers", "brandKeywordPaidShare"] },
+          { "name": "转化与投放", "keys": ["averageOrderValue", "conversionRate", "adSpend", "cpc"] },
+          { "name": "售后与履约", "keys": ["refundRate", "shippedRefundRate", "signedRefundRate", "mtdTurnover", "regionalFulfillmentRate"] }
+        ],
+        "all17KpiRemainVisible": true
+      },
+      "desktop": "Airy 248px navigation concept, four priority metrics, trend before the remaining grouped ledger.",
+      "mobile": "Two-column priority block followed by the trend and a complete two-column grouped ledger.",
+      "tokenProposal": {
+        "canvas": "#F5F7F6",
+        "surface": "#FFFFFF",
+        "ink": "#17201E",
+        "primary": "#0F766E",
+        "secondaryChart": "#6B8EA8",
+        "shape": "soft circular brand mark, restrained rounded filters, thin neutral grid"
+      },
+      "compatibility": "REQUIRES_VISUAL_CONTRACT_AMENDMENT_IF_SELECTED",
+      "compatibilityReason": "The existing textual visual reference treats the 17 KPI as an equal 6+6+5 matrix. Direction A preserves every metric but introduces a four-metric visual priority and new business groupings.",
+      "risks": [
+        "Can drift into a generic teal SaaS look if brand detail is weak.",
+        "Priority treatment could be mistaken for a formula or governance priority unless explicitly documented.",
+        "Excess whitespace could hide the full operating ledger below the fold."
+      ]
+    },
+    {
+      "id": "B",
+      "name": "精密仪表盘",
+      "englishName": "Precision Operations",
+      "thesis": "以高密度但不微型化的 17 指标矩阵，服务高频扫读、对比和日常经营操作。",
+      "bestFor": "希望最低契约风险、最高信息效率，并沿用当前 6+6+5 信息骨架的方向。",
+      "informationArchitecture": {
+        "featuredMetrics": [],
+        "groups": [{ "name": "完整经营矩阵", "layout": "6+6+5", "all17KpiRemainVisible": true }]
+      },
+      "desktop": "224px precision navigation, 64px command bar, compact 17-cell matrix, series row, then trend.",
+      "mobile": "Complete two-column KPI ledger with compact navigation and no hidden metrics.",
+      "tokenProposal": {
+        "canvas": "#F4F6F8",
+        "surface": "#FFFFFF",
+        "ink": "#111827",
+        "primary": "#225BD6",
+        "secondaryChart": "#5B6F95",
+        "shape": "low-radius controls, strong tabular alignment, precise structural rules"
+      },
+      "compatibility": "MOST_COMPATIBLE_WITH_CURRENT_6_6_5_CONTRACT",
+      "compatibilityReason": "It keeps the existing 17-metric order and 6+6+5 hierarchy without introducing a new metric priority claim.",
+      "risks": [
+        "Precision can degrade into spreadsheet or monitoring-wall aesthetics.",
+        "Too much blue or too many rules would make the page visually tiring.",
+        "Density must never be achieved with tiny text."
+      ]
+    },
+    {
+      "id": "C",
+      "name": "经营编辑台",
+      "englishName": "Editorial Commerce Desk",
+      "thesis": "把首页做成连续的经营阅读工作面，用排版节奏、编号与章节关系替代后台卡片堆叠。",
+      "bestFor": "希望形成更鲜明、更成熟的品牌编辑感，同时保留完整台账的方向。",
+      "informationArchitecture": {
+        "featuredMetrics": [],
+        "groups": [{ "name": "编号经营台账", "layout": "6+6+5", "all17KpiRemainVisible": true }],
+        "trendAndHealth": "9/12 trend plus 3/12 data-health note on desktop"
+      },
+      "desktop": "192px low-chrome navigation, numbered metric ledger, editorial spacing, trend with a side data-health note.",
+      "mobile": "Complete two-column numbered ledger; chapter rhythm replaces card stacking.",
+      "tokenProposal": {
+        "canvas": "#F4F2ED",
+        "surface": "#FFFEFB",
+        "ink": "#1A1A18",
+        "primary": "#2856D8",
+        "secondaryChart": "#8C6A4A",
+        "shape": "4px radii, numbered cells, typographic hierarchy, minimal chrome"
+      },
+      "compatibility": "COMPATIBLE_WITH_CURRENT_6_6_5_BUT_REQUIRES_SHELL_RESTYLE",
+      "compatibilityReason": "It preserves the current metric order and count but changes the product shell, spacing rhythm, and visual voice substantially.",
+      "risks": [
+        "Can look like a report, newspaper, or spreadsheet if hierarchy is not interactive enough.",
+        "Warm neutral surfaces may conflict with the final Airburg product palette.",
+        "Editorial styling must not weaken operational scan speed."
+      ]
+    }
+  ],
+  "decisionGuide": {
+    "strongestAestheticBreakthrough": "A",
+    "lowestImplementationAndContractRisk": "B",
+    "strongestDistinctiveEditorialIdentity": "C",
+    "ownerMayRejectAll": true,
+    "implementationRequiresSeparateAuthorization": true
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "V2_HOME_DIRECTION_A_AESTHETIC_REBASE_V2",
+  "visualSourceOfTruth": "prototype/index.html",
+  "captureEnvironment": "isolated localhost prototype in Codex in-app browser",
+  "datasetKind": "MASKED_DETERMINISTIC_DEMO",
+  "screenshots": [
+    {
+      "path": "screenshots/aesthetic-rebase-desktop-1440.png",
+      "viewport": "1440x900",
+      "format": "PNG",
+      "sha256": "935f685bd029904efbd5fe23dea0f6f5e31f4f944868f6187a5aea27065dbe41"
+    },
+    {
+      "path": "screenshots/aesthetic-rebase-mobile-390.png",
+      "viewport": "390x844",
+      "format": "PNG",
+      "sha256": "53bc3ccde19adab3bc711b0b843c4cfaf31683edcbd6c88e6ea5c550fead2e2d"
+    }
+  ],
+  "acceptance": {
+    "prototypeRendered": true,
+    "humanVisualAccepted": false,
+    "productionParity": false,
+    "commercialReady": false,
+    "humanReviewRequired": true
+  }
+}

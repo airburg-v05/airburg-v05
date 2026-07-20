@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "V2_HOME_DIRECTION_A_COMMERCIAL_MASTER_CONCEPT_V1",
+  "generatedAt": "2026-07-16T19:20:00+08:00",
+  "visualization": {
+    "file": "/Users/zongji/.codex/visualizations/2026/07/16/019f6a64-ea9f-7032-aa77-0bbd20978567/airburg-v2-home-a-plus.html",
+    "sha256": "3001f39b068d91aa389ff7caf5ff8e2d4d92702b2d84b1628828737661569820",
+    "kind": "theme-aware inline review master",
+    "archiveGateClosed": false
+  },
+  "captures": [
+    {
+      "id": "A_PLUS_DESKTOP_1440",
+      "file": "screenshots/a-plus-desktop-1440.png",
+      "sha256": "401a84d8f71fcd3efb6b46b3e32eb8ced8cb76b4629a44e3c22cd97388f298cf",
+      "pixelDimensions": {
+        "width": 1440,
+        "height": 987
+      },
+      "cssViewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "cssPageHeight": 987,
+      "coverage": "full concept page",
+      "captureNote": "Direct browser render; the raw device-scaled capture was resampled to the CSS page dimensions without content edits."
+    },
+    {
+      "id": "A_PLUS_MOBILE_390",
+      "file": "screenshots/a-plus-mobile-390.png",
+      "sha256": "26936ceaa69809e27fe569e745c11a38cd67e0676c66263507ff8aa139ec82d0",
+      "pixelDimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "reviewSurfaceCss": {
+        "width": 390,
+        "fullPageHeight": 1895
+      },
+      "coverage": "390x844 first screen plus the beginning of the complete ledger",
+      "captureNote": "The first 844 CSS pixels were cropped from a centered 390px review surface and resampled to exact CSS dimensions without content edits. Complete-page KPI and overflow coverage is supplied by DOM validation because the browser backend tiled beyond-viewport iframe captures."
+    }
+  ],
+  "runtimeEvidence": {
+    "desktop": {
+      "kpiCount": 17,
+      "uniqueKpiCount": 17,
+      "missingStateCount": 3,
+      "missingPrimaryValues": [
+        "--",
+        "--",
+        "--"
+      ],
+      "horizontalOverflow": false,
+      "maskedLabelVisible": true,
+      "unsafeVisibleTokenDetected": false
+    },
+    "mobile390": {
+      "reviewSurfaceWidth": 390,
+      "fullPageHeight": 1895,
+      "kpiCount": 17,
+      "uniqueKpiCount": 17,
+      "allKpiElementsRendered": true,
+      "horizontalOverflow": false,
+      "maskedLabelVisible": true,
+      "unsafeVisibleTokenDetected": false
+    },
+    "narrow320": {
+      "reviewSurfaceWidth": 320,
+      "kpiCount": 17,
+      "allKpiElementsRendered": true,
+      "horizontalOverflow": false
+    },
+    "interaction": {
+      "weeklyPeriodPressedStateUpdated": true,
+      "chartLabelUpdated": "周粒度 · 实际与目标 · 单位：万元",
+      "healthDetailsExpanded": true,
+      "defaultStateRestored": true
+    },
+    "consoleIssueCount": 0,
+    "reducedMotionRulePresent": true
+  },
+  "knownHolds": {
+    "aPlusMobileTouchTarget44Px": "FAIL_IN_REVIEW_PROTOTYPE",
+    "observedControlHeightPx": 28,
+    "observedSummaryHeightPx": 16,
+    "productionTokenParity": "PENDING",
+    "fullStateMatrix": "PENDING",
+    "darkThemeHumanReview": "PENDING",
+    "actualRoutePerformance": "NOT_APPLICABLE_UNTIL_IMPLEMENTED",
+    "humanVisualApproval": "PENDING"
+  }
+}

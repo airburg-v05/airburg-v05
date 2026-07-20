@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "task_type": "data_dashboard",
+  "task_id": "V2_HOME_DIRECTION_A_COMMERCIAL_MASTER_CONCEPT_V1",
+  "deliverable_status": "draft_only",
+  "business_purpose": "Elevate the selected A direction into a commercially credible, high-end visual master for /v2/home so the owner can judge product identity, operating hierarchy, and implementation readiness before production code is authorized.",
+  "raw_data_files": [
+    "docs/project/PROJECT_SSOT.json",
+    "docs/project/V2_HOME_DATA_CONTRACT.json",
+    "docs/project/tasks/V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1/concept-directions.json"
+  ],
+  "raw_data_boundary": "No merchant raw files, buyer data, order rows, contact information, addresses, logistics detail, refunds, notes, or source filenames are used. The master concept uses deterministic masked demonstration values only and is visibly marked as non-business evidence.",
+  "field_map": [
+    "docs/project/V2_HOME_DATA_CONTRACT.json",
+    "docs/project/METRIC_SEMANTIC_RECONCILIATION_V1.json"
+  ],
+  "decision_questions": [
+    "Does A+ feel like a coherent commercial product rather than a generic dashboard template?",
+    "Can an operator see the operating result, efficiency gap, and trend within 10 seconds?",
+    "Can all 17 KPI remain available without returning to card-wall density?",
+    "Are brand expression, interaction, accessibility, and responsive behavior strong enough to justify opening a production implementation task?"
+  ],
+  "problem_ids": [
+    "PVM2-001",
+    "PVM2-002",
+    "PVM2-004",
+    "A_PLUS_GENERIC_SAAS_RISK",
+    "A_PLUS_COMMERCIAL_POLISH_GAP"
+  ],
+  "scope": {
+    "allowed": [
+      "A-direction commercial visual master for /v2/home only",
+      "Commercial design principles, semantic tokens, component anatomy, chart language, responsive states, and review evidence",
+      "All 17 KPI with the same approved labels and missing behavior",
+      "Deterministic masked demonstration values",
+      "Desktop and 390px concept states"
+    ],
+    "forbidden": [
+      "Production app, component, library, type, package, deployment, or route edits",
+      "ETL, BI, Target, persistence, formula, metric, or data-contract changes",
+      "Hiding, removing, renaming, or fabricating any KPI",
+      "Synthetic zero for unavailable metrics",
+      "Deploying, pushing, replacing legacy /home, or broadening to other V2 routes",
+      "Claiming commercial readiness, visual acceptance, or human acceptance from a generated concept"
+    ]
+  },
+  "unknowns": [
+    "A formal Airburg SaaS brand identity system, production logo package, and approved type license have not been provided.",
+    "The four-metric visual priority is selected for concept refinement but still needs a formal visual-contract amendment before implementation.",
+    "Top-tier aesthetic quality remains a human judgment gate even after technical validation.",
+    "The concept has not been tested with every real-data length, locale, permission state, empty state, or error state."
+  ],
+  "validation_plan": [
+    "Render and inspect the A+ master at desktop and a DOM-validated 390px preview width.",
+    "Confirm all 17 KPI appear once, unavailable values display --, and masked data is clearly labeled.",
+    "Confirm no NaN, Infinity, undefined, rawRows, previewRows, sensitive identifiers, or personal data appears.",
+    "Confirm hierarchy, chart labels, controls, hit targets, focus behavior, reduced-motion behavior, and horizontal overflow.",
+    "Record concept-only pass separately from commercial implementation or human acceptance."
+  ],
+  "archive_target": "docs/project/tasks/V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1/V2_HOME_DIRECTION_A_COMMERCIAL_MASTER_CONCEPT_V1",
+  "human_review_required": true
+}

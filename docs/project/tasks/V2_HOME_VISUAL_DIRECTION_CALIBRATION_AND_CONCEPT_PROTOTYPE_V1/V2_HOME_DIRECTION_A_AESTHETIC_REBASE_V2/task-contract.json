@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "V2_HOME_DIRECTION_A_AESTHETIC_REBASE_V2",
+  "parentTaskId": "V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1",
+  "status": "CONCEPT_REVIEW_READY_PENDING_HUMAN_APPROVAL",
+  "activeProductTrack": "SAAS_UI_V2",
+  "trigger": "The owner explicitly rejected A+ V1 as still not visually attractive enough.",
+  "rejectionMeaning": "A+ V1 remains valid only as failure evidence for hierarchy, data completeness, and technical checks. It is not an accepted visual reference and must not be incrementally polished into production.",
+  "taskMeaning": "Create one materially different high-fidelity art direction with stronger commercial composition, fixed provisional Airburg tokens, clear material contrast, and complete metric honesty.",
+  "prototypeStrategy": "Use an isolated standalone HTML prototype inside this task folder for exact palette, typography, material, and 1440 composition. Do not use the theme-adaptive inline renderer as the source of visual truth.",
+  "allowedPaths": [
+    "docs/project/tasks/V2_HOME_VISUAL_DIRECTION_CALIBRATION_AND_CONCEPT_PROTOTYPE_V1/V2_HOME_DIRECTION_A_AESTHETIC_REBASE_V2/**",
+    "/Users/zongji/.codex/visualizations/2026/07/16/019f6a64-ea9f-7032-aa77-0bbd20978567/**"
+  ],
+  "forbiddenActions": [
+    "Modify production app, components, lib, types, package, deployment, or route files",
+    "Modify formulas, metric semantics, ETL, persistence, adapters, PROJECT_SSOT.json, or current-task.json",
+    "Treat the standalone prototype as production implementation",
+    "Set visualAccepted, humanAccepted, or commercialReady to true",
+    "Deploy, push, commit, or redirect any production route"
+  ],
+  "requiredOutputs": [
+    "gate-manifest.json",
+    "task-contract.json",
+    "plan.md",
+    "rejection-and-root-cause.md",
+    "art-direction-spec.json",
+    "prototype/index.html",
+    "screenshots/aesthetic-rebase-desktop-1440.png",
+    "screenshots/aesthetic-rebase-mobile-390.png",
+    "validation-report.md",
+    "handoff.md"
+  ],
+  "acceptanceState": {
+    "aPlusV1HumanAccepted": false,
+    "aestheticRebaseInProgress": false,
+    "prototypeValidationPassed": true,
+    "conceptDirectionAccepted": false,
+    "implementationAuthorized": false,
+    "visualAccepted": false,
+    "humanAccepted": false,
+    "commercialReady": false,
+    "humanReviewRequired": true
+  },
+  "validationConclusion": "The isolated prototype passed the scoped automated visual-contract and runtime checks. This does not equal owner aesthetic acceptance, production parity, or commercial readiness.",
+  "stopRule": "Stop after a validated isolated prototype and human-review handoff. Production implementation requires a separate explicit authorization."
+}

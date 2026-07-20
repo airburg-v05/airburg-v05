@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "CONCEPT_REVIEW_EVIDENCE_ONLY",
+  "capturedAt": "2026-07-16T18:40:00+08:00",
+  "captureMethod": "In-app browser render verification against a local temporary preview; preview server was stopped after capture.",
+  "canvasNote": "The host screenshot canvas is 1881x1074. Mobile files contain a DOM-validated 390px preview surface centered inside that host canvas.",
+  "acceptanceBoundary": "Screenshots prove concept rendering states only. They do not prove production readiness, real-data correctness, visual acceptance, or human acceptance.",
+  "files": [
+    {
+      "direction": "A",
+      "viewportState": "desktop",
+      "path": "screenshots/direction-a-desktop.png",
+      "pixelWidth": 1881,
+      "pixelHeight": 1074,
+      "sha256": "c6463bafccd5b47748039d1d4c901ba84c773b7cd88e919483fbdee75f9db2e1"
+    },
+    {
+      "direction": "A",
+      "viewportState": "mobile-390",
+      "path": "screenshots/direction-a-mobile.png",
+      "pixelWidth": 1881,
+      "pixelHeight": 1074,
+      "sha256": "095664a5e393e7124b48511eb428c4fce1113718107ee61c79f38c8cc557b919"
+    },
+    {
+      "direction": "B",
+      "viewportState": "desktop",
+      "path": "screenshots/direction-b-desktop.png",
+      "pixelWidth": 1881,
+      "pixelHeight": 1074,
+      "sha256": "faf6d0806c229872cc379ba6c1b07b69dd25bc1303cb59afce15436982f7df18"
+    },
+    {
+      "direction": "B",
+      "viewportState": "mobile-390",
+      "path": "screenshots/direction-b-mobile.png",
+      "pixelWidth": 1881,
+      "pixelHeight": 1074,
+      "sha256": "6bf5761b8aaf7a530f165e4df8256f36a2f0dd9f9af7057d3d7e313d70c84a62"
+    },
+    {
+      "direction": "C",
+      "viewportState": "desktop",
+      "path": "screenshots/direction-c-desktop.png",
+      "pixelWidth": 1881,
+      "pixelHeight": 1074,
+      "sha256": "a56c915a4a1570a16d5e7d61ec70dadc21e22d03a2e32d75a753d78d293f3c26"
+    },
+    {
+      "direction": "C",
+      "viewportState": "mobile-390",
+      "path": "screenshots/direction-c-mobile.png",
+      "pixelWidth": 1881,
+      "pixelHeight": 1074,
+      "sha256": "dbabd383ed935000c50165d12bfb3c65ec9b7e13063230d29d676fc95f0b24d9"
+    }
+  ]
+}
