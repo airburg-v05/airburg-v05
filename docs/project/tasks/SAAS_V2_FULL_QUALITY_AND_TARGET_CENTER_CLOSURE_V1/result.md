@@ -1,6 +1,6 @@
 # Result
 
-Status: `LOCAL_VALIDATED_PENDING_DEPLOY`
+Status: `PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW`
 
 Local implementation result so far:
 
@@ -24,9 +24,40 @@ Local implementation result so far:
   - Reused the provider from both four-source import hashing and legacy migration hashing.
   - Added standard vector and forced-fallback equivalence validator.
 
-Deployment result: pending.
+Deployment result:
+
+- Public URL: `http://123.57.49.121/v2/home`
+- Implementation commit: `bf76c174d12f1bc27b7ca73b9603df4cfa1c8f4a`
+- Release path: `/opt/airburg/releases/saas-v2-home-boundary-bf76c17-20260720T232834`
+- Active app path: `/opt/airburg/ecommerce-platform-optimized`
+- Remote `npm ci`: PASS
+- Remote `npm run build`: PASS
+- PM2/Nginx/port isolation: PASS
+- Public ten-route HTTP checks: PASS
+
+Public regression result:
+
+- Public 18-file runtime import: `18 success / 0 failed / 0 skipped`.
+- Public V0.5F four-source target foundation import: PASS on HTTP IP after SHA-256 fallback.
+- Public target-center target workflow: `92%` percent target save/readback/pause/reactivate PASS; no hard delete UI.
+- Public ten-route desktop/mobile browser regression: PASS.
+- Post-regression cleanup: runtime/debug/legacy runtime compatibility records removed; `airburg-target-drafts-v1`, `airburg-v05`, and `airburg:demo-session` preserved.
+- Cleanup confirmation: `/v2/home` returned to empty state and CTA points to `/v2/upload`.
+
+Evidence:
+
+- Validation log: `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/validation.md`
+- Public upload18 screenshots: `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-public-bf76c17-2026-07-20/`
+- Public ten-route + cleanup screenshots: `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-public-bf76c17-2026-07-20/`
 
 Owner acceptance remains pending:
 
 - `visualAccepted=false`
 - `humanAccepted=false`
+- `PENDING_POST_DEPLOY_OWNER_REVIEW`
+
+Known remaining non-closed scope:
+
+- Owner visual/human acceptance is still required.
+- AI 顾问, non-Tmall real adapters, activity targets, upload overwrite/version rollback, and unsupported multi-period target schema remain out of scope.
+- `/v2/exclusion-rules` remains a safe `BLOCKED_BY_MISSING_CONTRACT` page without fake controls.

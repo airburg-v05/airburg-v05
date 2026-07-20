@@ -1,6 +1,6 @@
 # Validation
 
-Status: `IN_PROGRESS`
+Status: `PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW`
 
 Planned gates:
 
@@ -96,9 +96,79 @@ Current results:
 - Transient validator note:
   - One fresh-profile upload18 run passed 18/18 import, then timed out waiting for `/v2/home` dashboard. A same-profile ten-route check immediately proved `/v2/home` reachable with 17 metrics. The validator route wait was increased from 30s to 60s and the full upload18 E2E passed from a new profile.
 
-Pending before final handoff:
+Deployment validation: PASS.
 
-- Implementation commit and deploy for the homepage source-boundary follow-up SHA.
-- Public upload18 + target-center E2E.
-- Public ten-route desktop/mobile regression.
-- Public runtime/debug cleanup and empty `/v2/home` + `/v2/upload` CTA evidence.
+- Implementation commit: `bf76c174d12f1bc27b7ca73b9603df4cfa1c8f4a`.
+- Release path: `/opt/airburg/releases/saas-v2-home-boundary-bf76c17-20260720T232834`.
+- Active path: `/opt/airburg/ecommerce-platform-optimized` resolves to the release path above.
+- Release metadata: `.airburg-release.json` records commit `bf76c174d12f1bc27b7ca73b9603df4cfa1c8f4a`, schema `SAAS_UI_V2`, UI version `SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1`.
+- Remote `npm ci`: PASS.
+  - Existing npm audit output: 3 vulnerabilities (2 moderate, 1 high). This was not changed or remediated in the current scoped fix.
+- Remote `npm run build`: PASS; 26 app routes generated.
+- PM2: `airburg-tmall-v1` online after restart.
+- Nginx: `systemctl is-active nginx` = `active`; `nginx -t` PASS.
+- Port checks:
+  - Remote `http://127.0.0.1:3000/v2/home`: HTTP 200.
+  - Public `http://123.57.49.121/v2/home`: HTTP 200.
+  - Public `http://123.57.49.121:3000/v2/home`: not reachable (`curl` timed out, HTTP 000).
+  - `ss -ltnp`: port 3000 listens on `127.0.0.1:3000`.
+
+Public upload18 + target-center E2E: PASS.
+
+- Command:
+  - `V2_HOME_BASE_URL=http://123.57.49.121 V2_HOME_PROFILE_DIR=/tmp/airburg-saas-v2-bf76c17-public-profile.vUUrKB V2_HOME_ARTIFACT_DIR=docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-public-bf76c17-2026-07-20 node scripts/private-audit/validate-v2-home-upload18-system-chrome-local-v1.mjs`
+- Result:
+  - 18 files from `/Users/zongji/Desktop/每日平台数据/天猫`.
+  - `18 success / 0 failed / 0 skipped`.
+  - `/v2/home`: 17 metrics visible while runtime data exists.
+  - Metric settings: default 17, subset/order persisted after refresh, reset restored 17.
+  - Mobile: no page-wide overflow.
+  - V0.5F target foundation four-source import: PASS on public HTTP IP after SHA-256 fallback.
+  - Target-center: percent target `92%` save/readback/pause/reactivate PASS; no hard delete button; single “平台和店铺” label.
+  - Console/network business errors: 0.
+- Artifact screenshots:
+  - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-public-bf76c17-2026-07-20/upload-desktop.png`
+  - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-public-bf76c17-2026-07-20/v2-home-desktop.png`
+  - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-public-bf76c17-2026-07-20/v2-home-mobile.png`
+
+Public ten-route + cleanup regression: PASS.
+
+- Command:
+  - `SAAS_V2_BASE_URL=http://123.57.49.121 SAAS_V2_PROFILE_DIR=/tmp/airburg-saas-v2-bf76c17-public-profile.vUUrKB SAAS_V2_ARTIFACT_DIR=docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-public-bf76c17-2026-07-20 SAAS_V2_CLEANUP_RUNTIME_DEBUG=1 node scripts/private-audit/validate-saas-v2-ten-route-system-chrome-v1.mjs`
+- Routes:
+  - `/v2/home`
+  - `/v2/series-board`
+  - `/v2/store-board`
+  - `/v2/product-board`
+  - `/v2/upload`
+  - `/v2/upload/history`
+  - `/v2/data-health`
+  - `/v2/target-center`
+  - `/v2/search-assets`
+  - `/v2/exclusion-rules`
+- Result:
+  - Desktop and mobile reachable for all ten routes.
+  - No page-wide overflow.
+  - No false preview/no-write shell copy.
+  - Cross-page inspected links stay in `/v2`.
+  - Search/exclusion pages show business copy and no mock controls.
+  - Console/network business errors: 0.
+- Post-regression cleanup:
+  - Removed: `airburg-runtime-dataset-v1`, `airburg-debug-context-v1`, `airburg_tmall_analysis_v2`.
+  - Preserved: `airburg-target-drafts-v1`, `airburg-v05`, `airburg:demo-session`.
+  - Refreshed `/v2/home`: empty state visible and “前往上传” CTA href is `/v2/upload`.
+- Artifact summary and screenshots:
+  - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-public-bf76c17-2026-07-20/summary.json`
+  - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-public-bf76c17-2026-07-20/v2-home-after-runtime-debug-cleanup.png`
+
+Final service/log validation: PASS.
+
+- Public HTTP route checks: all ten V2 routes returned HTTP 200.
+- PM2 error log new bytes since before public regression: 0.
+- PM2 out log new bytes since before public regression: 0.
+
+Owner review gates still open:
+
+- `visualAccepted=false`
+- `humanAccepted=false`
+- Status remains `PENDING_POST_DEPLOY_OWNER_REVIEW`.

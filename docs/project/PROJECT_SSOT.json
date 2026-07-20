@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "updatedAt": "2026-07-20T21:24:40+08:00",
+  "updatedAt": "2026-07-20T23:34:00+08:00",
   "authority": {
     "machineReadableSource": "docs/project/PROJECT_SSOT.json",
     "derivedHumanReadableSources": [
@@ -19,8 +19,8 @@
   },
   "repository": {
     "activeBranch": "feature/saas-ui-v2-shell",
-    "headCommit": "5aa2c76",
-    "headCommitMeaning": "exact deployed runtime-changing commit for the final V2 workspace copy correction; subsequent post-deploy evidence commits are intentionally not self-referenced here",
+    "headCommit": "bf76c174d12f1bc27b7ca73b9603df4cfa1c8f4a",
+    "headCommitMeaning": "exact deployed runtime-changing commit for the SHA-256 HTTP fallback and V2 home runtime-cleanup boundary; subsequent post-deploy evidence commits are intentionally not self-referenced here",
     "workingTree": "CLEAN_AFTER_POST_DEPLOY_EVIDENCE_COMMIT",
     "remote": "origin=https://github.com/airburg-v05/airburg-v05.git",
     "upstream": "origin/feature/saas-ui-v2-shell",
@@ -107,7 +107,7 @@
     },
     "saasUiV2": {
       "role": "ACTIVE_PRODUCT_TRACK",
-      "status": "UPLOAD18_PUBLIC_E2E_PASS_PENDING_HUMAN_REVIEW",
+      "status": "PUBLIC_E2E_PASS_PENDING_HUMAN_REVIEW",
       "archiveCommit": "7ade2f433d7dbd90e8fd1a0df5efdb00003ec8fa",
       "routeCount": 10,
       "componentCount": 18,
@@ -138,19 +138,19 @@
       "visualAccepted": false,
       "previewDeployed": true,
       "humanAccepted": false,
-      "publicV2RouteStatus": "TEN_V2_ROUTES_HTTP_200_FINAL_COPY_REFRESH_PUBLIC_SMOKE_PASS",
-      "deploymentCommit": "5aa2c76",
-      "deployedAt": "2026-07-20T21:23:33+08:00",
+      "publicV2RouteStatus": "TEN_V2_ROUTES_PUBLIC_E2E_PASS_AFTER_RUNTIME_CLEANUP",
+      "deploymentCommit": "bf76c174d12f1bc27b7ca73b9603df4cfa1c8f4a",
+      "deployedAt": "2026-07-20T23:28:50+08:00",
       "publicPreviewRoute": "http://123.57.49.121/v2/home",
-      "publicScreenshotManifest": "docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-copy-refresh-5aa2c76-2026-07-20/summary.json",
+      "publicScreenshotManifest": "docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-public-bf76c17-2026-07-20/summary.json",
       "businessImportsFound": 1,
       "controlsInteractive": true,
       "visualReviewStatus": "PENDING_HUMAN_REVIEW",
       "humanReviewRequired": true,
       "homeVerticalSlice": {
-        "status": "PREVIOUS_RUNTIME_UPLOAD18_PUBLIC_E2E_PASS_PENDING_HUMAN_REVIEW",
+        "status": "UPLOAD18_AND_RUNTIME_CLEANUP_PUBLIC_E2E_PASS_PENDING_HUMAN_REVIEW",
         "adapter": "lib/v2/home/v2-home-adapter.ts",
-        "latestImplementationCommit": "5aa2c76",
+        "latestImplementationCommit": "bf76c174d12f1bc27b7ca73b9603df4cfa1c8f4a",
         "metricCount": 17,
         "realSampleCount": 18,
         "safeSkippedCount": 0,
@@ -161,10 +161,10 @@
         "previewDeployed": true,
         "visualAccepted": false,
         "humanAccepted": false,
-        "evidence": "docs/project/tasks/V2_HOME_UPLOAD18_AD_PLAN_LAYERING_AND_DEPLOY_GATE_V1/VALIDATION.md",
-        "latestUpload18LocalValidationAt": "2026-07-18T19:35:27+08:00",
-        "latestUpload18PublicValidationAt": "2026-07-20T21:17:06+08:00",
-        "latestUpload18DeploymentStatus": "PREVIOUS_RUNTIME_PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW",
+        "evidence": "docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/validation.md",
+        "latestUpload18LocalValidationAt": "2026-07-20T23:25:00+08:00",
+        "latestUpload18PublicValidationAt": "2026-07-20T23:30:00+08:00",
+        "latestUpload18DeploymentStatus": "PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW",
         "latestUpload18DeploymentBlocker": null,
         "latestUpload18DeploymentLikelyCause": "RESOLVED_STALE_SINGLE_SOURCE_SECURITY_GROUP_RULE",
         "latestUpload18ConsoleState": "ALIYUN_AUTHENTICATED_SECURITY_GROUP_CURRENT_SOURCE_BOUND"
@@ -184,10 +184,10 @@
   "validatorRegistry": "docs/project/VALIDATOR_REGISTRY.json",
   "currentTask": {
     "taskId": "SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1",
-    "status": "IN_PROGRESS",
+    "status": "PENDING_POST_DEPLOY_OWNER_REVIEW",
     "contract": "docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/TASK.md"
   },
-  "nextAuthorizedEntryGate": "CONTINUE_BLUEPRINT_PRIORITY_V2_ROUTE_IMPLEMENTATION",
+  "nextAuthorizedEntryGate": "OWNER_POST_DEPLOY_REVIEW",
   "deprecatedArtifacts": [
     {
       "path": "lib/state/system-state.ts",
