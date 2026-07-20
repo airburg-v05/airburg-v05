@@ -21,12 +21,15 @@ const targetClient = read("components/targets/v05/target-management-client.tsx")
 const targetOptions = read("lib/v05/target-management/options.ts");
 const targetMutations = read("lib/v05/target-management/mutations.ts");
 const routeMapping = read("lib/v2/route-mapping.ts");
+const biDataSource = read("lib/bi/bi.data-source.ts");
+const v2HomeAdapter = read("lib/v2/home/v2-home-adapter.ts");
 const searchWorkspace = read("components/saas-v2/search-assets/v2-search-assets-workspace.tsx");
 const exclusionWorkspace = read("components/saas-v2/exclusion-rules/v2-exclusion-rules-workspace.tsx");
 const v2UploadPage = read("app/(workspace-v2)/v2/upload/page.tsx");
 const uploadDashboard = read("components/upload/v1/upload-page-v1-dashboard.tsx");
 const batchImportWorkbench = read("components/upload/batch-import/tmall-batch-import-workbench.tsx");
 const upload18Validator = read("scripts/private-audit/validate-v2-home-upload18-system-chrome-local-v1.mjs");
+const tenRouteValidator = read("scripts/private-audit/validate-saas-v2-ten-route-system-chrome-v1.mjs");
 const sha256Provider = read("lib/v05/shared/sha256-provider.ts");
 const importHash = read("lib/v05/import/hash.ts");
 const migrationHash = read("lib/v05/migration/hash.ts");
@@ -84,6 +87,8 @@ addCheck("v2UploadInputKeepsSingleChangeHandler", !uploadDashboard.includes("onI
 addCheck("v05FoundationInputKeepsSingleChangeHandler", !batchImportWorkbench.includes("onInput=") && batchImportWorkbench.includes('data-testid="v05-batch-file-input"') && batchImportWorkbench.includes("void handleSelectFiles(event.target.files)"));
 addCheck("upload18ValidatorUsesNativeFileChooserPath", upload18Validator.includes("Page.setInterceptFileChooserDialog") && upload18Validator.includes("Page.fileChooserOpened") && upload18Validator.includes("backendNodeId") && upload18Validator.includes("nativeClickSelector"));
 addCheck("upload18ValidatorCoversSeparatedRuntimeAndTargetFoundationRegression", upload18Validator.includes("targetCenterPreconditionRegression") && upload18Validator.includes("targetFoundationImportRegression") && upload18Validator.includes("targetCenterWritableRegression") && upload18Validator.includes("targetCenterPercentTargetSavedAndReadBack") && upload18Validator.includes("targetCenterPauseStateReadsBack") && upload18Validator.includes("targetCenterReactivateKeepsTarget"));
+addCheck("tenRouteCleanupRemovesRuntimeDebugAndLegacyCompatibilityAggregate", tenRouteValidator.includes('"airburg-runtime-dataset-v1"') && tenRouteValidator.includes('"airburg-debug-context-v1"') && tenRouteValidator.includes('"airburg_tmall_analysis_v2"') && tenRouteValidator.includes("legacyRuntimeCompatibilityRemoved"));
+addCheck("v2HomeDoesNotFallbackToV05TargetFoundationAfterRuntimeCleanup", biDataSource.includes("includeV05Persistence = true") && biDataSource.includes("if (!includeV05Persistence)") && v2HomeAdapter.includes("loadHomeBIDataSource({ includeV05Persistence: false })"));
 addCheck("sha256ProviderCoversHttpIpWithoutSubtleCrypto", sha256Provider.includes('from "@noble/hashes/sha2.js"') && sha256Provider.includes("globalThis.crypto?.subtle") && sha256Provider.includes('provider.digest("SHA-256", toArrayBuffer(bytes))') && sha256Provider.includes("nobleSha256(bytes)"));
 addCheck("importAndMigrationHashReuseSharedProvider", importHash.includes("../shared/sha256-provider") && migrationHash.includes("../shared/sha256-provider") && !importHash.includes("globalThis.crypto?.subtle") && !migrationHash.includes("globalThis.crypto?.subtle"));
 addCheck("sha256ValidatorCoversVectorsAndForcedFallback", sha256Validator.includes('"empty"') && sha256Validator.includes('"abc"') && sha256Validator.includes("unicode-airburg") && sha256Validator.includes("autoProviderAndForcedFallbackEquivalent"));

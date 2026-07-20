@@ -80,12 +80,25 @@ Current results:
   - Routes: ten V2 routes, desktop and mobile.
   - Result: reachable; no false preview/no-write copy; V2 links stay in V2; no wide overflow; console/network business errors: 0.
   - Artifacts: `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-hash-fallback-2026-07-20/`.
+- Homepage runtime/V0.5F source-boundary local validation: PASS.
+  - Root cause observed during public cleanup: runtime/debug records and `airburg_tmall_analysis_v2` could be removed while `/v2/home` still displayed metrics from preserved `airburg-v05` target-foundation facts.
+  - Source fix: `/v2/home` calls `loadHomeBIDataSource({ includeV05Persistence: false })`; target-center and V0.5F routes keep their default V0.5 persistence access.
+  - Static validator: `node scripts/private-audit/validate-saas-v2-full-quality-target-center-closure-v1.mjs`: PASS, including `v2HomeDoesNotFallbackToV05TargetFoundationAfterRuntimeCleanup`.
+  - Real local upload18 + target-center E2E:
+    - Command: `V2_HOME_ARTIFACT_DIR=docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-local-home-runtime-boundary-2026-07-20 node scripts/private-audit/validate-v2-home-upload18-system-chrome-local-v1.mjs`
+    - Result: `18 success / 0 failed / 0 skipped`; `/v2/home` 17 metrics while runtime exists; V0.5F four-source foundation import activates target dataset; percent target save/readback/pause/reactivate pass; console/network business errors: 0.
+  - Local ten-route + cleanup:
+    - Command: `SAAS_V2_BASE_URL=http://127.0.0.1:3000 SAAS_V2_ARTIFACT_DIR=docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20 SAAS_V2_CLEANUP_RUNTIME_DEBUG=1 node scripts/private-audit/validate-saas-v2-ten-route-system-chrome-v1.mjs`
+    - Result: ten V2 routes desktop/mobile PASS; cleanup PASS; runtime/debug deleted; preserved `airburg-v05`; `/v2/home` returned to empty state with CTA `/v2/upload`.
+  - Artifacts:
+    - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-local-home-runtime-boundary-2026-07-20/`
+    - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/`
 - Transient validator note:
   - One fresh-profile upload18 run passed 18/18 import, then timed out waiting for `/v2/home` dashboard. A same-profile ten-route check immediately proved `/v2/home` reachable with 17 metrics. The validator route wait was increased from 30s to 60s and the full upload18 E2E passed from a new profile.
 
 Pending before final handoff:
 
-- Implementation commit and deploy.
+- Implementation commit and deploy for the homepage source-boundary follow-up SHA.
 - Public upload18 + target-center E2E.
 - Public ten-route desktop/mobile regression.
 - Public runtime/debug cleanup and empty `/v2/home` + `/v2/upload` CTA evidence.

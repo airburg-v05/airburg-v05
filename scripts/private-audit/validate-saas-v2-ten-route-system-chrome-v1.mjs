@@ -15,6 +15,7 @@ const PROFILE_DIR = process.env.SAAS_V2_PROFILE_DIR
   ? path.resolve(process.env.SAAS_V2_PROFILE_DIR)
   : fs.mkdtempSync(path.join(os.tmpdir(), "airburg-saas-v2-ten-route-profile-"));
 const CLEANUP_RUNTIME_DEBUG = process.env.SAAS_V2_CLEANUP_RUNTIME_DEBUG === "1";
+const LEGACY_RUNTIME_COMPATIBILITY_KEY = "airburg_tmall_analysis_v2";
 
 fs.mkdirSync(ARTIFACT_DIR, { recursive: true });
 fs.mkdirSync(PROFILE_DIR, { recursive: true });
@@ -439,6 +440,15 @@ const cleanupRuntimeAndDebugRecords = async (client) => {
   const before = await evaluate(client, `indexedDB.databases ? indexedDB.databases().then((items) => items.map((item) => item.name).filter(Boolean).sort()) : []`);
   const runtimeDeleted = await deleteIndexedDbDatabase(client, "airburg-runtime-dataset-v1");
   const debugDeleted = await deleteIndexedDbDatabase(client, "airburg-debug-context-v1");
+  const legacyRuntimeCompatibilityRemoved = await evaluate(
+    client,
+    `(() => {
+      const key = ${JSON.stringify(LEGACY_RUNTIME_COMPATIBILITY_KEY)};
+      const existed = localStorage.getItem(key) !== null;
+      localStorage.removeItem(key);
+      return existed;
+    })()`,
+  );
   const after = await evaluate(client, `indexedDB.databases ? indexedDB.databases().then((items) => items.map((item) => item.name).filter(Boolean).sort()) : []`);
   await client.send("Page.reload", { ignoreCache: false });
   await waitForExpression(client, `document.readyState === "complete"`, 30000);
@@ -468,6 +478,7 @@ const cleanupRuntimeAndDebugRecords = async (client) => {
     after,
     runtimeDeleted,
     debugDeleted,
+    legacyRuntimeCompatibilityRemoved,
     preservedDatabases: after.filter((name) => ["airburg-target-drafts-v1", "airburg-v05"].includes(name)),
     preservedLocalStorageKeys: state.localStorageKeys.filter((key) => key === "airburg:demo-session"),
     screenshot,

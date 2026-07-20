@@ -61,6 +61,10 @@ export interface BIHomeDataSource {
   notices: string[];
 }
 
+export interface BIHomeDataSourceOptions {
+  includeV05Persistence?: boolean;
+}
+
 const DEFAULT_TMALL_STORE_ID = "tmall-default-store";
 const DEFAULT_TMALL_STORE_NAME = "天猫默认店铺";
 
@@ -539,7 +543,9 @@ const buildStatus = ({
   safeWarnings: warningCodes.slice(0, 5),
 });
 
-export const loadHomeBIDataSource = async (): Promise<BIHomeDataSource> => {
+export const loadHomeBIDataSource = async ({
+  includeV05Persistence = true,
+}: BIHomeDataSourceOptions = {}): Promise<BIHomeDataSource> => {
   const runtimeDataset = getRuntimeBIDataSet();
   if (runtimeDataset) {
     const { points, searchTotalKeywords, searchProductKeywords, notices } = buildETLPoints(runtimeDataset);
@@ -580,6 +586,22 @@ export const loadHomeBIDataSource = async (): Promise<BIHomeDataSource> => {
       safeWarnings: warningCodes.slice(0, 5),
       notices,
       dataStatus: buildStatus({ mode: "v2_valid", points, warningCodes, label: "已恢复上次安全聚合数据" }),
+    };
+  }
+
+  if (!includeV05Persistence) {
+    return {
+      mode: "empty",
+      points: [],
+      seriesPoints: [],
+      seriesDefinitions: [],
+      searchTotalKeywords: [],
+      searchProductKeywords: [],
+      targets: [],
+      selectedDate: null,
+      safeWarnings: [],
+      notices: ["当前没有可用经营数据。"],
+      dataStatus: buildStatus({ mode: "empty", points: [], warningCodes: [], label: "暂无数据" }),
     };
   }
 

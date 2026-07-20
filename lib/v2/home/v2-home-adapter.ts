@@ -843,7 +843,7 @@ export const loadV2HomeViewModel = async (
 ): Promise<V2HomeLoadResult> => {
   try {
     const [sourceResult, debugResult] = await Promise.all([
-      loadHomeBIDataSource(),
+      loadHomeBIDataSource({ includeV05Persistence: false }),
       loadCrossPageDebugContext(),
     ]);
     if (!sourceResult.dataStatus.hasRealData || sourceResult.points.length === 0) {

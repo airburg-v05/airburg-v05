@@ -1,0 +1,969 @@
+{
+  "status": "PASS",
+  "validator": "validate-saas-v2-ten-route-system-chrome-v1",
+  "baseUrl": "http://127.0.0.1:3000",
+  "artifactDir": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20",
+  "profileDir": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-saas-v2-ten-route-profile-8lKwZO",
+  "checks": [
+    {
+      "name": "v2-homeDesktopReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/home",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-home-desktop.png"
+      }
+    },
+    {
+      "name": "v2-homeUsesTruthfulV2ShellCopy",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/home",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-home-desktop.png"
+      }
+    },
+    {
+      "name": "v2-homeDesktopNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/home",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-home-desktop.png"
+      }
+    },
+    {
+      "name": "v2HomeEitherShows17MetricsOrSafeEmptyV2UploadCta",
+      "pass": true,
+      "details": {
+        "metricCount": 0,
+        "hasV2UploadCta": true
+      }
+    },
+    {
+      "name": "v2-series-boardDesktopReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/series-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 11,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-series-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2-series-boardUsesTruthfulV2ShellCopy",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/series-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 11,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-series-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2-series-boardDesktopNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/series-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 11,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-series-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2-store-boardDesktopReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/store-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 13,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-store-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2-store-boardUsesTruthfulV2ShellCopy",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/store-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 13,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-store-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2-store-boardDesktopNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/store-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 13,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-store-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2-product-boardDesktopReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/product-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 11,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-product-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2-product-boardUsesTruthfulV2ShellCopy",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/product-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 11,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-product-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2-product-boardDesktopNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/product-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 11,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-product-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2-uploadDesktopReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/upload",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-upload-desktop.png"
+      }
+    },
+    {
+      "name": "v2-uploadUsesTruthfulV2ShellCopy",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/upload",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-upload-desktop.png"
+      }
+    },
+    {
+      "name": "v2-uploadDesktopNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/upload",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-upload-desktop.png"
+      }
+    },
+    {
+      "name": "v2UploadKeepsV2LayoutAndFourSourceSection",
+      "pass": true,
+      "details": {
+        "hasUploadTargetFoundation": true
+      }
+    },
+    {
+      "name": "v2-upload-historyDesktopReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/upload/history",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 11,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-upload-history-desktop.png"
+      }
+    },
+    {
+      "name": "v2-upload-historyUsesTruthfulV2ShellCopy",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/upload/history",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 11,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-upload-history-desktop.png"
+      }
+    },
+    {
+      "name": "v2-upload-historyDesktopNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/upload/history",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 11,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-upload-history-desktop.png"
+      }
+    },
+    {
+      "name": "v2-data-healthDesktopReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/data-health",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 11,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-data-health-desktop.png"
+      }
+    },
+    {
+      "name": "v2-data-healthUsesTruthfulV2ShellCopy",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/data-health",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 11,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-data-health-desktop.png"
+      }
+    },
+    {
+      "name": "v2-data-healthDesktopNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/data-health",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 11,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-data-health-desktop.png"
+      }
+    },
+    {
+      "name": "v2DataHealthLinksStayInV2",
+      "pass": true,
+      "details": [
+        {
+          "text": "经营驾驶舱",
+          "href": "/v2/home"
+        },
+        {
+          "text": "系列中心",
+          "href": "/v2/series-board"
+        },
+        {
+          "text": "店铺中心",
+          "href": "/v2/store-board"
+        },
+        {
+          "text": "商品中心",
+          "href": "/v2/product-board"
+        },
+        {
+          "text": "数据接入",
+          "href": "/v2/upload"
+        },
+        {
+          "text": "数据健康",
+          "href": "/v2/data-health"
+        },
+        {
+          "text": "目标中心",
+          "href": "/v2/target-center"
+        },
+        {
+          "text": "排除规则",
+          "href": "/v2/exclusion-rules"
+        },
+        {
+          "text": "搜索资产",
+          "href": "/v2/search-assets"
+        },
+        {
+          "text": "返回 V2 首页",
+          "href": "/v2/home"
+        },
+        {
+          "text": "返回数据导入",
+          "href": "/v2/upload"
+        }
+      ]
+    },
+    {
+      "name": "v2-target-centerDesktopReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/target-center",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 12,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-target-center-desktop.png"
+      }
+    },
+    {
+      "name": "v2-target-centerUsesTruthfulV2ShellCopy",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/target-center",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 12,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-target-center-desktop.png"
+      }
+    },
+    {
+      "name": "v2-target-centerDesktopNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/target-center",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 12,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-target-center-desktop.png"
+      }
+    },
+    {
+      "name": "v2TargetCenterBoundaryNoHardDelete",
+      "pass": true,
+      "details": {
+        "hasDeleteButton": false
+      }
+    },
+    {
+      "name": "v2-search-assetsDesktopReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/search-assets",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-search-assets-desktop.png"
+      }
+    },
+    {
+      "name": "v2-search-assetsUsesTruthfulV2ShellCopy",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/search-assets",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-search-assets-desktop.png"
+      }
+    },
+    {
+      "name": "v2-search-assetsDesktopNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/search-assets",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-search-assets-desktop.png"
+      }
+    },
+    {
+      "name": "v2SearchAssetsBusinessCopyNoRawEngineeringTerms",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "name": "v2-exclusion-rulesDesktopReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/exclusion-rules",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-exclusion-rules-desktop.png"
+      }
+    },
+    {
+      "name": "v2-exclusion-rulesUsesTruthfulV2ShellCopy",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/exclusion-rules",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-exclusion-rules-desktop.png"
+      }
+    },
+    {
+      "name": "v2-exclusion-rulesDesktopNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/exclusion-rules",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-exclusion-rules-desktop.png"
+      }
+    },
+    {
+      "name": "v2ExclusionRulesSafeBlockedWithoutMockControls",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "name": "v2-homeMobileReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/home",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-home-mobile.png"
+      }
+    },
+    {
+      "name": "v2-homeMobileNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/home",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-home-mobile.png"
+      }
+    },
+    {
+      "name": "v2-series-boardMobileReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/series-board",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-series-board-mobile.png"
+      }
+    },
+    {
+      "name": "v2-series-boardMobileNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/series-board",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-series-board-mobile.png"
+      }
+    },
+    {
+      "name": "v2-store-boardMobileReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/store-board",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-store-board-mobile.png"
+      }
+    },
+    {
+      "name": "v2-store-boardMobileNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/store-board",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-store-board-mobile.png"
+      }
+    },
+    {
+      "name": "v2-product-boardMobileReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/product-board",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-product-board-mobile.png"
+      }
+    },
+    {
+      "name": "v2-product-boardMobileNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/product-board",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-product-board-mobile.png"
+      }
+    },
+    {
+      "name": "v2-uploadMobileReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/upload",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-upload-mobile.png"
+      }
+    },
+    {
+      "name": "v2-uploadMobileNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/upload",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-upload-mobile.png"
+      }
+    },
+    {
+      "name": "v2-upload-historyMobileReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/upload/history",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-upload-history-mobile.png"
+      }
+    },
+    {
+      "name": "v2-upload-historyMobileNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/upload/history",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-upload-history-mobile.png"
+      }
+    },
+    {
+      "name": "v2-data-healthMobileReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/data-health",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-data-health-mobile.png"
+      }
+    },
+    {
+      "name": "v2-data-healthMobileNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/data-health",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-data-health-mobile.png"
+      }
+    },
+    {
+      "name": "v2-target-centerMobileReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/target-center",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-target-center-mobile.png"
+      }
+    },
+    {
+      "name": "v2-target-centerMobileNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/target-center",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-target-center-mobile.png"
+      }
+    },
+    {
+      "name": "v2-search-assetsMobileReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/search-assets",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-search-assets-mobile.png"
+      }
+    },
+    {
+      "name": "v2-search-assetsMobileNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/search-assets",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-search-assets-mobile.png"
+      }
+    },
+    {
+      "name": "v2-exclusion-rulesMobileReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/exclusion-rules",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-exclusion-rules-mobile.png"
+      }
+    },
+    {
+      "name": "v2-exclusion-rulesMobileNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/exclusion-rules",
+        "horizontalOverflow": false,
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-exclusion-rules-mobile.png"
+      }
+    },
+    {
+      "name": "postRegressionCleanupRemovesRuntimeDebugAndKeepsV2HomeEmpty",
+      "pass": true,
+      "details": {
+        "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n排除规则\n\n资产\n\n搜索资产\n\n当前尚未导入经营数据\n\n请从统一批量上传入口导入天猫经营文件；页面仅读取安全聚合数据，不展示原始行或敏感明细。\n\n前往上传",
+        "hasEmptyState": true,
+        "uploadCtaIsV2": true,
+        "localStorageKeys": []
+      }
+    },
+    {
+      "name": "tenRouteConsoleBusinessErrorsZero",
+      "pass": true,
+      "details": []
+    },
+    {
+      "name": "tenRouteNetworkBusinessErrorsZero",
+      "pass": true,
+      "details": []
+    }
+  ],
+  "desktop": [
+    {
+      "pathname": "/v2/home",
+      "title": "Airburg Data · 电商数据分析平台",
+      "hasMain": true,
+      "hasV2Topbar": true,
+      "hasV2PageHeader": true,
+      "hasForbiddenCopy": [],
+      "horizontalOverflow": false,
+      "linkCount": 10,
+      "nonV2Links": [],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-home-desktop.png"
+    },
+    {
+      "pathname": "/v2/series-board",
+      "title": "Airburg Data · 电商数据分析平台",
+      "hasMain": true,
+      "hasV2Topbar": true,
+      "hasV2PageHeader": true,
+      "hasForbiddenCopy": [],
+      "horizontalOverflow": false,
+      "linkCount": 11,
+      "nonV2Links": [],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-series-board-desktop.png"
+    },
+    {
+      "pathname": "/v2/store-board",
+      "title": "Airburg Data · 电商数据分析平台",
+      "hasMain": true,
+      "hasV2Topbar": true,
+      "hasV2PageHeader": true,
+      "hasForbiddenCopy": [],
+      "horizontalOverflow": false,
+      "linkCount": 13,
+      "nonV2Links": [],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-store-board-desktop.png"
+    },
+    {
+      "pathname": "/v2/product-board",
+      "title": "Airburg Data · 电商数据分析平台",
+      "hasMain": true,
+      "hasV2Topbar": true,
+      "hasV2PageHeader": true,
+      "hasForbiddenCopy": [],
+      "horizontalOverflow": false,
+      "linkCount": 11,
+      "nonV2Links": [],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-product-board-desktop.png"
+    },
+    {
+      "pathname": "/v2/upload",
+      "title": "Airburg Data · 电商数据分析平台",
+      "hasMain": true,
+      "hasV2Topbar": true,
+      "hasV2PageHeader": true,
+      "hasForbiddenCopy": [],
+      "horizontalOverflow": false,
+      "linkCount": 10,
+      "nonV2Links": [],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-upload-desktop.png"
+    },
+    {
+      "pathname": "/v2/upload/history",
+      "title": "Airburg Data · 电商数据分析平台",
+      "hasMain": true,
+      "hasV2Topbar": true,
+      "hasV2PageHeader": true,
+      "hasForbiddenCopy": [],
+      "horizontalOverflow": false,
+      "linkCount": 11,
+      "nonV2Links": [],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-upload-history-desktop.png"
+    },
+    {
+      "pathname": "/v2/data-health",
+      "title": "Airburg Data · 电商数据分析平台",
+      "hasMain": true,
+      "hasV2Topbar": true,
+      "hasV2PageHeader": true,
+      "hasForbiddenCopy": [],
+      "horizontalOverflow": false,
+      "linkCount": 11,
+      "nonV2Links": [],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-data-health-desktop.png"
+    },
+    {
+      "pathname": "/v2/target-center",
+      "title": "Airburg Data · 电商数据分析平台",
+      "hasMain": true,
+      "hasV2Topbar": true,
+      "hasV2PageHeader": true,
+      "hasForbiddenCopy": [],
+      "horizontalOverflow": false,
+      "linkCount": 12,
+      "nonV2Links": [],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-target-center-desktop.png"
+    },
+    {
+      "pathname": "/v2/search-assets",
+      "title": "Airburg Data · 电商数据分析平台",
+      "hasMain": true,
+      "hasV2Topbar": true,
+      "hasV2PageHeader": true,
+      "hasForbiddenCopy": [],
+      "horizontalOverflow": false,
+      "linkCount": 10,
+      "nonV2Links": [],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-search-assets-desktop.png"
+    },
+    {
+      "pathname": "/v2/exclusion-rules",
+      "title": "Airburg Data · 电商数据分析平台",
+      "hasMain": true,
+      "hasV2Topbar": true,
+      "hasV2PageHeader": true,
+      "hasForbiddenCopy": [],
+      "horizontalOverflow": false,
+      "linkCount": 10,
+      "nonV2Links": [],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-exclusion-rules-desktop.png"
+    }
+  ],
+  "mobile": [
+    {
+      "pathname": "/v2/home",
+      "horizontalOverflow": false,
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-home-mobile.png"
+    },
+    {
+      "pathname": "/v2/series-board",
+      "horizontalOverflow": false,
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-series-board-mobile.png"
+    },
+    {
+      "pathname": "/v2/store-board",
+      "horizontalOverflow": false,
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-store-board-mobile.png"
+    },
+    {
+      "pathname": "/v2/product-board",
+      "horizontalOverflow": false,
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-product-board-mobile.png"
+    },
+    {
+      "pathname": "/v2/upload",
+      "horizontalOverflow": false,
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-upload-mobile.png"
+    },
+    {
+      "pathname": "/v2/upload/history",
+      "horizontalOverflow": false,
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-upload-history-mobile.png"
+    },
+    {
+      "pathname": "/v2/data-health",
+      "horizontalOverflow": false,
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-data-health-mobile.png"
+    },
+    {
+      "pathname": "/v2/target-center",
+      "horizontalOverflow": false,
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-target-center-mobile.png"
+    },
+    {
+      "pathname": "/v2/search-assets",
+      "horizontalOverflow": false,
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-search-assets-mobile.png"
+    },
+    {
+      "pathname": "/v2/exclusion-rules",
+      "horizontalOverflow": false,
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-exclusion-rules-mobile.png"
+    }
+  ],
+  "cleanupState": {
+    "before": [
+      "airburg-debug-context-v1",
+      "airburg-runtime-dataset-v1",
+      "airburg-v05"
+    ],
+    "after": [
+      "airburg-v05"
+    ],
+    "runtimeDeleted": true,
+    "debugDeleted": true,
+    "legacyRuntimeCompatibilityRemoved": false,
+    "preservedDatabases": [
+      "airburg-v05"
+    ],
+    "preservedLocalStorageKeys": [],
+    "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-home-runtime-boundary-2026-07-20/v2-home-after-runtime-debug-cleanup.png",
+    "state": {
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n排除规则\n\n资产\n\n搜索资产\n\n当前尚未导入经营数据\n\n请从统一批量上传入口导入天猫经营文件；页面仅读取安全聚合数据，不展示原始行或敏感明细。\n\n前往上传",
+      "hasEmptyState": true,
+      "uploadCtaIsV2": true,
+      "localStorageKeys": []
+    }
+  }
+}
