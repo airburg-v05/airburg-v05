@@ -184,7 +184,7 @@
   "validatorRegistry": "docs/project/VALIDATOR_REGISTRY.json",
   "currentTask": {
     "taskId": "SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1",
-    "status": "PENDING_POST_DEPLOY_OWNER_REVIEW",
+    "status": "IN_PROGRESS",
     "contract": "docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/TASK.md"
   },
   "nextAuthorizedEntryGate": "OWNER_POST_DEPLOY_REVIEW",

@@ -1,13 +1,35 @@
 # Handoff
 
-Status: `PENDING_POST_DEPLOY_OWNER_REVIEW`
+Status: `XLSX_0203_LOCAL_PASS_DEPLOY_PENDING`
 
-Current next action for 宗骥:
+Current next action for Codex:
+
+- Create the xlsx0203 implementation commit.
+- Deploy it through the existing Aliyun release flow.
+- Run public 18+4+target, ten-route, cleanup, and service/log checks.
+- Then update SSOT/result/validation/handoff to `PENDING_POST_DEPLOY_OWNER_REVIEW`.
+
+Current next action for 宗骥 after deployment:
 
 - Open `http://123.57.49.121/v2/home` and complete final post-deploy owner review.
-- Deployment and automated regression are complete; owner acceptance is not auto-written.
+- Owner acceptance is not auto-written.
 
-Final deployed implementation:
+Xlsx0203 local status:
+
+- Direct dependency `xlsx` now uses official SheetJS 0.20.3 CDN tarball.
+- Local xlsx security validator PASS; xlsx high/critical audit findings are gone.
+- Remaining Next/PostCSS moderate findings are recorded as `BLOCKED_BY_UPSTREAM_STABLE_FIX_LOW_CURRENT_EXPOSURE`; do not force downgrade, canary/preview upgrade, or override Next internal PostCSS.
+- Local same-profile browser regression PASS:
+  - `18 success / 0 failed / 0 skipped`
+  - V0.5F four-source target foundation PASS
+  - target-center save/readback/pause/reactivate PASS
+  - ten V2 routes desktop/mobile PASS
+  - post-regression runtime/debug cleanup PASS
+- Local artifact dirs:
+  - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-local-xlsx0203-final-2026-07-20/`
+  - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-xlsx0203-final-2026-07-20/`
+
+Previous deployed implementation before xlsx0203 continuation:
 
 - Commit: `bf76c174d12f1bc27b7ca73b9603df4cfa1c8f4a`
 - Release: `/opt/airburg/releases/saas-v2-home-boundary-bf76c17-20260720T232834`

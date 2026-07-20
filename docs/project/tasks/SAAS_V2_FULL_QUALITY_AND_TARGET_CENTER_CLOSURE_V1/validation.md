@@ -1,6 +1,6 @@
 # Validation
 
-Status: `PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW`
+Status: `XLSX_0203_LOCAL_PASS_DEPLOY_PENDING`
 
 Planned gates:
 
@@ -18,6 +18,37 @@ Current results:
 - Preflight reads: PASS.
 - Intake routing: existing project candidate `ecommerce_platform_optimized`.
 - Gate manifest: PASS (`data_dashboard`).
+- Xlsx security upgrade validator: PASS.
+  - Command: `node scripts/private-audit/validate-xlsx-security-and-postcss-exposure-v1.mjs`
+  - Dependency and lockfile now use official SheetJS 0.20.3 CDN tarball: `https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz`.
+  - Import/API compatibility: ESM namespace, ESM default read path, and CommonJS `require("xlsx")` read/write utilities available; package version reports `0.20.3` for namespace/CJS imports.
+  - Workbook smoke: generated `.xlsx` buffer/array reads back two test rows with Chinese headers.
+  - `npm audit --json` after upgrade: high 0, critical 0, total 2 moderate; xlsx is absent from vulnerabilities.
+  - Remaining moderate findings: `next` / `postcss` only. Status: `BLOCKED_BY_UPSTREAM_STABLE_FIX_LOW_CURRENT_EXPOSURE`.
+  - Stable-version check: `npm view next version` returned `16.2.10`; `npm view next@16.2.10 dependencies --json` shows `postcss: 8.4.31`, so stable 16.2.10 still does not clear `postcss<8.5.10`.
+  - Exposure scan: production roots `app`, `components`, `lib` have no direct `postcss` import/call, user CSS input, dynamic `<style>` stringify, `dangerouslySetInnerHTML`, `cssText`, `insertRule`, or `CSSStyleSheet` constructor exposure.
+- Xlsx0203 local validation stack: PASS.
+  - Targeted validators: PASS.
+    - `node scripts/private-audit/validate-v05-sha256-provider-cross-context-v1.mjs`
+    - `node scripts/private-audit/validate-v2-layout-copy-truthfulness-v1.mjs`
+    - `node scripts/private-audit/validate-v2-search-assets-and-exclusion-contract-boundaries-v1.mjs`
+    - `node scripts/private-audit/validate-v2-target-center-routing-variant-v1.mjs`
+    - `node scripts/private-audit/validate-v2-board-route-mapping-and-home-empty-cta-v1.mjs`
+    - `node scripts/private-audit/validate-v2-upload-data-health-embedded-routing-v1.mjs`
+    - `node scripts/private-audit/validate-v2-board-target-and-trend-guards-v1.mjs`
+    - `node scripts/private-audit/validate-v2-home-metric-settings-defaults-v1.mjs`
+    - `node scripts/private-audit/validate-v2-series-board-runtime-binding-v1.mjs`
+    - `node scripts/private-audit/validate-saas-v2-full-quality-target-center-closure-v1.mjs`
+  - Changed-file ESLint: PASS via `npx eslint scripts/private-audit/validate-xlsx-security-and-postcss-exposure-v1.mjs scripts/private-audit/validate-saas-v2-full-quality-target-center-closure-v1.mjs`.
+  - Repo lint: PASS with 0 errors and the same 2 pre-existing warnings.
+  - Build: PASS; Next 16.2.9 generated 26 app routes.
+  - Final same-profile local browser regression: PASS.
+    - Upload command: `V2_HOME_PROFILE_DIR=/tmp/airburg-saas-v2-xlsx0203-final-local-profile.* V2_HOME_ARTIFACT_DIR=docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-local-xlsx0203-final-2026-07-20 node scripts/private-audit/validate-v2-home-upload18-system-chrome-local-v1.mjs`
+    - Ten-route cleanup command: `SAAS_V2_BASE_URL=http://127.0.0.1:3000 SAAS_V2_PROFILE_DIR=/tmp/airburg-saas-v2-xlsx0203-final-local-profile.* SAAS_V2_ARTIFACT_DIR=docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-xlsx0203-final-2026-07-20 SAAS_V2_CLEANUP_RUNTIME_DEBUG=1 node scripts/private-audit/validate-saas-v2-ten-route-system-chrome-v1.mjs`
+    - Result: `18 success / 0 failed / 0 skipped`; V0.5F four-source import PASS; target-center `92%` save/readback/pause/reactivate PASS; ten V2 routes desktop/mobile PASS; console/network business errors 0; cleanup removed runtime/debug and returned `/v2/home` to empty state with CTA `/v2/upload`.
+    - Artifact dirs:
+      - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-local-xlsx0203-final-2026-07-20/`
+      - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-xlsx0203-final-2026-07-20/`
 - Static closure validator: PASS.
   - `node scripts/private-audit/validate-saas-v2-full-quality-target-center-closure-v1.mjs`
   - Covers route truth, source matrix, single file-input handlers, native file chooser validator path, runtime/V0.5F split, target freeze/no hard delete, percent input normalization, single “平台和店铺” label, route mapper, search/exclusion business copy, and stale target-agent conflict.

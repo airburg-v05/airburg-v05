@@ -16,6 +16,8 @@ const sameList = (left, right) =>
   left.slice().sort().join("|") === right.slice().sort().join("|");
 
 const ssot = readJson("docs/project/PROJECT_SSOT.json");
+const packageJson = readJson("package.json");
+const packageLock = readJson("package-lock.json");
 const routeMatrix = readJson("docs/project/ROUTE_DATA_SOURCE_MATRIX.json");
 const targetClient = read("components/targets/v05/target-management-client.tsx");
 const targetOptions = read("lib/v05/target-management/options.ts");
@@ -34,9 +36,14 @@ const sha256Provider = read("lib/v05/shared/sha256-provider.ts");
 const importHash = read("lib/v05/import/hash.ts");
 const migrationHash = read("lib/v05/migration/hash.ts");
 const sha256Validator = read("scripts/private-audit/validate-v05-sha256-provider-cross-context-v1.mjs");
+const xlsxSecurityValidator = read("scripts/private-audit/validate-xlsx-security-and-postcss-exposure-v1.mjs");
 const targetRuntime = read("lib/v05/target-management/browser-runtime.ts");
 const taskIssueMatrix = read("docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/issue-matrix.md");
 const freeze = read("docs/releases/v0.5f-target-allocation-freeze.md");
+
+const officialSheetJsTarball = "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz";
+const xlsxLock = packageLock.packages?.["node_modules/xlsx"];
+const rootLock = packageLock.packages?.[""];
 
 const expectedV2Routes = [
   "/v2/home",
@@ -92,6 +99,9 @@ addCheck("v2HomeDoesNotFallbackToV05TargetFoundationAfterRuntimeCleanup", biData
 addCheck("sha256ProviderCoversHttpIpWithoutSubtleCrypto", sha256Provider.includes('from "@noble/hashes/sha2.js"') && sha256Provider.includes("globalThis.crypto?.subtle") && sha256Provider.includes('provider.digest("SHA-256", toArrayBuffer(bytes))') && sha256Provider.includes("nobleSha256(bytes)"));
 addCheck("importAndMigrationHashReuseSharedProvider", importHash.includes("../shared/sha256-provider") && migrationHash.includes("../shared/sha256-provider") && !importHash.includes("globalThis.crypto?.subtle") && !migrationHash.includes("globalThis.crypto?.subtle"));
 addCheck("sha256ValidatorCoversVectorsAndForcedFallback", sha256Validator.includes('"empty"') && sha256Validator.includes('"abc"') && sha256Validator.includes("unicode-airburg") && sha256Validator.includes("autoProviderAndForcedFallbackEquivalent"));
+addCheck("xlsxUsesOfficialSheetJs0203CdnTarball", packageJson.dependencies?.xlsx === officialSheetJsTarball && rootLock?.dependencies?.xlsx === officialSheetJsTarball && xlsxLock?.version === "0.20.3" && xlsxLock?.resolved === officialSheetJsTarball);
+addCheck("xlsxSecurityValidatorCoversAuditApiAndPostcssExposure", xlsxSecurityValidator.includes("validate-xlsx-security-and-postcss-exposure-v1") && xlsxSecurityValidator.includes("xlsxImportApiCompatible") && xlsxSecurityValidator.includes("xlsxReadWriteWorkbookSmokePasses") && xlsxSecurityValidator.includes("npmAuditHasNoXlsxHighOrCriticalAfterUpgrade") && xlsxSecurityValidator.includes("BLOCKED_BY_UPSTREAM_STABLE_FIX_LOW_CURRENT_EXPOSURE") && xlsxSecurityValidator.includes("postcssCurrentExposureHasNoUserCssOrDynamicStyleStringifySurface"));
+addCheck("taskMatrixRecordsXlsxAndPostcssAuditBoundary", taskIssueMatrix.includes("P0-XLSX-0203-CDN-UPGRADE") && taskIssueMatrix.includes("official SheetJS 0.20.3 CDN tarball") && taskIssueMatrix.includes("P2-NEXT-POSTCSS-UPSTREAM-BLOCKED") && taskIssueMatrix.includes("BLOCKED_BY_UPSTREAM_STABLE_FIX_LOW_CURRENT_EXPOSURE"));
 addCheck("v2UploadExposesTargetFoundationWithoutDecorativeOuterCard", v2UploadPage.includes("v2-upload-target-foundation") && v2UploadPage.includes("<TmallBatchImportWorkbench routeVariant=\"v2\" />") && !v2UploadPage.includes("rounded-3xl"));
 addCheck("v2UploadKeepsRuntimeAndV05FoundationSeparated", v2UploadPage.includes("18 文件入口写入经营首页和看板使用的安全聚合数据") && v2UploadPage.includes("目标中心沿用 V0.5F") && !uploadDashboard.includes("runV05BrowserTmallBatchImport"));
 addCheck("v05BatchImportWorkbenchSupportsV2LinksWithoutChangingLegacyDefault", batchImportWorkbench.includes('routeVariant = "legacy"') && batchImportWorkbench.includes('type DataCenterRouteVariant') && batchImportWorkbench.includes("}, { routeVariant })"));
