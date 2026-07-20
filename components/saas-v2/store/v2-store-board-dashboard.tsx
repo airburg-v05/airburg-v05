@@ -452,7 +452,14 @@ export function V2StoreBoardDashboard() {
   }
 
   if (!viewModel || !viewModel.storeContext || viewModel.statusLabel === "暂无数据") {
-    return <SafeEmptyState title="暂无店铺数据" description="完成数据导入后，再返回查看店铺中心。" />;
+    return (
+      <SafeEmptyState
+        actionHref="/v2/upload"
+        actionLabel="前往数据接入"
+        title="暂无店铺数据"
+        description="完成数据导入后，再返回查看店铺中心。"
+      />
+    );
   }
 
   return (

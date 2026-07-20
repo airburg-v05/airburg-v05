@@ -15,6 +15,7 @@ const sources = {
   homeToolbar: read("components/saas-v2/home/v2-home-toolbar.tsx"),
   homeMetrics: read("components/saas-v2/home/v2-home-metric-grid.tsx"),
   metricCard: read("components/saas-v2/cards/metric-card-v2.tsx"),
+  safeEmptyState: read("components/saas-v2/empty/safe-empty-state.tsx"),
   series: read("components/saas-v2/series/v2-series-board-dashboard.tsx"),
   store: read("components/saas-v2/store/v2-store-board-dashboard.tsx"),
   product: read("components/saas-v2/product/v2-product-board-dashboard.tsx"),
@@ -82,6 +83,17 @@ addCheck(
     sources[key].includes('!viewModel || !viewModel.storeContext || viewModel.statusLabel === "暂无数据"') &&
     sources[key].includes("SafeEmptyState"),
   ),
+);
+
+addCheck(
+  "emptyBoardStatesHaveSingleV2UploadCta",
+  sources.safeEmptyState.includes('data-testid="safe-empty-state-primary-cta"') &&
+    sources.safeEmptyState.includes("actionHref") &&
+    ["series", "store", "product"].every((key) =>
+      sources[key].includes('actionHref="/v2/upload"') &&
+      sources[key].includes('actionLabel="前往数据接入"'),
+    ) &&
+    sources.tenRouteValidator.includes("emptyBoardPrimaryCtaPointsToV2Upload"),
 );
 
 addCheck(

@@ -457,7 +457,14 @@ export function V2SeriesBoardDashboard() {
   }
 
   if (!viewModel || !viewModel.storeContext || viewModel.statusLabel === "暂无数据") {
-    return <SafeEmptyState title="暂无系列数据" description="完成数据导入或系列维护后，再返回查看系列中心。" />;
+    return (
+      <SafeEmptyState
+        actionHref="/v2/upload"
+        actionLabel="前往数据接入"
+        title="暂无系列数据"
+        description="完成数据导入或系列维护后，再返回查看系列中心。"
+      />
+    );
   }
 
   return (

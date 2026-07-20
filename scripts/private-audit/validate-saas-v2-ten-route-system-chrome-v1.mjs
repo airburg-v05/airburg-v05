@@ -20,7 +20,14 @@ const LEGACY_RUNTIME_COMPATIBILITY_KEY = "airburg_tmall_analysis_v2";
 fs.mkdirSync(ARTIFACT_DIR, { recursive: true });
 fs.mkdirSync(PROFILE_DIR, { recursive: true });
 
-const routes = [
+const routeFilter = new Set(
+  (process.env.SAAS_V2_ROUTE_FILTER ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean),
+);
+
+const allRoutes = [
   { path: "/v2/home", ready: "main", label: "v2-home" },
   { path: "/v2/series-board", ready: "main", label: "v2-series-board" },
   { path: "/v2/store-board", ready: "main", label: "v2-store-board" },
@@ -32,6 +39,12 @@ const routes = [
   { path: "/v2/search-assets", ready: "[data-testid='v2-search-assets-workspace']", label: "v2-search-assets" },
   { path: "/v2/exclusion-rules", ready: "[data-testid='v2-exclusion-rules-workspace']", label: "v2-exclusion-rules" },
 ];
+
+const routes = routeFilter.size > 0 ? allRoutes.filter((route) => routeFilter.has(route.path)) : allRoutes;
+
+if (routes.length === 0) {
+  throw new Error(`empty_route_filter:${Array.from(routeFilter).join(",")}`);
+}
 
 const forbiddenCopy = [
   "V2 preview routes only",
@@ -349,12 +362,25 @@ const inspectRouteMobile = async (client, route) => {
       pathname: window.location.pathname,
       horizontalOverflow: Math.ceil(document.documentElement.scrollWidth) > Math.ceil(document.documentElement.clientWidth) + 1,
       bodyText: document.body.innerText,
+      emptyStatePrimaryCtas: Array.from(document.querySelectorAll('[data-testid="safe-empty-state-primary-cta"]')).map((link) => ({
+        text: (link.textContent ?? '').replace(/\\s+/g, ' ').trim(),
+        href: link.getAttribute('href'),
+      })),
     }))()`,
   );
   const screenshot = await capture(client, `${route.label}-mobile`);
   const details = { ...state, screenshot, bodyText: undefined };
   check(`${route.label}MobileReachable`, state.pathname === route.path, details);
   check(`${route.label}MobileNoWideOverflow`, state.horizontalOverflow === false, details);
+  if (["/v2/series-board", "/v2/store-board", "/v2/product-board"].includes(route.path)) {
+    check(
+      `${route.label}MobileEmptyStateCtaPointsToV2Upload`,
+      state.emptyStatePrimaryCtas.length === 1 &&
+        state.emptyStatePrimaryCtas[0]?.text === "前往数据接入" &&
+        state.emptyStatePrimaryCtas[0]?.href === "/v2/upload",
+      state.emptyStatePrimaryCtas,
+    );
+  }
   if (route.path === "/v2/search-assets") {
     await evaluate(
       client,
@@ -408,6 +434,11 @@ const inspectRouteMobile = async (client, route) => {
   return details;
 };
 
+const emptyBoardPrimaryCtaPointsToV2Upload = (state) => {
+  const matchingLinks = state.links.filter((link) => link.text === "前往数据接入" && link.href === "/v2/upload");
+  return matchingLinks.length === 1 && state.emptyStatePrimaryCtaCount === 1;
+};
+
 const routeSpecificChecks = async (client) => {
   const state = await evaluate(
     client,
@@ -419,6 +450,7 @@ const routeSpecificChecks = async (client) => {
         text,
         links,
         metricCount: document.querySelectorAll('[data-metric-key]').length,
+        emptyStatePrimaryCtaCount: document.querySelectorAll('[data-testid="safe-empty-state-primary-cta"]').length,
         hasUploadTargetFoundation: Boolean(document.querySelector('[data-testid="v2-upload-target-foundation"]')),
         targetDrawerLabelCount: Array.from(document.querySelectorAll('[role="dialog"] span')).filter((element) => (element.textContent ?? '').trim() === '平台和店铺').length,
         hasDeleteButton: Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '删除'),
@@ -437,30 +469,33 @@ const routeSpecificChecks = async (client) => {
     check(
       "v2SeriesBoardEmptyStateIsCompactWhenNoRuntimeData",
       state.text.includes("暂无系列数据") &&
+        emptyBoardPrimaryCtaPointsToV2Upload(state) &&
         !state.text.includes("GMV--") &&
         !state.text.includes("趋势--") &&
         !state.text.includes("目标达成--"),
-      { text: state.text.slice(0, 1200) },
+      { text: state.text.slice(0, 1200), links: state.links, emptyStatePrimaryCtaCount: state.emptyStatePrimaryCtaCount },
     );
   }
   if (state.path === "/v2/store-board") {
     check(
       "v2StoreBoardEmptyStateIsCompactWhenNoRuntimeData",
       state.text.includes("暂无店铺数据") &&
+        emptyBoardPrimaryCtaPointsToV2Upload(state) &&
         !state.text.includes("GMV--") &&
         !state.text.includes("趋势--") &&
         !state.text.includes("目标达成--"),
-      { text: state.text.slice(0, 1200) },
+      { text: state.text.slice(0, 1200), links: state.links, emptyStatePrimaryCtaCount: state.emptyStatePrimaryCtaCount },
     );
   }
   if (state.path === "/v2/product-board") {
     check(
       "v2ProductBoardEmptyStateIsCompactWhenNoRuntimeData",
       state.text.includes("暂无重点商品数据") &&
+        emptyBoardPrimaryCtaPointsToV2Upload(state) &&
         !state.text.includes("GMV--") &&
         !state.text.includes("趋势--") &&
         !state.text.includes("目标达成--"),
-      { text: state.text.slice(0, 1200) },
+      { text: state.text.slice(0, 1200), links: state.links, emptyStatePrimaryCtaCount: state.emptyStatePrimaryCtaCount },
     );
   }
   if (state.path === "/v2/upload") {

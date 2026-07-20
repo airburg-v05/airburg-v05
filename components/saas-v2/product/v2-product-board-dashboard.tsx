@@ -440,7 +440,14 @@ export function V2ProductBoardDashboard() {
   }
 
   if (!viewModel || !viewModel.storeContext || viewModel.statusLabel === "暂无数据") {
-    return <SafeEmptyState title="暂无重点商品数据" description="完成数据导入并维护重点商品后，再返回查看商品中心。" />;
+    return (
+      <SafeEmptyState
+        actionHref="/v2/upload"
+        actionLabel="前往数据接入"
+        title="暂无重点商品数据"
+        description="完成数据导入并维护重点商品后，再返回查看商品中心。"
+      />
+    );
   }
 
   return (
