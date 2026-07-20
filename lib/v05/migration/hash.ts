@@ -11,24 +11,10 @@ import {
   type LegacyValueHasher,
 } from "./contracts";
 
-const HEX_BYTE_PAD = 2;
-
-const bytesToHex = (bytes: ArrayBuffer): string =>
-  Array.from(new Uint8Array(bytes))
-    .map((byte) => byte.toString(16).padStart(HEX_BYTE_PAD, "0"))
-    .join("");
+import { sha256HexString } from "../shared/sha256-provider";
 
 export const createWebCryptoLegacyValueHasher = (): LegacyValueHasher => ({
-  hash: async (rawValue: string): Promise<string> => {
-    const subtle = globalThis.crypto?.subtle;
-    if (!subtle) {
-      throw new Error("hash_provider_unavailable");
-    }
-
-    const bytes = new TextEncoder().encode(rawValue);
-    const digest = await subtle.digest("SHA-256", bytes);
-    return bytesToHex(digest);
-  },
+  hash: (rawValue: string): Promise<string> => sha256HexString(rawValue),
 });
 
 export const hashLegacyValue = async (

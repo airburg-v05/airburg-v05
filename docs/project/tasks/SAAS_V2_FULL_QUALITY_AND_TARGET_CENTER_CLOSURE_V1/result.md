@@ -18,6 +18,11 @@ Local implementation result so far:
   - `/v2/upload` target foundation path reuses existing V0.5F four-source import for target-center.
   - No runtime snapshot is written into `airburg-v05`.
 - Reworded `/v2/search-assets` and `/v2/exclusion-rules` to business Chinese; removed misleading mock/static rows and fake controls.
+- Fixed a public HTTP-only product failure in V0.5F hashing:
+  - `http://123.57.49.121` is an insecure context; `crypto.subtle` is unavailable even though localhost passes.
+  - Added shared SHA-256 provider with WebCrypto fast path and `@noble/hashes` fallback.
+  - Reused the provider from both four-source import hashing and legacy migration hashing.
+  - Added standard vector and forced-fallback equivalence validator.
 
 Deployment result: pending.
 

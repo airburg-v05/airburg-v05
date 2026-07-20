@@ -42,6 +42,11 @@ Current results:
   - Result: desktop and mobile reachable; no page-wide mobile/desktop overflow; no `V2 preview routes only`, `Dataset: preview pending`, or false no-write copy; no business console/network errors.
   - Artifacts: `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-2026-07-20/`.
 - Additional local validation commands:
+  - `node scripts/private-audit/validate-v05-sha256-provider-cross-context-v1.mjs`: PASS.
+    - Shared provider source: `lib/v05/shared/sha256-provider.ts`.
+    - Business paths covered: `lib/v05/import/hash.ts`, `lib/v05/migration/hash.ts`.
+    - Standard vectors: empty string, `abc`, Unicode `空气堡🌬️`, binary `[00 01 02 03 fe ff]`.
+    - Provider equivalence: WebCrypto fast path, forced noble fallback, ArrayBuffer input, and offset Uint8Array input all produced identical SHA-256 hex output.
   - `node scripts/private-audit/validate-v2-layout-copy-truthfulness-v1.mjs`: PASS.
   - `node scripts/private-audit/validate-v2-search-assets-and-exclusion-contract-boundaries-v1.mjs`: PASS.
   - `node scripts/private-audit/validate-v2-target-center-routing-variant-v1.mjs`: PASS.
@@ -55,6 +60,26 @@ Current results:
   - `npm run build`: PASS; 26 app routes generated.
   - `git diff --check`: PASS.
   - `git diff -- next-env.d.ts`: clean after restoring generated route-reference drift.
+- Hash fallback public root-cause evidence:
+  - Public URL checked: `http://123.57.49.121/v2/upload`.
+  - CDP eval result: `isSecureContext=false`, `hasCrypto=true`, `hasSubtleCrypto=false`, `cryptoKeys=["getRandomValues"]`.
+  - Previous public implementation SHA `56a6369`: runtime upload18 reached `18 success / 0 failed / 0 skipped`, then V0.5F four-source import failed waiting for completion.
+  - Public/official sources consulted:
+    - MDN `Crypto.subtle`: secure-context only.
+    - MDN `Window.crypto`: insecure contexts generally only expose `getRandomValues`.
+    - `@noble/hashes` README: audited/minimal/tree-shakeable SHA-2 subimport, `@noble/hashes/sha2.js`.
+- Hash fallback local post-fix E2E: PASS.
+  - Command: `V2_HOME_ARTIFACT_DIR=docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-local-hash-fallback-2026-07-20 node scripts/private-audit/validate-v2-home-upload18-system-chrome-local-v1.mjs`
+  - Result: `18 success / 0 failed / 0 skipped`; four-source import activates V0.5F target foundation; target-center percent target save/readback/pause/reactivate all pass; console/network business errors: 0.
+  - Persistent screenshots:
+    - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-local-hash-fallback-2026-07-20/upload-desktop.png`
+    - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-local-hash-fallback-2026-07-20/v2-home-desktop.png`
+    - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-local-hash-fallback-2026-07-20/v2-home-mobile.png`
+- Hash fallback local ten-route browser regression: PASS.
+  - Command: `SAAS_V2_BASE_URL=http://127.0.0.1:3000 SAAS_V2_ARTIFACT_DIR=docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-hash-fallback-2026-07-20 node scripts/private-audit/validate-saas-v2-ten-route-system-chrome-v1.mjs`
+  - Routes: ten V2 routes, desktop and mobile.
+  - Result: reachable; no false preview/no-write copy; V2 links stay in V2; no wide overflow; console/network business errors: 0.
+  - Artifacts: `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-hash-fallback-2026-07-20/`.
 - Transient validator note:
   - One fresh-profile upload18 run passed 18/18 import, then timed out waiting for `/v2/home` dashboard. A same-profile ten-route check immediately proved `/v2/home` reachable with 17 metrics. The validator route wait was increased from 30s to 60s and the full upload18 E2E passed from a new profile.
 

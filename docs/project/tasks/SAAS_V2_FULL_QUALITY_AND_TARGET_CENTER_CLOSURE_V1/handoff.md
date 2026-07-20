@@ -4,7 +4,7 @@ Status: `IN_PROGRESS`
 
 Current next action:
 
-- Make the single implementation commit, deploy through the existing Aliyun flow, then run public upload18/target-center and ten-route regression.
+- Make the hash-fallback implementation commit, deploy through the existing Aliyun flow, then run public upload18/target-center and ten-route regression.
 
 Local evidence already captured:
 
@@ -14,6 +14,13 @@ Local evidence already captured:
   - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-local-2026-07-20/v2-home-mobile.png`
 - Ten-route local screenshots and summary:
   - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-2026-07-20/`
+- Hash fallback local evidence:
+  - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/upload18-local-hash-fallback-2026-07-20/`
+  - `docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/artifacts/ten-route-local-hash-fallback-2026-07-20/`
+
+Public root-cause note:
+
+- `http://123.57.49.121/v2/upload` was confirmed as `isSecureContext=false` with `crypto.subtle=false`; prior public SHA `56a6369` failed V0.5F four-source import after upload18 succeeded. The fix is the shared SHA-256 provider, not a timeout increase.
 
 Important product boundaries:
 
