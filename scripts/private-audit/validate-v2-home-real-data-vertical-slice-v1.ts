@@ -255,7 +255,14 @@ const buildRuntimePlan = async (): Promise<RuntimePlan> => {
     ?? runtime.dataset.products.find((row) => row.productId.trim())?.productId
     ?? "";
   check("runtimePlanHasProductId", productId.length > 0);
-  check("runtimePlanSafeSkippedPresent", runtime.issues.some((issue) => issue.code === "etl_plan_summary_without_product_id_unsupported"));
+  check(
+    "runtimePlanLevelAdPlanAccepted",
+    runtime.dataset.planMetrics.some((row) => !row.productId && !!row.planId),
+    {
+      planMetrics: runtime.dataset.planMetrics.length,
+      issueCodes: Array.from(new Set(runtime.issues.map((issue) => issue.code))).sort(),
+    },
+  );
   return {
     filePaths,
     dataset: runtime.dataset,
@@ -696,7 +703,7 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
     await click(client, "[data-testid='upload-page-v2-import-button']");
     await waitForExpression(client, `Boolean(document.querySelector('[data-testid="upload-page-v2-result-summary"]'))`, 30000);
     const firstImport = await importCounts(client);
-    check("realUploadRecognitionCounts", firstImport.success === 17 && firstImport.failed === 0 && firstImport.skipped === 1, firstImport);
+    check("realUploadRecognitionCounts", firstImport.success === 18 && firstImport.failed === 0 && firstImport.skipped === 0, firstImport);
 
     await configureRealSeries(client, plan.productId);
     currentStage = "target_seed";
@@ -741,7 +748,7 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
     check("defaultBusinessRangeStable", metricState.dateRangeCorrect);
     check("realConfiguredKeySeriesRestored", metricState.seriesCount > 0, { count: metricState.seriesCount });
     check("chartCoversBusinessDates", ["6/26", "6/27", "6/28", "6/29", "6/30"].every((date) => metricState.chartDates.includes(date)));
-    check("persistedSafeSkippedCountMatchesUpload", metricState.dataHealthText.includes("安全跳过1"), {
+    check("persistedSafeSkippedCountMatchesUpload", metricState.dataHealthText.includes("安全跳过0"), {
       expected: firstImport.skipped,
     });
 
@@ -803,7 +810,7 @@ const browserChecks = async (plan: RuntimePlan): Promise<BrowserResult> => {
     check("engineeringCopyAbsentFromHome", desktopLayout.engineeringTextCount === 0, desktopLayout);
     check("kpiCellsHaveNoIndividualShadow", desktopLayout.shadowedKpiCount === 0, desktopLayout);
     check("dataHealthIsFourCountSummary", desktopLayout.dataHealthCount === 4, desktopLayout);
-    check("dataHealthSafeSkippedCountIsOne", desktopLayout.safeSkippedCount === firstImport.skipped, desktopLayout);
+    check("dataHealthSafeSkippedCountMatchesUpload", desktopLayout.safeSkippedCount === firstImport.skipped, desktopLayout);
     check("homeOmitsFullConfigurationSurfaces", await evaluate<boolean>(client, `(() => {
       const dashboard = document.querySelector('[data-testid="v2-home-dashboard"]');
       return Boolean(dashboard) && dashboard.querySelectorAll('form, table, textarea').length === 0;

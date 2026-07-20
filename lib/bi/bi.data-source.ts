@@ -280,6 +280,8 @@ const buildETLPoints = (
   const points: BIDataPoint[] = [];
   const productMetrics = dataset.productMetrics ?? [];
   const planMetrics = dataset.planMetrics ?? [];
+  const productLevelPlanMetrics = planMetrics.filter((metric) => !!metric.productId);
+  const fallbackPlanMetrics = productLevelPlanMetrics.length > 0 ? productLevelPlanMetrics : planMetrics;
   const afterSalesMetrics = dataset.afterSalesMetrics ?? [];
   const searchTotalKeywords = dataset.searchTotalKeywords ?? [];
   const searchProductKeywords = dataset.searchProductKeywords ?? [];
@@ -302,7 +304,7 @@ const buildETLPoints = (
     }));
   });
 
-  planMetrics.forEach((metric) => {
+  fallbackPlanMetrics.forEach((metric) => {
     const adRevenue =
       typeof metric.spend === "number" &&
       Number.isFinite(metric.spend) &&
@@ -356,6 +358,11 @@ const buildETLPoints = (
     persistenceMode === "persisted"
       ? "已恢复上次安全聚合数据，刷新页面后可继续查看。"
       : "当前显示本次上传的 ETL 运行时数据；通过上传页导入的数据会保存为安全聚合快照。",
+    productLevelPlanMetrics.length > 0 && productLevelPlanMetrics.length !== planMetrics.length
+      ? "已接收计划级推广文件，但当前广告指标仍优先使用商品级推广，避免与商品口径重复相加。"
+      : productLevelPlanMetrics.length === 0 && planMetrics.length > 0
+        ? "当前缺少商品级推广数据，广告指标临时回落到计划级推广汇总。"
+        : "当前广告指标使用商品级推广口径。",
     `搜索词总表 ${searchTotalKeywords.length} 条，商品搜索词 ${searchProductKeywords.length} 条，售后安全聚合 ${afterSalesMetrics.length} 条。`,
   ];
 

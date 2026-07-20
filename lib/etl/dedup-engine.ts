@@ -51,7 +51,12 @@ export const deduplicateBIDataSet = (dataset: BIDataSet): DedupResult => {
   );
   const planMetrics = uniqueBy(
     dataset.planMetrics,
-    (metric) => `${metric.platformCode}::${metric.storeId}::${metric.productId}::${metric.date}`,
+    (metric) => {
+      if (metric.productId) {
+        return `${metric.platformCode}::${metric.storeId}::${metric.productId}::${metric.date}`;
+      }
+      return `${metric.platformCode}::${metric.storeId}::__store__::${metric.planId ?? "__no_plan__"}::${metric.date}`;
+    },
   );
   const searchTotalKeywords = uniqueBy(
     dataset.searchTotalKeywords,

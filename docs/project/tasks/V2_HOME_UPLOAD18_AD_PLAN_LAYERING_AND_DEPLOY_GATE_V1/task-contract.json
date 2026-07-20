@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "V2_HOME_UPLOAD18_AD_PLAN_LAYERING_AND_DEPLOY_GATE_V1",
+  "status": "BLOCKED",
+  "taskMeaning": "Accept the full historical 18-file Tmall upload set through /upload, layer plan-level and product-level ad sources without double counting store or product KPIs, validate /v2/home semantics and browser behavior locally, then deploy only this authorized slice to the existing ECS preview if SSH BatchMode and remote checks pass.",
+  "baselineCommit": "2defe2fb76cd63a73bf88db7988775e3554fa399",
+  "activeBranch": "feature/saas-ui-v2-shell",
+  "authorized": true,
+  "authorizedAt": "2026-07-18T19:35:27+08:00",
+  "allowedActions": [
+    "Modify the minimum upload, ETL runtime, BI adapter, persistence, and validator code required for the 18-file Tmall acceptance path",
+    "Run local TypeScript, lint, build, runtime, reconciliation, and browser validation",
+    "Read and use the existing ECS deployment protocol",
+    "Run SSH BatchMode, rsync, remote build, PM2, Nginx, and public regression only if the SSH gate passes",
+    "Write task evidence, validation, result, and handoff documents"
+  ],
+  "forbiddenActions": [
+    "Modify metric formulas or semantic definitions beyond layered source selection",
+    "Fake productId or merge plan-level rows into product-level KPI totals",
+    "Modify unrelated V2 routes, V1 routes, formulas, or ETL domains outside the minimum acceptance fix",
+    "Upload private samples or real Excel / CSV files to the ECS project directory",
+    "Claim VISUAL_ACCEPTED, HUMAN_ACCEPTED, or deployed success without remote evidence",
+    "Commit or push as part of deployment"
+  ],
+  "deployPolicy": {
+    "host": "123.57.49.121",
+    "sshUser": "root",
+    "pm2App": "airburg-tmall-v1",
+    "sourceType": "rsync_with_exclusions",
+    "publicPort3000Allowed": false
+  },
+  "blocker": {
+    "stage": "SSH_BATCHMODE_GATE",
+    "status": "BLOCKED",
+    "observedAt": "2026-07-18T19:35:27+08:00",
+    "evidence": "Connection closed by 123.57.49.121 port 22"
+  }
+}

@@ -608,7 +608,6 @@ const buildRealFixturePlan = async (): Promise<RealFixturePlan> => {
     "search_total",
     "search_product",
     "after_sales",
-    "unsupported_plan_summary",
   ];
   for (const type of requiredTypes) {
     assertCheck(`realFileCoverage_${type}`, detectedTypes.includes(type), { detectedTypes });
@@ -623,9 +622,10 @@ const buildRealFixturePlan = async (): Promise<RealFixturePlan> => {
   }));
   const runtime = await runETLRuntime(descriptors);
   const issueCodes = new Set([...runtime.issues, ...runtime.errorQueue].map((issue) => issue.code));
-  assertCheck("unsupportedFilesEnterSafeIssueQueue", !issueCodes.has("etl_after_sales_not_supported") && issueCodes.has("etl_plan_summary_without_product_id_unsupported"), {
+  assertCheck("planLevelAdPlanAccepted", !issueCodes.has("etl_after_sales_not_supported") && !issueCodes.has("etl_plan_summary_without_product_id_unsupported"), {
     issueCodes: Array.from(issueCodes).sort(),
     afterSalesMetrics: runtime.dataset.afterSalesMetrics.length,
+    planLevelRows: runtime.dataset.planMetrics.filter((row) => !row.productId && !!row.planId).length,
   });
   const dataset = runtime.dataset;
   const counts = {
@@ -640,6 +640,7 @@ const buildRealFixturePlan = async (): Promise<RealFixturePlan> => {
   assertCheck("runtimeProductMetricsParsed", counts.productMetrics > 0, counts);
   assertCheck("runtimeSearchTotalParsed", counts.searchTotalKeywords > 0, counts);
   assertCheck("runtimeSearchProductParsed", counts.searchProductKeywords > 0, counts);
+  assertCheck("runtimePlanLevelRowsParsed", dataset.planMetrics.some((row) => !row.productId && !!row.planId), counts);
 
   const choice = chooseKeywordAndProduct(dataset);
   assertCheck("brandKeywordAndProductIdAvailable", !!choice, {

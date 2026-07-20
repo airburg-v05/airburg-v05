@@ -48,7 +48,9 @@ export interface PlanMetric {
   platformName: string | null;
   storeId: string;
   storeName: string | null;
-  productId: string;
+  productId: string | null;
+  planId?: string | null;
+  planName?: string | null;
   date: string;
   spend: number | null;
   clicks: number | null;

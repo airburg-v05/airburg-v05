@@ -377,7 +377,7 @@ const summarizeRuntimeTotals = (dataset: BIDataSet): Totals => {
     totals.paidBuyers = add(totals.paidBuyers, row.buyers);
   });
   dataset.planMetrics.forEach((row) => {
-    if (!EXPECTED_DATES.includes(row.date)) return;
+    if (!EXPECTED_DATES.includes(row.date) || !row.productId) return;
     totals.spend = add(totals.spend, row.spend);
     totals.clicks = add(totals.clicks, row.clicks);
   });
@@ -402,6 +402,19 @@ const summarizeRuntimeTotals = (dataset: BIDataSet): Totals => {
   });
 
   return totals;
+};
+
+const summarizePlanLevelCoverage = (dataset: BIDataSet): Pick<Totals, "spend" | "clicks"> & { rowCount: number } => {
+  let rowCount = 0;
+  let spend: number | null = null;
+  let clicks: number | null = null;
+  dataset.planMetrics.forEach((row) => {
+    if (!EXPECTED_DATES.includes(row.date) || row.productId || !row.planId) return;
+    rowCount += 1;
+    spend = add(spend, row.spend);
+    clicks = add(clicks, row.clicks);
+  });
+  return { rowCount, spend, clicks };
 };
 
 const closeEnough = (left: number | null, right: number | null): boolean => {
@@ -615,7 +628,7 @@ const main = async () => {
 
   addCheck("ETL_FILE_ROUTER_V2_FIX", "realDailyFilesFound", files.length >= 18, { count: files.length });
   addCheck("ETL_FILE_ROUTER_V2_FIX", "afterSalesDetectedAsAfterSales", (typeCounts.after_sales ?? 0) >= 1, typeCounts);
-  addCheck("ETL_FILE_ROUTER_V2_FIX", "planSummarySafelyUnsupported", (typeCounts.unsupported_plan_summary ?? 0) >= 1, typeCounts);
+  addCheck("ETL_FILE_ROUTER_V2_FIX", "planLevelAdPlanRoutedToPlanMetric", (typeCounts.plan_metric ?? 0) >= 2, typeCounts);
   addCheck("ETL_FILE_ROUTER_V2_FIX", "noUnknownDailyFiles", (typeCounts.unknown ?? 0) === 0, typeCounts);
 
   clearRuntimeBIDataSet();
@@ -624,7 +637,16 @@ const main = async () => {
   const allAtOnceRecordCount = recordCount(allDataset);
   const issueCodes = Array.from(new Set([...allResult.issues, ...allResult.errorQueue].map((issue) => issue.code))).sort();
 
-  addCheck("ETL_FILE_ROUTER_V2_FIX", "unsupportedPlanSummaryIssuePresent", issueCodes.includes("etl_plan_summary_without_product_id_unsupported"), issueCodes);
+  addCheck(
+    "ETL_FILE_ROUTER_V2_FIX",
+    "planLevelAdPlanAcceptedWithoutUnsupportedIssue",
+    !issueCodes.includes("etl_plan_summary_without_product_id_unsupported") &&
+      allDataset.planMetrics.some((metric) => !metric.productId && !!metric.planId),
+    {
+      issueCodes,
+      planLevelRows: allDataset.planMetrics.filter((metric) => !metric.productId && !!metric.planId).length,
+    },
+  );
   addCheck("ETL_FILE_ROUTER_V2_FIX", "afterSalesNoUnsupportedIssue", !issueCodes.includes("etl_after_sales_not_supported"), issueCodes);
 
   addCheck("SEARCH_KEYWORD_DEDUP_V2", "searchTotalDatesComplete", hasAllExpectedDates(datesFor(allDataset.searchTotalKeywords)), Array.from(datesFor(allDataset.searchTotalKeywords)).sort());
@@ -713,9 +735,16 @@ const main = async () => {
 
   const sourceTotals = summarizeSourceTotals(files);
   const runtimeTotals = summarizeRuntimeTotals(allDataset);
+  const planLevelCoverage = summarizePlanLevelCoverage(allDataset);
   const totalChecks = compareTotals(sourceTotals, runtimeTotals);
   addCheck("RECONCILIATION", "businessTotalsMatch", totalChecks.gmv && totalChecks.gsv && totalChecks.visitors && totalChecks.paidBuyers, { sourceTotals, runtimeTotals });
   addCheck("RECONCILIATION", "planTotalsMatch", totalChecks.spend && totalChecks.clicks, { sourceTotals, runtimeTotals });
+  addCheck(
+    "RECONCILIATION",
+    "planLevelCoverageLayeredWithoutChangingAuthoritativeTotals",
+    planLevelCoverage.rowCount > 0 && totalChecks.spend && totalChecks.clicks,
+    { planLevelCoverage, sourceTotals, runtimeTotals },
+  );
   addCheck("RECONCILIATION", "searchTotalsMatch", totalChecks.searchTotalVisitors && totalChecks.searchTotalBuyers && totalChecks.searchProductVisitors && totalChecks.searchProductBuyers, { sourceTotals, runtimeTotals });
   addCheck("RECONCILIATION", "afterSalesTotalsMatch", totalChecks.refundAmount && totalChecks.refundCount && totalChecks.shippedRefundAmount && totalChecks.shippedRefundCount && totalChecks.signedRefundAmount && totalChecks.signedRefundCount, { sourceTotals, runtimeTotals });
   addCheck("RECONCILIATION", "june26ToJune30FullyStable", hasAllExpectedDates(productMetricDates(allDataset)) && hasAllExpectedDates(planMetricDates(allDataset)) && hasAllExpectedDates(datesFor(allDataset.searchTotalKeywords)) && hasAllExpectedDates(datesFor(allDataset.searchProductKeywords)) && hasAllExpectedDates(datesFor(allDataset.afterSalesMetrics)), {
@@ -758,6 +787,11 @@ const main = async () => {
     reconciliationReport: {
       sourceTotals: Object.fromEntries(Object.entries(sourceTotals).map(([key, value]) => [key, round2(value)])),
       runtimeTotals: Object.fromEntries(Object.entries(runtimeTotals).map(([key, value]) => [key, round2(value)])),
+      planLevelCoverage: {
+        rowCount: planLevelCoverage.rowCount,
+        spend: round2(planLevelCoverage.spend),
+        clicks: round2(planLevelCoverage.clicks),
+      },
       totalChecks,
     },
     stableRange: {

@@ -50,6 +50,7 @@ interface SourceMetricSummary {
 interface SourceSummary {
   productMetric: SourceMetricSummary;
   planMetric: SourceMetricSummary;
+  planLevelCoverage: SourceMetricSummary;
   searchTotal: SourceMetricSummary;
   searchProduct: SourceMetricSummary;
 }
@@ -58,11 +59,14 @@ interface RuntimeSummary {
   products: number;
   productMetrics: number;
   planMetrics: number;
+  authoritativePlanMetrics: number;
+  planLevelPlanMetrics: number;
   searchTotalKeywords: number;
   searchProductKeywords: number;
   afterSalesMetrics: number;
   productMetricTotals: Pick<SourceMetricSummary, "gmv" | "gsv" | "visitors" | "buyers">;
   planMetricTotals: Pick<SourceMetricSummary, "spend" | "clicks"> & { roiFiniteCount: number };
+  planLevelCoverageTotals: Pick<SourceMetricSummary, "spend" | "clicks"> & { roiFiniteCount: number };
   searchTotalTotals: Pick<SourceMetricSummary, "gmv" | "visitors" | "buyers">;
   searchProductTotals: Pick<SourceMetricSummary, "visitors" | "buyers">;
 }
@@ -111,6 +115,7 @@ const matchesPattern = (file: string, pattern: string): boolean => {
 };
 
 const knownPriorBaselinePatterns = [
+  "docs/**",
   "app/(workspace)/home/page.tsx",
   "app/(workspace)/series-board/page.tsx",
   "app/(workspace)/store-board/page.tsx",
@@ -359,7 +364,7 @@ const metricRowsFromSource = (rows: Record<string, unknown>[]) => {
   return uniqueRows(sourceRows, (row) => `${row.productId}::${row.date}`);
 };
 
-const planRowsFromSource = (rows: Record<string, unknown>[]) => {
+const authoritativePlanRowsFromSource = (rows: Record<string, unknown>[]) => {
   const sourceRows = rows
     .map((row) => ({
       productId: asText(readValue(row, "productId")),
@@ -370,6 +375,20 @@ const planRowsFromSource = (rows: Record<string, unknown>[]) => {
     }))
     .filter((row) => row.productId && row.date);
   return uniqueRows(sourceRows, (row) => `${row.productId}::${row.date}`);
+};
+
+const planLevelRowsFromSource = (rows: Record<string, unknown>[]) => {
+  const sourceRows = rows
+    .map((row) => ({
+      productId: asText(readValue(row, "productId")),
+      planId: asText(row["计划ID"] ?? row["计划id"] ?? row["推广计划ID"] ?? row["推广计划id"] ?? row.planId ?? row.plan_id),
+      date: parseDate(readValue(row, "date")),
+      spend: readValue(row, "spend"),
+      clicks: readValue(row, "clicks"),
+      roi: readValue(row, "roi"),
+    }))
+    .filter((row) => !row.productId && row.planId && row.date);
+  return uniqueRows(sourceRows, (row) => `${row.planId}::${row.date}`);
 };
 
 const searchTotalRowsFromSource = (rows: Record<string, unknown>[]) => {
@@ -398,7 +417,8 @@ const searchProductRowsFromSource = (rows: Record<string, unknown>[]) => {
 
 const buildSourceSummary = (rowsByType: Record<ETLSourceType, Record<string, unknown>[]>): SourceSummary => {
   const productMetricRows = metricRowsFromSource(rowsByType.product_metric);
-  const planRows = planRowsFromSource(rowsByType.plan_metric);
+  const planRows = authoritativePlanRowsFromSource(rowsByType.plan_metric);
+  const planLevelRows = planLevelRowsFromSource(rowsByType.plan_metric);
   const searchTotalRows = searchTotalRowsFromSource(rowsByType.search_total);
   const searchProductRows = searchProductRowsFromSource(rowsByType.search_product);
 
@@ -425,6 +445,17 @@ const buildSourceSummary = (rowsByType: Record<ETLSourceType, Record<string, unk
     if (parseNumber(row.roi) !== null) planMetric.roiFiniteCount += 1;
   });
 
+  const planLevelCoverage = emptySourceMetricSummary();
+  planLevelCoverage.sourceRows = rowsByType.plan_metric.filter(hasAnyValue).length;
+  planLevelCoverage.finalCount = planLevelRows.length;
+  planLevelCoverage.dateCount = new Set(planLevelRows.map((row) => row.date)).size;
+  planLevelCoverage.keywordCount = new Set(planLevelRows.map((row) => row.planId)).size;
+  planLevelRows.forEach((row) => {
+    addValue(planLevelCoverage.spend, row.spend);
+    addValue(planLevelCoverage.clicks, row.clicks);
+    if (parseNumber(row.roi) !== null) planLevelCoverage.roiFiniteCount += 1;
+  });
+
   const searchTotal = emptySourceMetricSummary();
   searchTotal.sourceRows = rowsByType.search_total.filter(hasAnyValue).length;
   searchTotal.finalCount = searchTotalRows.length;
@@ -445,7 +476,7 @@ const buildSourceSummary = (rowsByType: Record<ETLSourceType, Record<string, unk
     addValue(searchProduct.buyers, row.buyers);
   });
 
-  return { productMetric, planMetric, searchTotal, searchProduct };
+  return { productMetric, planMetric, planLevelCoverage, searchTotal, searchProduct };
 };
 
 const runtimeSummary = (dataset: BIDataSet): RuntimeSummary => {
@@ -467,10 +498,27 @@ const runtimeSummary = (dataset: BIDataSet): RuntimeSummary => {
     clicks: emptyNumberSummary(),
     roiFiniteCount: 0,
   };
+  const planLevelCoverageTotals = {
+    spend: emptyNumberSummary(),
+    clicks: emptyNumberSummary(),
+    roiFiniteCount: 0,
+  };
+  let authoritativePlanMetrics = 0;
+  let planLevelPlanMetrics = 0;
   dataset.planMetrics.forEach((row) => {
-    addValue(planMetricTotals.spend, row.spend);
-    addValue(planMetricTotals.clicks, row.clicks);
-    if (typeof row.roi === "number" && Number.isFinite(row.roi)) planMetricTotals.roiFiniteCount += 1;
+    if (row.productId) {
+      authoritativePlanMetrics += 1;
+      addValue(planMetricTotals.spend, row.spend);
+      addValue(planMetricTotals.clicks, row.clicks);
+      if (typeof row.roi === "number" && Number.isFinite(row.roi)) planMetricTotals.roiFiniteCount += 1;
+      return;
+    }
+    if (row.planId) {
+      planLevelPlanMetrics += 1;
+      addValue(planLevelCoverageTotals.spend, row.spend);
+      addValue(planLevelCoverageTotals.clicks, row.clicks);
+      if (typeof row.roi === "number" && Number.isFinite(row.roi)) planLevelCoverageTotals.roiFiniteCount += 1;
+    }
   });
 
   const searchTotalTotals = {
@@ -497,11 +545,14 @@ const runtimeSummary = (dataset: BIDataSet): RuntimeSummary => {
     products: dataset.products.length,
     productMetrics: dataset.productMetrics.length,
     planMetrics: dataset.planMetrics.length,
+    authoritativePlanMetrics,
+    planLevelPlanMetrics,
     searchTotalKeywords: dataset.searchTotalKeywords.length,
     searchProductKeywords: dataset.searchProductKeywords.length,
     afterSalesMetrics: dataset.afterSalesMetrics.length,
     productMetricTotals,
     planMetricTotals,
+    planLevelCoverageTotals,
     searchTotalTotals,
     searchProductTotals,
   };
@@ -602,7 +653,6 @@ const main = async () => {
     "search_total",
     "search_product",
     "after_sales",
-    "unsupported_plan_summary",
   ];
   requiredTypes.forEach((type) => assertCheck(`realFileCoverage_${type}`, detectedTypes.includes(type), { detectedTypes }));
 
@@ -615,10 +665,11 @@ const main = async () => {
   }));
   const runtimeResult = await runETLRuntime(descriptors);
   const issueCodes = new Set([...runtimeResult.issues, ...runtimeResult.errorQueue].map((issue) => issue.code));
-  assertCheck("runETLRuntimeSucceededWithAfterSalesAndPlanSummarySafelyHandled", runtimeResult.summary.filesParsed >= 5 && runtimeResult.summary.filesFailed === 1, runtimeResult.summary);
-  assertCheck("onlyPlanSummaryEntersSafeIssueQueue", !issueCodes.has("etl_after_sales_not_supported") && issueCodes.has("etl_plan_summary_without_product_id_unsupported"), {
+  assertCheck("runETLRuntimeAcceptedPlanLevelAdPlan", runtimeResult.summary.filesParsed >= 6 && runtimeResult.summary.filesFailed === 0, runtimeResult.summary);
+  assertCheck("planLevelAdPlanDoesNotEnterSafeIssueQueue", !issueCodes.has("etl_after_sales_not_supported") && !issueCodes.has("etl_plan_summary_without_product_id_unsupported"), {
     issueCodes: Array.from(issueCodes).sort(),
     afterSalesMetrics: runtimeResult.dataset.afterSalesMetrics.length,
+    planLevelRows: runtimeResult.dataset.planMetrics.filter((row) => !row.productId && !!row.planId).length,
   });
 
   const source = buildSourceSummary(rowsByType);
@@ -627,13 +678,24 @@ const main = async () => {
 
   assertCheck("biHomeReadsRuntimeETL", biSource.dataStatus.label === "ETL运行时数据", biSource.dataStatus);
   compareCount("productMetricsCountMatchesSource", runtime.productMetrics, source.productMetric.finalCount);
-  compareCount("planMetricsCountMatchesSource", runtime.planMetrics, source.planMetric.finalCount);
+  compareCount("planMetricsCountMatchesSource", runtime.planMetrics, source.planMetric.finalCount + source.planLevelCoverage.finalCount);
+  compareCount("authoritativePlanMetricsCountMatchesSource", runtime.authoritativePlanMetrics, source.planMetric.finalCount);
+  compareCount("planLevelCoverageCountMatchesSource", runtime.planLevelPlanMetrics, source.planLevelCoverage.finalCount);
   compareCount("searchTotalCountMatchesSource", runtime.searchTotalKeywords, source.searchTotal.finalCount);
   compareCount("searchProductCountMatchesSource", runtime.searchProductKeywords, source.searchProduct.finalCount);
   assertCheck("afterSalesSafeAggregationExists", runtime.afterSalesMetrics > 0, { afterSalesMetrics: runtime.afterSalesMetrics });
   compareCount("biSearchTotalCountMatchesRuntime", biSource.searchTotalKeywords.length, runtime.searchTotalKeywords);
   compareCount("biSearchProductCountMatchesRuntime", biSource.searchProductKeywords.length, runtime.searchProductKeywords);
-  compareCount("biPointsCountMatchesRuntimeBusinessPlanAndAfterSales", biSource.points.length, runtime.productMetrics + runtime.planMetrics + runtime.afterSalesMetrics);
+  compareCount("biPointsCountMatchesRuntimeBusinessPlanAndAfterSales", biSource.points.length, runtime.productMetrics + runtime.authoritativePlanMetrics + runtime.afterSalesMetrics);
+  assertCheck(
+    "planLevelCoverageAcceptedWithoutEnteringBiPointCount",
+    runtime.planLevelPlanMetrics > 0 && biSource.points.length === runtime.productMetrics + runtime.authoritativePlanMetrics + runtime.afterSalesMetrics,
+    {
+      biPoints: biSource.points.length,
+      authoritativePlanMetrics: runtime.authoritativePlanMetrics,
+      planLevelPlanMetrics: runtime.planLevelPlanMetrics,
+    },
+  );
 
   compareNumber("gmvTotalMatchesSource", runtime.productMetricTotals.gmv.sum, source.productMetric.gmv.sum, 0.01);
   compareNumber("gsvTotalMatchesSource", runtime.productMetricTotals.gsv.sum, source.productMetric.gsv.sum, 0.01);
@@ -652,6 +714,7 @@ const main = async () => {
   compareNumber("biVisitorsPointsMatchRuntime", sumPointMetric(biSource.points, "visitors"), runtime.productMetricTotals.visitors.sum, 0);
   compareNumber("biBuyersPointsMatchRuntime", sumPointMetric(biSource.points, "paidBuyers"), runtime.productMetricTotals.buyers.sum, 0);
   compareNumber("biAdSpendPointsMatchRuntime", sumPointMetric(biSource.points, "adSpend"), runtime.planMetricTotals.spend.sum, 0.01);
+  compareNumber("planLevelCoverageDoesNotChangeBiAdSpend", sumPointMetric(biSource.points, "adSpend"), source.planMetric.spend.sum, 0.01);
 
   const latestDate = Array.from(new Set(biSource.points.map((point) => point.businessDate).filter(Boolean))).sort().at(-1) ?? null;
   assertCheck("selectedDateMatchesLatestPointDate", biSource.selectedDate === latestDate, { selectedDate: biSource.selectedDate, latestDate });
@@ -737,6 +800,7 @@ const main = async () => {
     sourceSummary: {
       productMetric: source.productMetric,
       planMetric: source.planMetric,
+      planLevelCoverage: source.planLevelCoverage,
       searchTotal: source.searchTotal,
       searchProduct: source.searchProduct,
     },
@@ -747,6 +811,8 @@ const main = async () => {
         products: runtime.products,
         productMetrics: runtime.productMetrics,
         planMetrics: runtime.planMetrics,
+        authoritativePlanMetrics: runtime.authoritativePlanMetrics,
+        planLevelPlanMetrics: runtime.planLevelPlanMetrics,
         searchTotalKeywords: runtime.searchTotalKeywords,
         searchProductKeywords: runtime.searchProductKeywords,
       },
@@ -757,6 +823,8 @@ const main = async () => {
         buyers: runtime.productMetricTotals.buyers.sum,
         adSpend: runtime.planMetricTotals.spend.sum,
         adClicks: runtime.planMetricTotals.clicks.sum,
+        planLevelCoverageSpend: runtime.planLevelCoverageTotals.spend.sum,
+        planLevelCoverageClicks: runtime.planLevelCoverageTotals.clicks.sum,
       },
     },
     biHomeDataSource: {

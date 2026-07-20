@@ -26,6 +26,8 @@ const HEADER_ALIASES: Record<string, string[]> = {
     "item_id",
   ],
   productName: ["商品名称", "商品名", "宝贝名称", "宝贝标题", "商品标题", "标题", "产品名称", "主体名称", "productName", "name"],
+  planId: ["计划ID", "计划id", "推广计划ID", "推广计划id", "planId", "plan_id"],
+  planName: ["计划名字", "计划名称", "推广计划名称", "planName", "plan_name"],
   date: ["日期", "统计日期", "业务日期", "时间", "下载周期", "报表日期", "date"],
   gmv: ["GMV", "成交金额", "交易金额", "支付金额", "支付子订单金额", "销售额", "下单金额", "引导支付金额", "总预售成交金额", "gmv"],
   gsv: ["GSV", "净销售额", "净成交金额", "成功成交金额", "支付金额", "支付子订单金额", "gsv"],
@@ -73,6 +75,7 @@ export const detectFileType = (sheets: ParsedExcelSheet[]): ETLSourceType => {
   const hasProductName = hasAlias(fields, "productName");
   const hasKeyword = hasAlias(fields, "keyword");
   const hasDate = hasAlias(fields, "date");
+  const hasPlanId = hasAlias(fields, "planId");
   const hasBusinessMetric = hasAlias(fields, "gmv") || hasAlias(fields, "gsv") || hasAlias(fields, "buyers");
   const hasTrafficMetric = hasAlias(fields, "visitors");
   const hasPlanMetric = hasAlias(fields, "spend") || hasAlias(fields, "roi") || hasAlias(fields, "clicks");
@@ -86,6 +89,7 @@ export const detectFileType = (sheets: ParsedExcelSheet[]): ETLSourceType => {
   if (hasProductId && hasKeyword) return "search_product";
   if (!hasProductId && hasKeyword && hasTrafficMetric) return "search_total";
   if (hasProductId && hasDate && hasPlanMetric) return "plan_metric";
+  if (!hasProductId && hasDate && hasPlanMetric && hasPlanId) return "plan_metric";
   if (!hasProductId && hasDate && hasPlanMetric) return "unsupported_plan_summary";
   if (hasProductId && hasDate && (hasBusinessMetric || hasTrafficMetric)) return "product_metric";
   if (hasProductId && hasProductName) return "product_dimension";

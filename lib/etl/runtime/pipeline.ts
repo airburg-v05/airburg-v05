@@ -148,14 +148,18 @@ const transformPlanMetric = (
   sheet.rows.forEach((row, rowIndex) => {
     if (!hasAnyValue(row)) return;
     const productId = asText(readValue(row, "productId"));
+    const planId = asText(readValue(row, "planId"));
+    const planName = asText(readValue(row, "planName"));
     const date = dateForRow(row, owner);
-    if (!productId || !date) {
-      pushMissingFieldWarning(context, safeFileName, sheet.sheetName, rowIndex, "productId/date");
+    if (!date || (!productId && !planId)) {
+      pushMissingFieldWarning(context, safeFileName, sheet.sheetName, rowIndex, "productId|planId/date");
       return;
     }
     context.dataset.planMetrics.push({
       ...ownerFields(owner),
       productId,
+      planId,
+      planName,
       date,
       spend: parseNumber(readValue(row, "spend")),
       clicks: parseNumber(readValue(row, "clicks")),
