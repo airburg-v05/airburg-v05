@@ -1,0 +1,109 @@
+{
+  "status": "PASS",
+  "baseUrl": "http://123.57.49.121",
+  "results": [
+    {
+      "route": "/v2/home",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-copy-refresh-5aa2c76-2026-07-20/v2-home-empty-public-5aa2c76.png",
+      "pathname": "/v2/home",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n数据接入\n数据健康\n目标中心\n排除规则\n搜索资产\n\n当前尚未导入经营数据\n\n请从统一批量上传入口导入天猫经营文件；页面仅读取安全聚合数据，不展示原始行或敏感明细。\n\n前往上传",
+      "topbarStatus": false,
+      "pageHeaderStatus": false,
+      "emptyState": true,
+      "ctaHref": "/v2/upload"
+    },
+    {
+      "route": "/v2/series-board",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-copy-refresh-5aa2c76-2026-07-20/v2-series-board-public-5aa2c76.png",
+      "pathname": "/v2/series-board",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n数据接入\n数据健康\n目标中心\n排除规则\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n\nAIRBURG BUSINESS WORKSPACE\n\n品牌经营分析工作区\n\n当前页面按已接入的数据与业务口径展示，未接入能力会明确标记。\n\n返回 V2 首页\n暂无数据\n系列中心\n\n与首页重点系列 GSV 模块保持同一系列定义，只汇总当前店铺、当前系列和当前时间范围。\n\n日\n周\n月\n自定义\n平台\n店铺\n系列\n经营日期\n当前没有可用经营日期。\n系列列表\n\n系列属于平台、品牌和店铺；商品 ID 清单仍由用户维护，不",
+      "topbarStatus": true,
+      "pageHeaderStatus": true,
+      "emptyState": false,
+      "ctaHref": "/v2/upload"
+    },
+    {
+      "route": "/v2/store-board",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-copy-refresh-5aa2c76-2026-07-20/v2-store-board-public-5aa2c76.png",
+      "pathname": "/v2/store-board",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n数据接入\n数据健康\n目标中心\n排除规则\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n\nAIRBURG BUSINESS WORKSPACE\n\n品牌经营分析工作区\n\n当前页面按已接入的数据与业务口径展示，未接入能力会明确标记。\n\n返回 V2 首页\n暂无数据\n店铺中心\n\n只汇总当前平台、当前店铺和当前时间范围，不与其他店铺事实混合。\n\n日\n周\n月\n自定义\n平台\n店铺\n经营日期\n当前没有可用经营日期。\n查看系列\n查看商品\n店铺列表 / 店铺切换\n\n平台和店铺选择来自当前 active dataset ",
+      "topbarStatus": true,
+      "pageHeaderStatus": true,
+      "emptyState": false,
+      "ctaHref": "/v2/upload"
+    },
+    {
+      "route": "/v2/product-board",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-copy-refresh-5aa2c76-2026-07-20/v2-product-board-public-5aa2c76.png",
+      "pathname": "/v2/product-board",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n数据接入\n数据健康\n目标中心\n排除规则\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n\nAIRBURG BUSINESS WORKSPACE\n\n品牌经营分析工作区\n\n当前页面按已接入的数据与业务口径展示，未接入能力会明确标记。\n\n返回 V2 首页\n暂无数据\n商品中心\n\n只展示当前店铺中由用户主动维护的重点商品，不会把全量商品池伪装成可运营明细。\n\n日\n周\n月\n自定义\n平台\n店铺\n重点商品\n经营日期\n当前没有可用经营日期。\n重点商品列表\n\n只显示已维护的重点商品及其当前数据状态。\n\n商品\t商品 ID",
+      "topbarStatus": true,
+      "pageHeaderStatus": true,
+      "emptyState": false,
+      "ctaHref": "/v2/upload"
+    },
+    {
+      "route": "/v2/upload",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-copy-refresh-5aa2c76-2026-07-20/v2-upload-public-5aa2c76.png",
+      "pathname": "/v2/upload",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n数据接入\n数据健康\n目标中心\n排除规则\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n\nAIRBURG BUSINESS WORKSPACE\n\n品牌经营分析工作区\n\n当前页面按已接入的数据与业务口径展示，未接入能力会明确标记。\n\n返回 V2 首页\nLOGO\n目标店铺\n天猫 · 天猫默认店铺\n\n店铺数量 1个 · 已选择 1个\n\n涉及平台 天猫 · 当前平台 天猫\n\n天猫\n已开放\n京东\n暂未开放\n抖音\n暂未开放\n有赞\n暂未开放\n拼多多\n暂未开放\n当前范围\nPLATFORM\n天猫\nSTORE\n天猫默认",
+      "topbarStatus": true,
+      "pageHeaderStatus": true,
+      "emptyState": false,
+      "ctaHref": "/v2/upload"
+    },
+    {
+      "route": "/v2/upload/history",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-copy-refresh-5aa2c76-2026-07-20/v2-upload-history-public-5aa2c76.png",
+      "pathname": "/v2/upload/history",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n数据接入\n数据健康\n目标中心\n排除规则\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n\nAIRBURG BUSINESS WORKSPACE\n\n品牌经营分析工作区\n\n当前页面按已接入的数据与业务口径展示，未接入能力会明确标记。\n\n返回 V2 首页\n暂无导入记录\n\n当前还没有导入记录。请先返回数据导入页完成一次批量导入。\n\n返回数据导入",
+      "topbarStatus": true,
+      "pageHeaderStatus": true,
+      "emptyState": false,
+      "ctaHref": "/v2/upload"
+    },
+    {
+      "route": "/v2/data-health",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-copy-refresh-5aa2c76-2026-07-20/v2-data-health-public-5aa2c76.png",
+      "pathname": "/v2/data-health",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n数据接入\n数据健康\n目标中心\n排除规则\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n\nAIRBURG BUSINESS WORKSPACE\n\n品牌经营分析工作区\n\n当前页面按已接入的数据与业务口径展示，未接入能力会明确标记。\n\n返回 V2 首页\n\n暂无导入批次\n\n当前还没有 V2 导入批次。\n\n返回数据导入",
+      "topbarStatus": true,
+      "pageHeaderStatus": true,
+      "emptyState": false,
+      "ctaHref": "/v2/upload"
+    },
+    {
+      "route": "/v2/target-center",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-copy-refresh-5aa2c76-2026-07-20/v2-target-center-public-5aa2c76.png",
+      "pathname": "/v2/target-center",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n数据接入\n数据健康\n目标中心\n排除规则\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n\nAIRBURG BUSINESS WORKSPACE\n\n品牌经营分析工作区\n\n当前页面按已接入的数据与业务口径展示，未接入能力会明确标记。\n\n返回 V2 首页\n\nTARGET CENTER\n\n目标管理\n\n按公司、店铺、系列和商品四级维护目标。父子关系必须显式选择，本页不自动生成或分配目标。\n\n待处理\n当前还没有多店铺数据\n\n当前没有可用的多店铺数据。\n\n数据导入",
+      "topbarStatus": true,
+      "pageHeaderStatus": true,
+      "emptyState": false,
+      "ctaHref": "/v2/upload"
+    },
+    {
+      "route": "/v2/search-assets",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-copy-refresh-5aa2c76-2026-07-20/v2-search-assets-public-5aa2c76.png",
+      "pathname": "/v2/search-assets",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n数据接入\n数据健康\n目标中心\n排除规则\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n\nAIRBURG BUSINESS WORKSPACE\n\n品牌经营分析工作区\n\n当前页面按已接入的数据与业务口径展示，未接入能力会明确标记。\n\n返回 V2 首页\n品牌词 / 中心词搜索资产\n\n当前页面已经接通真实可用的搜索资产配置：品牌词、中心词分组及其别名会保存在当前浏览器，并被 `/v2/home`、`/v2/series-board`、`/v2/product-board` 里的搜索相关指标共同复用。\n\n最",
+      "topbarStatus": true,
+      "pageHeaderStatus": true,
+      "emptyState": false,
+      "ctaHref": "/v2/upload"
+    },
+    {
+      "route": "/v2/exclusion-rules",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-copy-refresh-5aa2c76-2026-07-20/v2-exclusion-rules-public-5aa2c76.png",
+      "pathname": "/v2/exclusion-rules",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n数据接入\n数据健康\n目标中心\n排除规则\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n\nAIRBURG BUSINESS WORKSPACE\n\n品牌经营分析工作区\n\n当前页面按已接入的数据与业务口径展示，未接入能力会明确标记。\n\n返回 V2 首页\nBLOCKED_BY_MISSING_CONTRACT\n排除规则\n\n当前只能确认“商品 ID 排除”和“备注文本排除”在现有统计逻辑里有对应含义，但还没有稳定的跨页保存与统一读取方案。 为了避免把局部临时状态伪装成正式配置中心，本页在本轮明确保持 `BL",
+      "topbarStatus": true,
+      "pageHeaderStatus": true,
+      "emptyState": false,
+      "ctaHref": "/v2/upload"
+    }
+  ],
+  "consoleErrors": [],
+  "failedBusinessRequests": [],
+  "observedAt": "2026-07-20T13:24:40.170Z"
+}

@@ -2,7 +2,7 @@
   "schemaVersion": "1.0.0",
   "generatedAt": "2026-07-20",
   "sourceDirectory": "scripts/private-audit",
-  "totalValidators": 197,
+  "totalValidators": 198,
   "countsByTier": {
     "TIER_B_MODULE_REGRESSION": 98,
     "TIER_D_LEGACY_OR_SUPERSEDED": 9,
@@ -11,7 +11,7 @@
   },
   "countsByValidationType": {
     "STATE_GOVERNANCE": 30,
-    "SOURCE_STRUCTURE": 80,
+    "SOURCE_STRUCTURE": 81,
     "REAL_LOGIC_DATA": 73,
     "SECURITY": 2,
     "BROWSER_INTERACTION_E2E": 12
@@ -2743,6 +2743,20 @@
       "requiresBrowser": false,
       "requiresHumanReview": false,
       "notes": "Historical stage-specific validator; later valid states may intentionally differ from its frozen expectations."
+    },
+    {
+      "file": "scripts/private-audit/validate-v2-layout-copy-truthfulness-v1.mjs",
+      "taskName": "V2_LAYOUT_COPY_TRUTHFULNESS_V1",
+      "track": "SAAS_UI_V2",
+      "tier": "TIER_B_LOCAL_GUARDRAIL",
+      "validationType": "SOURCE_STRUCTURE",
+      "current": true,
+      "legacy": false,
+      "stageOnly": false,
+      "requiresRealSamples": false,
+      "requiresBrowser": false,
+      "requiresHumanReview": false,
+      "notes": "Guards the shared V2 topbar/page-header copy against outdated preview-only or no-write promises after real runtime persistence was connected."
     },
     {
       "file": "scripts/private-audit/validate-v2-home-autonomous-e2e-reconciliation-v1.ts",

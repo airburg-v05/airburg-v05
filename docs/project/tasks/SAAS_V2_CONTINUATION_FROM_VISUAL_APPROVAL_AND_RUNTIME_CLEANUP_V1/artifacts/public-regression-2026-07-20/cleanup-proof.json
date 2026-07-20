@@ -1,0 +1,60 @@
+{
+  "status": "PASS",
+  "before": {
+    "indexedDb": [
+      "airburg-debug-context-v1",
+      "airburg-runtime-dataset-v1",
+      "airburg-target-drafts-v1",
+      "airburg-v05"
+    ],
+    "localStorage": [
+      "airburg:demo-session"
+    ],
+    "runtime": {
+      "name": "airburg-runtime-dataset-v1",
+      "exists": true,
+      "stores": {
+        "runtimeDatasetActivePointer": 1,
+        "runtimeDatasetSnapshots": 1
+      }
+    },
+    "debug": {
+      "name": "airburg-debug-context-v1",
+      "exists": true,
+      "stores": {
+        "debugContext": 1
+      }
+    }
+  },
+  "after": {
+    "indexedDb": [
+      "airburg-debug-context-v1",
+      "airburg-runtime-dataset-v1",
+      "airburg-target-drafts-v1",
+      "airburg-v05"
+    ],
+    "localStorage": [
+      "airburg:demo-session"
+    ],
+    "runtime": {
+      "name": "airburg-runtime-dataset-v1",
+      "exists": true,
+      "stores": {
+        "runtimeDatasetActivePointer": 0,
+        "runtimeDatasetSnapshots": 0
+      }
+    },
+    "debug": {
+      "name": "airburg-debug-context-v1",
+      "exists": true,
+      "stores": {
+        "debugContext": 0
+      }
+    }
+  },
+  "pageState": {
+    "hasEmptyState": true,
+    "ctaHref": "/v2/upload"
+  },
+  "observedAt": "2026-07-20T13:18:19.113Z"
+}

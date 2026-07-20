@@ -1,0 +1,128 @@
+{
+  "status": "PASS",
+  "baseUrl": "http://123.57.49.121",
+  "uploadCounts": {
+    "success": 18,
+    "failed": 0,
+    "skipped": 0
+  },
+  "artifacts": {
+    "uploadScreenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-regression-2026-07-20/upload18-public-desktop.png",
+    "homeDesktop": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-regression-2026-07-20/v2-home-public-desktop.png",
+    "homeMobile": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-regression-2026-07-20/v2-home-public-mobile.png",
+    "cleanupScreenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-regression-2026-07-20/v2-home-public-empty-after-cleanup.png",
+    "artifactDir": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-regression-2026-07-20"
+  },
+  "routeResults": [
+    {
+      "route": "/v2/home",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-regression-2026-07-20/v2-home-dashboard-public-desktop.png",
+      "pathname": "/v2/home",
+      "title": "Airburg Data · 电商数据分析平台",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n排除规则\n\n资产\n\n搜索资产\n品牌经营驾驶舱\n空气堡 · 天猫 · 全部店铺 (1)\n⌄\n经营设置\n⌄\n数据健康\n日\n周\n月\n自定义\n2026-06-26 ~ 2026-06-30\n对比方式\n无对比\n同比\n环比\n经营指标\n指标设置\nGMV\n元\n\n125,596\n\nMTD\n--\n--\n目标\n--\n--\n差值\n--\n--\n完成率\n",
+      "overflow": false
+    },
+    {
+      "route": "/v2/series-board",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-regression-2026-07-20/v2-series-board-public.png",
+      "pathname": "/v2/series-board",
+      "title": "Airburg Data · 电商数据分析平台",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n排除规则\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\nV2 preview routes only. Legacy V1 routes remain unchanged.\n\nBrand: 空气堡\nPlatform: 天猫\nDataset: preview pending\n\nAIRBURG SAAS UI V2\n\n多平台电商经营分",
+      "overflow": false
+    },
+    {
+      "route": "/v2/store-board",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-regression-2026-07-20/v2-store-board-public.png",
+      "pathname": "/v2/store-board",
+      "title": "Airburg Data · 电商数据分析平台",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n排除规则\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\nV2 preview routes only. Legacy V1 routes remain unchanged.\n\nBrand: 空气堡\nPlatform: 天猫\nDataset: preview pending\n\nAIRBURG SAAS UI V2\n\n多平台电商经营分",
+      "overflow": false
+    },
+    {
+      "route": "/v2/product-board",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-regression-2026-07-20/v2-product-board-public.png",
+      "pathname": "/v2/product-board",
+      "title": "Airburg Data · 电商数据分析平台",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n排除规则\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\nV2 preview routes only. Legacy V1 routes remain unchanged.\n\nBrand: 空气堡\nPlatform: 天猫\nDataset: preview pending\n\nAIRBURG SAAS UI V2\n\n多平台电商经营分",
+      "overflow": false
+    },
+    {
+      "route": "/v2/upload",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-regression-2026-07-20/v2-upload-public.png",
+      "pathname": "/v2/upload",
+      "title": "Airburg Data · 电商数据分析平台",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n排除规则\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\nV2 preview routes only. Legacy V1 routes remain unchanged.\n\nBrand: 空气堡\nPlatform: 天猫\nDataset: preview pending\n\nAIRBURG SAAS UI V2\n\n多平台电商经营分",
+      "overflow": false
+    },
+    {
+      "route": "/v2/upload/history",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-regression-2026-07-20/v2-upload-history-public.png",
+      "pathname": "/v2/upload/history",
+      "title": "Airburg Data · 电商数据分析平台",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n排除规则\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\nV2 preview routes only. Legacy V1 routes remain unchanged.\n\nBrand: 空气堡\nPlatform: 天猫\nDataset: preview pending\n\nAIRBURG SAAS UI V2\n\n多平台电商经营分",
+      "overflow": false
+    },
+    {
+      "route": "/v2/data-health",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-regression-2026-07-20/v2-data-health-public.png",
+      "pathname": "/v2/data-health",
+      "title": "Airburg Data · 电商数据分析平台",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n排除规则\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\nV2 preview routes only. Legacy V1 routes remain unchanged.\n\nBrand: 空气堡\nPlatform: 天猫\nDataset: preview pending\n\nAIRBURG SAAS UI V2\n\n多平台电商经营分",
+      "overflow": false
+    },
+    {
+      "route": "/v2/target-center",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-regression-2026-07-20/v2-target-center-public.png",
+      "pathname": "/v2/target-center",
+      "title": "Airburg Data · 电商数据分析平台",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n排除规则\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\nV2 preview routes only. Legacy V1 routes remain unchanged.\n\nBrand: 空气堡\nPlatform: 天猫\nDataset: preview pending\n\nAIRBURG SAAS UI V2\n\n多平台电商经营分",
+      "overflow": false
+    },
+    {
+      "route": "/v2/search-assets",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-regression-2026-07-20/v2-search-assets-public.png",
+      "pathname": "/v2/search-assets",
+      "title": "Airburg Data · 电商数据分析平台",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n排除规则\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\nV2 preview routes only. Legacy V1 routes remain unchanged.\n\nBrand: 空气堡\nPlatform: 天猫\nDataset: preview pending\n\nAIRBURG SAAS UI V2\n\n多平台电商经营分",
+      "overflow": false
+    },
+    {
+      "route": "/v2/exclusion-rules",
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/public-regression-2026-07-20/v2-exclusion-rules-public.png",
+      "pathname": "/v2/exclusion-rules",
+      "title": "Airburg Data · 电商数据分析平台",
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n排除规则\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\nV2 preview routes only. Legacy V1 routes remain unchanged.\n\nBrand: 空气堡\nPlatform: 天猫\nDataset: preview pending\n\nAIRBURG SAAS UI V2\n\n多平台电商经营分",
+      "overflow": false
+    }
+  ],
+  "cleanup": {
+    "beforeCleanup": {
+      "indexedDb": [
+        "airburg-debug-context-v1",
+        "airburg-runtime-dataset-v1",
+        "airburg-target-drafts-v1",
+        "airburg-v05"
+      ],
+      "localStorage": [
+        "airburg:demo-session"
+      ]
+    },
+    "afterCleanup": {
+      "indexedDb": [
+        "airburg-debug-context-v1",
+        "airburg-runtime-dataset-v1",
+        "airburg-target-drafts-v1",
+        "airburg-v05"
+      ],
+      "localStorage": [
+        "airburg:demo-session"
+      ],
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n排除规则\n\n资产\n\n搜索资产\n\n当前尚未导入经营数据\n\n请从统一批量上传入口导入天猫经营文件；页面仅读取安全聚合数据，不展示原始行或敏感明细。\n\n前往上传",
+      "ctaHref": "/v2/upload",
+      "hasEmptyState": true
+    }
+  },
+  "consoleErrors": [],
+  "failedBusinessRequests": [],
+  "observedAt": "2026-07-20T13:17:06.425Z"
+}

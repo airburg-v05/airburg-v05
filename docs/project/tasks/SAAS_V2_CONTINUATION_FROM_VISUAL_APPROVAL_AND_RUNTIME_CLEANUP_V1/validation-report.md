@@ -1,6 +1,6 @@
 # Validation Report
 
-Status: `IN_PROGRESS`
+Status: `PASS_PENDING_POST_DEPLOY_OWNER_REVIEW`
 
 Completed so far:
 
@@ -26,6 +26,16 @@ Completed so far:
 - `node scripts/private-audit/validate-v2-home-upload18-system-chrome-local-v1.mjs`: PASS (`18 success / 0 failed / 0 skipped`; metric subset/order persistence PASS; reset PASS; mobile overflow PASS; console/network business errors `0`)
 - `npm run build`: PASS
 - `npm run lint`: PASS with 2 pre-existing warnings and 0 errors
+- Previous runtime commit `1065ddb92805ea7413ca57573f5c249e8d531610` remains the authoritative full public upload18 + cleanup evidence baseline
+- Final runtime commit `5aa2c76` is now the active PM2 runtime for `airburg-tmall-v1`
+- PM2 runtime check: `cwd=/opt/airburg/ecommerce-platform-optimized`
+- Nginx active + `nginx -t`: PASS
+- `127.0.0.1:3000` route health: PASS
+- Public `123.57.49.121:3000` unreachable: PASS
+- Public ten-route HTTP 200 sweep: PASS (`/v2/home`, `/v2/series-board`, `/v2/store-board`, `/v2/product-board`, `/v2/upload`, `/v2/upload/history`, `/v2/data-health`, `/v2/target-center`, `/v2/search-assets`, `/v2/exclusion-rules`)
+- Previous runtime commit `1065ddb92805ea7413ca57573f5c249e8d531610` public real-data regression: PASS (`18 success / 0 failed / 0 skipped`; `17` `/v2/home` metrics; mobile overflow PASS; console/network business errors `0`; ten-route screenshots saved under `artifacts/public-regression-2026-07-20/`)
+- Previous runtime cleanup proof: runtime/debug records cleared to `0`; preserved keys remain `airburg-target-drafts-v1`, `airburg-v05`, `airburg:demo-session`; refreshed `/v2/home` empty-state CTA `/v2/upload` PASS
+- Final runtime commit `5aa2c76` public light route review: PASS (ten `/v2/*` routes HEAD `200`; truthful topbar/page-header copy present across non-home V2 routes; `/v2/home` empty-state CTA `/v2/upload` PASS; screenshots under `artifacts/public-copy-refresh-5aa2c76-2026-07-20/`; console/network business errors `0`)
 - External deletion evidence recorded for browser-origin cleanup of `airburg-runtime-dataset-v1` and `airburg-debug-context-v1`
 - Post-delete browser observation recorded: `/v2/home` empty state now shows `当前尚未导入经营数据`
 - System Chrome browser regression PASS for `/v2/upload`, `/v2/upload/history`, `/v2/data-health`, and `/v2/target-center`; screenshots saved under `docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/browser-regression-2026-07-20/`
@@ -36,9 +46,8 @@ Completed so far:
 
 Current blockers / pending:
 
-- No additional deletion is pending in this task unless a new explicitly safe cleanup target is proven; browser-origin cleanup has already been executed elsewhere and must not be repeated
-- Deployment still pending
-- Public regression still pending
+- No technical blocker remains inside the authorized slice.
+- The only open gate is owner visual/human review after deployment.
 
 Recorded boundary:
 
@@ -50,3 +59,4 @@ Owner-review gates that must remain open:
 - `visualAccepted=false`
 - `humanAccepted=false`
 - Newly implemented V2 routes require explicit owner review after deployment
+- Current task status must remain `PENDING_POST_DEPLOY_OWNER_REVIEW`
