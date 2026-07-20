@@ -1,0 +1,376 @@
+{
+  "status": "PASS",
+  "validator": "validate-v2-home-upload18-system-chrome-local-v1",
+  "checks": [
+    {
+      "name": "real18FilesAvailable",
+      "pass": true,
+      "details": {
+        "count": 18
+      }
+    },
+    {
+      "name": "v2HomeEmptyStateVisibleBeforeUpload",
+      "pass": true,
+      "details": {
+        "emptyStateText": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n\n资产\n\n搜索资产\n\n当前尚未导入经营数据\n\n请从统一批量上传入口导入天猫经营文件；页面仅读取安全聚合数据，不展示原始行或敏感明细。\n\n前往上传"
+      }
+    },
+    {
+      "name": "v2UploadInputReceives18Files",
+      "pass": true,
+      "details": {
+        "selectedFileCount": 18
+      }
+    },
+    {
+      "name": "upload18Counts",
+      "pass": true,
+      "details": {
+        "success": 18,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "v2HomeShows17Metrics",
+      "pass": true,
+      "details": {
+        "metricCount": 17,
+        "dataHealthText": "缺失0跳过文件0重复126不可计算3",
+        "toolbarText": "品牌经营驾驶舱空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌平台天猫店铺天猫默认店铺经营设置 ⌄重点系列搜索资产目标中心数据健康日周月自定义开始日期结束日期最长 1 年2026-06-26 ~ 2026-06-30对比方式无对比同比环比",
+        "hasUploadPrompt": false
+      }
+    },
+    {
+      "name": "v2HomeNoLongerShowsSafeSkip",
+      "pass": true,
+      "details": {
+        "metricCount": 17,
+        "dataHealthText": "缺失0跳过文件0重复126不可计算3",
+        "toolbarText": "品牌经营驾驶舱空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌平台天猫店铺天猫默认店铺经营设置 ⌄重点系列搜索资产目标中心数据健康日周月自定义开始日期结束日期最长 1 年2026-06-26 ~ 2026-06-30对比方式无对比同比环比",
+        "hasUploadPrompt": false
+      }
+    },
+    {
+      "name": "v2HomeLeavesEmptyState",
+      "pass": true,
+      "details": {
+        "metricCount": 17,
+        "dataHealthText": "缺失0跳过文件0重复126不可计算3",
+        "toolbarText": "品牌经营驾驶舱空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌平台天猫店铺天猫默认店铺经营设置 ⌄重点系列搜索资产目标中心数据健康日周月自定义开始日期结束日期最长 1 年2026-06-26 ~ 2026-06-30对比方式无对比同比环比",
+        "hasUploadPrompt": false
+      }
+    },
+    {
+      "name": "metricSettingsHas17Controls",
+      "pass": true,
+      "details": {
+        "count": 17
+      }
+    },
+    {
+      "name": "metricVisibilityAndOrderingInteractive",
+      "pass": true,
+      "details": {
+        "count": 15,
+        "firstKey": "gsv",
+        "hasAdRoi": false,
+        "hasBrandVisitors": false
+      }
+    },
+    {
+      "name": "refreshPreservesMetricSubsetAndOrdering",
+      "pass": true,
+      "details": {
+        "metricCount": 15,
+        "dataHealthText": "缺失0跳过文件0重复126不可计算3",
+        "firstMetricKey": "gsv",
+        "hasAdRoi": false,
+        "hasBrandVisitors": false
+      }
+    },
+    {
+      "name": "resetRestores17Metrics",
+      "pass": true,
+      "details": {
+        "metricCount": 17,
+        "firstMetricKey": "gmv"
+      }
+    },
+    {
+      "name": "refreshAfterResetRestores17Metrics",
+      "pass": true,
+      "details": {
+        "metricCount": 17,
+        "firstMetricKey": "gmv"
+      }
+    },
+    {
+      "name": "mobileHomeHasNoPageWideOverflow",
+      "pass": true,
+      "details": {
+        "horizontalOverflow": false,
+        "metricCount": 17
+      }
+    },
+    {
+      "name": "targetCenterExplainsRuntimeVsV05FoundationPrecondition",
+      "pass": true,
+      "details": {
+        "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n目标中心\n\n新建、编辑、暂停和重新启用经营目标。\n\n返回首页\n待处理\n目标中心待初始化\n\n经营数据已导入，但目标中心数据底座尚未初始化。\n\n前往数据接入\n查看数据健康\n目标设置说明\n\n当前支持公司、店铺、系列和商品四级目标，按已接入的目标数据底座保存和读回。\n\n已开放操作\n\n支持新建、编辑、暂停和重新启用。暂停会保留目标记录，便于后续恢复。\n\n父子关系\n\n支持公司到店铺、店铺到同店系列、系列到该系列商品；比例类指标按独立目标维护。\n\n周期口径\n\n当前支持日目标和单月目标；周、自定义和多月目标暂未开放。",
+        "hasRuntimeButNoTargetFoundationCopy": true,
+        "hasFoundationAction": true,
+        "hasDataHealthAction": true,
+        "hasDeleteButton": false
+      }
+    },
+    {
+      "name": "v05FourSourceCandidateFilesAvailable",
+      "pass": true,
+      "details": {
+        "selected": {
+          "businessProduct": "/Users/zongji/Desktop/每日平台数据/天猫/【生意参谋平台】商品_全部_2026-06-30_2026-06-30.xls",
+          "adProduct": "/Users/zongji/Desktop/每日平台数据/天猫/商品报表_20260701_160039.csv",
+          "adPlan": "/Users/zongji/Desktop/每日平台数据/天猫/计划报表_20260701_160014.csv",
+          "afterSales": "/Users/zongji/Desktop/每日平台数据/天猫/4051124186_1782897394563_919.xlsx"
+        },
+        "missing": []
+      }
+    },
+    {
+      "name": "v05FoundationInputReceivesFourSourceFiles",
+      "pass": true,
+      "details": {
+        "selectedFileCount": 4,
+        "fourFiles": [
+          "/Users/zongji/Desktop/每日平台数据/天猫/【生意参谋平台】商品_全部_2026-06-30_2026-06-30.xls",
+          "/Users/zongji/Desktop/每日平台数据/天猫/商品报表_20260701_160039.csv",
+          "/Users/zongji/Desktop/每日平台数据/天猫/计划报表_20260701_160014.csv",
+          "/Users/zongji/Desktop/每日平台数据/天猫/4051124186_1782897394563_919.xlsx"
+        ]
+      }
+    },
+    {
+      "name": "v05FoundationFourSourcesDetected",
+      "pass": true,
+      "details": {
+        "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n数据接入\n\n上传经营数据，并按需初始化目标中心数据底座。\n\n返回首页\nLOGO\n目标店铺\n天猫 · 天猫默认店铺\n\n店铺数量 1个 · 已选择 1个\n\n涉及平台 天猫 · 当前平台 天猫\n\n天猫\n已开放\n京东\n暂未开放\n抖音\n暂未开放\n有赞\n暂未开放\n拼多多\n暂未开放\n批量上传\n选择天猫数据文件\n\n一次选择多个天猫文件，系统自动识别类型并生成经营看板可读取的数据。\n\n选择文件\n清空本次选择\n成功：0\n失败：0\n跳过：0\n商品数据文件\n跳过\n\n商品ID、商品名称、品牌词和型号词等商品基础信息\n\n商品经营报表\n跳过\n\nGMV、GSV、访客、支付买家等经营指标\n\n计划报表\n跳过\n\n推广花费、点击、ROI 等计划推广指标\n\n总搜索词访客表\n跳过\n\n搜索词总访客、支付买家和成交表现\n\n商品搜索词访客表\n跳过\n\n商品ID与搜索词的访客和支付表现\n\n售后退货表\n跳过\n\n只进入退款金额、退款数量和发货/签收状态安全聚合\n\n尚未选择文件。选择天猫数据文件后，这里只展示文件标识、文件类型和处理状态。\n导入前检查摘要\n\n只处理已通过检查的文件；失败或跳过不影响其它文件。\n\n批量导入\n\n当前批次重复文件会自动跳过；失败或跳过不影响其它已识别文件。\n\n目标中心数据底座\n\n上方 18 文件入口用于经营首页和看板；下方四类报表用于初始化目标中心。 完成后即可新建、编辑、暂停和重新启用公司、店铺、系列和商品目标。\n\n平台和店铺\n\n当前只开放天猫导入；每次导入必须绑定到一个明确店铺。\n\n当前数据集：暂无\n选择平台\n天猫\n已开放\n京东\n暂未开放\n拼多多\n暂未开放\n抖音\n暂未开放\n有赞\n暂未开放\n选择店铺\n天猫默认店铺\n\n新店铺会在导入成功后进入本地数据区，旧天猫数据不会被清空。\n\n添加天猫店铺\n添加\n\n批量选择文件\n\n一次选择四类天猫报表，系统会自动识别来源。每类来源本次只允许一个文件。\n\n清空选择\n点击选择多个文件，或拖拽到这里\n支持 CSV / XLS / XLSX；文件只在当前浏览器内解析。\n\n生意参谋商品表\n\n已识别\n\n商品推广报表\n\n已识别\n\n计划推广报表\n\n已识别\n\n售后退货表\n\n已识别\n文件\n识别来源\n状态\n\n【生意参谋平台】商品_全部_2026-06-30_2026-06-30.xls\n\n34.5 KB · 18 行\n\n生意参谋商品表\n\n表头第 5 行\n\n可导入\n\n商品报表_20260701_160039.csv\n\n37.5 KB · 96 行\n\n商品推广报表\n\n表头第 1 行\n\n可导入\n\n计划报表_20260701_160014.csv\n\n30.6 KB · 101 行\n\n计划推广报表\n\n表头第 1 行\n\n可导入\n\n4051124186_1782897394563_919.xlsx\n\n19.9 KB · 53 行\n\n售后退货表\n\n表头第 1 行\n\n可导入\n\n导入操作与结果\n\n点击一次导入后，将自动完成解析、聚合、安全校验和本地保存。\n\n导入\n四类报表已完整识别，可以点击导入。",
+        "hasCompleteMessage": true,
+        "hasBusinessProduct": true,
+        "hasAdProduct": true,
+        "hasAdPlan": true,
+        "hasAfterSales": true
+      }
+    },
+    {
+      "name": "v05FoundationImportActivatesDatasetAndKeepsV2Links",
+      "pass": true,
+      "details": {
+        "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n数据接入\n\n上传经营数据，并按需初始化目标中心数据底座。\n\n返回首页\nLOGO\n目标店铺\n天猫 · 天猫默认店铺\n\n店铺数量 1个 · 已选择 1个\n\n涉及平台 天猫 · 当前平台 天猫\n\n天猫\n已开放\n京东\n暂未开放\n抖音\n暂未开放\n有赞\n暂未开放\n拼多多\n暂未开放\n批量上传\n选择天猫数据文件\n\n一次选择多个天猫文件，系统自动识别类型并生成经营看板可读取的数据。\n\n选择文件\n清空本次选择\n成功：0\n失败：0\n跳过：0\n商品数据文件\n跳过\n\n商品ID、商品名称、品牌词和型号词等商品基础信息\n\n商品经营报表\n跳过\n\nGMV、GSV、访客、支付买家等经营指标\n\n计划报表\n跳过\n\n推广花费、点击、ROI 等计划推广指标\n\n总搜索词访客表\n跳过\n\n搜索词总访客、支付买家和成交表现\n\n商品搜索词访客表\n跳过\n\n商品ID与搜索词的访客和支付表现\n\n售后退货表\n跳过\n\n只进入退款金额、退款数量和发货/签收状态安全聚合\n\n尚未选择文件。选择天猫数据文件后，这里只展示文件标识、文件类型和处理状态。\n导入前检查摘要\n\n只处理已通过检查的文件；失败或跳过不影响其它文件。\n\n批量导入\n\n当前批次重复文件会自动跳过；失败或跳过不影响其它已识别文件。\n\n目标中心数据底座\n\n上方 18 文件入口用于经营首页和看板；下方四类报表用于初始化目标中心。 完成后即可新建、编辑、暂停和重新启用公司、店铺、系列和商品目标。\n\n平台和店铺\n\n当前只开放天猫导入；每次导入必须绑定到一个明确店铺。\n\n当前数据集：已存在\n选择平台\n天猫\n已开放\n京东\n暂未开放\n拼多多\n暂未开放\n抖音\n暂未开放\n有赞\n暂未开放\n选择店铺\n天猫默认店铺\n\n新店铺会在导入成功后进入本地数据区，旧天猫数据不会被清空。\n\n添加天猫店铺\n添加\n\n批量选择文件\n\n一次选择四类天猫报表，系统会自动识别来源。每类来源本次只允许一个文件。\n\n清空选择\n点击选择多个文件，或拖拽到这里\n支持 CSV / XLS / XLSX；文件只在当前浏览器内解析。\n\n生意参谋商品表\n\n已识别\n\n商品推广报表\n\n已识别\n\n计划推广报表\n\n已识别\n\n售后退货表\n\n已识别\n文件\n识别来源\n状态\n\n【生意参谋平台】商品_全部_2026-06-30_2026-06-30.xls\n\n34.5 KB · 18 行\n\n生意参谋商品表\n\n表头第 5 行\n\n可导入\n\n商品报表_20260701_160039.csv\n\n37.5 KB · 96 行\n\n商品推广报表\n\n表头第 1 行\n\n可导入\n\n计划报表_20260701_160014.csv\n\n30.6 KB · 101 行\n\n计划推广报表\n\n表头第 1 行\n\n可导入\n\n4051124186_1782897394563_919.xlsx\n\n19.9 KB · 53 行\n\n售后退货表\n\n表头第 1 行\n\n可导入\n\n导入操作与结果\n\n点击一次导入后，将自动完成解析、聚合、安全校验和本地保存。\n\n导入\n导入完成，V2 数据集已激活。\n\n导入状态\n\nsuccess\n\n店铺\n\n天猫默认店铺\n\n事实记录\n\n158\n\n历史兼容\n\n已同步默认店铺\n\n查看导入记录\n查看数据质量",
+        "hasHistoryLink": true,
+        "hasQualityLink": true
+      }
+    },
+    {
+      "name": "targetCenterBoundaryAndNoDelete",
+      "pass": true,
+      "details": {
+        "hasBoundary": true,
+        "hasDeleteButton": false,
+        "hasWriteTruthCopy": false
+      }
+    },
+    {
+      "name": "targetCenterTruthfulSaveCopy",
+      "pass": true,
+      "details": {
+        "drawerCopy": "新建目标点击保存后会写入当前浏览器的目标数据，并通过读回校验后生效。关闭目标层级公司目标店铺目标系列目标商品目标指标GMVGSV商品访客数支付买家数支付转化率客单价退款率推广花费推广 ROI推广费比去退推广费比成功退款金额指标方向越高越好越低越好目标周期日目标月目标周期值目标值请输入大于 0 的目标值。父目标关系请选择父目标关系不绑定父目标（独立目标）只展示与当前层级、归属、指标、周期和方向匹配的直接父目标；比例类指标仅支持独立目标。取消保存目标"
+      }
+    },
+    {
+      "name": "targetCenterStoreScopeShowsSinglePlatformStoreLabel",
+      "pass": true,
+      "details": {
+        "labelCount": 1,
+        "drawerText": "新建目标点击保存后会写入当前浏览器的目标数据，并通过读回校验后生效。关闭目标层级公司目标店铺目标系列目标商品目标平台和店铺天猫 / 天猫默认店铺指标GMVGSV商品访客数支付买家数支付转化率客单价退款率推广花费推广 ROI推广费比去退推广费比成功退款金额指标方向越高越好越低越好目标周期日目标月目标周期值目标值请输入大于 0 的目标值。父目标关系请选择父目标关系不绑定父目标（独立目标）只展示与当前层级、归属、指标、周期和方向匹配的直接父目标；比例类指标仅支持独立目标。取消保存目标"
+      }
+    },
+    {
+      "name": "targetCenterPercentTargetSaveSucceeds",
+      "pass": true,
+      "details": {
+        "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n目标中心\n\n新建、编辑、暂停和重新启用经营目标。\n\n返回首页\n多店铺数据\n保存成功。\n\n公司目标\n\n0\n\n店铺目标\n\n1\n\n系列目标\n\n0\n\n商品目标\n\n0\n\n启用 1\n暂停 0\n新建目标\n\n新目标需要选择归属层级；有父目标时请显式选择直接父目标。\n\n目标设置说明\n\n当前支持公司、店铺、系列和商品四级目标，按已接入的目标数据底座保存和读回。\n\n已开放操作\n\n支持新建、编辑、暂停和重新启用。暂停会保留目标记录，便于后续恢复。\n\n父子关系\n\n支持公司到店铺、店铺到同店系列、系列到该系列商品；比例类指标按独立目标维护。\n\n周期口径\n\n当前支持日目标和单月目标；周、自定义和多月目标暂未开放。\n\n目标列表\n\n按层级、归属和周期展示当前多店铺数据中的目标。\n\n目标层级\t归属\t父目标\t指标\t周期\t目标值\t分配状态\t状态\t更新时间\t操作\n店铺\t\n\n天猫默认店铺\n\n\t\n\n独立目标\n\n\t\n\n支付转化率\n\n越高越好\n\n\t日目标 2026-07-01\t92%\t\n暂无子目标\n\n父目标 0.92\n\n启用已分配 0，暂停已分配 0\n\n剩余 0.92，超额 0\n\n启用子目标 0，暂停子目标 0\n\n\t启用\t2026-07-20 16:54\t\n编辑\n暂停",
+        "hasSuccess": true,
+        "hasPercentTarget": true,
+        "dialogOpen": false
+      }
+    },
+    {
+      "name": "targetCenterPercentTargetSavedAndReadBack",
+      "pass": true,
+      "details": {
+        "hasPercentTarget": true,
+        "hasPauseButton": true,
+        "hasDeleteButton": false
+      }
+    },
+    {
+      "name": "targetCenterPauseStateReadsBack",
+      "pass": true,
+      "details": {
+        "hasPaused": true,
+        "hasReactivateButton": true,
+        "hasPercentTarget": true
+      }
+    },
+    {
+      "name": "targetCenterReactivateKeepsTarget",
+      "pass": true,
+      "details": {
+        "hasPauseButton": true,
+        "hasPercentTarget": true,
+        "hasDeleteButton": false
+      }
+    },
+    {
+      "name": "cleanupAfterRegressionKeepsHomeEmptyAndV2UploadCta",
+      "pass": true,
+      "details": {
+        "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n\n资产\n\n搜索资产\n\n当前尚未导入经营数据\n\n请从统一批量上传入口导入天猫经营文件；页面仅读取安全聚合数据，不展示原始行或敏感明细。\n\n前往上传",
+        "hasEmptyState": true,
+        "uploadCtaIsV2": true,
+        "localStorageKeys": [
+          "airburg:demo-session",
+          "airburg_tmall_analysis_v2"
+        ]
+      }
+    },
+    {
+      "name": "consoleBusinessErrorsZero",
+      "pass": true,
+      "details": []
+    },
+    {
+      "name": "networkBusinessErrorsZero",
+      "pass": true,
+      "details": []
+    }
+  ],
+  "artifacts": {
+    "artifactDir": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/upload18-4target-final-public-f184d9d-2026-07-21",
+    "uploadScreenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/upload18-4target-final-public-f184d9d-2026-07-21/upload-desktop.png",
+    "homeDesktopScreenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/upload18-4target-final-public-f184d9d-2026-07-21/v2-home-desktop.png",
+    "homeMobileScreenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/upload18-4target-final-public-f184d9d-2026-07-21/v2-home-mobile.png"
+  },
+  "counts": {
+    "success": 18,
+    "failed": 0,
+    "skipped": 0
+  },
+  "homeState": {
+    "metricCount": 17,
+    "dataHealthText": "缺失0跳过文件0重复126不可计算3",
+    "toolbarText": "品牌经营驾驶舱空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌平台天猫店铺天猫默认店铺经营设置 ⌄重点系列搜索资产目标中心数据健康日周月自定义开始日期结束日期最长 1 年2026-06-26 ~ 2026-06-30对比方式无对比同比环比",
+    "hasUploadPrompt": false
+  },
+  "refreshedState": {
+    "metricCount": 15,
+    "dataHealthText": "缺失0跳过文件0重复126不可计算3",
+    "firstMetricKey": "gsv",
+    "hasAdRoi": false,
+    "hasBrandVisitors": false
+  },
+  "resetState": {
+    "metricCount": 17,
+    "firstMetricKey": "gmv"
+  },
+  "resetRefreshedState": {
+    "metricCount": 17,
+    "firstMetricKey": "gmv"
+  },
+  "mobileSafety": {
+    "horizontalOverflow": false,
+    "metricCount": 17
+  },
+  "targetCenterPreconditionState": {
+    "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n目标中心\n\n新建、编辑、暂停和重新启用经营目标。\n\n返回首页\n待处理\n目标中心待初始化\n\n经营数据已导入，但目标中心数据底座尚未初始化。\n\n前往数据接入\n查看数据健康\n目标设置说明\n\n当前支持公司、店铺、系列和商品四级目标，按已接入的目标数据底座保存和读回。\n\n已开放操作\n\n支持新建、编辑、暂停和重新启用。暂停会保留目标记录，便于后续恢复。\n\n父子关系\n\n支持公司到店铺、店铺到同店系列、系列到该系列商品；比例类指标按独立目标维护。\n\n周期口径\n\n当前支持日目标和单月目标；周、自定义和多月目标暂未开放。",
+    "hasRuntimeButNoTargetFoundationCopy": true,
+    "hasFoundationAction": true,
+    "hasDataHealthAction": true,
+    "hasDeleteButton": false
+  },
+  "targetFoundationState": {
+    "fourFiles": [
+      "/Users/zongji/Desktop/每日平台数据/天猫/【生意参谋平台】商品_全部_2026-06-30_2026-06-30.xls",
+      "/Users/zongji/Desktop/每日平台数据/天猫/商品报表_20260701_160039.csv",
+      "/Users/zongji/Desktop/每日平台数据/天猫/计划报表_20260701_160014.csv",
+      "/Users/zongji/Desktop/每日平台数据/天猫/4051124186_1782897394563_919.xlsx"
+    ],
+    "detectionState": {
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n数据接入\n\n上传经营数据，并按需初始化目标中心数据底座。\n\n返回首页\nLOGO\n目标店铺\n天猫 · 天猫默认店铺\n\n店铺数量 1个 · 已选择 1个\n\n涉及平台 天猫 · 当前平台 天猫\n\n天猫\n已开放\n京东\n暂未开放\n抖音\n暂未开放\n有赞\n暂未开放\n拼多多\n暂未开放\n批量上传\n选择天猫数据文件\n\n一次选择多个天猫文件，系统自动识别类型并生成经营看板可读取的数据。\n\n选择文件\n清空本次选择\n成功：0\n失败：0\n跳过：0\n商品数据文件\n跳过\n\n商品ID、商品名称、品牌词和型号词等商品基础信息\n\n商品经营报表\n跳过\n\nGMV、GSV、访客、支付买家等经营指标\n\n计划报表\n跳过\n\n推广花费、点击、ROI 等计划推广指标\n\n总搜索词访客表\n跳过\n\n搜索词总访客、支付买家和成交表现\n\n商品搜索词访客表\n跳过\n\n商品ID与搜索词的访客和支付表现\n\n售后退货表\n跳过\n\n只进入退款金额、退款数量和发货/签收状态安全聚合\n\n尚未选择文件。选择天猫数据文件后，这里只展示文件标识、文件类型和处理状态。\n导入前检查摘要\n\n只处理已通过检查的文件；失败或跳过不影响其它文件。\n\n批量导入\n\n当前批次重复文件会自动跳过；失败或跳过不影响其它已识别文件。\n\n目标中心数据底座\n\n上方 18 文件入口用于经营首页和看板；下方四类报表用于初始化目标中心。 完成后即可新建、编辑、暂停和重新启用公司、店铺、系列和商品目标。\n\n平台和店铺\n\n当前只开放天猫导入；每次导入必须绑定到一个明确店铺。\n\n当前数据集：暂无\n选择平台\n天猫\n已开放\n京东\n暂未开放\n拼多多\n暂未开放\n抖音\n暂未开放\n有赞\n暂未开放\n选择店铺\n天猫默认店铺\n\n新店铺会在导入成功后进入本地数据区，旧天猫数据不会被清空。\n\n添加天猫店铺\n添加\n\n批量选择文件\n\n一次选择四类天猫报表，系统会自动识别来源。每类来源本次只允许一个文件。\n\n清空选择\n点击选择多个文件，或拖拽到这里\n支持 CSV / XLS / XLSX；文件只在当前浏览器内解析。\n\n生意参谋商品表\n\n已识别\n\n商品推广报表\n\n已识别\n\n计划推广报表\n\n已识别\n\n售后退货表\n\n已识别\n文件\n识别来源\n状态\n\n【生意参谋平台】商品_全部_2026-06-30_2026-06-30.xls\n\n34.5 KB · 18 行\n\n生意参谋商品表\n\n表头第 5 行\n\n可导入\n\n商品报表_20260701_160039.csv\n\n37.5 KB · 96 行\n\n商品推广报表\n\n表头第 1 行\n\n可导入\n\n计划报表_20260701_160014.csv\n\n30.6 KB · 101 行\n\n计划推广报表\n\n表头第 1 行\n\n可导入\n\n4051124186_1782897394563_919.xlsx\n\n19.9 KB · 53 行\n\n售后退货表\n\n表头第 1 行\n\n可导入\n\n导入操作与结果\n\n点击一次导入后，将自动完成解析、聚合、安全校验和本地保存。\n\n导入\n四类报表已完整识别，可以点击导入。",
+      "hasCompleteMessage": true,
+      "hasBusinessProduct": true,
+      "hasAdProduct": true,
+      "hasAdPlan": true,
+      "hasAfterSales": true
+    },
+    "importState": {
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n数据接入\n\n上传经营数据，并按需初始化目标中心数据底座。\n\n返回首页\nLOGO\n目标店铺\n天猫 · 天猫默认店铺\n\n店铺数量 1个 · 已选择 1个\n\n涉及平台 天猫 · 当前平台 天猫\n\n天猫\n已开放\n京东\n暂未开放\n抖音\n暂未开放\n有赞\n暂未开放\n拼多多\n暂未开放\n批量上传\n选择天猫数据文件\n\n一次选择多个天猫文件，系统自动识别类型并生成经营看板可读取的数据。\n\n选择文件\n清空本次选择\n成功：0\n失败：0\n跳过：0\n商品数据文件\n跳过\n\n商品ID、商品名称、品牌词和型号词等商品基础信息\n\n商品经营报表\n跳过\n\nGMV、GSV、访客、支付买家等经营指标\n\n计划报表\n跳过\n\n推广花费、点击、ROI 等计划推广指标\n\n总搜索词访客表\n跳过\n\n搜索词总访客、支付买家和成交表现\n\n商品搜索词访客表\n跳过\n\n商品ID与搜索词的访客和支付表现\n\n售后退货表\n跳过\n\n只进入退款金额、退款数量和发货/签收状态安全聚合\n\n尚未选择文件。选择天猫数据文件后，这里只展示文件标识、文件类型和处理状态。\n导入前检查摘要\n\n只处理已通过检查的文件；失败或跳过不影响其它文件。\n\n批量导入\n\n当前批次重复文件会自动跳过；失败或跳过不影响其它已识别文件。\n\n目标中心数据底座\n\n上方 18 文件入口用于经营首页和看板；下方四类报表用于初始化目标中心。 完成后即可新建、编辑、暂停和重新启用公司、店铺、系列和商品目标。\n\n平台和店铺\n\n当前只开放天猫导入；每次导入必须绑定到一个明确店铺。\n\n当前数据集：已存在\n选择平台\n天猫\n已开放\n京东\n暂未开放\n拼多多\n暂未开放\n抖音\n暂未开放\n有赞\n暂未开放\n选择店铺\n天猫默认店铺\n\n新店铺会在导入成功后进入本地数据区，旧天猫数据不会被清空。\n\n添加天猫店铺\n添加\n\n批量选择文件\n\n一次选择四类天猫报表，系统会自动识别来源。每类来源本次只允许一个文件。\n\n清空选择\n点击选择多个文件，或拖拽到这里\n支持 CSV / XLS / XLSX；文件只在当前浏览器内解析。\n\n生意参谋商品表\n\n已识别\n\n商品推广报表\n\n已识别\n\n计划推广报表\n\n已识别\n\n售后退货表\n\n已识别\n文件\n识别来源\n状态\n\n【生意参谋平台】商品_全部_2026-06-30_2026-06-30.xls\n\n34.5 KB · 18 行\n\n生意参谋商品表\n\n表头第 5 行\n\n可导入\n\n商品报表_20260701_160039.csv\n\n37.5 KB · 96 行\n\n商品推广报表\n\n表头第 1 行\n\n可导入\n\n计划报表_20260701_160014.csv\n\n30.6 KB · 101 行\n\n计划推广报表\n\n表头第 1 行\n\n可导入\n\n4051124186_1782897394563_919.xlsx\n\n19.9 KB · 53 行\n\n售后退货表\n\n表头第 1 行\n\n可导入\n\n导入操作与结果\n\n点击一次导入后，将自动完成解析、聚合、安全校验和本地保存。\n\n导入\n导入完成，V2 数据集已激活。\n\n导入状态\n\nsuccess\n\n店铺\n\n天猫默认店铺\n\n事实记录\n\n158\n\n历史兼容\n\n已同步默认店铺\n\n查看导入记录\n查看数据质量",
+      "hasHistoryLink": true,
+      "hasQualityLink": true
+    }
+  },
+  "targetCenterWritableState": {
+    "initialState": {
+      "hasBoundary": true,
+      "hasDeleteButton": false,
+      "hasWriteTruthCopy": false
+    },
+    "savedState": {
+      "hasPercentTarget": true,
+      "hasPauseButton": true,
+      "hasDeleteButton": false
+    },
+    "pausedState": {
+      "hasPaused": true,
+      "hasReactivateButton": true,
+      "hasPercentTarget": true
+    },
+    "reactivatedState": {
+      "hasPauseButton": true,
+      "hasPercentTarget": true,
+      "hasDeleteButton": false
+    }
+  },
+  "cleanupState": {
+    "before": [
+      "airburg-debug-context-v1",
+      "airburg-runtime-dataset-v1",
+      "airburg-target-drafts-v1",
+      "airburg-v05"
+    ],
+    "after": [
+      "airburg-target-drafts-v1",
+      "airburg-v05"
+    ],
+    "runtimeDeleted": false,
+    "debugDeleted": true,
+    "preservedDatabases": [
+      "airburg-target-drafts-v1",
+      "airburg-v05"
+    ],
+    "preservedLocalStorageKeys": [
+      "airburg:demo-session"
+    ],
+    "emptyHomeState": {
+      "body": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n\n资产\n\n搜索资产\n\n当前尚未导入经营数据\n\n请从统一批量上传入口导入天猫经营文件；页面仅读取安全聚合数据，不展示原始行或敏感明细。\n\n前往上传",
+      "hasEmptyState": true,
+      "uploadCtaIsV2": true,
+      "localStorageKeys": [
+        "airburg:demo-session",
+        "airburg_tmall_analysis_v2"
+      ]
+    }
+  }
+}

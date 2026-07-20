@@ -1,6 +1,6 @@
 # Plan
 
-Status: `IN_PROGRESS`
+Status: `PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW`
 
 1. Preflight and archive setup — `completed`
    - Read required skills, project SSOT/current state and previous handoff.
@@ -26,17 +26,22 @@ Status: `IN_PROGRESS`
    - System Chrome isolated-profile 18+4+target.
    - System Chrome ten-route desktop/mobile and key UX clicks.
 
-6. Deploy — `pending`
+6. Deploy — `completed`
    - Clean implementation commit.
    - Existing Aliyun release flow with safe rsync exclusions and rollback metadata.
 
-7. Public regression and cleanup — `pending`
+7. Public regression and cleanup — `completed`
    - Public isolated-profile ten-route desktop/mobile and key-click validation.
    - Public 18+4+target regression if affected validators require it.
    - Cleanup test runtime/debug state in isolated profile only.
    - PM2/Nginx/loopback/public :3000/log delta checks.
 
-8. Evidence and handoff — `pending`
+8. Evidence and handoff — `completed`
    - Update SSOT/current-task/validation/result/handoff.
    - Evidence commit.
    - Confirm clean worktree.
+
+9. Board empty-state CTA increment — `completed`
+   - Add one `前往数据接入` CTA to `/v2/series-board`, `/v2/store-board`, and `/v2/product-board` compact empty states.
+   - Validate by brand UX validator, changed-file lint, build, local production three-route browser check, public HTTP check, public desktop/390px mobile browser check, and service/log delta.
+   - Keep prior 18+4+target PASS evidence; do not rerun data E2E for a pure link-only increment.

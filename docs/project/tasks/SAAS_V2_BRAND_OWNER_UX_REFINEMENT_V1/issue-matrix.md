@@ -1,6 +1,6 @@
 # Issue Matrix
 
-Status: `IN_PROGRESS`
+Status: `PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW`
 
 | ID | Route / Layer | Evidence | Required treatment |
 |---|---|---|---|
@@ -18,3 +18,4 @@ Status: `IN_PROGRESS`
 | UX-12-DEV-TERMS-USER-COPY | all V2 routes | Owner requires removal of English dev status, snake_case, route path, schema, mock, safe issue code from business UI. | Static validator must scan production UI for forbidden user-facing terms. |
 | UX-13-KEY-INTERACTION-REGRESSION | home/upload/search/target/nav | Owner requires actual interaction recheck. | Browser validator must cover home period/compare/settings, upload button, search modal open/switch/close, target entry, nav, desktop/mobile overflow and modal footer reachability. |
 | UX-14-HISTORY-QUALITY-SAFE-CODE-LABELS | `/v2/upload` history/quality-adjacent components | Follow-up `rg` found user-visible “安全短码” in `components/upload/history/v1/history-data-v1-dashboard.tsx:545` and `components/upload/quality/v1/upload-quality-v1-dashboard.tsx:274,889`; the same quality component also exposed English `safe warning code`, `问题 code`, `active dataset`, and `schema` copy. | Preserve underlying fields and data semantics; replace visible labels with business Chinese such as “批次标识/问题标识/当前数据/数据结构”, hide raw machine codes from main copy, and add brand UX validator coverage. |
+| UX-15-BOARD-EMPTY-CTA-MISSING | `/v2/series-board`, `/v2/store-board`, `/v2/product-board` | Owner independent public review found compact empty states had only explanation text and `返回首页`, forcing brand owner to detour before data import. | Add exactly one primary CTA, `前往数据接入`, to each compact empty state; link to `/v2/upload`; do not add extra explanation stack; validate desktop/390px mobile and public HTTP/console/network. |

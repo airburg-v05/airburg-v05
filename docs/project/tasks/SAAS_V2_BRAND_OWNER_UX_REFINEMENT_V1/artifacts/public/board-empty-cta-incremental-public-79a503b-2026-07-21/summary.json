@@ -1,0 +1,507 @@
+{
+  "status": "PASS",
+  "validator": "validate-saas-v2-ten-route-system-chrome-v1",
+  "baseUrl": "http://123.57.49.121",
+  "artifactDir": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21",
+  "profileDir": "/tmp/airburg-v2-ux-board-cta-public-profile-79a503b-20260721",
+  "checks": [
+    {
+      "name": "v2-series-boardDesktopReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/series-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-series-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2-series-boardUsesTruthfulV2ShellCopy",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/series-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-series-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2-series-boardDesktopNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/series-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-series-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2SeriesBoardEmptyStateIsCompactWhenNoRuntimeData",
+      "pass": true,
+      "details": {
+        "text": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n系列中心\n\n按已维护的系列范围查看经营表现。\n\n返回首页\n\n暂无系列数据\n\n完成数据导入或系列维护后，再返回查看系列中心。\n\n前往数据接入",
+        "links": [
+          {
+            "text": "经营驾驶舱",
+            "href": "/v2/home"
+          },
+          {
+            "text": "系列中心",
+            "href": "/v2/series-board"
+          },
+          {
+            "text": "店铺中心",
+            "href": "/v2/store-board"
+          },
+          {
+            "text": "商品中心",
+            "href": "/v2/product-board"
+          },
+          {
+            "text": "数据接入",
+            "href": "/v2/upload"
+          },
+          {
+            "text": "数据健康",
+            "href": "/v2/data-health"
+          },
+          {
+            "text": "目标中心",
+            "href": "/v2/target-center"
+          },
+          {
+            "text": "搜索资产",
+            "href": "/v2/search-assets"
+          },
+          {
+            "text": "返回首页",
+            "href": "/v2/home"
+          },
+          {
+            "text": "前往数据接入",
+            "href": "/v2/upload"
+          }
+        ],
+        "emptyStatePrimaryCtaCount": 1
+      }
+    },
+    {
+      "name": "v2-store-boardDesktopReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/store-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-store-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2-store-boardUsesTruthfulV2ShellCopy",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/store-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-store-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2-store-boardDesktopNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/store-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-store-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2StoreBoardEmptyStateIsCompactWhenNoRuntimeData",
+      "pass": true,
+      "details": {
+        "text": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n店铺中心\n\n聚焦当前平台和店铺的经营表现。\n\n返回首页\n\n暂无店铺数据\n\n完成数据导入后，再返回查看店铺中心。\n\n前往数据接入",
+        "links": [
+          {
+            "text": "经营驾驶舱",
+            "href": "/v2/home"
+          },
+          {
+            "text": "系列中心",
+            "href": "/v2/series-board"
+          },
+          {
+            "text": "店铺中心",
+            "href": "/v2/store-board"
+          },
+          {
+            "text": "商品中心",
+            "href": "/v2/product-board"
+          },
+          {
+            "text": "数据接入",
+            "href": "/v2/upload"
+          },
+          {
+            "text": "数据健康",
+            "href": "/v2/data-health"
+          },
+          {
+            "text": "目标中心",
+            "href": "/v2/target-center"
+          },
+          {
+            "text": "搜索资产",
+            "href": "/v2/search-assets"
+          },
+          {
+            "text": "返回首页",
+            "href": "/v2/home"
+          },
+          {
+            "text": "前往数据接入",
+            "href": "/v2/upload"
+          }
+        ],
+        "emptyStatePrimaryCtaCount": 1
+      }
+    },
+    {
+      "name": "v2-product-boardDesktopReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/product-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-product-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2-product-boardUsesTruthfulV2ShellCopy",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/product-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-product-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2-product-boardDesktopNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/product-board",
+        "title": "Airburg Data · 电商数据分析平台",
+        "hasMain": true,
+        "hasV2Topbar": true,
+        "hasV2PageHeader": true,
+        "hasForbiddenCopy": [],
+        "horizontalOverflow": false,
+        "linkCount": 10,
+        "nonV2Links": [],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-product-board-desktop.png"
+      }
+    },
+    {
+      "name": "v2ProductBoardEmptyStateIsCompactWhenNoRuntimeData",
+      "pass": true,
+      "details": {
+        "text": "AB\n\nAirburg 经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n平台：天猫\n商品中心\n\n查看已维护重点商品的经营表现。\n\n返回首页\n\n暂无重点商品数据\n\n完成数据导入并维护重点商品后，再返回查看商品中心。\n\n前往数据接入",
+        "links": [
+          {
+            "text": "经营驾驶舱",
+            "href": "/v2/home"
+          },
+          {
+            "text": "系列中心",
+            "href": "/v2/series-board"
+          },
+          {
+            "text": "店铺中心",
+            "href": "/v2/store-board"
+          },
+          {
+            "text": "商品中心",
+            "href": "/v2/product-board"
+          },
+          {
+            "text": "数据接入",
+            "href": "/v2/upload"
+          },
+          {
+            "text": "数据健康",
+            "href": "/v2/data-health"
+          },
+          {
+            "text": "目标中心",
+            "href": "/v2/target-center"
+          },
+          {
+            "text": "搜索资产",
+            "href": "/v2/search-assets"
+          },
+          {
+            "text": "返回首页",
+            "href": "/v2/home"
+          },
+          {
+            "text": "前往数据接入",
+            "href": "/v2/upload"
+          }
+        ],
+        "emptyStatePrimaryCtaCount": 1
+      }
+    },
+    {
+      "name": "v2-series-boardMobileReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/series-board",
+        "horizontalOverflow": false,
+        "emptyStatePrimaryCtas": [
+          {
+            "text": "前往数据接入",
+            "href": "/v2/upload"
+          }
+        ],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-series-board-mobile.png"
+      }
+    },
+    {
+      "name": "v2-series-boardMobileNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/series-board",
+        "horizontalOverflow": false,
+        "emptyStatePrimaryCtas": [
+          {
+            "text": "前往数据接入",
+            "href": "/v2/upload"
+          }
+        ],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-series-board-mobile.png"
+      }
+    },
+    {
+      "name": "v2-series-boardMobileEmptyStateCtaPointsToV2Upload",
+      "pass": true,
+      "details": [
+        {
+          "text": "前往数据接入",
+          "href": "/v2/upload"
+        }
+      ]
+    },
+    {
+      "name": "v2-store-boardMobileReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/store-board",
+        "horizontalOverflow": false,
+        "emptyStatePrimaryCtas": [
+          {
+            "text": "前往数据接入",
+            "href": "/v2/upload"
+          }
+        ],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-store-board-mobile.png"
+      }
+    },
+    {
+      "name": "v2-store-boardMobileNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/store-board",
+        "horizontalOverflow": false,
+        "emptyStatePrimaryCtas": [
+          {
+            "text": "前往数据接入",
+            "href": "/v2/upload"
+          }
+        ],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-store-board-mobile.png"
+      }
+    },
+    {
+      "name": "v2-store-boardMobileEmptyStateCtaPointsToV2Upload",
+      "pass": true,
+      "details": [
+        {
+          "text": "前往数据接入",
+          "href": "/v2/upload"
+        }
+      ]
+    },
+    {
+      "name": "v2-product-boardMobileReachable",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/product-board",
+        "horizontalOverflow": false,
+        "emptyStatePrimaryCtas": [
+          {
+            "text": "前往数据接入",
+            "href": "/v2/upload"
+          }
+        ],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-product-board-mobile.png"
+      }
+    },
+    {
+      "name": "v2-product-boardMobileNoWideOverflow",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/product-board",
+        "horizontalOverflow": false,
+        "emptyStatePrimaryCtas": [
+          {
+            "text": "前往数据接入",
+            "href": "/v2/upload"
+          }
+        ],
+        "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-product-board-mobile.png"
+      }
+    },
+    {
+      "name": "v2-product-boardMobileEmptyStateCtaPointsToV2Upload",
+      "pass": true,
+      "details": [
+        {
+          "text": "前往数据接入",
+          "href": "/v2/upload"
+        }
+      ]
+    },
+    {
+      "name": "tenRouteConsoleBusinessErrorsZero",
+      "pass": true,
+      "details": []
+    },
+    {
+      "name": "tenRouteNetworkBusinessErrorsZero",
+      "pass": true,
+      "details": []
+    }
+  ],
+  "desktop": [
+    {
+      "pathname": "/v2/series-board",
+      "title": "Airburg Data · 电商数据分析平台",
+      "hasMain": true,
+      "hasV2Topbar": true,
+      "hasV2PageHeader": true,
+      "hasForbiddenCopy": [],
+      "horizontalOverflow": false,
+      "linkCount": 10,
+      "nonV2Links": [],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-series-board-desktop.png"
+    },
+    {
+      "pathname": "/v2/store-board",
+      "title": "Airburg Data · 电商数据分析平台",
+      "hasMain": true,
+      "hasV2Topbar": true,
+      "hasV2PageHeader": true,
+      "hasForbiddenCopy": [],
+      "horizontalOverflow": false,
+      "linkCount": 10,
+      "nonV2Links": [],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-store-board-desktop.png"
+    },
+    {
+      "pathname": "/v2/product-board",
+      "title": "Airburg Data · 电商数据分析平台",
+      "hasMain": true,
+      "hasV2Topbar": true,
+      "hasV2PageHeader": true,
+      "hasForbiddenCopy": [],
+      "horizontalOverflow": false,
+      "linkCount": 10,
+      "nonV2Links": [],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-product-board-desktop.png"
+    }
+  ],
+  "mobile": [
+    {
+      "pathname": "/v2/series-board",
+      "horizontalOverflow": false,
+      "emptyStatePrimaryCtas": [
+        {
+          "text": "前往数据接入",
+          "href": "/v2/upload"
+        }
+      ],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-series-board-mobile.png"
+    },
+    {
+      "pathname": "/v2/store-board",
+      "horizontalOverflow": false,
+      "emptyStatePrimaryCtas": [
+        {
+          "text": "前往数据接入",
+          "href": "/v2/upload"
+        }
+      ],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-store-board-mobile.png"
+    },
+    {
+      "pathname": "/v2/product-board",
+      "horizontalOverflow": false,
+      "emptyStatePrimaryCtas": [
+        {
+          "text": "前往数据接入",
+          "href": "/v2/upload"
+        }
+      ],
+      "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/v2-product-board-mobile.png"
+    }
+  ],
+  "cleanupState": null
+}
