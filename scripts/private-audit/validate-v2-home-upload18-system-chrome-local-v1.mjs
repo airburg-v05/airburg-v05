@@ -417,7 +417,8 @@ const importCounts = (client) =>
     `(() => {
       const text = document.querySelector('[data-testid="upload-page-v2-result-summary"]')?.textContent ?? "";
       const read = (label) => Number(text.match(new RegExp(label + "：?([0-9]+)"))?.[1] ?? -1);
-      return { success: read("成功"), failed: read("失败"), skipped: read("skipped") };
+      const skipped = read("跳过");
+      return { success: read("成功"), failed: read("失败"), skipped: skipped >= 0 ? skipped : read("skipped") };
     })()`,
   );
 
@@ -437,14 +438,15 @@ const fourSourceFilePaths = (files) => {
 const targetCenterPreconditionRegression = async (client) => {
   await setViewport(client, 1440, 1000);
   await navigate(client, "/v2/target-center", "main");
-  await waitForExpression(client, `document.body.innerText.includes("目标管理") && document.body.innerText.includes("目标中心边界")`, 30000);
+  await waitForExpression(client, `document.readyState === "complete"`, 30000);
+  await wait(1500);
   const preconditionState = await evaluate(
     client,
     `(() => {
       const links = Array.from(document.querySelectorAll('a')).map((link) => ({ text: (link.textContent ?? '').trim(), href: link.getAttribute('href') }));
       return {
         body: document.body.innerText,
-        hasRuntimeButNoTargetFoundationCopy: document.body.innerText.includes("经营数据已导入，但目标中心数据底座尚未初始化") || document.body.innerText.includes("18 文件安全聚合数据"),
+        hasRuntimeButNoTargetFoundationCopy: document.body.innerText.includes("经营数据已导入，但目标中心数据底座尚未初始化") || document.body.innerText.includes("18 文件经营数据"),
         hasFoundationAction: links.some((link) => link.text.includes("数据接入") && link.href?.startsWith("/v2/upload")),
         hasDataHealthAction: links.some((link) => link.text.includes("数据健康") && link.href?.startsWith("/v2/data-health")),
         hasDeleteButton: Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '删除'),
@@ -464,11 +466,11 @@ const targetCenterPreconditionRegression = async (client) => {
 
 const targetCenterWritableRegression = async (client) => {
   await navigate(client, "/v2/target-center", "main");
-  await waitForExpression(client, `document.body.innerText.includes("目标管理") && document.body.innerText.includes("目标中心边界")`, 30000);
+  await waitForExpression(client, `document.body.innerText.includes("目标中心") && document.body.innerText.includes("目标设置说明")`, 30000);
   const initialState = await evaluate(
     client,
     `(() => ({
-      hasBoundary: document.body.innerText.includes("周、自定义和多月范围没有独立合同"),
+      hasBoundary: document.body.innerText.includes("目标设置说明") && document.body.innerText.includes("周、自定义和多月目标暂未开放"),
       hasDeleteButton: Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '删除'),
       hasWriteTruthCopy: document.body.innerText.includes("点击保存后会写入当前浏览器的目标数据"),
     }))()`,
@@ -528,7 +530,7 @@ const targetCenterWritableRegression = async (client) => {
   check("targetCenterPercentTargetSaveSucceeds", saveAttemptState.hasSuccess && saveAttemptState.hasPercentTarget, saveAttemptState);
 
   await reloadPage(client);
-  await waitForExpression(client, `document.body.innerText.includes("目标管理") && document.body.innerText.includes("92%")`, 30000);
+  await waitForExpression(client, `document.body.innerText.includes("目标中心") && document.body.innerText.includes("92%")`, 30000);
   const savedState = await evaluate(
     client,
     `(() => ({
@@ -542,7 +544,7 @@ const targetCenterWritableRegression = async (client) => {
   await clickText(client, "暂停");
   await waitForExpression(client, `document.body.innerText.includes("保存成功") && document.body.innerText.includes("重新启用")`, 30000);
   await reloadPage(client);
-  await waitForExpression(client, `document.body.innerText.includes("目标管理") && document.body.innerText.includes("重新启用")`, 30000);
+  await waitForExpression(client, `document.body.innerText.includes("目标中心") && document.body.innerText.includes("重新启用")`, 30000);
   const pausedState = await evaluate(
     client,
     `(() => ({
@@ -573,7 +575,7 @@ const targetFoundationImportRegression = async (client, files) => {
   await navigate(client, "/v2/upload", "[data-testid='v2-upload-target-foundation']");
   await waitForExpression(
     client,
-    `document.body.innerText.includes("目标中心数据底座") && document.body.innerText.includes("用于目标设置的四源导入")`,
+    `document.body.innerText.includes("目标中心数据底座") && document.body.innerText.includes("下方四类报表用于初始化目标中心")`,
     30000,
   );
   const selectedFileCount = await setInputFiles(client, fourFiles, {
@@ -767,7 +769,11 @@ const run = async () => {
       }))()`,
     );
     check("v2HomeShows17Metrics", homeState.metricCount === 17, homeState);
-    check("v2HomeNoLongerShowsSafeSkip", String(homeState.dataHealthText).includes("安全跳过0"), homeState);
+    check(
+      "v2HomeNoLongerShowsSafeSkip",
+      String(homeState.dataHealthText).includes("跳过文件0") || String(homeState.dataHealthText).includes("安全跳过0"),
+      homeState,
+    );
     check("v2HomeLeavesEmptyState", homeState.hasUploadPrompt === false, homeState);
     const homeDesktopScreenshot = await capture(client, "v2-home-desktop");
 
@@ -822,7 +828,7 @@ const run = async () => {
     check(
       "refreshPreservesMetricSubsetAndOrdering",
       refreshedState.metricCount === 15 &&
-        String(refreshedState.dataHealthText).includes("安全跳过0") &&
+        (String(refreshedState.dataHealthText).includes("跳过文件0") || String(refreshedState.dataHealthText).includes("安全跳过0")) &&
         refreshedState.firstMetricKey === "gsv" &&
         refreshedState.hasAdRoi === false &&
         refreshedState.hasBrandVisitors === false,

@@ -1,7 +1,14 @@
 import type { MetricV2 } from "@/components/saas-v2/data";
 
+const hasMeaningfulTarget = (metric: MetricV2): boolean =>
+  [metric.mtdTarget, metric.totalTarget, metric.delta, metric.completion].some((value) => {
+    const trimmed = value.trim();
+    return trimmed !== "" && trimmed !== "--";
+  }) || metric.progress > 0;
+
 export function MetricCardV2({ metric }: { metric: MetricV2 }) {
   const progress = Math.max(0, Math.min(100, metric.progress));
+  const showTargetDetail = hasMeaningfulTarget(metric);
 
   return (
     <article className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
@@ -17,27 +24,35 @@ export function MetricCardV2({ metric }: { metric: MetricV2 }) {
           </span>
         ) : null}
       </div>
-      <dl className="mt-4 grid grid-cols-2 gap-3 text-xs">
-        <div>
-          <dt className="text-slate-400">MTD目标</dt>
-          <dd className="mt-1 font-semibold text-slate-700">{metric.mtdTarget}</dd>
+      {showTargetDetail ? (
+        <>
+          <dl className="mt-4 grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <dt className="text-slate-400">MTD目标</dt>
+              <dd className="mt-1 font-semibold text-slate-700">{metric.mtdTarget}</dd>
+            </div>
+            <div>
+              <dt className="text-slate-400">总目标</dt>
+              <dd className="mt-1 font-semibold text-slate-700">{metric.totalTarget}</dd>
+            </div>
+            <div>
+              <dt className="text-slate-400">差值</dt>
+              <dd className="mt-1 font-semibold text-slate-700">{metric.delta}</dd>
+            </div>
+            <div>
+              <dt className="text-slate-400">完成率</dt>
+              <dd className="mt-1 font-semibold text-slate-700">{metric.completion}</dd>
+            </div>
+          </dl>
+          <div className="mt-4 h-2 rounded-full bg-slate-100">
+            <div className="h-full rounded-full bg-blue-500" style={{ width: `${progress}%` }} />
+          </div>
+        </>
+      ) : (
+        <div className="mt-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-500">
+          未设置目标
         </div>
-        <div>
-          <dt className="text-slate-400">总目标</dt>
-          <dd className="mt-1 font-semibold text-slate-700">{metric.totalTarget}</dd>
-        </div>
-        <div>
-          <dt className="text-slate-400">差值</dt>
-          <dd className="mt-1 font-semibold text-slate-700">{metric.delta}</dd>
-        </div>
-        <div>
-          <dt className="text-slate-400">完成率</dt>
-          <dd className="mt-1 font-semibold text-slate-700">{metric.completion}</dd>
-        </div>
-      </dl>
-      <div className="mt-4 h-2 rounded-full bg-slate-100">
-        <div className="h-full rounded-full bg-blue-500" style={{ width: `${progress}%` }} />
-      </div>
+      )}
     </article>
   );
 }

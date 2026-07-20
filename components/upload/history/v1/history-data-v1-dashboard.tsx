@@ -542,7 +542,7 @@ function FilterPanel({
           <input
             className={fieldClass}
             value={filters.searchTerm}
-            placeholder="搜批次号、店铺名、安全短码"
+            placeholder="搜批次号、店铺名、批次标识"
             onChange={(event) => setFilters({ ...filters, searchTerm: event.target.value })}
           />
         </label>
@@ -1038,7 +1038,7 @@ export function HistoryDataV1Dashboard() {
             activeSnapshot: activeResult.snapshot,
             snapshots: listWithActive,
             issueCodes: activeResult.snapshot.safeIssues.map((issue) => issue.code),
-            message: "已读取持久化安全聚合数据。",
+            message: "已读取已保存经营数据。",
           });
           return;
         }
@@ -1048,7 +1048,7 @@ export function HistoryDataV1Dashboard() {
             activeSnapshot: null,
             snapshots: listSnapshots,
             issueCodes: ["runtime_dataset_schema_corrupted"],
-            message: "持久化快照不可安全读取。",
+            message: "历史导入记录暂时无法读取。",
           });
           return;
         }
@@ -1067,7 +1067,7 @@ export function HistoryDataV1Dashboard() {
           activeSnapshot: null,
           snapshots: listSnapshots,
           issueCodes: [],
-          message: listSnapshots.length > 0 ? "存在历史安全快照，但没有 active dataset。" : "暂无持久化安全聚合数据。",
+          message: listSnapshots.length > 0 ? "存在历史导入记录，但当前没有可用数据。" : "暂无已保存经营数据。",
         });
       } catch {
         if (!cancelled) {

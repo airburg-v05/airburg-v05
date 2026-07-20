@@ -103,15 +103,21 @@ addCheck("xlsxUsesOfficialSheetJs0203CdnTarball", packageJson.dependencies?.xlsx
 addCheck("xlsxSecurityValidatorCoversAuditApiAndPostcssExposure", xlsxSecurityValidator.includes("validate-xlsx-security-and-postcss-exposure-v1") && xlsxSecurityValidator.includes("xlsxImportApiCompatible") && xlsxSecurityValidator.includes("xlsxReadWriteWorkbookSmokePasses") && xlsxSecurityValidator.includes("npmAuditHasNoXlsxHighOrCriticalAfterUpgrade") && xlsxSecurityValidator.includes("BLOCKED_BY_UPSTREAM_STABLE_FIX_LOW_CURRENT_EXPOSURE") && xlsxSecurityValidator.includes("postcssCurrentExposureHasNoUserCssOrDynamicStyleStringifySurface"));
 addCheck("taskMatrixRecordsXlsxAndPostcssAuditBoundary", taskIssueMatrix.includes("P0-XLSX-0203-CDN-UPGRADE") && taskIssueMatrix.includes("official SheetJS 0.20.3 CDN tarball") && taskIssueMatrix.includes("P2-NEXT-POSTCSS-UPSTREAM-BLOCKED") && taskIssueMatrix.includes("BLOCKED_BY_UPSTREAM_STABLE_FIX_LOW_CURRENT_EXPOSURE"));
 addCheck("v2UploadExposesTargetFoundationWithoutDecorativeOuterCard", v2UploadPage.includes("v2-upload-target-foundation") && v2UploadPage.includes("<TmallBatchImportWorkbench routeVariant=\"v2\" />") && !v2UploadPage.includes("rounded-3xl"));
-addCheck("v2UploadKeepsRuntimeAndV05FoundationSeparated", v2UploadPage.includes("18 文件入口写入经营首页和看板使用的安全聚合数据") && v2UploadPage.includes("目标中心沿用 V0.5F") && !uploadDashboard.includes("runV05BrowserTmallBatchImport"));
+addCheck("v2UploadKeepsRuntimeAndTargetFoundationSeparated", v2UploadPage.includes("18 文件入口用于经营首页和看板") && v2UploadPage.includes("下方四类报表用于初始化目标中心") && !v2UploadPage.includes("V0.5F") && !uploadDashboard.includes("runV05BrowserTmallBatchImport"));
 addCheck("v05BatchImportWorkbenchSupportsV2LinksWithoutChangingLegacyDefault", batchImportWorkbench.includes('routeVariant = "legacy"') && batchImportWorkbench.includes('type DataCenterRouteVariant') && batchImportWorkbench.includes("}, { routeVariant })"));
-addCheck("targetRuntimeExplainsRuntimeVsTargetFoundationPrecondition", targetRuntime.includes("loadActiveRuntimeDatasetSnapshot") && targetRuntime.includes("经营数据已导入，但目标中心数据底座尚未初始化") && targetRuntime.includes("18 文件安全聚合数据"));
+addCheck(
+  "targetRuntimeExplainsRuntimeVsTargetFoundationPrecondition",
+  targetRuntime.includes("loadActiveRuntimeDatasetSnapshot") &&
+    targetRuntime.includes("经营数据已导入，但目标中心数据底座尚未初始化") &&
+    targetRuntime.includes("18 文件经营数据") &&
+    !targetRuntime.includes("V0.5F 四源目标底座"),
+);
 
 addCheck("targetFreezeForbidsHardDelete", freeze.includes("新建、编辑、暂停和重新启用") && freeze.includes("暂停目标不硬删除"));
 addCheck("targetUiDoesNotOpenDeleteAction", !/>\s*删除\s*</.test(targetClient) && !targetClient.includes("setTargetStatusMutation({ targetId, status: \"deleted\""));
 addCheck("targetUiKeepsPauseReactivateActions", targetClient.includes("重新启用") && targetClient.includes("暂停"));
 addCheck("targetUiTruthfulWriteCopy", targetClient.includes("点击保存后会写入当前浏览器的目标数据，并通过读回校验后生效。") && !targetClient.includes("保存前不会写入本地数据"));
-addCheck("targetUiShowsFrozenBoundary", targetClient.includes("目标中心边界") && targetClient.includes("周、自定义和多月范围没有独立合同"));
+addCheck("targetUiShowsBusinessTargetSupportBoundary", targetClient.includes("目标设置说明") && targetClient.includes("当前支持日目标和单月目标；周、自定义和多月目标暂未开放。") && !targetClient.includes("TARGET CENTER") && !targetClient.includes("V0.5F 已冻结"));
 addCheck("targetDrawerHasSinglePlatformStoreLabel", (targetClient.match(/>平台和店铺</g) ?? []).length === 1);
 addCheck("targetPercentInputNormalizesBusinessForms", targetClient.includes("百分比支持 92、92% 或 0.92") && targetClient.includes("inputMode=\"decimal\"") && targetClient.includes("parseTargetValueText(draft.metricKey, draft.targetValueText)"));
 addCheck("targetMutationRejectsUnknownMetrics", targetMutations.includes("target_metric_unsupported") && targetOptions.includes("isTargetManagementMetricKey"));
@@ -119,8 +125,8 @@ addCheck("targetMutationRejectsUnnormalizedPercent", targetMutations.includes("t
 addCheck("targetStatusMutationRemainsPauseOnly", targetMutations.includes('status: "active" | "paused";') && !targetMutations.includes('status: "deleted";'));
 
 addCheck("explicitV2RouteMapperStillBlocksMissingManagementRoutes", routeMapping.includes('"/series-board/manage"') && routeMapping.includes('"/product-board/tracked"') && routeMapping.includes('"/upload/quality": "/v2/data-health"'));
-addCheck("searchCopyUsesBusinessPageNames", searchWorkspace.includes("首页、系列看板和商品看板") && !searchWorkspace.includes("`/v2/home`"));
-addCheck("exclusionCopyUsesBusinessPageNames", exclusionWorkspace.includes("首页、商品看板") && !exclusionWorkspace.includes("`/v2/home`"));
+addCheck("searchCopyUsesBusinessPageNames", searchWorkspace.includes("首页、系列看板和商品看板") && !searchWorkspace.includes("`/v2/home`") && !searchWorkspace.includes("BLOCKED_BY_MISSING_CONTRACT") && !searchWorkspace.includes("mock"));
+addCheck("exclusionCopyUsesBusinessPageNames", exclusionWorkspace.includes("首页、商品看板") && !exclusionWorkspace.includes("`/v2/home`") && !exclusionWorkspace.includes("BLOCKED_BY_MISSING_CONTRACT") && !exclusionWorkspace.includes("mock"));
 addCheck("searchAndExclusionDoNotReintroduceMockRows", !searchWorkspace.includes("keywordComparisonRows") && !exclusionWorkspace.includes("exclusionRuleRows") && !exclusionWorkspace.includes("readOnly"));
 addCheck("targetAgentConflictRecorded", taskIssueMatrix.includes("TARGET_AGENT_REQUIRED_CONFLICT_STALE") && taskIssueMatrix.includes("stable registry"));
 

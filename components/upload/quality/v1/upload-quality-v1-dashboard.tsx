@@ -271,7 +271,7 @@ const issueImpacts = (sourceType: SourceFilter, issueType: Exclude<IssueTypeFilt
 
 const issueSuggestion = (issueType: Exclude<IssueTypeFilter, "all">): string => {
   if (issueType === "missing_file") return "去数据上传页补充对应来源。";
-  if (issueType === "duplicate_file") return "去历史数据页查看批次安全短码。";
+  if (issueType === "duplicate_file") return "去历史数据页查看批次标识。";
   if (issueType === "platform_unavailable") return "等待该平台数据接入，当前不计入缺失。";
   if (issueType === "after_sales_safe") return "售后仅保留安全聚合提示，不影响原始明细展示边界。";
   if (issueType === "metric_unavailable") return "该指标可能暂不可计算，请查看来源状态后补充数据。";
@@ -530,7 +530,7 @@ const runtimeMissingCoverageIssue = (
     runtimeIssueSourceType(sourceType),
     label,
     `missing_${sourceType}`,
-    `${label}未接入当前 active dataset，相关看板会只展示可计算部分。`,
+    `${label}未接入当前数据，相关看板会只展示可计算部分。`,
     runtimeIssueImpacts(sourceType),
     "去数据上传页补充对应来源。",
     { needsSupplement: true },
@@ -557,7 +557,7 @@ const runtimeSafeIssueToQualityIssue = (snapshot: RuntimeDatasetSnapshot, issue:
     runtimeIssueSourceType(issue.sourceType),
     label,
     issue.code,
-    `${label}安全 issue code：${normalizeSafeCode(issue.code)}，数量 ${formatCount(issue.safeCount)}。原始内容和文件信息不会在本页展示。`,
+    `${label}有 ${formatCount(issue.safeCount)} 条聚合提示。原始内容和文件信息不会在本页展示。`,
     runtimeIssueImpacts(issue.sourceType),
     issueType === "platform_unavailable" ? "等待该文件类型接入，当前不阻断其它数据。" : issueSuggestion(issueType),
     { blocksCalculation: severity === "high", needsSupplement: false },
@@ -580,7 +580,7 @@ const buildRuntimeSnapshotIssues = (snapshot: RuntimeDatasetSnapshot): QualityIs
       "runtime_deduped_records",
       `已隔离 ${formatCount(snapshot.importSummary.dedupedRecords)} 条重复聚合记录，未重复累加 GMV、访客或搜索词。`,
       ["仅提示"],
-      "去历史数据页查看 active dataset 安全摘要。",
+      "去历史数据页查看当前数据摘要。",
     )
     : null;
   const afterSalesStatusIssue = snapshot.sourceCoverage.after_sales.present
@@ -592,7 +592,7 @@ const buildRuntimeSnapshotIssues = (snapshot: RuntimeDatasetSnapshot): QualityIs
       "after_sales",
       RUNTIME_SOURCE_LABELS.after_sales,
       "after_sales_safe_aggregate",
-      `售后数据已转为安全聚合指标，当前 afterSalesMetricsCount 为 ${formatCount(snapshot.importSummary.afterSalesMetricsCount)}。`,
+      `售后数据已转为汇总指标，当前售后汇总记录数为 ${formatCount(snapshot.importSummary.afterSalesMetricsCount)}。`,
       SOURCE_TO_IMPACTS.after_sales,
       "暂不影响看板；本页不会展示售后订单、退款或交易明细。",
     )
@@ -609,17 +609,17 @@ const buildRuntimeCorruptedIssue = (reason: string): QualityIssue => ({
   platformCode: "tmall",
   platformLabel: "天猫",
   storeId: "unknown",
-  storeName: "当前 active dataset",
+  storeName: "当前数据",
   dateRange: "--",
   sourceType: "all",
-  sourceLabel: "持久化数据 schema",
+  sourceLabel: "已保存数据结构",
   batchSafeCode: "RUNTIME",
   safeCode: normalizeSafeCode(`runtime_schema_corrupted_${reason}`),
   impact: ["影响首页", "影响系列看板", "影响宝贝看板"],
   suggestion: "请重新完成一次安全批量导入。",
   blocksCalculation: true,
   needsSupplement: true,
-  safeSummary: "持久化 schema 不兼容，页面不会展示损坏对象或技术堆栈。",
+  safeSummary: "已保存数据结构不兼容，请重新导入后查看。",
 });
 
 const filterIssues = (issues: QualityIssue[], filters: QualityFilters): QualityIssue[] => {
@@ -843,7 +843,7 @@ function IssueList({
         <div>
           <h2 className="text-lg font-semibold text-slate-950">质量问题列表</h2>
           <p className="mt-1 text-sm text-slate-500">
-            数据质量页展示安全 issue code 和聚合摘要，只读查看，不展示原始行、来源私密信息或敏感明细。
+            数据质量页展示聚合摘要和影响范围，只读查看，不展示原始行、来源私密信息或敏感明细。
           </p>
         </div>
         <span className="rounded-full border border-slate-200/80 bg-slate-50/80 px-3 py-1 text-sm font-semibold text-slate-600">
@@ -857,7 +857,7 @@ function IssueList({
               {loadStatus === "loading" ? "正在读取数据质量状态" : "暂无质量问题"}
             </p>
             <p className="mt-2 text-sm leading-6 text-slate-500">
-              当前数据质量问题将在导入后展示；如果已有数据，本页会优先展示安全问题 code 和影响范围。
+              当前数据质量问题将在导入后展示；如果已有数据，本页会优先展示问题类型和影响范围。
             </p>
           </div>
         ) : (
@@ -868,7 +868,7 @@ function IssueList({
                   <div className="flex flex-wrap items-center gap-2">
                     <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${severityClass(issue.severity)}`}>{issue.severityLabel}</span>
                     <span className="rounded-full border border-slate-200/80 bg-slate-50/80 px-2.5 py-1 text-xs font-semibold text-slate-700">{issue.issueTypeLabel}</span>
-                    <span className="rounded-full border border-slate-200/80 bg-white px-2.5 py-1 text-xs font-semibold text-slate-500">{issue.safeCode}</span>
+                    <span className="rounded-full border border-slate-200/80 bg-white px-2.5 py-1 text-xs font-semibold text-slate-500">问题标识 {shortCode(issue.safeCode)}</span>
                   </div>
                   <h3 className="mt-3 text-base font-semibold text-slate-950">{issue.sourceLabel} · {issue.storeName}</h3>
                   <p className="mt-2 text-sm leading-6 text-slate-600">{issue.safeSummary}</p>
@@ -886,8 +886,8 @@ function IssueList({
                 <Meta label="店铺" value={`${issue.storeName} · ${issue.platformCode}/${issue.storeId}`} />
                 <Meta label="业务日期 / 日期范围" value={issue.dateRange} />
                 <Meta label="来源类型" value={issue.sourceLabel} />
-                <Meta label="批次安全短码" value={issue.batchSafeCode} />
-                <Meta label="safe warning code" value={issue.safeCode} />
+                <Meta label="批次标识" value={issue.batchSafeCode} />
+                <Meta label="问题标识" value={shortCode(issue.safeCode)} />
                 <Meta label="影响范围" value={issue.impact.join(" / ")} />
                 <Meta label="建议动作" value={issue.suggestion} />
               </dl>
@@ -986,7 +986,7 @@ function DetailDrawer({ issue, onClose }: { issue: QualityIssue | null; onClose:
           </button>
         </div>
         <div className="mt-5 grid gap-3">
-          <Meta label="问题 code" value={issue.safeCode} />
+          <Meta label="问题标识" value={shortCode(issue.safeCode)} />
           <Meta label="严重程度" value={issue.severityLabel} />
           <Meta label="问题类型" value={issue.issueTypeLabel} />
           <Meta label="平台" value={`${issue.platformLabel} · ${issue.platformCode}`} />
@@ -998,7 +998,7 @@ function DetailDrawer({ issue, onClose }: { issue: QualityIssue | null; onClose:
           <p className="text-sm font-semibold text-slate-900">安全摘要</p>
           <p className="mt-2 text-sm leading-6 text-slate-600">{issue.safeSummary}</p>
           <div className="mt-3 grid gap-2 text-sm">
-            <Meta label="safe warning code" value={issue.safeCode} />
+            <Meta label="问题标识" value={shortCode(issue.safeCode)} />
             <Meta label="影响看板" value={issue.impact.join(" / ")} />
             <Meta label="是否阻断计算" value={issue.blocksCalculation ? "是" : "否"} />
             <Meta label="是否需要补充数据" value={issue.needsSupplement ? "是" : "否"} />
@@ -1055,9 +1055,9 @@ export function UploadQualityV1Dashboard() {
         setModel({
           loadStatus: persistedResult.status === "corrupted" ? "corrupted" : result.status,
           message: persistedResult.status === "ok"
-            ? "已读取 active dataset 安全聚合质量摘要。"
+            ? "已读取当前数据质量摘要。"
             : persistedResult.status === "corrupted"
-              ? "active dataset schema 不可安全读取。"
+              ? "当前数据结构暂时无法读取。"
               : result.status === "valid"
                 ? "数据质量已加载。"
                 : result.status === "empty"

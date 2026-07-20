@@ -25,9 +25,9 @@ export function ChartPanelV2({ title, description, recommendedPairs, content }: 
       <div className="mt-5 min-h-64 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-5">
         {content ?? (
           <div className="flex h-52 flex-col items-center justify-center text-center">
-            <p className="text-sm font-semibold text-slate-900">图表等待 active dataset</p>
+            <p className="text-sm font-semibold text-slate-900">图表等待经营数据</p>
             <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
-              缺失值不会绘制为 0。hover tooltip、axis 和同比 / 环比提示将在数据接入后启用。
+              缺失日期会中断曲线；同比、环比提示将在数据接入后启用。
             </p>
           </div>
         )}

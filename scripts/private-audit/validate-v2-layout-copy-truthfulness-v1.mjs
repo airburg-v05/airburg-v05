@@ -26,18 +26,21 @@ const checks = [
       !topbar.includes("Platform: 天猫"),
   },
   {
-    name: "page-header-uses-business-neutral-truthful-copy",
+    name: "page-header-uses-compact-business-route-copy",
     pass:
-      pageHeader.includes("Airburg Business Workspace") &&
-      pageHeader.includes("品牌经营分析工作区") &&
-      pageHeader.includes("当前页面按已接入的数据与业务口径展示，未接入能力会明确标记。"),
+      pageHeader.includes('data-testid="saas-v2-compact-page-header"') &&
+      pageHeader.includes("系列中心") &&
+      pageHeader.includes("目标中心") &&
+      pageHeader.includes("返回首页"),
   },
   {
     name: "page-header-removes-no-write-preview-guarantees",
     pass:
       !pageHeader.includes("本地 preview 工作区") &&
       !pageHeader.includes("不写入真实数据") &&
-      !pageHeader.includes("不改变 ETL / BI / Target / Persistence"),
+      !pageHeader.includes("不改变 ETL / BI / Target / Persistence") &&
+      !pageHeader.includes("Airburg Business Workspace") &&
+      !pageHeader.includes("品牌经营分析工作区"),
   },
 ];
 

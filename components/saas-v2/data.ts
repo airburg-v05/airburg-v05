@@ -36,7 +36,7 @@ export const homeMetrics: MetricV2[] = [
   delta: "--",
   completion: "--",
   progress: 0,
-  note: "Preview pending: 连接 active dataset 后显示。",
+  note: "导入经营数据后显示。",
 }));
 
 export const boardMetrics: MetricV2[] = [
@@ -63,7 +63,7 @@ export const boardMetrics: MetricV2[] = [
   delta: "--",
   completion: "--",
   progress: 0,
-  note: "等待当前 scope 的 BI view model。",
+  note: "等待当前经营范围的数据。",
 }));
 
 export const navItems = [
@@ -75,14 +75,12 @@ export const navItems = [
   { href: "/v2/data-health", label: "数据健康", group: "工具" },
   { href: "/v2/target-center", label: "目标中心", group: "控制" },
   { href: "/v2/search-assets", label: "搜索资产", group: "资产" },
-  { href: "/v2/exclusion-rules", label: "排除规则", group: "控制" },
 ];
 
 export const toolEntries = [
   { href: "/v2/series-board", title: "系列自定义", description: "维护重点系列和商品 ID 清单。" },
-  { href: "/v2/exclusion-rules", title: "商品排除", description: "配置商品 ID 和数据源能力范围。" },
   { href: "/v2/search-assets", title: "品牌搜索资产", description: "管理品牌词、中心词、别名词和类目词。" },
-  { href: "/v2/target-center", title: "目标中心", description: "集中设置 required 目标并查看 derived 目标。" },
+  { href: "/v2/target-center", title: "目标中心", description: "集中设置可维护目标并查看联动进度。" },
 ];
 
 export const keySeriesRows = [
@@ -100,10 +98,10 @@ export const recommendedMetricPairs = [
 ];
 
 export const anomalyRows = [
-  ["数据缺失", "Preview pending", "进入数据健康中心查看覆盖日历"],
-  ["skipped 文件", "Preview pending", "查看 safe issue code"],
-  ["重复上传", "Preview pending", "确认是否需要后续覆盖能力"],
-  ["指标不可计算", "Preview pending", "检查分母缺失或不支持来源"],
+  ["数据缺失", "待导入", "进入数据健康中心查看覆盖日历"],
+  ["未接收文件", "待导入", "查看导入提示"],
+  ["重复上传", "待确认", "确认是否需要后续覆盖能力"],
+  ["指标不可计算", "待确认", "检查分母缺失或不支持来源"],
 ];
 
 export const seriesRows = [
@@ -113,9 +111,9 @@ export const seriesRows = [
 ];
 
 export const seriesContributionRows = [
-  ["P1 桌面净化器", "--", "等待当前系列 active dataset"],
+  ["P1 桌面净化器", "--", "等待当前系列数据"],
   ["P1+ 升级款", "--", "等待商品 ID 清单维护"],
-  ["系列合计", "--", "不自动包含全部运行时商品"],
+  ["系列合计", "--", "按已维护商品清单展示"],
 ];
 
 export const seriesSearchRows = [
@@ -171,31 +169,31 @@ export const templateRows = [
 ];
 
 export const uploadStatusRows = [
-  ["success", "--", "识别并进入安全聚合"],
-  ["failed", "--", "未识别或缺少必填字段"],
-  ["skipped", "--", "重复或不支持来源"],
+  ["成功", "--", "识别并进入经营汇总"],
+  ["失败", "--", "未识别或缺少必填字段"],
+  ["跳过", "--", "重复或不支持来源"],
 ];
 
 export const coverageCalendarRows = [
-  ["2026-06-26", "Preview pending", "Preview pending", "Preview pending", "Preview pending"],
-  ["2026-06-27", "Preview pending", "Preview pending", "Preview pending", "Preview pending"],
-  ["2026-06-28", "Preview pending", "Preview pending", "Preview pending", "Preview pending"],
-  ["2026-06-29", "Preview pending", "Preview pending", "Preview pending", "Preview pending"],
-  ["2026-06-30", "Preview pending", "Preview pending", "Preview pending", "Preview pending"],
+  ["2026-06-26", "待导入", "待导入", "待导入", "待导入"],
+  ["2026-06-27", "待导入", "待导入", "待导入", "待导入"],
+  ["2026-06-28", "待导入", "待导入", "待导入", "待导入"],
+  ["2026-06-29", "待导入", "待导入", "待导入", "待导入"],
+  ["2026-06-30", "待导入", "待导入", "待导入", "待导入"],
 ];
 
 export const dataHealthRows = [
-  ["缺失数据", "Preview pending", "等待 active dataset coverage"],
-  ["重复上传", "Preview pending", "后续可扩展版本管理"],
-  ["skipped 文件", "Preview pending", "只显示 safe issue code"],
-  ["指标不可计算", "Preview pending", "分母缺失时显示 --"],
+  ["缺失数据", "待导入", "等待经营数据覆盖"],
+  ["重复上传", "待确认", "后续可扩展版本管理"],
+  ["未接收文件", "待确认", "显示可处理提示"],
+  ["指标不可计算", "待确认", "分母缺失时显示 --"],
 ];
 
 export const sourceCoverageRows = [
-  ["product_metric", "Preview pending", "GMV / GSV / 访客 / 支付买家"],
-  ["plan_metric", "Preview pending", "推广花费 / 点击 / ROI"],
-  ["search_total", "Preview pending", "品牌词访客 / 支付人数"],
-  ["after_sales", "Preview pending", "退货率三线"],
+  ["商品经营", "待导入", "GMV / GSV / 访客 / 支付买家"],
+  ["推广计划", "待导入", "推广花费 / 点击 / ROI"],
+  ["搜索汇总", "待导入", "品牌词访客 / 支付人数"],
+  ["售后数据", "待导入", "退货率三线"],
 ];
 
 export const targetScopeRows = [
@@ -207,19 +205,19 @@ export const targetScopeRows = [
 ];
 
 export const targetRuleRows = [
-  ["GMV", "元", "required"],
-  ["GSV", "元", "required"],
-  ["投入产出比", "倍", "required"],
-  ["转化率", "%", "required"],
-  ["退货率（总）", "%", "required"],
-  ["客单价", "元", "required"],
-  ["直接成交占比", "%", "required"],
+  ["GMV", "元", "可输入"],
+  ["GSV", "元", "可输入"],
+  ["投入产出比", "倍", "可输入"],
+  ["转化率", "%", "可输入"],
+  ["退货率（总）", "%", "可输入"],
+  ["客单价", "元", "可输入"],
+  ["直接成交占比", "%", "可输入"],
 ];
 
 export const derivedTargetRows = [
-  ["推广花费", "GSV目标 / 投入产出比目标", "不写 target drafts"],
-  ["品牌词支付占比", "品牌词支付人数目标 / 总搜索词支付人数目标", "不写 target drafts"],
-  ["去退费比", "推广花费目标 / (GSV目标 x (1 - 退货率目标))", "不写 target drafts"],
+  ["推广花费", "GSV目标 / 投入产出比目标", "由已有目标推导"],
+  ["品牌词支付占比", "品牌词支付人数目标 / 总搜索词支付人数目标", "由已有目标推导"],
+  ["去退费比", "推广花费目标 / (GSV目标 x (1 - 退货率目标))", "由已有目标推导"],
 ];
 
 export const aliasRows = [
@@ -245,11 +243,11 @@ export const sourceCapabilityRows = [
   ["商品标题", "可用性待检测", "可用于商品 ID 外的辅助排除"],
   ["订单明细", "当前数据源不支持该过滤", "无对应来源时不可用"],
   ["售后明细", "当前数据源不支持该过滤", "不展示敏感文本"],
-  ["备注字段", "当前数据源不支持该过滤", "不伪装生效"],
+  ["备注字段", "当前数据源不支持该过滤", "待开放"],
 ];
 
 export const exclusionRuleRows = [
-  ["商品 ID 排除", "商品级经营数据", "preview pending"],
-  ["多文本排除", "仅数据源支持字段", "preview pending"],
-  ["规则生效说明", "当前 scope", "等待 active dataset"],
+  ["商品 ID 排除", "商品级经营数据", "待开放"],
+  ["多文本排除", "仅数据源支持字段", "待开放"],
+  ["规则生效说明", "当前经营范围", "待开放"],
 ];

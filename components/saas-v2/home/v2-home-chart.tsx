@@ -128,7 +128,7 @@ export function V2HomeChart({
   const comparisonPairs = model.availablePairs.filter((pair) => pair.leftMetricKey === model.pair.leftMetricKey);
   const healthRows = [
     { label: "缺失", value: dataHealth.missingSourceCount },
-    { label: "安全跳过", value: dataHealth.safeSkippedCount },
+    { label: "跳过文件", value: dataHealth.safeSkippedCount },
     { label: "重复", value: dataHealth.dedupedRecordCount },
     { label: "不可计算", value: dataHealth.nonComputableMetricCount },
   ];

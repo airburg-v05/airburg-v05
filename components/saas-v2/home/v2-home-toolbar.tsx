@@ -22,7 +22,6 @@ interface V2HomeToolbarProps {
 
 const OPERATING_ACTIONS = [
   { label: "重点系列", href: "/v2/series-board" },
-  { label: "商品排除", href: "/v2/exclusion-rules" },
   { label: "搜索资产", href: "/v2/search-assets" },
   { label: "目标中心", href: "/v2/target-center" },
 ];

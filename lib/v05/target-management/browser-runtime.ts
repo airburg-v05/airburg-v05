@@ -21,7 +21,7 @@ const targetFoundationEmptyResult = async (): Promise<TargetManagementLoadResult
   const runtimeSnapshot = await loadActiveRuntimeDatasetSnapshot();
   const runtimeHasBusinessData = runtimeSnapshot.status === "ok";
   const notice = runtimeHasBusinessData
-    ? "已检测到经营首页和看板使用的 18 文件安全聚合数据，但目标中心使用 V0.5F 四源目标底座。请先在数据接入页完成“目标中心数据底座”导入，再设置公司、店铺、系列和商品目标。"
+    ? "已检测到经营首页和看板使用的 18 文件经营数据；目标设置需要先初始化四类目标基础报表。请在数据接入页完成“目标中心数据底座”导入，再设置公司、店铺、系列和商品目标。"
     : "当前没有可用的目标中心数据底座。请先在数据接入页完成“目标中心数据底座”导入，再设置公司、店铺、系列和商品目标。";
 
   return {

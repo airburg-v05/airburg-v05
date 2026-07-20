@@ -1,0 +1,56 @@
+{
+  "task_id": "SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1",
+  "task_type": "data_dashboard",
+  "business_purpose": "Improve the deployed SaaS V2 data platform from a brand-owner usability perspective without changing metrics, ETL, target contracts or data safety boundaries.",
+  "raw_data_files": [
+    "/Users/zongji/Desktop/每日平台数据/天猫 (18 authorized source files, names only in task evidence; source files are not copied into repo)",
+    "Existing V0.5F target-foundation sample/import contracts already validated by previous task"
+  ],
+  "field_map": [
+    "No formula or ETL field-map change is authorized in this task.",
+    "UI may only consume existing verified SaaS V2 runtime, V0.5F target-foundation and search-config persistence contracts."
+  ],
+  "decision_questions": [
+    "Can the deployed V2 workspace be made simpler and less defensive without changing metric truth?",
+    "Do empty states and modals reduce brand-owner review effort on desktop and 390px mobile?",
+    "Are unavailable capabilities hidden or expressed as business planned states rather than fake controls?"
+  ],
+  "evidence_sources": [
+    "Latest direct instruction from 宗骥 on 2026-07-21",
+    "docs/project/PROJECT_SSOT.json",
+    "docs/project/current-task.json",
+    "docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/validation.md",
+    "Owner-provided public Chrome ten-page UX audit recorded in issue-matrix.md",
+    "Owner-provided 390x844 search-assets modal evidence: scrollHeight=1761, scrollWidth=390, footer not visible"
+  ],
+  "scope": {
+    "allowed": [
+      "SaaS V2 UI hierarchy and density",
+      "User-facing copy",
+      "Empty states",
+      "Navigation visibility for unavailable routes",
+      "Search assets modal usability",
+      "Validators and evidence under current task"
+    ],
+    "forbidden": [
+      "Secrets, tokens, cookies, passwords, private keys",
+      "ETL or BI formula changes",
+      "18-file or four-source semantics changes",
+      "Target contract changes",
+      "Deleting owner browser data",
+      "Push or merge",
+      "Auto-writing human visual acceptance"
+    ]
+  },
+  "validation_plan": [
+    "Brand UX validator",
+    "Existing data/target/security validators",
+    "Changed-file lint, repo lint, build",
+    "Local isolated-profile system Chrome 18+4+target and ten-route regression",
+    "Public isolated-profile ten-route and key-click regression",
+    "PM2/Nginx/port/log checks"
+  ],
+  "archive_target": "docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1",
+  "owner_gate": "PENDING_POST_DEPLOY_OWNER_REVIEW",
+  "deliverable_status": "in_progress"
+}

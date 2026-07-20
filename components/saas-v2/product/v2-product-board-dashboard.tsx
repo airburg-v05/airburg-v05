@@ -85,7 +85,7 @@ const metricRowsFromViewModel = (viewModel: ProductBoardViewModel): MetricV2[] =
 
 const blockedRouteNode = (key: string, reason: string) => (
   <span key={key} className="text-xs font-semibold text-amber-700" title={reason}>
-    BLOCKED_BY_MISSING_V2_ROUTE
+    暂未开放
   </span>
 );
 
@@ -182,7 +182,7 @@ function ProductTrendChart({
       <div className="flex h-52 flex-col items-center justify-center text-center">
         <p className="text-sm font-semibold text-slate-900">当前范围暂无商品趋势数据</p>
         <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
-          当前重点商品在当前日期范围内没有可安全展示的趋势点，缺失值不会被补成 0。
+          当前重点商品在当前日期范围内暂无趋势点。
         </p>
       </div>
     );
@@ -233,7 +233,7 @@ function ProductTrendChart({
           </div>
         </div>
         <p className="text-xs text-slate-500">
-          {trendMode === "mtd" ? "按当前范围累计值绘制。" : "按单日值绘制，缺失值不补 0。"}
+            {trendMode === "mtd" ? "按当前范围累计值绘制。" : "按单日值绘制，缺失日期会中断曲线。"}
         </p>
       </div>
 
@@ -331,7 +331,7 @@ export function V2ProductBoardDashboard() {
         const platformCode = (requestedPlatform ?? defaultStore?.platformCode ?? null) as PlatformCode | null;
         const storeId = requestedStoreId ?? defaultStore?.storeId ?? null;
         if (!platformCode || !storeId) {
-          setState({ status: "ready", viewModel: buildEmptyProductBoardViewModel("当前没有可安全读取的重点商品数据。") });
+          setState({ status: "ready", viewModel: buildEmptyProductBoardViewModel("当前没有可读取的重点商品数据。") });
           return;
         }
         setState({
@@ -439,7 +439,7 @@ export function V2ProductBoardDashboard() {
     );
   }
 
-  if (!viewModel) {
+  if (!viewModel || !viewModel.storeContext || viewModel.statusLabel === "暂无数据") {
     return <SafeEmptyState title="暂无重点商品数据" description="完成数据导入并维护重点商品后，再返回查看商品中心。" />;
   }
 
@@ -461,9 +461,9 @@ export function V2ProductBoardDashboard() {
                 </span>
               ) : null}
             </div>
-            <h2 className="mt-3 text-lg font-semibold text-slate-950">商品中心</h2>
+            <h2 className="mt-3 text-lg font-semibold text-slate-950">筛选与范围</h2>
             <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-500">
-              只展示当前店铺中由用户主动维护的重点商品，不会把全量商品池伪装成可运营明细。
+              选择店铺、重点商品和时间范围后查看商品经营表现。
             </p>
 
             <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="商品周期选择">
@@ -562,7 +562,7 @@ export function V2ProductBoardDashboard() {
               </Link>
             ) : mappedManageTrackedHref ? (
               <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-center text-xs font-semibold text-amber-700" title={mappedManageTrackedHref.reason}>
-                BLOCKED_BY_MISSING_V2_ROUTE
+                管理页暂未开放
               </span>
             ) : null}
             {mappedStoreBoardHref?.status === "mapped" && mappedStoreBoardHref.href ? (
@@ -571,7 +571,7 @@ export function V2ProductBoardDashboard() {
               </Link>
             ) : mappedStoreBoardHref ? (
               <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-center text-xs font-semibold text-amber-700" title={mappedStoreBoardHref.reason}>
-                BLOCKED_LEGACY_ROUTE
+                暂未开放
               </span>
             ) : null}
           </div>
@@ -588,7 +588,7 @@ export function V2ProductBoardDashboard() {
             mappedManageTrackedHref?.status === "mapped" && mappedManageTrackedHref.href
               ? <Link className="primary-button justify-center" href={mappedManageTrackedHref.href}>维护商品池</Link>
               : mappedManageTrackedHref
-                ? <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700" title={mappedManageTrackedHref.reason}>BLOCKED_BY_MISSING_V2_ROUTE</span>
+                ? <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700" title={mappedManageTrackedHref.reason}>管理页暂未开放</span>
                 : null
           }
         />
@@ -602,7 +602,7 @@ export function V2ProductBoardDashboard() {
 
       <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="text-base font-semibold text-slate-950">商品 KPI</h2>
-        <p className="mt-1 text-sm text-slate-500">沿用现有商品口径；仅推广数据时经营指标保持 --。</p>
+        <p className="mt-1 text-sm text-slate-500">按当前重点商品口径展示经营与推广指标。</p>
         <div className="mt-4">
           <MetricGridV2 metrics={metricRows} />
         </div>
@@ -611,7 +611,7 @@ export function V2ProductBoardDashboard() {
       <section className="grid gap-5 xl:grid-cols-2">
         <ChartPanelV2
           title="商品趋势"
-          description="趋势只服务当前重点商品，不回退成全店商品汇总。"
+          description="趋势跟随当前重点商品与时间范围。"
           recommendedPairs={["GSV vs 转化率", "推广花费 vs ROI"]}
           content={
             <ProductTrendChart
@@ -634,7 +634,7 @@ export function V2ProductBoardDashboard() {
       <section className="grid gap-5 xl:grid-cols-2">
         <DataTableV2
           title="所属系列"
-          description="仅展示当前商品已命中的活跃系列，不会虚构未维护关联。"
+          description="展示当前商品已维护的系列关联。"
           columns={["系列", "系列规模", "系列 ID", "操作"]}
           rows={seriesRows}
         />
@@ -659,7 +659,7 @@ export function V2ProductBoardDashboard() {
               <p className="mt-1 text-xs text-slate-500">点击率 {formatPercent(viewModel.adSummary.clickRate)}</p>
             </div>
             <div className="rounded-lg bg-slate-50 p-4">
-              <p className="text-xs font-semibold text-slate-500">安全告警</p>
+              <p className="text-xs font-semibold text-slate-500">数据提示</p>
               <p className="mt-2 text-lg font-semibold text-slate-900">{viewModel.dataStatus.warningCount}</p>
               <p className="mt-1 text-xs text-slate-500">重点商品 {viewModel.dataStatus.trackedProductCount}</p>
             </div>
@@ -671,7 +671,7 @@ export function V2ProductBoardDashboard() {
               </Link>
             ) : mappedQualityHref ? (
               <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700" title={mappedQualityHref.reason}>
-                BLOCKED_LEGACY_ROUTE
+                暂未开放
               </span>
             ) : null}
             {mappedHistoryHref?.status === "mapped" && mappedHistoryHref.href ? (
@@ -680,7 +680,7 @@ export function V2ProductBoardDashboard() {
               </Link>
             ) : mappedHistoryHref ? (
               <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700" title={mappedHistoryHref.reason}>
-                BLOCKED_LEGACY_ROUTE
+                暂未开放
               </span>
             ) : null}
           </div>

@@ -1,0 +1,51 @@
+{
+  "status": "PASS",
+  "validator": "validate-v2-home-upload18-system-chrome-local-v1",
+  "baseUrl": "http://127.0.0.1:3101",
+  "executedAt": "2026-07-21T00:42:00+08:00",
+  "sourceFiles": {
+    "directory": "/Users/zongji/Desktop/每日平台数据/天猫",
+    "tmallUploadFileCount": 18,
+    "targetFoundationFourSources": [
+      "【生意参谋平台】商品_全部_2026-06-30_2026-06-30.xls",
+      "商品报表_20260701_160039.csv",
+      "计划报表_20260701_160014.csv",
+      "4051124186_1782897394563_919.xlsx"
+    ]
+  },
+  "upload18": {
+    "success": 18,
+    "failed": 0,
+    "skipped": 0
+  },
+  "home": {
+    "metricCount": 17,
+    "customSubsetRefreshPreserved": true,
+    "resetRestored17Metrics": true,
+    "mobileHorizontalOverflow": false
+  },
+  "targetCenter": {
+    "runtimeVsTargetFoundationPreconditionExplained": true,
+    "fourSourceDetected": true,
+    "fourSourceImportActivatedDataset": true,
+    "percentTargetCreatedAndReadBack": true,
+    "pauseReadBack": true,
+    "reactivateReadBack": true,
+    "hardDeleteAvailable": false,
+    "duplicatePlatformStoreLabel": false
+  },
+  "cleanup": {
+    "runtimeAndDebugTestStateCleaned": true,
+    "homeEmptyStateAfterCleanup": true,
+    "homeUploadCta": "/v2/upload"
+  },
+  "errors": {
+    "consoleBusinessErrors": 0,
+    "networkBusinessErrors": 0
+  },
+  "artifacts": {
+    "uploadDesktop": "upload-desktop.png",
+    "homeDesktop": "v2-home-desktop.png",
+    "homeMobile": "v2-home-mobile.png"
+  }
+}

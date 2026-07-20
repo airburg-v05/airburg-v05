@@ -41,7 +41,7 @@ const checks = [
   },
   {
     name: "seriesDashboardKeepsSearchGapExplicit",
-    pass: dashboard.includes("不伪造搜索映射") && dashboard.includes("搜索资产语义"),
+    pass: dashboard.includes("搜索词 → 商品 → 系列") && dashboard.includes("搜索资产"),
   },
   {
     name: "seriesDashboardKeepsOwnerReviewOpen",
@@ -55,8 +55,11 @@ const checks = [
       !ssot.tracks.saasUiV2.dataBoundRoutes.includes("/v2/exclusion-rules"),
   },
   {
-    name: "currentTaskPointerMovedToFullQualityClosureTask",
-    pass: currentTask.taskId === "SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1" &&
+    name: "currentTaskPointerAllowsFullQualityClosureOrUxRefinementTask",
+    pass: [
+      "SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1",
+      "SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1",
+    ].includes(currentTask.taskId) &&
       ["IN_PROGRESS", "PENDING_POST_DEPLOY_OWNER_REVIEW"].includes(currentTask.status) &&
       ssot.currentTask.taskId === currentTask.taskId,
   },

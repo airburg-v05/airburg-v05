@@ -85,7 +85,7 @@ const metricRowsFromViewModel = (viewModel: StoreBoardViewModel): MetricV2[] =>
 
 const blockedRouteNode = (key: string, reason: string) => (
   <span key={key} className="text-xs font-semibold text-amber-700" title={reason}>
-    BLOCKED_BY_MISSING_V2_ROUTE
+    暂未开放
   </span>
 );
 
@@ -182,7 +182,7 @@ function StoreTrendChart({
       <div className="flex h-52 flex-col items-center justify-center text-center">
         <p className="text-sm font-semibold text-slate-900">当前范围暂无店铺趋势数据</p>
         <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
-          该店铺在当前日期范围内没有可安全展示的趋势点，缺失值不会被补成 0。
+          该店铺在当前日期范围内暂无趋势点。
         </p>
       </div>
     );
@@ -233,7 +233,7 @@ function StoreTrendChart({
           </div>
         </div>
         <p className="text-xs text-slate-500">
-          {trendMode === "mtd" ? "按当前范围累计值绘制。" : "按单日值绘制，缺失值不补 0。"}
+            {trendMode === "mtd" ? "按当前范围累计值绘制。" : "按单日值绘制，缺失日期会中断曲线。"}
         </p>
       </div>
 
@@ -329,7 +329,7 @@ export function V2StoreBoardDashboard() {
         const platformCode = (requestedPlatform ?? defaultStore?.platformCode ?? null) as PlatformCode | null;
         const storeId = requestedStoreId ?? defaultStore?.storeId ?? null;
         if (!platformCode || !storeId) {
-          setState({ status: "ready", viewModel: buildEmptyStoreBoardViewModel("当前没有可安全读取的店铺数据。") });
+          setState({ status: "ready", viewModel: buildEmptyStoreBoardViewModel("当前没有可读取的店铺数据。") });
           return;
         }
         setState({
@@ -451,8 +451,8 @@ export function V2StoreBoardDashboard() {
     );
   }
 
-  if (!viewModel) {
-    return <SafeEmptyState title="暂无店铺数据" description="完成数据导入后，再返回查看店铺经营中心。" />;
+  if (!viewModel || !viewModel.storeContext || viewModel.statusLabel === "暂无数据") {
+    return <SafeEmptyState title="暂无店铺数据" description="完成数据导入后，再返回查看店铺中心。" />;
   }
 
   return (
@@ -468,9 +468,9 @@ export function V2StoreBoardDashboard() {
                 </span>
               ) : null}
             </div>
-            <h2 className="mt-3 text-lg font-semibold text-slate-950">店铺中心</h2>
+            <h2 className="mt-3 text-lg font-semibold text-slate-950">筛选与范围</h2>
             <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-500">
-              只汇总当前平台、当前店铺和当前时间范围，不与其他店铺事实混合。
+              选择平台、店铺和时间范围后查看店铺经营表现。
             </p>
 
             <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="店铺周期选择">
@@ -575,13 +575,13 @@ export function V2StoreBoardDashboard() {
       <section className="grid gap-5 xl:grid-cols-[0.96fr_1.04fr]">
         <DataTableV2
           title="店铺列表 / 店铺切换"
-          description="平台和店铺选择来自当前 active dataset 或安全旧版回退。"
+          description="平台和店铺选择来自当前可用经营数据。"
           columns={["店铺", "平台", "状态", "操作"]}
           rows={storeRows}
         />
         <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="text-base font-semibold text-slate-950">经营边界与数据状态</h2>
-          <p className="mt-1 text-sm leading-6 text-slate-500">只读展示当前店铺的数据覆盖、导入提示和安全告警数量。</p>
+          <p className="mt-1 text-sm leading-6 text-slate-500">展示当前店铺的数据覆盖和导入提示。</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <div className="rounded-lg bg-slate-50 p-4">
               <p className="text-xs font-semibold text-slate-500">数据状态</p>
@@ -589,7 +589,7 @@ export function V2StoreBoardDashboard() {
               <p className="mt-2 text-xs text-slate-500">告警 {viewModel.dataStatus.warningCount} · 店铺 {viewModel.dataStatus.storeCount}</p>
             </div>
             <div className="rounded-lg bg-slate-50 p-4">
-              <p className="text-xs font-semibold text-slate-500">安全提示</p>
+              <p className="text-xs font-semibold text-slate-500">数据提示</p>
               <p className="mt-2 text-sm text-slate-700">{viewModel.notices[1] ?? "当前只显示当前店铺事实。"}</p>
             </div>
           </div>
@@ -600,7 +600,7 @@ export function V2StoreBoardDashboard() {
               </Link>
             ) : mappedQualityHref ? (
               <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700" title={mappedQualityHref.reason}>
-                BLOCKED_LEGACY_ROUTE
+                暂未开放
               </span>
             ) : null}
             {mappedHistoryHref?.status === "mapped" && mappedHistoryHref.href ? (
@@ -609,7 +609,7 @@ export function V2StoreBoardDashboard() {
               </Link>
             ) : mappedHistoryHref ? (
               <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700" title={mappedHistoryHref.reason}>
-                BLOCKED_LEGACY_ROUTE
+                暂未开放
               </span>
             ) : null}
           </div>
@@ -618,7 +618,7 @@ export function V2StoreBoardDashboard() {
 
       <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="text-base font-semibold text-slate-950">店铺 KPI</h2>
-        <p className="mt-1 text-sm text-slate-500">沿用现有店铺口径，不改变经营、推广或售后语义。</p>
+        <p className="mt-1 text-sm text-slate-500">按当前店铺口径展示经营、推广和售后指标。</p>
         <div className="mt-4">
           <MetricGridV2 metrics={metricRows} />
         </div>
@@ -627,7 +627,7 @@ export function V2StoreBoardDashboard() {
       <section className="grid gap-5 xl:grid-cols-2">
         <ChartPanelV2
           title="店铺趋势"
-          description="趋势跟随当前店铺和当前周期，缺失值不补 0。"
+          description="趋势跟随当前店铺和当前周期，缺失日期会中断曲线。"
           recommendedPairs={["GMV vs GSV", "GSV vs 退款金额"]}
           content={
             <StoreTrendChart
@@ -656,7 +656,7 @@ export function V2StoreBoardDashboard() {
         />
         <DataTableV2
           title="重点商品贡献"
-          description="商品入口保持与重点商品池联动，不把未关注商品伪装成可钻取明细。"
+          description="商品入口与重点商品池联动。"
           columns={["商品", "GSV", "推广 ROI", "操作"]}
           rows={productRows}
         />

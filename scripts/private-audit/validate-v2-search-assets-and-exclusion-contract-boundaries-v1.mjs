@@ -18,12 +18,13 @@ checks.push({
 });
 
 checks.push({
-  name: "search-assets-workspace-binds-debug-context-contract",
+  name: "search-assets-workspace-binds-current-browser-config",
   pass:
     searchWorkspace.includes("loadCrossPageDebugContext") &&
     searchWorkspace.includes("saveCrossPageDebugContextPatch") &&
     searchWorkspace.includes("BrandModelFilterPopover") &&
-    searchWorkspace.includes("BLOCKED_BY_MISSING_CONTRACT"),
+    searchWorkspace.includes("暂未开放的效果看板") &&
+    !searchWorkspace.includes("BLOCKED_BY_MISSING_CONTRACT"),
 });
 
 checks.push({
@@ -39,9 +40,13 @@ checks.push({
   pass:
     !searchWorkspace.includes("analytics contract") &&
     !searchWorkspace.includes("persistence + route") &&
+    !searchWorkspace.includes("BLOCKED_BY_MISSING_CONTRACT") &&
+    !searchWorkspace.includes("mock") &&
     !exclusionWorkspace.includes("legacy BI state") &&
     !exclusionWorkspace.includes("persistence schema") &&
-    !exclusionWorkspace.includes("route contract"),
+    !exclusionWorkspace.includes("route contract") &&
+    !exclusionWorkspace.includes("BLOCKED_BY_MISSING_CONTRACT") &&
+    !exclusionWorkspace.includes("mock"),
 });
 
 checks.push({
@@ -50,11 +55,11 @@ checks.push({
 });
 
 checks.push({
-  name: "exclusion-workspace-explicitly-blocks-missing-contract",
+  name: "exclusion-workspace-uses-business-planned-state",
   pass:
-    exclusionWorkspace.includes("BLOCKED_BY_MISSING_CONTRACT") &&
-    exclusionWorkspace.includes("跨页保存") &&
-    exclusionWorkspace.includes("统一读取"),
+    exclusionWorkspace.includes("排除规则暂未开放") &&
+    exclusionWorkspace.includes("当前页面只保留规划状态") &&
+    exclusionWorkspace.includes("开放前还需要确认"),
 });
 
 checks.push({

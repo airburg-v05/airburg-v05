@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { SafeIssueCodeBadge } from "@/components/saas-v2/badges/safe-issue-code-badge";
 import { BrandModelFilterPopover } from "@/components/visual-system/v1/brand-model-filter-popover";
 import type { BrandModelFilter } from "@/lib/bi/search-keyword.types";
 import {
@@ -45,7 +44,7 @@ export function V2SearchAssetsWorkspace() {
         setLoading(false);
         return;
       }
-      setError("当前浏览器无法读取跨页搜索资产上下文。");
+      setError("当前浏览器暂时无法读取搜索资产配置。");
       setLoading(false);
     });
     return () => {
@@ -62,7 +61,7 @@ export function V2SearchAssetsWorkspace() {
     });
     if (result.status !== "saved") {
       setSaving(false);
-      setError("搜索资产保存失败：当前浏览器上下文不可用。");
+        setError("搜索资产保存失败：请刷新后重试。");
       return;
     }
     setFilter(result.snapshot.brandModelFilter);
@@ -95,8 +94,7 @@ export function V2SearchAssetsWorkspace() {
           <div className="max-w-3xl">
             <h2 className="mt-3 text-base font-semibold text-slate-950">品牌词 / 中心词搜索资产</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              当前页面已经接通真实可用的搜索资产配置：品牌词、中心词分组及其别名会保存在当前浏览器，并被
-              首页、系列看板和商品看板里的搜索相关指标共同复用。
+              维护品牌词、中心词分组及其别名；保存后会被首页、系列看板和商品看板里的搜索相关指标共同复用。
             </p>
             <p className="mt-2 text-xs font-semibold text-slate-500">
               最近更新时间：{summaryTimestamp(updatedAt)}
@@ -131,7 +129,7 @@ export function V2SearchAssetsWorkspace() {
           </div>
           {filter.brandWords.length === 0 ? (
             <div className="mt-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
-              当前还没有配置品牌词。此时品牌搜索相关指标会保持“暂无可用数据”或提示先配置搜索资产。
+              当前还没有配置品牌词。配置后，搜索相关指标会按当前词表归因。
             </div>
           ) : (
             <div className="mt-4 flex flex-wrap gap-2">
@@ -164,7 +162,7 @@ export function V2SearchAssetsWorkspace() {
           </div>
           {configuredCenterGroups.length === 0 ? (
             <div className="mt-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
-              当前还没有保存任何中心词分组。可通过“编辑搜索资产”复用现有品牌词 / 中心词弹层配置。
+              当前还没有保存任何中心词分组。可通过“编辑搜索资产”维护 P1、P2、P300、ZEN 等分组。
             </div>
           ) : (
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -181,14 +179,11 @@ export function V2SearchAssetsWorkspace() {
         </div>
 
         <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex flex-wrap gap-2">
-            <SafeIssueCodeBadge code="BLOCKED_BY_MISSING_CONTRACT" />
-          </div>
-          <h3 className="mt-3 text-sm font-semibold text-slate-950">本轮明确不伪装完成的部分</h3>
+          <h3 className="text-sm font-semibold text-slate-950">暂未开放的效果看板</h3>
           <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
-            <li>• 跨品牌 / 系列 / 商品的搜索资产效果对比表，目前还没有稳定的数据支撑。</li>
-            <li>• 别名组效果排行、品牌词支付占比表等结果页，目前也没有统一的保存与读取方案。</li>
-            <li>• 因此本页只交付已经真实接通的“搜索资产配置面”，不再展示静态 mock 行数据。</li>
+            <li>• 当前已开放词表维护与保存。</li>
+            <li>• 分组效果排行、品牌词支付占比明细等结果看板暂未开放。</li>
+            <li>• 效果结果表将在数据支撑完整后开放。</li>
           </ul>
         </div>
       </section>

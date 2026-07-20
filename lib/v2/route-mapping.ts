@@ -21,8 +21,8 @@ const EXACT_V2_ROUTE_MAP: Record<string, string> = {
 };
 
 const MISSING_V2_ROUTE_REASON: Record<string, string> = {
-  "/series-board/manage": "BLOCKED_BY_MISSING_V2_ROUTE: 系列管理页尚未提供授权 V2 路由。",
-  "/product-board/tracked": "BLOCKED_BY_MISSING_V2_ROUTE: 重点商品管理页尚未提供授权 V2 路由。",
+  "/series-board/manage": "系列管理页尚未开放到当前工作区。",
+  "/product-board/tracked": "重点商品管理页尚未开放到当前工作区。",
 };
 
 export const mapHrefToAuthorizedV2Route = (
@@ -34,7 +34,7 @@ export const mapHrefToAuthorizedV2Route = (
       status: "mapped",
       sourceHref: href,
       href,
-      reason: "Already within authorized V2 routes.",
+      reason: "已在当前工作区内。",
     };
   }
 
@@ -45,7 +45,7 @@ export const mapHrefToAuthorizedV2Route = (
       status: "mapped",
       sourceHref: href,
       href: `${targetPath}${parsed.search}`,
-      reason: "Mapped to an authorized V2 route.",
+      reason: "已转到当前工作区对应页面。",
     };
   }
 
@@ -63,6 +63,6 @@ export const mapHrefToAuthorizedV2Route = (
     status: "blocked_legacy_route",
     sourceHref: href,
     href: null,
-    reason: `BLOCKED_LEGACY_ROUTE: ${parsed.pathname} has no authorized V2 mapping in the current continuation scope.`,
+    reason: "当前工作区暂未开放对应页面。",
   };
 };

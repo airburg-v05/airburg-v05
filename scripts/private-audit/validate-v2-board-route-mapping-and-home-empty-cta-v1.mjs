@@ -24,14 +24,14 @@ const checks = [
   {
     name: "RouteMappingBlocksMissingV2ManagementPages",
     pass:
-      files.routeMapping.includes('"/series-board/manage": "BLOCKED_BY_MISSING_V2_ROUTE') &&
-      files.routeMapping.includes('"/product-board/tracked": "BLOCKED_BY_MISSING_V2_ROUTE'),
+      files.routeMapping.includes('"/series-board/manage": "系列管理页尚未开放到当前工作区。"') &&
+      files.routeMapping.includes('"/product-board/tracked": "重点商品管理页尚未开放到当前工作区。"'),
   },
   {
     name: "SeriesBoardUsesExplicitV2RouteMapper",
     pass:
       files.series.includes('mapHrefToAuthorizedV2Route') &&
-      files.series.includes('BLOCKED_BY_MISSING_V2_ROUTE') &&
+      files.series.includes('管理页暂未开放') &&
       !files.series.includes('href={viewModel.storeContext.manageSeriesHref}') &&
       !files.series.includes('href={viewModel.storeContext.storeBoardHref}') &&
       !files.series.includes('href={row.productBoardHref}') &&
@@ -50,7 +50,7 @@ const checks = [
     pass:
       !files.product.includes('const toV2Href =') &&
       files.product.includes('mapHrefToAuthorizedV2Route') &&
-      files.product.includes('BLOCKED_BY_MISSING_V2_ROUTE') &&
+      files.product.includes('管理页暂未开放') &&
       !files.product.includes('/v2/product-board/tracked') &&
       files.product.includes('mappedQualityHref?.sourceHref.startsWith("/upload/quality") ? "查看数据健康" : "前往上传"'),
   },

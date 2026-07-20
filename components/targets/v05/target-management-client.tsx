@@ -264,7 +264,7 @@ function SummaryStrip({
         </div>
       </div>
       <p className="mt-3 text-xs leading-5 text-slate-500">
-        新目标必须明确选择独立目标或合法直接父目标；本页不会自动生成父子关系或自动分配目标值。
+        新目标需要选择归属层级；有父目标时请显式选择直接父目标。
       </p>
     </section>
   );
@@ -272,19 +272,19 @@ function SummaryStrip({
 
 function TargetCenterRulePanel() {
   return (
-    <SectionCard title="目标中心边界" description="本页沿用 V0.5F 已冻结的目标层级合同，不新增尚未确认的 schema。">
+    <SectionCard title="目标设置说明" description="当前支持公司、店铺、系列和商品四级目标，按已接入的目标数据底座保存和读回。">
       <div className="grid gap-4 text-sm leading-6 text-slate-600 lg:grid-cols-3">
         <div className="rounded-xl bg-slate-50 p-4">
           <p className="font-semibold text-slate-900">已开放操作</p>
-          <p className="mt-2">支持新建、编辑、暂停和重新启用。暂停会保留原 targetId 与父子关系，不会硬删除目标。</p>
+          <p className="mt-2">支持新建、编辑、暂停和重新启用。暂停会保留目标记录，便于后续恢复。</p>
         </div>
         <div className="rounded-xl bg-slate-50 p-4">
           <p className="font-semibold text-slate-900">父子关系</p>
-          <p className="mt-2">只允许公司到店铺、店铺到同店系列、系列到该系列商品；比例类指标仅作为独立目标保存。</p>
+          <p className="mt-2">支持公司到店铺、店铺到同店系列、系列到该系列商品；比例类指标按独立目标维护。</p>
         </div>
         <div className="rounded-xl bg-slate-50 p-4">
           <p className="font-semibold text-slate-900">周期口径</p>
-          <p className="mt-2">当前只保存日目标或单月目标。周、自定义和多月范围没有独立合同，不会复用单月目标自动推导。</p>
+          <p className="mt-2">当前支持日目标和单月目标；周、自定义和多月目标暂未开放。</p>
         </div>
       </div>
     </SectionCard>
@@ -324,7 +324,7 @@ function TargetRows({
             {viewModel.targets.length === 0 ? (
               <tr>
                 <td colSpan={10} className="text-center text-slate-500">
-                  当前还没有目标，请新建 company、store、series 或 product 目标。
+                  当前还没有目标，请新建公司、店铺、系列或商品目标。
                 </td>
               </tr>
             ) : (
@@ -335,9 +335,6 @@ function TargetRows({
                   </td>
                   <td>
                     <p className="max-w-[220px] break-words font-semibold text-slate-900">{row.ownerLabel}</p>
-                    {row.target.scope !== "company" ? (
-                      <p className="mt-1 truncate text-xs text-slate-400">{row.target.storeId}</p>
-                    ) : null}
                   </td>
                   <td>
                     <p className="max-w-[220px] break-words text-sm text-slate-600">{row.parentLabel}</p>
@@ -802,7 +799,7 @@ function AllocationDrawer({
         <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
           <div className="min-w-0">
             <h2 className="text-base font-semibold text-slate-950">分配子目标</h2>
-            <p className="mt-1 text-sm text-slate-500">只创建当前父目标的合法直接子目标，不自动分配数值。</p>
+            <p className="mt-1 text-sm text-slate-500">为当前父目标添加直接子目标，并填写子目标值。</p>
           </div>
           <button ref={closeButtonRef} type="button" className="secondary-button shrink-0" onClick={attemptClose}>
             关闭
@@ -1052,7 +1049,7 @@ function TargetManagementPageInner({ routeVariant }: { routeVariant: DataCenterR
       ? {
           title:
             loadResult.status === "corrupted"
-              ? "本地目标数据暂不可安全读取"
+              ? "目标数据暂时无法读取"
               : loadResult.status === "error"
                 ? "目标管理暂时无法打开"
                 : "目标中心待初始化",
@@ -1063,12 +1060,18 @@ function TargetManagementPageInner({ routeVariant }: { routeVariant: DataCenterR
 
   return (
     <div className="space-y-6 lg:space-y-8">
-      <PageHeader
-        eyebrow="TARGET CENTER"
-        title="目标管理"
-        description="按公司、店铺、系列和商品四级维护目标。父子关系必须显式选择，本页不自动生成或分配目标。"
-        action={<StatusPill tone={loadResult.status === "valid" ? "info" : "neutral"}>{loading ? "读取中" : loadResult.status === "valid" ? "多店铺数据" : "待处理"}</StatusPill>}
-      />
+      {routeVariant === "v2" ? (
+        <div className="flex justify-end">
+          <StatusPill tone={loadResult.status === "valid" ? "info" : "neutral"}>{loading ? "读取中" : loadResult.status === "valid" ? "多店铺数据" : "待处理"}</StatusPill>
+        </div>
+      ) : (
+        <PageHeader
+          eyebrow="目标设置"
+          title="目标管理"
+          description="按公司、店铺、系列和商品四级维护目标；有父目标时请明确选择直接父目标。"
+          action={<StatusPill tone={loadResult.status === "valid" ? "info" : "neutral"}>{loading ? "读取中" : loadResult.status === "valid" ? "多店铺数据" : "待处理"}</StatusPill>}
+        />
+      )}
 
       {feedback ? (
         <div

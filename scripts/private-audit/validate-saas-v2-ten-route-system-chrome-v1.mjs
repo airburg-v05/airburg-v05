@@ -22,9 +22,9 @@ fs.mkdirSync(PROFILE_DIR, { recursive: true });
 
 const routes = [
   { path: "/v2/home", ready: "main", label: "v2-home" },
-  { path: "/v2/series-board", ready: "[data-testid='v2-series-board-dashboard']", label: "v2-series-board" },
-  { path: "/v2/store-board", ready: "[data-testid='v2-store-board-dashboard']", label: "v2-store-board" },
-  { path: "/v2/product-board", ready: "[data-testid='v2-product-board-dashboard']", label: "v2-product-board" },
+  { path: "/v2/series-board", ready: "main", label: "v2-series-board" },
+  { path: "/v2/store-board", ready: "main", label: "v2-store-board" },
+  { path: "/v2/product-board", ready: "main", label: "v2-product-board" },
   { path: "/v2/upload", ready: "[data-testid='upload-page-v1-dashboard']", label: "v2-upload" },
   { path: "/v2/upload/history", ready: "main", label: "v2-upload-history" },
   { path: "/v2/data-health", ready: "main", label: "v2-data-health" },
@@ -43,6 +43,12 @@ const forbiddenCopy = [
   "legacy BI state",
   "persistence schema",
   "route contract",
+  "BLOCKED_BY_MISSING_CONTRACT",
+  "V0.5F",
+  "TARGET CENTER",
+  "Airburg Business Workspace",
+  "品牌经营分析工作区",
+  "safe issue code",
 ];
 
 const checks = [];
@@ -309,7 +315,7 @@ const inspectRoute = async (client, route) => {
         bodyText: text,
         hasMain: Boolean(document.querySelector('main')),
         hasV2Topbar: text.includes("空气堡经营工作区") || window.location.pathname === "/v2/home",
-        hasV2PageHeader: text.includes("品牌经营分析工作区") || window.location.pathname === "/v2/home",
+        hasV2PageHeader: Boolean(document.querySelector('[data-testid="saas-v2-compact-page-header"]')) || window.location.pathname === "/v2/home",
         hasForbiddenCopy: ${JSON.stringify(forbiddenCopy)}.filter((token) => text.includes(token)),
         horizontalOverflow: Math.ceil(document.documentElement.scrollWidth) > Math.ceil(document.documentElement.clientWidth) + 1,
         links,
@@ -349,6 +355,56 @@ const inspectRouteMobile = async (client, route) => {
   const details = { ...state, screenshot, bodyText: undefined };
   check(`${route.label}MobileReachable`, state.pathname === route.path, details);
   check(`${route.label}MobileNoWideOverflow`, state.horizontalOverflow === false, details);
+  if (route.path === "/v2/search-assets") {
+    await evaluate(
+      client,
+      `(() => {
+        const button = Array.from(document.querySelectorAll('button')).find((item) => /开始配置|编辑搜索资产/.test((item.textContent ?? '').trim()));
+        button?.click();
+        return Boolean(button);
+      })()`,
+    );
+    await waitForExpression(client, `Boolean(document.querySelector('[data-testid="v2-search-assets-filter-popover"]'))`, 10000);
+    const modalState = await evaluate(
+      client,
+      `(() => {
+        const dialog = document.querySelector('[data-testid="v2-search-assets-filter-popover"]');
+        const content = document.querySelector('[data-testid="v2-search-assets-filter-popover-scrollable-content"]');
+        const footer = document.querySelector('[data-testid="v2-search-assets-filter-popover-fixed-footer"]');
+        const cards = Array.from(document.querySelectorAll('[data-testid="v2-search-assets-filter-popover-center-word-group-card"]'));
+        const buttons = Array.from(dialog?.querySelectorAll('button') ?? []).map((button) => (button.textContent ?? '').replace(/\\s+/g, ' ').trim());
+        const footerRect = footer?.getBoundingClientRect();
+        const contentStyle = content ? getComputedStyle(content) : null;
+        return {
+          hasDialog: Boolean(dialog),
+          documentScrollHeight: document.documentElement.scrollHeight,
+          documentScrollWidth: document.documentElement.scrollWidth,
+          viewportWidth: window.innerWidth,
+          viewportHeight: window.innerHeight,
+          hasScrollableContent: contentStyle ? /(auto|scroll)/.test(contentStyle.overflowY) : false,
+          footerVisible: footerRect ? footerRect.bottom <= window.innerHeight + 1 && footerRect.top >= 0 : false,
+          cardCount: cards.length,
+          duplicateActionButtons: buttons.filter((text) => text === '查看' || text === '编辑分组').length,
+          hasFooterActions: ['取消', '清空', '保存'].every((text) => buttons.includes(text)),
+        };
+      })()`,
+    );
+    const modalScreenshot = await capture(client, "v2-search-assets-mobile-modal");
+    check(
+      "v2SearchAssetsMobile390ModalFooterReachable",
+      modalState.hasDialog &&
+        modalState.viewportWidth === 390 &&
+        modalState.viewportHeight === 844 &&
+        modalState.documentScrollWidth <= modalState.viewportWidth + 1 &&
+        modalState.hasScrollableContent &&
+        modalState.footerVisible &&
+        modalState.cardCount >= 4 &&
+        modalState.duplicateActionButtons === 0 &&
+        modalState.hasFooterActions,
+      { ...modalState, modalScreenshot },
+    );
+    await evaluate(client, `document.querySelector('[data-testid="v2-search-assets-filter-popover"] button')?.click()`);
+  }
   return details;
 };
 
@@ -377,13 +433,44 @@ const routeSpecificChecks = async (client) => {
       { metricCount: state.metricCount, hasV2UploadCta },
     );
   }
+  if (state.path === "/v2/series-board") {
+    check(
+      "v2SeriesBoardEmptyStateIsCompactWhenNoRuntimeData",
+      state.text.includes("暂无系列数据") &&
+        !state.text.includes("GMV--") &&
+        !state.text.includes("趋势--") &&
+        !state.text.includes("目标达成--"),
+      { text: state.text.slice(0, 1200) },
+    );
+  }
+  if (state.path === "/v2/store-board") {
+    check(
+      "v2StoreBoardEmptyStateIsCompactWhenNoRuntimeData",
+      state.text.includes("暂无店铺数据") &&
+        !state.text.includes("GMV--") &&
+        !state.text.includes("趋势--") &&
+        !state.text.includes("目标达成--"),
+      { text: state.text.slice(0, 1200) },
+    );
+  }
+  if (state.path === "/v2/product-board") {
+    check(
+      "v2ProductBoardEmptyStateIsCompactWhenNoRuntimeData",
+      state.text.includes("暂无重点商品数据") &&
+        !state.text.includes("GMV--") &&
+        !state.text.includes("趋势--") &&
+        !state.text.includes("目标达成--"),
+      { text: state.text.slice(0, 1200) },
+    );
+  }
   if (state.path === "/v2/upload") {
     check(
       "v2UploadKeepsV2LayoutAndFourSourceSection",
       state.hasUploadTargetFoundation &&
         state.text.includes("18 文件入口") &&
         state.text.includes("目标中心数据底座") &&
-        state.text.includes("用于目标设置的四源导入"),
+        state.text.includes("下方四类报表用于初始化目标中心") &&
+        !state.text.includes("V0.5F"),
       { hasUploadTargetFoundation: state.hasUploadTargetFoundation },
     );
   }
@@ -397,10 +484,12 @@ const routeSpecificChecks = async (client) => {
   if (state.path === "/v2/target-center") {
     check(
       "v2TargetCenterBoundaryNoHardDelete",
-      state.text.includes("目标管理") &&
-        state.text.includes("目标中心边界") &&
+      state.text.includes("目标设置说明") &&
         state.text.includes("暂停") &&
         state.text.includes("重新启用") &&
+        !state.text.includes("TARGET CENTER") &&
+        !state.text.includes("V0.5F") &&
+        !state.text.includes("schema") &&
         state.hasDeleteButton === false,
       { hasDeleteButton: state.hasDeleteButton },
     );
@@ -409,16 +498,59 @@ const routeSpecificChecks = async (client) => {
     check(
       "v2SearchAssetsBusinessCopyNoRawEngineeringTerms",
       state.text.includes("首页、系列看板和商品看板") &&
-        !["debug-context", "legacy BI state", "persistence schema", "route contract"].some((token) => state.text.includes(token)),
+        !["debug-context", "legacy BI state", "persistence schema", "route contract", "BLOCKED_BY_MISSING_CONTRACT", "mock"].some((token) => state.text.includes(token)),
       {},
     );
+    await evaluate(
+      client,
+      `(() => {
+        const button = Array.from(document.querySelectorAll('button')).find((item) => /开始配置|编辑搜索资产/.test((item.textContent ?? '').trim()));
+        button?.click();
+        return Boolean(button);
+      })()`,
+    );
+    await waitForExpression(client, `Boolean(document.querySelector('[data-testid="v2-search-assets-filter-popover"]'))`, 10000);
+    const modalState = await evaluate(
+      client,
+      `(() => {
+        const dialog = document.querySelector('[data-testid="v2-search-assets-filter-popover"]');
+        const content = document.querySelector('[data-testid="v2-search-assets-filter-popover-scrollable-content"]');
+        const footer = document.querySelector('[data-testid="v2-search-assets-filter-popover-fixed-footer"]');
+        const cards = Array.from(document.querySelectorAll('[data-testid="v2-search-assets-filter-popover-center-word-group-card"]'));
+        const buttons = Array.from(dialog?.querySelectorAll('button') ?? []).map((button) => (button.textContent ?? '').replace(/\\s+/g, ' ').trim());
+        const footerRect = footer?.getBoundingClientRect();
+        const contentStyle = content ? getComputedStyle(content) : null;
+        return {
+          hasDialog: Boolean(dialog),
+          hasScrollableContent: contentStyle ? /(auto|scroll)/.test(contentStyle.overflowY) : false,
+          footerVisible: footerRect ? footerRect.bottom <= window.innerHeight + 1 && footerRect.top >= 0 : false,
+          cardCount: cards.length,
+          duplicateActionButtons: buttons.filter((text) => text === '查看' || text === '编辑分组').length,
+          hasFooterActions: ['取消', '清空', '保存'].every((text) => buttons.includes(text)),
+          documentScrollWidth: document.documentElement.scrollWidth,
+          viewportWidth: window.innerWidth,
+        };
+      })()`,
+    );
+    check(
+      "v2SearchAssetsModalFocusedScrollableFixedFooter",
+      modalState.hasDialog &&
+        modalState.hasScrollableContent &&
+        modalState.footerVisible &&
+        modalState.cardCount >= 4 &&
+        modalState.duplicateActionButtons === 0 &&
+        modalState.hasFooterActions &&
+        modalState.documentScrollWidth <= modalState.viewportWidth + 1,
+      modalState,
+    );
+    await evaluate(client, `document.querySelector('[data-testid="v2-search-assets-filter-popover"] button')?.click()`);
   }
   if (state.path === "/v2/exclusion-rules") {
     check(
       "v2ExclusionRulesSafeBlockedWithoutMockControls",
-      state.text.includes("本轮只保留安全说明") &&
-        state.text.includes("不开放假配置控件") &&
-        !["debug-context", "legacy BI state", "persistence schema", "route contract"].some((token) => state.text.includes(token)),
+      state.text.includes("排除规则暂未开放") &&
+        state.text.includes("当前页面只保留规划状态") &&
+        !["debug-context", "legacy BI state", "persistence schema", "route contract", "BLOCKED_BY_MISSING_CONTRACT", "mock"].some((token) => state.text.includes(token)),
       {},
     );
   }
@@ -507,7 +639,7 @@ const run = async () => {
       await routeSpecificChecks(client);
     }
 
-    await setViewport(client, 390, 900);
+    await setViewport(client, 390, 844);
     for (const route of routes) {
       currentStage = `mobile:${route.path}`;
       mobile.push(await inspectRouteMobile(client, route));

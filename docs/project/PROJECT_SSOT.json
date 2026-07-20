@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "updatedAt": "2026-07-20T23:52:00+08:00",
+  "updatedAt": "2026-07-21T00:30:00+08:00",
   "authority": {
     "machineReadableSource": "docs/project/PROJECT_SSOT.json",
     "derivedHumanReadableSources": [
@@ -21,7 +21,7 @@
     "activeBranch": "feature/saas-ui-v2-shell",
     "headCommit": "4812e4db4d3398c2767c6e5449344ec1434f18f0",
     "headCommitMeaning": "exact deployed runtime-changing commit for the xlsx 0.20.3 security continuation; subsequent post-deploy evidence commits are intentionally not self-referenced here",
-    "workingTree": "CLEAN_AFTER_POST_DEPLOY_EVIDENCE_COMMIT",
+    "workingTree": "DIRTY_IN_PROGRESS_FOR_SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1",
     "remote": "origin=https://github.com/airburg-v05/airburg-v05.git",
     "upstream": "origin/feature/saas-ui-v2-shell",
     "fallbackComparisonRef": "origin/feature/g6-preview",
@@ -107,7 +107,7 @@
     },
     "saasUiV2": {
       "role": "ACTIVE_PRODUCT_TRACK",
-      "status": "PUBLIC_E2E_PASS_PENDING_HUMAN_REVIEW",
+      "status": "UX_REFINEMENT_IN_PROGRESS_AFTER_PUBLIC_OWNER_WALKTHROUGH",
       "archiveCommit": "7ade2f433d7dbd90e8fd1a0df5efdb00003ec8fa",
       "routeCount": 10,
       "componentCount": 18,
@@ -139,6 +139,16 @@
       "previewDeployed": true,
       "humanAccepted": false,
       "publicV2RouteStatus": "TEN_V2_ROUTES_PUBLIC_E2E_PASS_AFTER_XLSX0203_AND_RUNTIME_CLEANUP",
+      "activeUxRefinementTask": "SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1",
+      "activeUxRefinementScope": [
+        "compact secondary page header",
+        "empty-state density",
+        "home no-target KPI display",
+        "upload copy hierarchy",
+        "target-center business copy",
+        "search-assets focused modal",
+        "exclusion-rules navigation visibility"
+      ],
       "deploymentCommit": "4812e4db4d3398c2767c6e5449344ec1434f18f0",
       "deployedAt": "2026-07-20T23:48:12+08:00",
       "publicPreviewRoute": "http://123.57.49.121/v2/home",
@@ -198,11 +208,11 @@
   "metricSemantics": "docs/project/METRIC_SEMANTIC_RECONCILIATION_V1.json",
   "validatorRegistry": "docs/project/VALIDATOR_REGISTRY.json",
   "currentTask": {
-    "taskId": "SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1",
-    "status": "PENDING_POST_DEPLOY_OWNER_REVIEW",
-    "contract": "docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/TASK.md"
+    "taskId": "SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1",
+    "status": "IN_PROGRESS",
+    "contract": "docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/TASK.md"
   },
-  "nextAuthorizedEntryGate": "OWNER_POST_DEPLOY_REVIEW",
+  "nextAuthorizedEntryGate": "IMPLEMENT_VALIDATE_DEPLOY_PUBLIC_RECHECK_THEN_OWNER_REVIEW",
   "deprecatedArtifacts": [
     {
       "path": "lib/state/system-state.ts",

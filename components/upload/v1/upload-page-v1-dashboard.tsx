@@ -190,6 +190,8 @@ const productStatusTone = (status: ProductUploadStatus) => {
   return "border-slate-200 bg-slate-50 text-slate-600";
 };
 
+const productStatusLabel = (status: ProductUploadStatus) => (status === "skipped" ? "跳过" : status);
+
 const productStatusDescription = (file: PendingUploadFile, status: ProductUploadStatus) => {
   if (status === "成功") {
     if (file.status === "导入成功") return "已完成导入";
@@ -197,9 +199,9 @@ const productStatusDescription = (file: PendingUploadFile, status: ProductUpload
     return "已通过检查";
   }
   if (status === "失败") return "文件未通过检查";
-  if (file.duplicate) return "重复文件已 skipped";
+  if (file.duplicate) return "重复文件已跳过";
   if (file.removed) return "已从本次批量上传中移除";
-  return "暂未开放或已安全 skipped";
+  return "暂未开放或已跳过";
 };
 
 const summarizeProductStatuses = (files: PendingUploadFile[]) =>
@@ -340,7 +342,7 @@ function CoverageCards({ files }: { files: PendingUploadFile[] }) {
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-sm font-semibold text-slate-950">{config.title}</h3>
               <span className={`rounded-full px-2 py-1 text-xs font-semibold ${present ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>
-                {present ? "成功" : "skipped"}
+                {present ? "成功" : "跳过"}
               </span>
             </div>
             <p className="mt-2 text-xs font-semibold leading-5 text-slate-600">{config.description}</p>
@@ -361,7 +363,7 @@ function RecognitionList({
   if (files.length === 0) {
     return (
       <section className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm font-semibold text-slate-600" data-testid="upload-page-v2-recognition-empty">
-        尚未选择文件。选择天猫数据文件后，这里只展示安全短码、文件类型和处理状态。
+        尚未选择文件。选择天猫数据文件后，这里只展示文件标识、文件类型和处理状态。
       </section>
     );
   }
@@ -370,7 +372,7 @@ function RecognitionList({
     <section className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06)]" data-testid="upload-page-v2-recognition-list">
       <div className="border-b border-slate-200/80 px-4 py-3">
         <h3 className="text-base font-semibold text-slate-950">文件识别结果</h3>
-        <p className="mt-1 text-xs font-semibold text-slate-500">只展示成功 / 失败 / skipped，不展示原始名称、原始行或原始提示内容。</p>
+        <p className="mt-1 text-xs font-semibold text-slate-500">只展示成功、失败或跳过，不展示原始名称、原始行或原始提示内容。</p>
       </div>
       <div className="grid gap-3 p-4 md:grid-cols-2 xl:grid-cols-3">
         {files.map((item) => {
@@ -384,11 +386,11 @@ function RecognitionList({
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-slate-500">安全短码</p>
+                  <p className="text-xs font-semibold text-slate-500">文件标识</p>
                   <p className="mt-1 break-all text-sm font-semibold text-slate-950">{item.safeCode}</p>
                 </div>
                 <span className={`shrink-0 rounded-full border px-2 py-1 text-xs font-semibold ${productStatusTone(productStatus)}`}>
-                  {productStatus}
+                  {productStatusLabel(productStatus)}
                 </span>
               </div>
               <div className="mt-4 rounded-xl bg-slate-50 px-3 py-2">
@@ -440,7 +442,7 @@ function ResultSummary({
           <dd className="mt-1 text-xl text-slate-950">{statusCounts.failed}</dd>
         </div>
         <div className="rounded-xl bg-white/70 px-3 py-2">
-          <dt className="text-xs text-slate-600">skipped</dt>
+          <dt className="text-xs text-slate-600">跳过</dt>
           <dd className="mt-1 text-xl text-slate-950">{statusCounts.skipped}</dd>
         </div>
       </dl>
@@ -536,8 +538,8 @@ export function UploadPageV1Dashboard({
       const warningCount = supported ? 0 : 1;
       const unsupportedMessage =
         fileType === "unsupported_plan_summary"
-            ? "计划汇总表缺少商品ID，已安全跳过，不会摊入商品级计划指标"
-            : "暂未匹配到已开放的天猫文件类型，已进入安全提示，不影响其它文件导入";
+            ? "计划汇总表缺少商品ID，已跳过商品级计划指标"
+            : "暂未匹配到已开放的天猫文件类型，不影响其它文件导入";
       return {
         id,
         file,
@@ -669,13 +671,15 @@ export function UploadPageV1Dashboard({
         {isEmbedded ? null : <TopBar />}
         <div className={isEmbedded ? "min-w-0" : "min-h-0 flex-1 overflow-y-auto overflow-x-hidden"}>
           <ControlBar stores={stores} selectedStoreKey={selectedStoreKey} onSelectStore={setSelectedStoreKey} />
-          <V1DimensionScopeBar
-            testId="upload-page-v1-dimension-scope"
-            platform={selectedStore?.platformName ?? "天猫"}
-            store={selectedStore?.storeName ?? "请选择目标店铺"}
-            series="导入后由看板配置"
-            product="导入后由看板配置"
-          />
+          {isEmbedded ? null : (
+            <V1DimensionScopeBar
+              testId="upload-page-v1-dimension-scope"
+              platform={selectedStore?.platformName ?? "天猫"}
+              store={selectedStore?.storeName ?? "请选择目标店铺"}
+              series="导入后由看板配置"
+              product="导入后由看板配置"
+            />
+          )}
           <section className="mx-auto w-full max-w-[1440px] px-4 pb-8">
             {!selectedStore ? (
               <div className="rounded-xl border border-slate-200/80 bg-white p-8 text-center text-sm font-semibold text-slate-600 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
@@ -690,20 +694,14 @@ export function UploadPageV1Dashboard({
                 <section data-testid="upload-page-v1-upload-section" className="space-y-4" data-problem-ids="PVM2-010 PVM2-011">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <h2 className="text-base font-semibold text-slate-950">批量上传</h2>
-                    <span className="text-xs font-semibold text-slate-500">统一选择、多类型识别、安全聚合保存</span>
                   </div>
                 <section className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                     <div>
-                      <h1 className="text-xl font-semibold text-slate-950">批量上传天猫数据文件</h1>
-                      <div className="mt-3 grid max-w-3xl gap-2 text-sm font-semibold leading-6 text-slate-600 md:grid-cols-2">
-                        <p className="rounded-xl border border-slate-200/80 bg-slate-50/80 px-3 py-2">
-                          一次选择多个天猫文件，系统自动识别类型并生成安全聚合数据。
-                        </p>
-                        <p className="rounded-xl border border-slate-200/80 bg-slate-50/80 px-3 py-2">
-                          仅保存本浏览器安全聚合数据；不保存原始 Excel / CSV、文件名或明细行。
-                        </p>
-                      </div>
+                      <h1 className="text-xl font-semibold text-slate-950">选择天猫数据文件</h1>
+                      <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+                        一次选择多个天猫文件，系统自动识别类型并生成经营看板可读取的数据。
+                      </p>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <input
@@ -734,7 +732,7 @@ export function UploadPageV1Dashboard({
                   <div className="mt-4 grid grid-cols-3 gap-2 text-sm font-semibold text-slate-600">
                     <div className="rounded-xl bg-emerald-50 px-3 py-2 text-emerald-700">成功：<span>{statusCounts.success}</span></div>
                     <div className="rounded-xl bg-rose-50 px-3 py-2 text-rose-700">失败：<span>{statusCounts.failed}</span></div>
-                    <div className="rounded-xl bg-slate-50 px-3 py-2 text-slate-700">skipped：<span>{statusCounts.skipped}</span></div>
+                    <div className="rounded-xl bg-slate-50 px-3 py-2 text-slate-700">跳过：<span>{statusCounts.skipped}</span></div>
                   </div>
                 </section>
 
@@ -746,7 +744,7 @@ export function UploadPageV1Dashboard({
                     <div>
                       <h3 className="text-base font-semibold text-slate-950">导入前检查摘要</h3>
                       <p className="mt-1 text-sm font-semibold text-slate-600">
-                        只处理已通过检查的文件；失败或 skipped 不会阻断其它文件。
+                        只处理已通过检查的文件；失败或跳过不影响其它文件。
                       </p>
                     </div>
                     <button
@@ -760,7 +758,7 @@ export function UploadPageV1Dashboard({
                     </button>
                   </div>
                   <p data-testid="upload-page-v2-duplicate-notice" className="mt-3 rounded-xl bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700">
-                    当前批次重复文件会自动 skipped；失败或 skipped 不会阻断其它已识别文件。
+                    当前批次重复文件会自动跳过；失败或跳过不影响其它已识别文件。
                   </p>
                 </section>
 

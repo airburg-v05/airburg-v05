@@ -83,7 +83,7 @@ const blockedRouteNode = (key: string, reason: string) => (
     className="text-xs font-semibold text-amber-700"
     title={reason}
   >
-    BLOCKED_BY_MISSING_V2_ROUTE
+    暂未开放
   </span>
 );
 
@@ -188,7 +188,7 @@ function SeriesTrendChart({
       <div className="flex h-52 flex-col items-center justify-center text-center">
         <p className="text-sm font-semibold text-slate-900">当前范围暂无趋势数据</p>
         <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
-          该系列在当前平台、店铺、日期范围内没有可安全展示的趋势点。
+          该系列在当前平台、店铺、日期范围内暂无趋势点。
         </p>
       </div>
     );
@@ -239,7 +239,7 @@ function SeriesTrendChart({
           </div>
         </div>
         <p className="text-xs text-slate-500">
-          {trendMode === "mtd" ? "按当前范围累计值绘制。" : "按单日值绘制，缺失值不补 0。"}
+          {trendMode === "mtd" ? "按当前范围累计值绘制。" : "按单日值绘制，缺失日期会中断曲线。"}
         </p>
       </div>
 
@@ -341,7 +341,7 @@ export function V2SeriesBoardDashboard() {
         if (!platformCode || !storeId) {
           setState({
             status: "ready",
-            viewModel: buildEmptySeriesBoardViewModel("当前没有可安全读取的店铺系列数据。"),
+            viewModel: buildEmptySeriesBoardViewModel("当前没有可读取的店铺系列数据。"),
           });
           return;
         }
@@ -456,8 +456,8 @@ export function V2SeriesBoardDashboard() {
     );
   }
 
-  if (!viewModel) {
-    return <SafeEmptyState title="暂无系列数据" description="完成数据导入或系列维护后，再返回查看系列经营中心。" />;
+  if (!viewModel || !viewModel.storeContext || viewModel.statusLabel === "暂无数据") {
+    return <SafeEmptyState title="暂无系列数据" description="完成数据导入或系列维护后，再返回查看系列中心。" />;
   }
 
   return (
@@ -478,9 +478,9 @@ export function V2SeriesBoardDashboard() {
                 </span>
               ) : null}
             </div>
-            <h2 className="mt-3 text-lg font-semibold text-slate-950">系列中心</h2>
+            <h2 className="mt-3 text-lg font-semibold text-slate-950">筛选与范围</h2>
             <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-500">
-              与首页重点系列 GSV 模块保持同一系列定义，只汇总当前店铺、当前系列和当前时间范围。
+              选择平台、店铺、系列和时间范围后查看系列经营表现。
             </p>
 
             <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="系列周期选择">
@@ -579,7 +579,7 @@ export function V2SeriesBoardDashboard() {
               </Link>
             ) : mappedManageSeriesHref ? (
               <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-center text-xs font-semibold text-amber-700" title={mappedManageSeriesHref.reason}>
-                BLOCKED_BY_MISSING_V2_ROUTE
+                管理页暂未开放
               </span>
             ) : null}
             {mappedStoreBoardHref?.status === "mapped" && mappedStoreBoardHref.href ? (
@@ -588,7 +588,7 @@ export function V2SeriesBoardDashboard() {
               </Link>
             ) : mappedStoreBoardHref ? (
               <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-center text-xs font-semibold text-amber-700" title={mappedStoreBoardHref.reason}>
-                BLOCKED_LEGACY_ROUTE
+                暂未开放
               </span>
             ) : null}
           </div>
@@ -601,11 +601,11 @@ export function V2SeriesBoardDashboard() {
             mappedManageSeriesHref?.status === "mapped" && mappedManageSeriesHref.href
               ? <Link className="primary-button" href={mappedManageSeriesHref.href}>维护系列</Link>
               : mappedManageSeriesHref
-                ? <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700" title={mappedManageSeriesHref.reason}>BLOCKED_BY_MISSING_V2_ROUTE</span>
+                ? <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700" title={mappedManageSeriesHref.reason}>管理页暂未开放</span>
                 : null
           }
           columns={["系列", "归属", "商品 ID", "操作"]}
-          description="系列属于平台、品牌和店铺；商品 ID 清单仍由用户维护，不自动吞并全部运行时商品。"
+          description="系列属于平台、品牌和店铺；商品 ID 清单由用户维护。"
           rows={seriesRows}
           title="系列列表"
         />
@@ -631,7 +631,7 @@ export function V2SeriesBoardDashboard() {
 
       <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="text-base font-semibold text-slate-950">系列 KPI</h2>
-        <p className="mt-1 text-sm text-slate-500">当前接入真实系列范围指标；目标只作为 overlay，不回写实际值。</p>
+        <p className="mt-1 text-sm text-slate-500">当前接入系列范围指标，目标进度按已设置目标展示。</p>
         <div className="mt-4">
           <MetricGridV2 metrics={metricRows} />
         </div>
@@ -640,13 +640,13 @@ export function V2SeriesBoardDashboard() {
       <section className="grid gap-5 xl:grid-cols-2">
         <DataTableV2
           columns={["商品", "GSV", "ROI", "动作"]}
-          description="只展示当前系列维护的商品贡献；不会自动切回全部商品视图。"
+          description="展示当前系列维护商品的贡献。"
           rows={productRows}
           title="系列商品贡献"
         />
         <DataTableV2
           columns={["目标", "目标值", "差值", "完成率"]}
-          description="系列目标沿用现有 target context 语义，只读取 overlay，不改真实数据。"
+          description="展示当前系列可匹配的目标进度。"
           rows={targetRows}
           title="系列目标进度"
         />
@@ -656,11 +656,11 @@ export function V2SeriesBoardDashboard() {
         <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="text-base font-semibold text-slate-950">系列搜索表现</h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            当前 V2 系列中心已接入真实系列经营与目标范围，但系列级搜索表现仍缺少稳定的“搜索词 → 商品 → 系列”绑定路径。
-            本轮保持显式缺口，不伪造搜索映射，也不改搜索资产语义。
+            当前系列级搜索表现还需要稳定的“搜索词 → 商品 → 系列”绑定路径。
+            接入后会在这里展示品牌词、中心词对系列的贡献。
           </p>
           <div className="mt-4 rounded-lg bg-slate-50 p-4 text-sm leading-6 text-slate-600">
-            下一步将从搜索资产中心和现有 search semantic 边界补齐该映射，再把系列搜索表现接入这里。
+            可先在搜索资产中维护品牌词与中心词，后续接通表现数据后会自动用于分析。
           </div>
         </div>
         <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
@@ -676,13 +676,13 @@ export function V2SeriesBoardDashboard() {
             </div>
           </dl>
           <div className="mt-4 flex flex-wrap gap-2">
-            {viewModel.dataStatus.issueCodes.length > 0 ? viewModel.dataStatus.issueCodes.map((code) => (
-              <span key={code} className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600">
-                {code}
+            {viewModel.dataStatus.issueCodes.length > 0 ? (
+              <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+                数据健康有 {viewModel.dataStatus.issueCodes.length} 条提示
               </span>
-            )) : (
+            ) : (
               <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600">
-                无额外 safe issue code
+                暂无额外提示
               </span>
             )}
           </div>

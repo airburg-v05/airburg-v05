@@ -18,6 +18,12 @@ const compactTargetValue = (value: string): string => {
   }).format(numeric);
 };
 
+const hasHomeTargetDetail = (metric: V2HomeMetricCard): boolean =>
+  [metric.target.mtdTarget, metric.target.totalTarget, metric.target.difference, metric.target.completionRate].some((value) => {
+    const trimmed = value.trim();
+    return trimmed !== "" && trimmed !== "--";
+  }) || metric.target.progress !== null;
+
 export function V2HomeMetricGrid({
   metrics,
   visibleKeys,
@@ -51,15 +57,19 @@ export function V2HomeMetricGrid({
       {visible.map((metric) => {
         const selected = metric.metricKey === selectedMetricKey;
         const note = shortMetricNote(metric);
+        const showTargetDetail = hasHomeTargetDetail(metric);
         return (
           <article
             key={metric.metricKey}
-            aria-label={`${metric.title}，当前值 ${metric.actual}，MTD目标 ${metric.target.mtdTarget}，总目标 ${metric.target.totalTarget}，差值 ${metric.target.difference}，完成率 ${metric.target.completionRate}`}
-            className={`flex h-[148px] min-w-0 flex-col border-b border-r border-t-[3px] border-slate-100 px-3.5 pb-3 pt-2.5 transition-colors ${
+            aria-label={showTargetDetail
+              ? `${metric.title}，当前值 ${metric.actual}，MTD目标 ${metric.target.mtdTarget}，总目标 ${metric.target.totalTarget}，差值 ${metric.target.difference}，完成率 ${metric.target.completionRate}`
+              : `${metric.title}，当前值 ${metric.actual}，未设置目标`}
+            className={`flex min-h-[136px] min-w-0 flex-col border-b border-r border-t-[3px] border-slate-100 px-3.5 pb-3 pt-2.5 transition-colors ${
               selected ? "border-t-blue-600 bg-[#f4f7ff]" : "border-t-transparent bg-white hover:bg-slate-50/70"
             }`}
             data-kpi-cell="true"
             data-metric-key={metric.metricKey}
+            data-target-state={showTargetDetail ? "ready" : "empty"}
           >
             <div className="flex min-w-0 items-start justify-between gap-2">
               <h3 className="min-w-0 truncate text-[13px] font-semibold text-slate-700" title={metric.title}>{metric.title}</h3>
@@ -82,41 +92,49 @@ export function V2HomeMetricGrid({
               {metric.actual}
             </p>
 
-            <dl className="mt-3 grid grid-cols-3 gap-x-1 text-[10px]">
-              <div className="min-w-0" title={`MTD目标 ${metric.target.mtdTarget}`}>
-                <dt className="text-slate-400">MTD</dt>
-                <dd className="mt-0.5 truncate text-[10px] font-semibold tabular-nums text-slate-700">
-                  <span aria-hidden="true">{compactTargetValue(metric.target.mtdTarget)}</span>
-                  <span className="sr-only">{metric.target.mtdTarget}</span>
-                </dd>
-              </div>
-              <div className="min-w-0" title={`总目标 ${metric.target.totalTarget}`}>
-                <dt className="text-slate-400">目标</dt>
-                <dd className="mt-0.5 truncate text-[10px] font-semibold tabular-nums text-slate-700">
-                  <span aria-hidden="true">{compactTargetValue(metric.target.totalTarget)}</span>
-                  <span className="sr-only">{metric.target.totalTarget}</span>
-                </dd>
-              </div>
-              <div className="min-w-0" title={`差值 ${metric.target.difference}`}>
-                <dt className="text-slate-400">差值</dt>
-                <dd className="mt-0.5 truncate text-[10px] font-semibold tabular-nums text-slate-700">
-                  <span aria-hidden="true">{compactTargetValue(metric.target.difference)}</span>
-                  <span className="sr-only">{metric.target.difference}</span>
-                </dd>
-              </div>
-            </dl>
+            {showTargetDetail ? (
+              <>
+                <dl className="mt-3 grid grid-cols-3 gap-x-1 text-[10px]">
+                  <div className="min-w-0" title={`MTD目标 ${metric.target.mtdTarget}`}>
+                    <dt className="text-slate-400">MTD</dt>
+                    <dd className="mt-0.5 truncate text-[10px] font-semibold tabular-nums text-slate-700">
+                      <span aria-hidden="true">{compactTargetValue(metric.target.mtdTarget)}</span>
+                      <span className="sr-only">{metric.target.mtdTarget}</span>
+                    </dd>
+                  </div>
+                  <div className="min-w-0" title={`总目标 ${metric.target.totalTarget}`}>
+                    <dt className="text-slate-400">目标</dt>
+                    <dd className="mt-0.5 truncate text-[10px] font-semibold tabular-nums text-slate-700">
+                      <span aria-hidden="true">{compactTargetValue(metric.target.totalTarget)}</span>
+                      <span className="sr-only">{metric.target.totalTarget}</span>
+                    </dd>
+                  </div>
+                  <div className="min-w-0" title={`差值 ${metric.target.difference}`}>
+                    <dt className="text-slate-400">差值</dt>
+                    <dd className="mt-0.5 truncate text-[10px] font-semibold tabular-nums text-slate-700">
+                      <span aria-hidden="true">{compactTargetValue(metric.target.difference)}</span>
+                      <span className="sr-only">{metric.target.difference}</span>
+                    </dd>
+                  </div>
+                </dl>
 
-            <div className="mt-auto">
-              <div className="flex items-center justify-end text-[11px]">
-                <span className="sr-only">完成率</span>
-                <span className="font-semibold tabular-nums text-slate-600">{metric.target.completionRate}</span>
+                <div className="mt-auto">
+                  <div className="flex items-center justify-end text-[11px]">
+                    <span className="sr-only">完成率</span>
+                    <span className="font-semibold tabular-nums text-slate-600">{metric.target.completionRate}</span>
+                  </div>
+                  <div className="mt-1 h-1 overflow-hidden rounded-full bg-slate-100">
+                    {metric.target.progress !== null ? (
+                      <div className="h-full rounded-full bg-blue-600" style={{ width: `${metric.target.progress}%` }} />
+                    ) : null}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="mt-auto rounded-md bg-slate-50 px-2.5 py-2 text-[11px] font-semibold text-slate-500">
+                未设置目标
               </div>
-              <div className="mt-1 h-1 overflow-hidden rounded-full bg-slate-100">
-                {metric.target.progress !== null ? (
-                  <div className="h-full rounded-full bg-blue-600" style={{ width: `${metric.target.progress}%` }} />
-                ) : null}
-              </div>
-            </div>
+            )}
           </article>
         );
       })}
