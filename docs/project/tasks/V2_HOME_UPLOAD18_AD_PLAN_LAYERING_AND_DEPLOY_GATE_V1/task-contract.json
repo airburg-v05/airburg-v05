@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
   "taskId": "V2_HOME_UPLOAD18_AD_PLAN_LAYERING_AND_DEPLOY_GATE_V1",
-  "status": "BLOCKED",
+  "status": "PASS_PENDING_HUMAN_REVIEW",
   "taskMeaning": "Accept the full historical 18-file Tmall upload set through /upload, layer plan-level and product-level ad sources without double counting store or product KPIs, validate /v2/home semantics and browser behavior locally, then deploy only this authorized slice to the existing ECS preview if SSH BatchMode and remote checks pass.",
   "baselineCommit": "2defe2fb76cd63a73bf88db7988775e3554fa399",
   "activeBranch": "feature/saas-ui-v2-shell",
@@ -31,8 +31,8 @@
   },
   "blocker": {
     "stage": "SSH_BATCHMODE_GATE",
-    "status": "BLOCKED",
-    "observedAt": "2026-07-18T19:35:27+08:00",
-    "evidence": "Connection closed by 123.57.49.121 port 22"
+    "status": "RESOLVED",
+    "observedAt": "2026-07-20T19:21:30+08:00",
+    "evidence": "The obsolete single-source TCP 22 security-group rule was rebound to the current legitimate management source as /32; three spaced post-deploy BatchMode checks passed. The address is intentionally omitted from versioned evidence."
   }
 }

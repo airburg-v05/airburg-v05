@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "updatedAt": "2026-07-20T19:16:07+08:00",
+  "updatedAt": "2026-07-20T19:23:03+08:00",
   "authority": {
     "machineReadableSource": "docs/project/PROJECT_SSOT.json",
     "derivedHumanReadableSources": [
@@ -107,7 +107,7 @@
     },
     "saasUiV2": {
       "role": "ACTIVE_PRODUCT_TRACK",
-      "status": "UPLOAD18_LOCAL_PASS_SSH_RECOVERED_DEPLOY_READY",
+      "status": "UPLOAD18_PUBLIC_E2E_PASS_PENDING_HUMAN_REVIEW",
       "archiveCommit": "7ade2f433d7dbd90e8fd1a0df5efdb00003ec8fa",
       "routeCount": 9,
       "componentCount": 18,
@@ -122,16 +122,16 @@
       "previewDeployed": true,
       "humanAccepted": false,
       "publicV2RouteStatus": "V2_HOME_PREVIEW_HTTP_200_OTHER_EIGHT_STATIC_SHELL_ROUTE_200",
-      "deploymentCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
-      "deployedAt": "2026-07-15T19:15:51+08:00",
+      "deploymentCommit": "de1a65feafe7f83d678654ccf77d448aa2c71159",
+      "deployedAt": "2026-07-20T19:21:30+08:00",
       "publicPreviewRoute": "http://123.57.49.121/v2/home",
-      "publicScreenshotManifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-public-preview-20260715-17qerU/manifest.json",
+      "publicScreenshotManifest": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-upload18-local-oZrlE3/manifest.json",
       "businessImportsFound": 1,
       "controlsInteractive": true,
       "visualReviewStatus": "PENDING_HUMAN_REVIEW",
       "humanReviewRequired": true,
       "homeVerticalSlice": {
-        "status": "AUTHORIZED_UPLOAD18_LOCAL_PASS_SSH_RECOVERED_DEPLOY_READY",
+        "status": "UPLOAD18_PUBLIC_E2E_PASS_PENDING_HUMAN_REVIEW",
         "adapter": "lib/v2/home/v2-home-adapter.ts",
         "latestImplementationCommit": "de1a65feafe7f83d678654ccf77d448aa2c71159",
         "metricCount": 17,
@@ -140,13 +140,14 @@
         "multiMonthTargetPolicy": "NO_SINGLE_MONTH_TARGET_REUSE",
         "browserConsoleBusinessErrors": 0,
         "mobile390PageWideOverflow": false,
-        "publicE2EPassed": false,
+        "publicE2EPassed": true,
         "previewDeployed": true,
         "visualAccepted": false,
         "humanAccepted": false,
         "evidence": "docs/project/tasks/V2_HOME_UPLOAD18_AD_PLAN_LAYERING_AND_DEPLOY_GATE_V1/VALIDATION.md",
         "latestUpload18LocalValidationAt": "2026-07-18T19:35:27+08:00",
-        "latestUpload18DeploymentStatus": "SSH_GATE_PASS_DEPLOY_PENDING",
+        "latestUpload18PublicValidationAt": "2026-07-20T19:21:30+08:00",
+        "latestUpload18DeploymentStatus": "PUBLIC_E2E_PASS_PENDING_HUMAN_REVIEW",
         "latestUpload18DeploymentBlocker": null,
         "latestUpload18DeploymentLikelyCause": "RESOLVED_STALE_SINGLE_SOURCE_SECURITY_GROUP_RULE",
         "latestUpload18ConsoleState": "ALIYUN_AUTHENTICATED_SECURITY_GROUP_CURRENT_SOURCE_BOUND"
@@ -166,10 +167,10 @@
   "validatorRegistry": "docs/project/VALIDATOR_REGISTRY.json",
   "currentTask": {
     "taskId": "V2_HOME_UPLOAD18_AD_PLAN_LAYERING_AND_DEPLOY_GATE_V1",
-    "status": "SSH_GATE_PASS_DEPLOY_PENDING",
+    "status": "PENDING_POST_DEPLOY_OWNER_REVIEW",
     "contract": "docs/project/tasks/V2_HOME_UPLOAD18_AD_PLAN_LAYERING_AND_DEPLOY_GATE_V1/task-contract.json"
   },
-  "nextAuthorizedEntryGate": "IMMUTABLE_PACKAGE_AND_REMOTE_DEPLOY_GATE",
+  "nextAuthorizedEntryGate": "V2_HOME_HUMAN_VISUAL_REVIEW",
   "deprecatedArtifacts": [
     {
       "path": "lib/state/system-state.ts",

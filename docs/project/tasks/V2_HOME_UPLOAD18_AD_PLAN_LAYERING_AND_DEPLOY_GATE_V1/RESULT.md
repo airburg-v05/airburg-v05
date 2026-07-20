@@ -1,6 +1,6 @@
 # RESULT
 
-Status: `LOCAL_PASS_REMOTE_DEPLOY_BLOCKED`
+Status: `PUBLIC_E2E_PASS_PENDING_HUMAN_REVIEW`
 
 What is complete:
 
@@ -12,13 +12,17 @@ What is complete:
   - mixed-granularity input no longer double counts ad spend / clicks / ROI.
 - `/v2/home` local browser verification passes after upload, refresh, and mobile viewport checks.
 
+Deployment completion:
+
+- Root cause confirmed: the TCP 22 security-group rule still pointed to an obsolete single management source.
+- Only that rule was rebound to the current legitimate source as `/32`; SSH was not opened to all sources.
+- Three spaced post-deploy BatchMode checks passed.
+- Exact implementation commit `de1a65feafe7f83d678654ccf77d448aa2c71159` was packaged, built, and deployed to the existing ECS preview.
+- PM2 is online, Nginx configuration is valid, Node remains loopback-only on `127.0.0.1:3000`, and public port `3000` remains unreachable.
+- All authorized legacy and V2 preview routes returned HTTP 200.
+- Public `/upload -> /v2/home` real 18-file E2E passed: `18 success / 0 failed / 0 skipped`.
+
 What is not complete:
 
-- The authorized deployment did not reach rsync / remote build / PM2 / Nginx because the ECS SSH BatchMode gate failed before authentication.
-- The previous successful recovery task proves the same symptom was caused by an Alibaba Cloud security-group rule bound to an obsolete single management address. The current recurrence is therefore `LIKELY_RECURRENT_ALIYUN_SECURITY_CONTROL`, but remains pending current console confirmation.
-- Chrome was opened to the Alibaba Cloud ECS console and stopped at the official login page. No credential, cookie, password, token, or private key was read. No cloud setting was changed.
-
-Deployment blocker:
-
-- `ssh -o BatchMode=yes -o ConnectTimeout=10 root@123.57.49.121 true`
-- Output: `Connection closed by 123.57.49.121 port 22`
+- `visualAccepted=false` and `humanAccepted=false` remain unchanged.
+- The next gate is the owner's public `/v2/home` visual review; technical and browser PASS do not replace that review.

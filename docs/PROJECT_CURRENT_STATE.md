@@ -11,21 +11,20 @@
 - 冻结 fallback：天猫 V1 公网内测版。
 - 可信数据基础：天猫 V1 ETL / Runtime / BI 真实 18 文件链路。
 - foundation candidate：V0.5 domain / repository / persistence；当前只部分 route-bound。
-- 当前任务：`ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1`，状态 `PENDING_HUMAN_REVIEW`。
+- 当前任务：`V2_HOME_UPLOAD18_AD_PLAN_LAYERING_AND_DEPLOY_GATE_V1`，状态 `PENDING_POST_DEPLOY_OWNER_REVIEW`。
 - 下一唯一入口：`V2_HOME_HUMAN_VISUAL_REVIEW`；自动化截图不能替代用户视觉确认。
-- 当前任务和证据：`docs/project/current-task.json`、`docs/project/tasks/ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1/`。
+- 当前任务和证据：`docs/project/current-task.json`、`docs/project/tasks/V2_HOME_UPLOAD18_AD_PLAN_LAYERING_AND_DEPLOY_GATE_V1/`。
 
 ## SaaS UI V2 Home 公网预览
 
 - 当前分支：`feature/saas-ui-v2-shell`。
-- 最新已验证业务实现：`8b69e46fee532379be5f5f0b2ef4fe44c87a87aa`。
-- 公网部署源：精确 `git archive` commit `a293db7e75b14853d68d9711e131cc348d2f3ea0`。
+- 最新已验证业务实现与公网部署源：`de1a65feafe7f83d678654ccf77d448aa2c71159`。
 - 公网预览：[V2 Home](http://123.57.49.121/v2/home)。
 - `/v2/home`：17 个指标、真实 18 文件、目标 overlay、重点系列、MTD / DLY、时间范围、刷新恢复、关闭重开恢复、1440px / 390px 浏览器 E2E 均通过。
 - 真实经营对账保持不变：GMV `125596`、GSV `85455.96`、访客 `143076`、支付买家 `128`、推广花费 `7625.95`、点击 `6692`、退款金额 `29602.18`。
-- 上传结果与数据健康摘要已对齐：`17 success / 0 failed / 1 safe skipped`，首页安全跳过计数为 `1`。
+- 上传结果与数据健康摘要已对齐：`18 success / 0 failed / 0 skipped`，首页安全跳过计数为 `0`。
 - 跨月范围不会误套用单个月份目标；回到单月后目标正常恢复。
-- 公网回归为 `17 success / 0 failed / 1 safe skipped`，重复导入不翻倍，console 业务错误与 failed business requests 均为 `0`。
+- 公网回归为 `18 success / 0 failed / 0 skipped`，重复导入不翻倍，console 业务错误与 failed business requests 均为 `0`。
 - `visualAccepted=false`、`humanAccepted=false`、`visualReviewStatus=PENDING_HUMAN_REVIEW`；当前只等待用户打开公网 `/v2/home` 核查。
 - 其它八个 V2 路由虽然 HTTP 200，但仍是静态壳，不得称为 data-bound 或已验收。
 

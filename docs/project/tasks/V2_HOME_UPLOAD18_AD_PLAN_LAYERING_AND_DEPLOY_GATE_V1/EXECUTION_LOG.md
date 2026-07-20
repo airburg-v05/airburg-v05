@@ -56,3 +56,16 @@
    - SSH BatchMode gate command run against `root@123.57.49.121`
    - result: `Connection closed by 123.57.49.121 port 22`
    - remote rsync / build / PM2 / Nginx / public regression did not run
+
+## 2026-07-20 recovery and deployment
+
+1. Confirmed the historical failure did not originate from task archiving, source damage, or local build failure.
+2. Used the authenticated Alibaba Cloud console and Workbench without reading credentials, cookies, tokens, or private keys.
+3. Confirmed the active TCP 22 security-group rule pointed to an obsolete single management source.
+4. Rebound only that rule to the current legitimate source as `/32`; no broad SSH source was added.
+5. SSH BatchMode passed before deployment and passed three spaced checks after deployment.
+6. Packaged exact implementation commit `de1a65feafe7f83d678654ccf77d448aa2c71159`; package SHA-256 matched locally and remotely.
+7. Remote `npm ci` and `npm run build` passed; PM2 switched to the new release with rollback metadata preserved.
+8. PM2, Nginx, loopback-only Node binding, public-port isolation, and authorized route checks passed.
+9. Public `/upload -> /v2/home` 18-file E2E passed with `18 success / 0 failed / 0 skipped`.
+10. Preserved `visualAccepted=false` and `humanAccepted=false`; next gate is owner visual review.

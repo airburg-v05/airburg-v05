@@ -34,6 +34,28 @@
   - `v2-home-desktop.png`
   - `v2-home-mobile.png`
 
+## Public deployment evidence
+
+- Deployment evidence: `DEPLOYMENT_EVIDENCE_20260720.json`
+- Exact implementation commit: `de1a65feafe7f83d678654ccf77d448aa2c71159`
+- Immutable package SHA-256: `178810bfe923942db318b66e2ccc421dd8f300cff32ef7d51757c38ceb733145`
+- Package entries: `978`; forbidden entries: `0`
+- Remote `npm ci`: PASS
+- Remote `npm run build`: PASS, 25 routes
+- PM2 `airburg-tmall-v1`: online
+- Nginx: active and `nginx -t` PASS
+- Node binding: `127.0.0.1:3000`
+- Public `:3000`: unreachable as required
+- Authorized legacy and V2 route regression: HTTP 200
+- Public 18-file E2E artifact directory:
+  - `/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-upload18-local-oZrlE3`
+- Public upload result: `18 success / 0 failed / 0 skipped`
+- Public `/v2/home`: 17 metric cards; `缺失0 安全跳过0 重复126 不可计算3`
+- Browser business console errors: `0`; failed business requests: `0`
+- 390px page-wide overflow: `false`
+
+Human gates remain closed: `visualAccepted=false`, `humanAccepted=false`.
+
 ## Important observed values
 
 - Upload result: `18 success / 0 failed / 0 skipped`

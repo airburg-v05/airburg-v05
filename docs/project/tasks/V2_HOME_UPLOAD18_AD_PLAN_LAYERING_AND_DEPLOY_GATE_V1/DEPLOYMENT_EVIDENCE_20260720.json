@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "PASS_PENDING_HUMAN_REVIEW",
+  "observedAt": "2026-07-20T19:21:30+08:00",
+  "sshRecovery": {
+    "rootCause": "STALE_SINGLE_SOURCE_SECURITY_GROUP_RULE",
+    "remediation": "CURRENT_LEGITIMATE_MANAGEMENT_SOURCE_BOUND_AS_32",
+    "publicAddressRecorded": false,
+    "openToAllSources": false,
+    "postDeployBatchModeChecks": ["PASS", "PASS", "PASS"]
+  },
+  "deployment": {
+    "implementationCommit": "de1a65feafe7f83d678654ccf77d448aa2c71159",
+    "packageSha256": "178810bfe923942db318b66e2ccc421dd8f300cff32ef7d51757c38ceb733145",
+    "packageEntries": 978,
+    "forbiddenEntries": 0,
+    "releasePath": "/opt/airburg/releases/v2-home-upload18-de1a65f-20260720T1919",
+    "rollbackMetadata": "/opt/airburg/rollback/airburg-tmall-v1-pre-upload18-20260720T1921.txt",
+    "npmCi": "PASS",
+    "npmBuild": "PASS_25_ROUTES",
+    "pm2": "ONLINE",
+    "nginx": "ACTIVE_CONFIG_VALID",
+    "nodeBinding": "127.0.0.1:3000",
+    "publicPort3000Reachable": false
+  },
+  "publicRegression": {
+    "authorizedRoutesHttp200": true,
+    "uploadFilesAvailable": 18,
+    "uploadSuccess": 18,
+    "uploadFailed": 0,
+    "uploadSkipped": 0,
+    "metricCards": 17,
+    "dataHealth": "缺失0 安全跳过0 重复126 不可计算3",
+    "businessConsoleErrors": 0,
+    "failedBusinessRequests": 0,
+    "mobile390PageWideOverflow": false,
+    "artifactDirectory": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-upload18-local-oZrlE3"
+  },
+  "visualAccepted": false,
+  "humanAccepted": false,
+  "nextGate": "V2_HOME_HUMAN_VISUAL_REVIEW"
+}
