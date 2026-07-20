@@ -28,6 +28,7 @@ export interface TargetMetricOption {
   label: string;
   direction: TargetDirection;
   allocationMode: "sum" | "none";
+  format: "money" | "integer" | "percent" | "ratio";
 }
 
 export interface TargetStoreOption {

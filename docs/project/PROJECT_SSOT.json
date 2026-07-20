@@ -109,13 +109,30 @@
       "role": "ACTIVE_PRODUCT_TRACK",
       "status": "UPLOAD18_PUBLIC_E2E_PASS_PENDING_HUMAN_REVIEW",
       "archiveCommit": "7ade2f433d7dbd90e8fd1a0df5efdb00003ec8fa",
-      "routeCount": 9,
+      "routeCount": 10,
       "componentCount": 18,
       "dataBound": true,
       "dataBoundRoutes": [
-        "/v2/home"
+        "/v2/home",
+        "/v2/series-board",
+        "/v2/store-board",
+        "/v2/product-board",
+        "/v2/upload/history",
+        "/v2/data-health",
+        "/v2/target-center"
       ],
-      "remainingStaticShellRouteCount": 8,
+      "runtimeWriterRoutes": [
+        "/v2/upload"
+      ],
+      "configurationBoundRoutes": [
+        "/v2/search-assets"
+      ],
+      "blockedByMissingContractRoutes": [
+        "/v2/exclusion-rules"
+      ],
+      "remainingStaticShellRouteCount": 0,
+      "routeTruthRebuiltAt": "2026-07-20T22:18:00+08:00",
+      "routeTruthNotes": "Ten V2 routes exist. dataBoundRoutes only names routes that read current runtime/domain/target state. /v2/upload writes runtime data, /v2/search-assets writes current-browser search configuration, and /v2/exclusion-rules is a safe BLOCKED_BY_MISSING_CONTRACT page; these are not counted as fully business data-bound dashboard routes.",
       "localRoutesValidated": true,
       "localE2EPassed": true,
       "visualAccepted": false,
@@ -166,9 +183,9 @@
   "metricSemantics": "docs/project/METRIC_SEMANTIC_RECONCILIATION_V1.json",
   "validatorRegistry": "docs/project/VALIDATOR_REGISTRY.json",
   "currentTask": {
-    "taskId": "SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1",
-    "status": "PENDING_POST_DEPLOY_OWNER_REVIEW",
-    "contract": "docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/task-contract.json"
+    "taskId": "SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1",
+    "status": "IN_PROGRESS",
+    "contract": "docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/TASK.md"
   },
   "nextAuthorizedEntryGate": "CONTINUE_BLUEPRINT_PRIORITY_V2_ROUTE_IMPLEMENTATION",
   "deprecatedArtifacts": [

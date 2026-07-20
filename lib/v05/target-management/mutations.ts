@@ -1,6 +1,6 @@
 import { V2_SCHEMA_VERSION, type TargetRecord } from "../domain/models";
 import { buildAllocationChildDraft, buildTargetAllocationChildOptions } from "./allocation";
-import { buildTargetParentOptions } from "./options";
+import { buildTargetParentOptions, isTargetManagementMetricKey, targetMetricFormat } from "./options";
 import type { AllocateChildTargetInput, TargetDatasetMutation, TargetDraft, TargetSaveResult } from "./contracts";
 
 const CONTROL_CHAR_PATTERN = /[\u0000-\u001F\u007F]/;
@@ -59,11 +59,17 @@ const normalizeTargetDraft = ({
   if (!draft.metricKey.trim()) {
     return targetError("validation_error", "请选择目标指标。", ["target_metric_required"]);
   }
+  if (!isTargetManagementMetricKey(draft.metricKey.trim())) {
+    return targetError("validation_error", "当前目标指标不在已冻结的目标中心可输入范围内。", ["target_metric_unsupported"]);
+  }
   if (!validatePeriodValue(draft.periodType, draft.periodValue)) {
     return targetError("validation_error", "目标周期格式不正确。", ["target_period_invalid"]);
   }
   if (!Number.isFinite(draft.targetValue) || draft.targetValue <= 0) {
     return targetError("validation_error", "目标值必须大于 0。", ["target_value_invalid"]);
+  }
+  if (targetMetricFormat(draft.metricKey.trim()) === "percent" && draft.targetValue > 1) {
+    return targetError("validation_error", "百分比目标需保存为 0 到 1 之间的小数。", ["target_percent_value_invalid"]);
   }
   if (!hasRequiredOwner(draft)) {
     return targetError("validation_error", "请先选择目标归属。", ["target_owner_required"]);

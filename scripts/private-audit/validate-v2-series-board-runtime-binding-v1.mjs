@@ -48,12 +48,15 @@ const checks = [
     pass: ssot.tracks.saasUiV2.visualAccepted === false && ssot.tracks.saasUiV2.humanAccepted === false,
   },
   {
-    name: "ssotStillDoesNotOverclaimSeriesDataBoundDeployment",
-    pass: ssot.tracks.saasUiV2.dataBoundRoutes.length === 1 && ssot.tracks.saasUiV2.dataBoundRoutes[0] === "/v2/home",
+    name: "ssotClassifiesSeriesAsRuntimeReaderWithoutOverclaimingWriterOrConfigRoutes",
+    pass: ssot.tracks.saasUiV2.dataBoundRoutes.includes("/v2/series-board") &&
+      !ssot.tracks.saasUiV2.dataBoundRoutes.includes("/v2/upload") &&
+      !ssot.tracks.saasUiV2.dataBoundRoutes.includes("/v2/search-assets") &&
+      !ssot.tracks.saasUiV2.dataBoundRoutes.includes("/v2/exclusion-rules"),
   },
   {
-    name: "currentTaskPointerMovedToContinuationTask",
-    pass: currentTask.taskId === "SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1" &&
+    name: "currentTaskPointerMovedToFullQualityClosureTask",
+    pass: currentTask.taskId === "SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1" &&
       currentTask.status === "IN_PROGRESS" &&
       ssot.currentTask.taskId === currentTask.taskId,
   },

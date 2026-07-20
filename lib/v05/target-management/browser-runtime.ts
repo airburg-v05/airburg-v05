@@ -1,3 +1,4 @@
+import { loadActiveRuntimeDatasetSnapshot } from "../../persistence/runtime-dataset-persistence";
 import { IndexedDbV2PersistenceStore } from "../persistence/indexeddb-adapter";
 import { buildEmptyTargetManagementViewModel, buildTargetManagementViewModel } from "./build-view-model";
 import { saveTargetDatasetMutation } from "./dataset-update";
@@ -15,6 +16,25 @@ declare const process: {
 
 export const getV05TargetDatabaseName = (): string =>
   process.env?.NEXT_PUBLIC_AIRBURG_V05_DATABASE_NAME?.trim() || "airburg-v05";
+
+const targetFoundationEmptyResult = async (): Promise<TargetManagementLoadResult> => {
+  const runtimeSnapshot = await loadActiveRuntimeDatasetSnapshot();
+  const runtimeHasBusinessData = runtimeSnapshot.status === "ok";
+  const notice = runtimeHasBusinessData
+    ? "已检测到经营首页和看板使用的 18 文件安全聚合数据，但目标中心使用 V0.5F 四源目标底座。请先在数据接入页完成“目标中心数据底座”导入，再设置公司、店铺、系列和商品目标。"
+    : "当前没有可用的目标中心数据底座。请先在数据接入页完成“目标中心数据底座”导入，再设置公司、店铺、系列和商品目标。";
+
+  return {
+    status: "empty",
+    viewModel: buildEmptyTargetManagementViewModel(notice, [
+      { label: "前往数据接入", href: "/upload" },
+      { label: "查看数据健康", href: "/upload/quality" },
+    ]),
+    message: runtimeHasBusinessData
+      ? "经营数据已导入，但目标中心数据底座尚未初始化。"
+      : "目标中心数据底座尚未初始化。",
+  };
+};
 
 export const loadTargetManagementContext = async ({
   databaseName = getV05TargetDatabaseName(),
@@ -40,11 +60,7 @@ export const loadTargetManagementContext = async ({
 
     const dataset = await store.loadActiveDataset();
     if (!dataset) {
-      return {
-        status: "empty",
-        viewModel: buildEmptyTargetManagementViewModel("当前没有可用的多店铺数据，请先完成数据导入。"),
-        message: "当前没有可用的多店铺数据。",
-      };
+      return await targetFoundationEmptyResult();
     }
 
     const pointer = await store.getActivePointer();

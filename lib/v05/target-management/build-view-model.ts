@@ -11,11 +11,15 @@ import {
   buildProductOptions,
   buildSeriesOptions,
   buildStoreOptions,
+  targetMetricFormat,
   targetMetricLabel,
   targetScopeLabel,
 } from "./options";
 
-export const buildEmptyTargetManagementViewModel = (notice: string): TargetManagementViewModel => ({
+export const buildEmptyTargetManagementViewModel = (
+  notice: string,
+  primaryActions: TargetManagementViewModel["primaryActions"] = [{ label: "数据导入", href: "/upload" }],
+): TargetManagementViewModel => ({
   mode: "empty",
   datasetId: null,
   expectedCurrentDatasetId: null,
@@ -29,14 +33,23 @@ export const buildEmptyTargetManagementViewModel = (notice: string): TargetManag
   rawSeries: [],
   metricOptions: TARGET_METRIC_OPTIONS,
   notices: [notice],
-  primaryActions: [{ label: "数据导入", href: "/upload" }],
+  primaryActions,
   isEmpty: true,
 });
 
-const formatNumber = (value: number): string =>
+const formatNumber = (value: number, maximumFractionDigits = 2): string =>
   Number.isFinite(value)
-    ? new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(value)
+    ? new Intl.NumberFormat("zh-CN", { maximumFractionDigits }).format(value)
     : "--";
+
+const formatTargetValue = (metricKey: string, value: number): string => {
+  const format = targetMetricFormat(metricKey);
+  if (format === "percent") return `${formatNumber(value * 100)}%`;
+  if (format === "ratio") return `${formatNumber(value)} 倍`;
+  if (format === "money") return `${formatNumber(value)} 元`;
+  if (format === "integer") return `${formatNumber(value, 0)} 人`;
+  return formatNumber(value);
+};
 
 const periodLabel = (target: TargetRecord): string =>
   target.periodType === "daily" ? `日目标 ${target.periodValue}` : `月目标 ${target.periodValue}`;
@@ -95,7 +108,7 @@ const buildTargetRows = (dataset: V2Dataset): TargetRowViewModel[] => {
       parentLabel: parentLabel(target, parentById, dataset),
       metricLabel: targetMetricLabel(target.metricKey),
       periodLabel: periodLabel(target),
-      valueLabel: formatNumber(target.targetValue),
+      valueLabel: formatTargetValue(target.metricKey, target.targetValue),
       statusLabel: statusLabel(target.status),
       allocationSummary:
         target.status === "deleted"

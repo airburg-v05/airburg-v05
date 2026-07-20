@@ -24,22 +24,31 @@ const platformLabel = (platformCode: PlatformCode): string => {
 };
 
 export const TARGET_METRIC_OPTIONS: TargetMetricOption[] = [
-  { key: "gmv", label: "GMV", direction: "higher_is_better", allocationMode: "sum" },
-  { key: "gsv", label: "GSV", direction: "higher_is_better", allocationMode: "sum" },
-  { key: "visitors", label: "商品访客数", direction: "higher_is_better", allocationMode: "sum" },
-  { key: "paidBuyers", label: "支付买家数", direction: "higher_is_better", allocationMode: "sum" },
-  { key: "conversionRate", label: "支付转化率", direction: "higher_is_better", allocationMode: "none" },
-  { key: "avgOrderValue", label: "客单价", direction: "higher_is_better", allocationMode: "none" },
-  { key: "refundRate", label: "退款率", direction: "lower_is_better", allocationMode: "none" },
-  { key: "adSpend", label: "推广花费", direction: "lower_is_better", allocationMode: "sum" },
-  { key: "adRoi", label: "推广 ROI", direction: "higher_is_better", allocationMode: "none" },
-  { key: "adSpendRate", label: "推广费比", direction: "lower_is_better", allocationMode: "none" },
-  { key: "adSpendRateAfterRefund", label: "去退推广费比", direction: "lower_is_better", allocationMode: "none" },
-  { key: "refundSuccessAmount", label: "成功退款金额", direction: "lower_is_better", allocationMode: "sum" },
+  { key: "gmv", label: "GMV", direction: "higher_is_better", allocationMode: "sum", format: "money" },
+  { key: "gsv", label: "GSV", direction: "higher_is_better", allocationMode: "sum", format: "money" },
+  { key: "visitors", label: "商品访客数", direction: "higher_is_better", allocationMode: "sum", format: "integer" },
+  { key: "paidBuyers", label: "支付买家数", direction: "higher_is_better", allocationMode: "sum", format: "integer" },
+  { key: "conversionRate", label: "支付转化率", direction: "higher_is_better", allocationMode: "none", format: "percent" },
+  { key: "avgOrderValue", label: "客单价", direction: "higher_is_better", allocationMode: "none", format: "money" },
+  { key: "refundRate", label: "退款率", direction: "lower_is_better", allocationMode: "none", format: "percent" },
+  { key: "adSpend", label: "推广花费", direction: "lower_is_better", allocationMode: "sum", format: "money" },
+  { key: "adRoi", label: "推广 ROI", direction: "higher_is_better", allocationMode: "none", format: "ratio" },
+  { key: "adSpendRate", label: "推广费比", direction: "lower_is_better", allocationMode: "none", format: "percent" },
+  { key: "adSpendRateAfterRefund", label: "去退推广费比", direction: "lower_is_better", allocationMode: "none", format: "percent" },
+  { key: "refundSuccessAmount", label: "成功退款金额", direction: "lower_is_better", allocationMode: "sum", format: "money" },
 ];
 
 export const targetMetricLabel = (metricKey: string): string =>
   TARGET_METRIC_OPTIONS.find((option) => option.key === metricKey)?.label ?? metricKey;
+
+export const targetMetricOption = (metricKey: string): TargetMetricOption | null =>
+  TARGET_METRIC_OPTIONS.find((option) => option.key === metricKey) ?? null;
+
+export const isTargetManagementMetricKey = (metricKey: string): boolean =>
+  targetMetricOption(metricKey) !== null;
+
+export const targetMetricFormat = (metricKey: string): TargetMetricOption["format"] | null =>
+  targetMetricOption(metricKey)?.format ?? null;
 
 export const targetScopeLabel = (scope: TargetScope): string => {
   if (scope === "company") return "公司";
@@ -150,7 +159,7 @@ export const buildTargetParentOptions = ({
   const noneOption: TargetParentOption = {
     value: "",
     label: "不绑定父目标（独立目标）",
-    description: "作为 standalone 目标保存，不参与父子分配。",
+    description: "作为独立目标保存，不参与父子分配。",
   };
   const parentScope = directParentScope(draft.scope);
   if (!parentScope) return [noneOption];

@@ -10,7 +10,7 @@ export function V2ExclusionRulesWorkspace() {
         <h2 className="mt-3 text-base font-semibold text-slate-950">排除规则</h2>
         <p className="mt-2 text-sm leading-6 text-slate-600">
           当前只能确认“商品 ID 排除”和“备注文本排除”在现有统计逻辑里有对应含义，但还没有稳定的跨页保存与统一读取方案。
-          为了避免把局部临时状态伪装成正式配置中心，本页在本轮明确保持 `BLOCKED_BY_MISSING_CONTRACT`。
+          为了避免把局部临时状态伪装成正式配置中心，本页在本轮只保留安全说明，不开放假配置控件。
         </p>
       </section>
 
@@ -28,7 +28,7 @@ export function V2ExclusionRulesWorkspace() {
           <h3 className="text-sm font-semibold text-slate-950">缺失的合同</h3>
           <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
             <li>• 缺少已批准的跨页保存方案，无法安全保存或复用排除规则。</li>
-            <li>• 缺少统一的读取与回写路径，无法证明 `/v2/home`、`/v2/product-board` 等页面会一致生效。</li>
+            <li>• 缺少统一的读取与回写路径，无法证明首页、商品看板等页面会一致生效。</li>
             <li>• 缺少对备注类文本字段可用范围的稳定说明，不能伪装成真实多文本排除。</li>
           </ul>
         </div>

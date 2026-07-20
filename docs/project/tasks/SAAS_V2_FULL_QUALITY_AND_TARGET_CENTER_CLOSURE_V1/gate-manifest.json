@@ -1,0 +1,40 @@
+{
+  "task_type": "data_dashboard",
+  "task_id": "SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1",
+  "business_purpose": "Close current SaaS V2 quality issues and target-center details for the Airburg ecommerce data platform, then deliver a deployable owner review package.",
+  "raw_data_files": [
+    "/Users/zongji/Desktop/每日平台数据/天猫/*.csv|*.xlsx"
+  ],
+  "field_map": [
+    "Use existing route/data-source/metric contracts only; keep plan-level ad_plan evidence separate from product-level KPI aggregation.",
+    "Do not invent formula, target schema, platform adapter, or fake JD/Douyin data."
+  ],
+  "decision_questions": [
+    "Can each V2 route be truthfully classified from current implementation evidence?",
+    "Which target-center capabilities are supported by stable contracts, and which must remain explicit gaps?",
+    "Do final public checks preserve visualAccepted=false and humanAccepted=false?"
+  ],
+  "validation_plan": [
+    "changed-file lint",
+    "repo lint/build",
+    "targeted validators",
+    "real 18-file Tmall regression",
+    "public ten-route desktop/mobile smoke and runtime cleanup"
+  ],
+  "archive_target": "docs/project/tasks/SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1/",
+  "identity_gate": "宗骥 authorized continuing the current ecommerce-platform-optimized SaaS V2 quality and target-center closure.",
+  "project_gate": "Primary owner is ecommerce-platform-optimized; Airburg data platform gates apply.",
+  "evidence_gate": [
+    "docs/project/PROJECT_SSOT.json",
+    "docs/project/current-task.json",
+    "docs/project/ROUTE_DATA_SOURCE_MATRIX.json",
+    "docs/project/V2_HOME_DATA_CONTRACT.json",
+    "docs/product-blueprint-v2/AIRBURG_SAAS_PRODUCT_UI_BLUEPRINT_V2.md",
+    "previous task result/validation/handoff"
+  ],
+  "scope_gate": "Allowed to fix current SaaS UI V2 issues and deploy; forbidden to invent formulas, schemas, fake platform data, or final human acceptance.",
+  "method_gate": "Use current source/contracts, validators, system Chrome, real 18-file regression, and Aliyun deployment protocol.",
+  "validation_gate": "Lint/build/validators/browser/public regression must pass; business acceptance remains owner-gated.",
+  "deliverable_status": "in_progress",
+  "validation_result": ""
+}

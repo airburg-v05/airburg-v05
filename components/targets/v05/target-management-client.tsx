@@ -14,6 +14,7 @@ import {
   saveTargetManagementChange,
   setTargetStatusMutation,
   targetDirectionLabel,
+  targetMetricFormat,
   upsertTargetMutation,
   type TargetAllocationChildOption,
   type TargetDatasetMutation,
@@ -115,6 +116,40 @@ const allocationLabel = (status: string): string => {
 const defaultPeriod = (viewModel: TargetManagementViewModel, periodType: TargetPeriodType): string =>
   periodType === "monthly" ? viewModel.monthlyPeriodOptions[0] ?? "" : viewModel.dailyPeriodOptions[0] ?? "";
 
+const formatTargetInputValue = (metricKey: string, value: number): string => {
+  if (!Number.isFinite(value)) return "";
+  if (targetMetricFormat(metricKey) === "percent") return `${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(value * 100)}%`;
+  return String(value);
+};
+
+const parseTargetValueText = (
+  metricKey: string,
+  valueText: string,
+): { value: number | null; error: string | null } => {
+  const trimmed = valueText.trim();
+  if (!trimmed) return { value: null, error: "请填写目标值。" };
+  const isPercent = targetMetricFormat(metricKey) === "percent";
+  const withoutPercent = trimmed.endsWith("%") ? trimmed.slice(0, -1).trim() : trimmed;
+  const normalizedText = withoutPercent.replace(/,/g, "");
+  const parsed = Number(normalizedText);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return { value: null, error: "目标值必须大于 0。" };
+  }
+  if (!isPercent) return { value: parsed, error: null };
+
+  const normalized = trimmed.endsWith("%") || parsed > 1 ? parsed / 100 : parsed;
+  if (!Number.isFinite(normalized) || normalized <= 0 || normalized > 1) {
+    return { value: null, error: "百分比目标请输入 0%-100%，例如 92、92% 或 0.92。" };
+  }
+  return { value: normalized, error: null };
+};
+
+const targetValueHelp = (metricKey: string): string => {
+  if (targetMetricFormat(metricKey) === "percent") return "百分比支持 92、92% 或 0.92，保存后按 92% 展示。";
+  if (targetMetricFormat(metricKey) === "ratio") return "投入产出比按“倍”填写，例如 4.5 表示 4.5 倍。";
+  return "请输入大于 0 的目标值。";
+};
+
 const createDraft = (viewModel: TargetManagementViewModel, target?: TargetRecord): TargetDraftFormState => {
   const firstStore = viewModel.stores[0];
   if (target) {
@@ -129,7 +164,7 @@ const createDraft = (viewModel: TargetManagementViewModel, target?: TargetRecord
       periodType: target.periodType,
       periodValue: target.periodValue,
       metricKey: target.metricKey,
-      targetValueText: String(target.targetValue),
+      targetValueText: formatTargetInputValue(target.metricKey, target.targetValue),
       direction: target.direction,
     };
   }
@@ -147,7 +182,7 @@ const createDraft = (viewModel: TargetManagementViewModel, target?: TargetRecord
   };
 };
 
-const toTargetDraft = (draft: TargetDraftFormState, parentChoice: string): TargetDraft => ({
+const toTargetDraft = (draft: TargetDraftFormState, parentChoice: string, targetValue: number): TargetDraft => ({
   targetId: draft.targetId,
   scope: draft.scope,
   parentTargetId: parentChoice === "" ? null : parentChoice,
@@ -158,8 +193,13 @@ const toTargetDraft = (draft: TargetDraftFormState, parentChoice: string): Targe
   periodType: draft.periodType,
   periodValue: draft.periodValue,
   metricKey: draft.metricKey,
-  targetValue: Number(draft.targetValueText),
+  targetValue,
   direction: draft.direction,
+});
+
+const toParentOptionDraft = (draft: TargetDraftFormState, parentChoice: string): TargetDraft => ({
+  ...toTargetDraft(draft, parentChoice, 1),
+  parentTargetId: parentChoice === "__unset__" || parentChoice === "" ? null : parentChoice,
 });
 
 function SafeState({
@@ -227,6 +267,27 @@ function SummaryStrip({
         新目标必须明确选择独立目标或合法直接父目标；本页不会自动生成父子关系或自动分配目标值。
       </p>
     </section>
+  );
+}
+
+function TargetCenterRulePanel() {
+  return (
+    <SectionCard title="目标中心边界" description="本页沿用 V0.5F 已冻结的目标层级合同，不新增尚未确认的 schema。">
+      <div className="grid gap-4 text-sm leading-6 text-slate-600 lg:grid-cols-3">
+        <div className="rounded-xl bg-slate-50 p-4">
+          <p className="font-semibold text-slate-900">已开放操作</p>
+          <p className="mt-2">支持新建、编辑、暂停和重新启用。暂停会保留原 targetId 与父子关系，不会硬删除目标。</p>
+        </div>
+        <div className="rounded-xl bg-slate-50 p-4">
+          <p className="font-semibold text-slate-900">父子关系</p>
+          <p className="mt-2">只允许公司到店铺、店铺到同店系列、系列到该系列商品；比例类指标仅作为独立目标保存。</p>
+        </div>
+        <div className="rounded-xl bg-slate-50 p-4">
+          <p className="font-semibold text-slate-900">周期口径</p>
+          <p className="mt-2">当前只保存日目标或单月目标。周、自定义和多月范围没有独立合同，不会复用单月目标自动推导。</p>
+        </div>
+      </div>
+    </SectionCard>
   );
 }
 
@@ -377,10 +438,7 @@ function TargetDrawer({
       buildTargetParentOptions({
         targets: viewModel.rawTargets,
         series: viewModel.rawSeries,
-        draft: {
-          ...toTargetDraft(draft, parentChoice === "__unset__" ? "" : parentChoice),
-          parentTargetId: parentChoice === "__unset__" || parentChoice === "" ? null : parentChoice,
-        },
+        draft: toParentOptionDraft(draft, parentChoice === "__unset__" ? "" : parentChoice),
       }),
     [draft, parentChoice, viewModel.rawSeries, viewModel.rawTargets],
   );
@@ -461,7 +519,12 @@ function TargetDrawer({
       setFormError("请明确选择独立目标或合法父目标。");
       return;
     }
-    await onSave(toTargetDraft(draft, parentChoice === "__unset__" ? "" : parentChoice));
+    const parsedTargetValue = parseTargetValueText(draft.metricKey, draft.targetValueText);
+    if (parsedTargetValue.error || parsedTargetValue.value === null) {
+      setFormError(parsedTargetValue.error ?? "目标值格式不正确。");
+      return;
+    }
+    await onSave(toTargetDraft(draft, parentChoice === "__unset__" ? "" : parentChoice, parsedTargetValue.value));
   };
 
   return (
@@ -471,7 +534,7 @@ function TargetDrawer({
         <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
           <div className="min-w-0">
             <h2 className="text-base font-semibold text-slate-950">{drawer.mode === "create" ? "新建目标" : "编辑目标"}</h2>
-            <p className="mt-1 text-sm text-slate-500">保存前不会写入本地数据。</p>
+            <p className="mt-1 text-sm text-slate-500">点击保存后会写入当前浏览器的目标数据，并通过读回校验后生效。</p>
           </div>
           <button ref={closeButtonRef} type="button" className="secondary-button shrink-0" onClick={attemptClose}>
             关闭
@@ -615,13 +678,12 @@ function TargetDrawer({
             <span className="mb-1 block text-xs font-semibold text-slate-500">目标值</span>
             <input
               className="form-input"
-              type="number"
-              min="0"
-              step="0.01"
+              inputMode="decimal"
               value={draft.targetValueText}
               onChange={(event) => setPatch({ targetValueText: event.target.value })}
-              placeholder="请输入大于 0 的目标值"
+              placeholder={targetMetricFormat(draft.metricKey) === "percent" ? "例如 92、92% 或 0.92" : "请输入大于 0 的目标值"}
             />
+            <span className="mt-1 block text-xs leading-5 text-slate-500">{targetValueHelp(draft.metricKey)}</span>
           </label>
 
           <label className="block text-sm">
@@ -993,7 +1055,7 @@ function TargetManagementPageInner({ routeVariant }: { routeVariant: DataCenterR
               ? "本地目标数据暂不可安全读取"
               : loadResult.status === "error"
                 ? "目标管理暂时无法打开"
-                : "当前还没有多店铺数据",
+                : "目标中心待初始化",
           description: loadResult.message,
           actions: viewModel.primaryActions,
         }
@@ -1026,6 +1088,8 @@ function TargetManagementPageInner({ routeVariant }: { routeVariant: DataCenterR
 
       {safeState ? <SafeState title={safeState.title} description={safeState.description} actions={safeState.actions} /> : null}
 
+      {!loading && loadResult.status === "empty" ? <TargetCenterRulePanel /> : null}
+
       {!loading && loadResult.status === "valid" ? (
         <>
           <SummaryStrip viewModel={viewModel} onCreate={openCreate} />
@@ -1038,6 +1102,7 @@ function TargetManagementPageInner({ routeVariant }: { routeVariant: DataCenterR
               </div>
             </SectionCard>
           ) : null}
+          <TargetCenterRulePanel />
           <TargetRows viewModel={viewModel} onEdit={openEdit} onAllocate={openAllocate} onToggleStatus={toggleStatus} />
         </>
       ) : null}

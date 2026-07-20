@@ -21,6 +21,7 @@ import type { ReimportContext } from "@/lib/v05/data-quality";
 import {
   dataCenterHref,
   type DataCenterContextQuery,
+  type DataCenterRouteVariant,
 } from "@/lib/v05/data-center";
 import { saveTmallAnalysisResult } from "@/lib/storage/tmall-analysis-storage";
 import type { TmallSourceType } from "@/types/tmall";
@@ -29,6 +30,7 @@ interface TmallBatchImportWorkbenchProps {
   idFactory?: () => string;
   reimportContext?: ReimportContext | null;
   initialContext?: DataCenterContextQuery | null;
+  routeVariant?: DataCenterRouteVariant;
 }
 
 type MessageTone = "success" | "error" | "info";
@@ -89,6 +91,7 @@ export function TmallBatchImportWorkbench({
   idFactory = createBrowserStoreId,
   reimportContext = null,
   initialContext = null,
+  routeVariant = "legacy",
 }: TmallBatchImportWorkbenchProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [stores, setStores] = useState<StoreRecord[]>([]);
@@ -398,6 +401,7 @@ export function TmallBatchImportWorkbench({
         <input
           ref={inputRef}
           id="v05-batch-file-input"
+          data-testid="v05-batch-file-input"
           type="file"
           multiple
           accept=".csv,.xls,.xlsx"
@@ -557,7 +561,7 @@ export function TmallBatchImportWorkbench({
                     platformCode: result.platformCode,
                     storeId: result.storeId,
                     batchId: result.importBatchId,
-                  })}
+                  }, { routeVariant })}
                   className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50"
                 >
                   查看导入记录
@@ -567,7 +571,7 @@ export function TmallBatchImportWorkbench({
                     platformCode: result.platformCode,
                     storeId: result.storeId,
                     batchId: result.importBatchId,
-                  })}
+                  }, { routeVariant })}
                   className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
                 >
                   查看数据质量

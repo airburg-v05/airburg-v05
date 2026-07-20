@@ -96,7 +96,7 @@ export function V2SearchAssetsWorkspace() {
             <h2 className="mt-3 text-base font-semibold text-slate-950">品牌词 / 中心词搜索资产</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
               当前页面已经接通真实可用的搜索资产配置：品牌词、中心词分组及其别名会保存在当前浏览器，并被
-              `/v2/home`、`/v2/series-board`、`/v2/product-board` 里的搜索相关指标共同复用。
+              首页、系列看板和商品看板里的搜索相关指标共同复用。
             </p>
             <p className="mt-2 text-xs font-semibold text-slate-500">
               最近更新时间：{summaryTimestamp(updatedAt)}
@@ -147,8 +147,8 @@ export function V2SearchAssetsWorkspace() {
         <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
           <h3 className="text-sm font-semibold text-slate-950">影响范围</h3>
           <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
-            <li>• `/v2/home` 品牌词访客、品牌词支付人数等搜索相关指标使用当前配置。</li>
-            <li>• `/v2/series-board` 与 `/v2/product-board` 的品牌 / 中心词对比口径沿用同一配置。</li>
+            <li>• 首页的品牌词访客、品牌词支付人数等搜索相关指标使用当前配置。</li>
+            <li>• 系列看板与商品看板的品牌 / 中心词对比口径沿用同一配置。</li>
             <li>• 只保存词表配置，不写原始搜索明细，也不改已有统计口径。</li>
           </ul>
         </div>

@@ -1,0 +1,21 @@
+# Execution Log
+
+- `2026-07-20T21:59:38+08:00` — Started governed task. Read required skills, Airburg data-platform gate references, expert boundary, proactive policy, project AGENTS, current SSOT/current-task, route/data/metric contracts, previous result/validation/handoff, and memory routing notes.
+- `2026-07-20T21:59:38+08:00` — Intake router selected existing project candidate `ecommerce_platform_optimized`; no new project created.
+- `2026-07-20T21:59:38+08:00` — Initial P0 issue identified: SSOT and route matrix still contain stale route-count/static-shell facts after the 2026-07-20 continuation deployment.
+- `2026-07-20T22:08:00+08:00` — Gate manifest corrected to `task_type=data_dashboard`; Airburg gate checker passed.
+- `2026-07-20T22:12:00+08:00` — Read `docs/releases/v0.5f-target-allocation-freeze.md` after control-plane clarification. Confirmed delete/hard-delete must not be added; frozen operations are new/edit/pause/reactivate.
+- `2026-07-20T22:18:00+08:00` — Rebuilt SSOT route truth: ten V2 routes; seven reader/data-bound routes, one runtime writer, one configuration writer, one safe blocked route.
+- `2026-07-20T22:22:00+08:00` — Updated route matrix V2 entries with source-backed `bindingClass`, including missing `/v2/upload/history`.
+- `2026-07-20T22:28:00+08:00` — Implemented target-center truth/copy fixes: truthful save copy, frozen boundary panel, percent input normalization, mutation guards for unsupported metric keys and unnormalized percent values.
+- `2026-07-20T22:31:00+08:00` — Reworded search-assets and exclusion-rules visible copy to business Chinese while preserving evidence status code/blocked state.
+- `2026-07-20T22:34:00+08:00` — Added `scripts/private-audit/validate-saas-v2-full-quality-target-center-closure-v1.mjs` to pin route truth, target-center frozen boundary, percent handling, and business-copy checks.
+- `2026-07-20T22:40:00+08:00` — Integrated latest target-center control clarifications: no delete/void UI; pause/reactivate only; target-agent required-metric conflict recorded as stale against stable registry.
+- `2026-07-20T22:43:00+08:00` — Kept 18-file runtime data and V0.5F target foundation separated. Added `/v2/upload` target foundation section reusing existing four-source V0.5F import instead of writing runtime snapshots into `airburg-v05`.
+- `2026-07-20T22:46:00+08:00` — Enhanced real Chrome upload18 validator to use native CDP file chooser, then validate 18/18 runtime upload, `/v2/home` 17 metrics, V0.5F four-source import, target percent create/readback, pause, refresh, reactivate, and no hard delete.
+- `2026-07-20T22:48:00+08:00` — Covered the target drawer duplicate label bug: static validator expects one source “平台和店铺” label; browser E2E counts one visible store-scope drawer label.
+- `2026-07-20T22:50:00+08:00` — Local real 18-file E2E passed using `/Users/zongji/Desktop/每日平台数据/天猫`: 18 success / 0 failed / 0 skipped; four V0.5F source files detected from the same 18-file folder.
+- `2026-07-20T22:52:00+08:00` — Added and ran ten-route system Chrome validator. Local desktop/mobile pass captured all ten V2 routes, verified truthful V2 shell copy, no wide overflow, no business console/network errors, and V2-only cross-page links for inspected actions.
+- `2026-07-20T22:54:00+08:00` — Ran final local validation stack: targeted validators PASS, changed-file ESLint PASS, repo lint PASS with 2 pre-existing warnings, build PASS, real upload18 + target-center E2E PASS, ten-route local Chrome PASS.
+- `2026-07-20T22:55:00+08:00` — Observed one transient upload18 validator timeout after import while waiting for `/v2/home` dashboard selector; immediate same-profile ten-route check proved `/v2/home` reachable with 17 metrics. Increased validator route wait from 30s to 60s and reran from a fresh profile; full upload18 E2E then passed.
+- `2026-07-20T22:56:00+08:00` — Restored generated `next-env.d.ts` route-reference drift to baseline and confirmed `git diff -- next-env.d.ts` is empty.
