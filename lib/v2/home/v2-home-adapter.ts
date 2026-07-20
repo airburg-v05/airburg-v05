@@ -850,7 +850,7 @@ export const loadV2HomeViewModel = async (
       return {
         status: "empty",
         message: "当前尚未导入经营数据",
-        uploadHref: "/upload",
+        uploadHref: "/v2/upload",
       };
     }
 

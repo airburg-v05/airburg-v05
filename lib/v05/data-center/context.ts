@@ -1,6 +1,7 @@
 import type { PlatformCode } from "../domain/models";
 
 export type DataCenterPageKey = "upload" | "history" | "quality";
+export type DataCenterRouteVariant = "legacy" | "v2";
 
 export interface DataCenterContextQuery {
   platformCode: PlatformCode | null;
@@ -62,18 +63,33 @@ const DATA_CENTER_PATHS: Record<DataCenterPageKey, string> = {
   quality: "/upload/quality",
 };
 
+const DATA_CENTER_PATHS_BY_VARIANT: Record<DataCenterRouteVariant, Record<DataCenterPageKey, string>> = {
+  legacy: DATA_CENTER_PATHS,
+  v2: {
+    upload: "/v2/upload",
+    history: "/v2/upload/history",
+    quality: "/v2/data-health",
+  },
+};
+
+const resolveDataCenterPaths = (routeVariant: DataCenterRouteVariant = "legacy") =>
+  DATA_CENTER_PATHS_BY_VARIANT[routeVariant];
+
 export const dataCenterHref = (
   page: DataCenterPageKey,
   context: Partial<DataCenterContextQuery> | null | undefined = null,
+  options: { routeVariant?: DataCenterRouteVariant } = {},
 ): string => {
   const params = new URLSearchParams();
   if (context) appendContext(params, context);
   const query = params.toString();
-  return query ? `${DATA_CENTER_PATHS[page]}?${query}` : DATA_CENTER_PATHS[page];
+  const path = resolveDataCenterPaths(options.routeVariant)[page];
+  return query ? `${path}?${query}` : path;
 };
 
 export const dataCenterReimportHref = (
   context: Pick<DataCenterContextQuery, "platformCode" | "storeId" | "batchId">,
+  options: { routeVariant?: DataCenterRouteVariant } = {},
 ): string => {
   const params = new URLSearchParams();
   params.set("mode", "reimport");
@@ -81,7 +97,8 @@ export const dataCenterReimportHref = (
   if (isSafeDataCenterToken(context.storeId)) params.set("storeId", context.storeId);
   if (isSafeDataCenterToken(context.batchId)) params.set("sourceBatchId", context.batchId);
   const query = params.toString();
-  return query ? `/upload?${query}` : "/upload";
+  const path = resolveDataCenterPaths(options.routeVariant).upload;
+  return query ? `${path}?${query}` : path;
 };
 
 export const shortDataCenterId = (value: string | null | undefined): string => {

@@ -9,6 +9,7 @@ import {
   dataCenterReimportHref,
   dataCenterStoreKey,
   parseDataCenterSearchParams,
+  type DataCenterRouteVariant,
 } from "@/lib/v05/data-center";
 import type {
   DataQualityFilters,
@@ -228,7 +229,13 @@ const SourcePills = ({ summary }: { summary: V2DataQualitySummary }) => (
   </div>
 );
 
-const IssueRow = ({ issue }: { issue: V2DataQualityIssue }) => (
+const IssueRow = ({
+  issue,
+  routeVariant,
+}: {
+  issue: V2DataQualityIssue;
+  routeVariant: DataCenterRouteVariant;
+}) => (
   <div className="grid gap-3 border-t border-slate-100 px-4 py-4 lg:grid-cols-[minmax(0,1fr)_9rem]">
     <div className="min-w-0">
       <div className="flex flex-wrap items-center gap-2">
@@ -252,7 +259,7 @@ const IssueRow = ({ issue }: { issue: V2DataQualityIssue }) => (
           platformCode: issue.platformCode,
           storeId: issue.storeId,
           batchId: issue.importBatchId,
-        })}
+        }, { routeVariant })}
         className="inline-flex rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
       >
         重新导入
@@ -261,7 +268,13 @@ const IssueRow = ({ issue }: { issue: V2DataQualityIssue }) => (
   </div>
 );
 
-const SummaryCard = ({ summary }: { summary: V2DataQualitySummary }) => (
+const SummaryCard = ({
+  summary,
+  routeVariant,
+}: {
+  summary: V2DataQualitySummary;
+  routeVariant: DataCenterRouteVariant;
+}) => (
   <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
     <div className="grid gap-4 bg-slate-50 px-4 py-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
       <div className="min-w-0">
@@ -291,7 +304,7 @@ const SummaryCard = ({ summary }: { summary: V2DataQualitySummary }) => (
             platformCode: summary.platformCode,
             storeId: summary.storeId,
             batchId: summary.importBatchId,
-          })}
+          }, { routeVariant })}
           className="inline-flex w-fit rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50"
         >
           查看导入记录
@@ -301,7 +314,7 @@ const SummaryCard = ({ summary }: { summary: V2DataQualitySummary }) => (
             platformCode: summary.platformCode,
             storeId: summary.storeId,
             batchId: summary.importBatchId,
-          })}
+          }, { routeVariant })}
           className="inline-flex w-fit rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
         >
           重新导入
@@ -314,7 +327,7 @@ const SummaryCard = ({ summary }: { summary: V2DataQualitySummary }) => (
     {summary.issues.length > 0 ? (
       <div>
         {summary.issues.map((issue) => (
-          <IssueRow key={issue.issueKey} issue={issue} />
+          <IssueRow key={issue.issueKey} issue={issue} routeVariant={routeVariant} />
         ))}
       </div>
     ) : (
@@ -325,7 +338,13 @@ const SummaryCard = ({ summary }: { summary: V2DataQualitySummary }) => (
   </article>
 );
 
-const QualityList = ({ result }: { result: NonNullable<DataQualityLoadResult["viewModel"]> }) => (
+const QualityList = ({
+  result,
+  routeVariant,
+}: {
+  result: NonNullable<DataQualityLoadResult["viewModel"]>;
+  routeVariant: DataCenterRouteVariant;
+}) => (
   <section className="panel p-5">
     <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
       <div>
@@ -346,7 +365,7 @@ const QualityList = ({ result }: { result: NonNullable<DataQualityLoadResult["vi
     ) : (
       <div className="mt-5 space-y-4">
         {result.filteredSummaries.map((summary) => (
-          <SummaryCard key={summary.summaryKey} summary={summary} />
+          <SummaryCard key={summary.summaryKey} summary={summary} routeVariant={routeVariant} />
         ))}
       </div>
     )}
@@ -356,9 +375,11 @@ const QualityList = ({ result }: { result: NonNullable<DataQualityLoadResult["vi
 function DataQualityClientInner({
   initialFilters,
   dataCenterContext,
+  routeVariant,
 }: {
   initialFilters: DataQualityFilters;
   dataCenterContext: ReturnType<typeof parseDataCenterSearchParams>;
+  routeVariant: DataCenterRouteVariant;
 }) {
   const [filters, setFilters] = useState<DataQualityFilters>(initialFilters);
   const [loadState, setLoadState] = useState<LoadState>("loading");
@@ -393,19 +414,19 @@ function DataQualityClientInner({
   }, [result]);
 
   if (loadState === "loading") {
-    return <EmptyState title="正在读取数据质量状态" description="系统正在读取本地安全状态。" actionHref={dataCenterHref("upload", dataCenterContext)} />;
+    return <EmptyState title="正在读取数据质量状态" description="系统正在读取本地安全状态。" actionHref={dataCenterHref("upload", dataCenterContext, { routeVariant })} />;
   }
 
   if (loadState === "empty") {
-    return <EmptyState title="暂无导入批次" description={message || "请先返回数据导入页完成一次批量导入。"} actionHref={dataCenterHref("upload", dataCenterContext)} />;
+    return <EmptyState title="暂无导入批次" description={message || "请先返回数据导入页完成一次批量导入。"} actionHref={dataCenterHref("upload", dataCenterContext, { routeVariant })} />;
   }
 
   if (loadState === "corrupted") {
-    return <EmptyState title="本地数据状态不可安全读取" description={message || "请保留当前数据，并返回上传页重新导入四源文件。"} actionHref={dataCenterHref("upload", dataCenterContext)} />;
+    return <EmptyState title="本地数据状态不可安全读取" description={message || "请保留当前数据，并返回上传页重新导入四源文件。"} actionHref={dataCenterHref("upload", dataCenterContext, { routeVariant })} />;
   }
 
   if (loadState === "error" || !result) {
-    return <EmptyState title="读取失败" description={message || "请刷新页面后重试。"} actionHref={dataCenterHref("upload", dataCenterContext)} />;
+    return <EmptyState title="读取失败" description={message || "请刷新页面后重试。"} actionHref={dataCenterHref("upload", dataCenterContext, { routeVariant })} />;
   }
 
   return (
@@ -434,13 +455,13 @@ function DataQualityClientInner({
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
-              href={dataCenterHref("upload", dataCenterContext)}
+              href={dataCenterHref("upload", dataCenterContext, { routeVariant })}
               className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50"
             >
               返回数据导入
             </Link>
             <Link
-              href={dataCenterHref("history", dataCenterContext)}
+              href={dataCenterHref("history", dataCenterContext, { routeVariant })}
               className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50"
             >
               查看导入记录
@@ -450,12 +471,16 @@ function DataQualityClientInner({
       </section>
 
       <FilterBar filters={filters} result={result} onChange={setFilters} />
-      <QualityList result={result} />
+      <QualityList result={result} routeVariant={routeVariant} />
     </div>
   );
 }
 
-export function DataQualityClient() {
+export function DataQualityClient({
+  routeVariant = "legacy",
+}: {
+  routeVariant?: DataCenterRouteVariant;
+} = {}) {
   const searchParams = useSearchParams();
   const searchKey = searchParams.toString();
   const dataCenterContext = useMemo(
@@ -472,6 +497,7 @@ export function DataQualityClient() {
       key={searchKey}
       initialFilters={initialFilters}
       dataCenterContext={dataCenterContext}
+      routeVariant={routeVariant}
     />
   );
 }

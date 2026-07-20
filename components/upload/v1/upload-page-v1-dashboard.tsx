@@ -16,6 +16,7 @@ import {
   type ETLRuntimeResult,
   type ETLSourceType,
 } from "@/lib/etl/runtime";
+import { dataCenterHref, type DataCenterRouteVariant } from "@/lib/v05/data-center";
 import {
   V1DimensionScopeBar,
   V1Sidebar,
@@ -414,14 +415,18 @@ function ResultSummary({
   result,
   statusCounts,
   persistenceStatus,
+  routeVariant,
 }: {
   result: "idle" | "success" | "partial" | "failed";
   statusCounts: ReturnType<typeof summarizeProductStatuses>;
   persistenceStatus: "idle" | "saved" | "failed";
+  routeVariant: DataCenterRouteVariant;
 }) {
   if (result === "idle") return null;
   const tone = result === "failed" ? "border-rose-200 bg-rose-50 text-rose-800" : "border-emerald-200 bg-emerald-50 text-emerald-800";
   const title = result === "success" ? "导入成功" : result === "partial" ? "部分成功" : "导入失败";
+  const homeHref = routeVariant === "v2" ? "/v2/home" : "/home";
+  const historyHref = dataCenterHref("history", null, { routeVariant });
   return (
     <section className={`rounded-xl border p-4 ${tone}`} data-testid="upload-page-v2-result-summary">
       <h3 className="text-base font-semibold">{title}</h3>
@@ -450,10 +455,10 @@ function ResultSummary({
         </p>
       ) : null}
       <div className="mt-4 flex flex-wrap gap-2">
-        <Link className="rounded-xl border border-slate-200/80 bg-white px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_1px_3px_rgba(15,23,42,0.06)]" href="/home">
+        <Link className="rounded-xl border border-slate-200/80 bg-white px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_1px_3px_rgba(15,23,42,0.06)]" href={homeHref}>
           查看经营首页
         </Link>
-        <Link className="rounded-xl border border-slate-200/80 bg-white px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_1px_3px_rgba(15,23,42,0.06)]" href="/upload/history">
+        <Link className="rounded-xl border border-slate-200/80 bg-white px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_1px_3px_rgba(15,23,42,0.06)]" href={historyHref}>
           查看历史数据
         </Link>
       </div>
@@ -461,7 +466,13 @@ function ResultSummary({
   );
 }
 
-export function UploadPageV1Dashboard() {
+export function UploadPageV1Dashboard({
+  layoutMode = "legacy",
+  routeVariant = "legacy",
+}: {
+  layoutMode?: "legacy" | "embedded";
+  routeVariant?: DataCenterRouteVariant;
+} = {}) {
   const [dataSource, setDataSource] = useState<BIHomeDataSource>(() => createEmptyHomeBIDataSource("loading", "读取中"));
   const [selectedStoreKey, setSelectedStoreKey] = useState(DEFAULT_STORE.key);
   const [pendingFiles, setPendingFiles] = useState<PendingUploadFile[]>([]);
@@ -496,6 +507,7 @@ export function UploadPageV1Dashboard() {
   const importableFiles = activeFiles.filter((file) => file.status !== "识别失败" && isSupportedImportType(file.fileType));
   const statusCounts = summarizeProductStatuses(pendingFiles);
   const canImport = !!selectedStore && selectedStore.open && importableFiles.length > 0 && !importing;
+  const isEmbedded = layoutMode === "embedded";
 
   const previewFile = async (file: File, id: string, signature: string, duplicate: boolean): Promise<PendingUploadFile> => {
     const safeCode = safeCodeFor(signature);
@@ -643,13 +655,19 @@ export function UploadPageV1Dashboard() {
   return (
     <div
       data-testid="upload-page-v1-dashboard"
+      data-layout-mode={layoutMode}
+      data-route-variant={routeVariant}
       data-problem-ids="PVM2-010 PVM2-013"
-      className="fixed inset-0 z-50 flex overflow-hidden bg-[#F5F7FB] text-slate-950"
+      className={
+        isEmbedded
+          ? "min-w-0 text-slate-950"
+          : "fixed inset-0 z-50 flex overflow-hidden bg-[#F5F7FB] text-slate-950"
+      }
     >
-      <Sidebar />
-      <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <TopBar />
-        <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
+      {isEmbedded ? null : <Sidebar />}
+      <main className={isEmbedded ? "min-w-0" : "flex min-w-0 flex-1 flex-col overflow-hidden"}>
+        {isEmbedded ? null : <TopBar />}
+        <div className={isEmbedded ? "min-w-0" : "min-h-0 flex-1 overflow-y-auto overflow-x-hidden"}>
           <ControlBar stores={stores} selectedStoreKey={selectedStoreKey} onSelectStore={setSelectedStoreKey} />
           <V1DimensionScopeBar
             testId="upload-page-v1-dimension-scope"
@@ -750,6 +768,7 @@ export function UploadPageV1Dashboard() {
                   result={result}
                   statusCounts={statusCounts}
                   persistenceStatus={persistenceStatus}
+                  routeVariant={routeVariant}
                 />
                 </section>
               </div>

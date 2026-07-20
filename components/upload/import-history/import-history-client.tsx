@@ -9,6 +9,7 @@ import {
   dataCenterHref,
   dataCenterStoreKey,
   parseDataCenterSearchParams,
+  type DataCenterRouteVariant,
 } from "@/lib/v05/data-center";
 import {
   DEFAULT_IMPORT_HISTORY_FILTERS,
@@ -76,15 +77,17 @@ function SafeStateCard({
   title,
   description,
   actionLabel = "返回数据导入",
+  actionHref = "/upload",
 }: {
   title: string;
   description: string;
   actionLabel?: string;
+  actionHref?: string;
 }) {
   return (
     <SectionCard title={title} description={description}>
       <Link
-        href="/upload"
+        href={actionHref}
         className="inline-flex rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
       >
         {actionLabel}
@@ -302,9 +305,11 @@ function ImportHistoryTable({
 function ImportHistoryDrawer({
   entry,
   onClose,
+  routeVariant,
 }: {
   entry: ImportHistoryEntry | null;
   onClose: () => void;
+  routeVariant: DataCenterRouteVariant;
 }) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -422,7 +427,7 @@ function ImportHistoryDrawer({
                 platformCode: entry.platformCode,
                 storeId: entry.storeId,
                 batchId: entry.importBatchId,
-              })}
+              }, { routeVariant })}
               className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
             >
               查看当前批次质量
@@ -436,8 +441,10 @@ function ImportHistoryDrawer({
 
 function ImportHistoryClientInner({
   initialFilters,
+  routeVariant,
 }: {
   initialFilters: ImportHistoryFilters;
+  routeVariant: DataCenterRouteVariant;
 }) {
   const [filters, setFilters] = useState<ImportHistoryFilters>(initialFilters);
   const [reloadKey, setReloadKey] = useState(0);
@@ -489,19 +496,44 @@ function ImportHistoryClientInner({
   }, [result]);
 
   if (loading) {
-    return <SafeStateCard title="正在读取导入记录" description="正在加载本地导入历史。" actionLabel="返回数据导入" />;
+    return (
+      <SafeStateCard
+        title="正在读取导入记录"
+        description="正在加载本地导入历史。"
+        actionLabel="返回数据导入"
+        actionHref={dataCenterHref("upload", null, { routeVariant })}
+      />
+    );
   }
 
   if (result.status === "empty") {
-    return <SafeStateCard title="暂无导入记录" description="当前还没有导入记录。请先返回数据导入页完成一次批量导入。" />;
+    return (
+      <SafeStateCard
+        title="暂无导入记录"
+        description="当前还没有导入记录。请先返回数据导入页完成一次批量导入。"
+        actionHref={dataCenterHref("upload", null, { routeVariant })}
+      />
+    );
   }
 
   if (result.status === "corrupted") {
-    return <SafeStateCard title="历史数据不可安全读取" description="本地导入历史可能损坏。页面不会自动删除数据，请重新上传并导入修复。" />;
+    return (
+      <SafeStateCard
+        title="历史数据不可安全读取"
+        description="本地导入历史可能损坏。页面不会自动删除数据，请重新上传并导入修复。"
+        actionHref={dataCenterHref("upload", null, { routeVariant })}
+      />
+    );
   }
 
   if (result.status === "error") {
-    return <SafeStateCard title="读取失败" description="读取导入记录失败，请刷新页面后重试。页面不会展示技术错误堆栈。" />;
+    return (
+      <SafeStateCard
+        title="读取失败"
+        description="读取导入记录失败，请刷新页面后重试。页面不会展示技术错误堆栈。"
+        actionHref={dataCenterHref("upload", null, { routeVariant })}
+      />
+    );
   }
 
   return (
@@ -528,12 +560,16 @@ function ImportHistoryClientInner({
         <ImportHistoryTable entries={entries} onSelectEntry={handleSelectEntry} />
       </SectionCard>
 
-      <ImportHistoryDrawer entry={selectedEntry} onClose={handleCloseDrawer} />
+      <ImportHistoryDrawer entry={selectedEntry} onClose={handleCloseDrawer} routeVariant={routeVariant} />
     </div>
   );
 }
 
-export function ImportHistoryClient() {
+export function ImportHistoryClient({
+  routeVariant = "legacy",
+}: {
+  routeVariant?: DataCenterRouteVariant;
+} = {}) {
   const searchParams = useSearchParams();
   const searchKey = searchParams.toString();
   const initialFilters = useMemo(
@@ -541,5 +577,5 @@ export function ImportHistoryClient() {
     [searchKey],
   );
 
-  return <ImportHistoryClientInner key={searchKey} initialFilters={initialFilters} />;
+  return <ImportHistoryClientInner key={searchKey} initialFilters={initialFilters} routeVariant={routeVariant} />;
 }

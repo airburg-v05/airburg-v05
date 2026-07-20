@@ -32,7 +32,7 @@ interface HomePreference {
   chartDisplayMode: ChartDisplayMode;
 }
 
-const PREFERENCE_KEY = "airburg:v2-home:ui-preference:v1";
+const PREFERENCE_KEY = "airburg:v2-home:ui-preference:v2";
 const DEFAULT_PREFERENCE: HomePreference = {
   visibleKeys: [...V2_HOME_METRIC_KEYS],
   order: [...V2_HOME_METRIC_KEYS],
@@ -50,10 +50,12 @@ const readPreference = (): HomePreference => {
     const parsed = JSON.parse(raw) as Partial<HomePreference>;
     const visibleKeys = Array.isArray(parsed.visibleKeys) ? parsed.visibleKeys.filter(isMetricKey) : [];
     const parsedOrder = Array.isArray(parsed.order) ? parsed.order.filter(isMetricKey) : [];
-    const missingOrderKeys = V2_HOME_METRIC_KEYS.filter((key) => !parsedOrder.includes(key));
+    const uniqueVisibleKeys = Array.from(new Set(visibleKeys));
+    const uniqueOrder = Array.from(new Set(parsedOrder));
+    const missingOrderKeys = V2_HOME_METRIC_KEYS.filter((key) => !uniqueOrder.includes(key));
     return {
-      visibleKeys: visibleKeys.length > 0 ? Array.from(new Set(visibleKeys)) : [...V2_HOME_METRIC_KEYS],
-      order: [...Array.from(new Set(parsedOrder)), ...missingOrderKeys],
+      visibleKeys: uniqueVisibleKeys.length > 0 ? uniqueVisibleKeys : [...V2_HOME_METRIC_KEYS],
+      order: [...uniqueOrder, ...missingOrderKeys],
       chartDisplayMode: parsed.chartDisplayMode === "single" ? "single" : "dual",
     };
   } catch {

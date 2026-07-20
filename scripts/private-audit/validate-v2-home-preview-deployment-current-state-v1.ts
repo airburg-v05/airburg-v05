@@ -8,7 +8,139 @@ interface Check {
   details?: unknown;
 }
 
-type Json = Record<string, any>;
+type Json = Record<string, unknown>;
+interface CurrentTaskRecord {
+  taskId: string;
+  status: string;
+  contract: string;
+  nextGate?: string;
+}
+
+interface ProjectSsot {
+  currentTask: CurrentTaskRecord;
+  nextAuthorizedEntryGate: string;
+  repository: {
+    headCommit: string;
+  };
+  tracks: {
+    saasUiV2: {
+      status: string;
+      dataBound: boolean;
+      dataBoundRoutes: string[];
+      remainingStaticShellRouteCount: number;
+      localE2EPassed: boolean;
+      previewDeployed: boolean;
+      visualAccepted: boolean;
+      humanAccepted: boolean;
+      visualReviewStatus: string;
+      humanReviewRequired: boolean;
+      deploymentCommit: string;
+    };
+  };
+}
+
+interface StatusModel {
+  requiredSaasUiV2CurrentState: {
+    previewDeployed: boolean;
+    visualAccepted: boolean;
+    humanAccepted: boolean;
+    nextGate: string;
+  };
+  states: Record<string, string>;
+}
+
+interface PassStatusRecord {
+  taskId: string;
+  status: string;
+}
+
+interface GateManifestRecord {
+  deliverable_status: string;
+}
+
+interface DataContractRecord {
+  implementationStatus: string;
+  deploymentCommit: string;
+  previewDeployed: boolean;
+  visualAccepted: boolean;
+  humanAccepted: boolean;
+}
+
+interface RouteMatrixRecord {
+  routes: Array<{
+    route: string;
+    isPublic: boolean;
+    isDataBound: boolean;
+    isStaticShell: boolean;
+    status: string;
+  }>;
+}
+
+interface RegistryRecord {
+  totalValidators: number;
+  countsByTier: Record<string, number>;
+  countsByValidationType: Record<string, number>;
+  validators: Array<{
+    file: string;
+    tier: string;
+    validationType: string;
+  }>;
+}
+
+interface EvidenceRecord {
+  taskId: string;
+  status: string;
+  outOfBandConnection: {
+    method: string;
+  };
+  sshRootCauseReport: {
+    rootCause: string;
+  };
+  sshRecovery: {
+    sshdConfigTest: string;
+    consecutivePasses: number;
+    serverBannerReceived: boolean;
+    authenticationCompleted: boolean;
+    wholeInstanceRebooted: boolean;
+  };
+  deployment: {
+    deploymentCommit: string;
+    packageSha256: string;
+    remoteNpmCi: string;
+    remoteBuild: string;
+    pm2: string;
+    nginx: string;
+    nodePortBinding: string;
+    publicPort3000Reachable: boolean;
+    realSamplesCopiedToServer: boolean;
+  };
+  publicRegression: {
+    realFileCount: number;
+    importCounts: {
+      success: number;
+      failed: number;
+      skipped: number;
+    };
+    totals: {
+      gmv: number;
+      gsv: number;
+    };
+    refreshRestore: boolean;
+    reopenRestore: boolean;
+    duplicateImportDoesNotDouble: boolean;
+    mobile390HorizontalOverflow: boolean;
+    consoleBusinessErrors: number;
+    failedBusinessRequests: number;
+    invalidNumericText: boolean;
+    sensitiveText: boolean;
+    screenshotCount: number;
+    screenshotManifest: string;
+  };
+  stateBoundary: {
+    visualAccepted: boolean;
+    humanAccepted: boolean;
+  };
+}
 
 const ROOT = process.cwd();
 const TASK_ID = "ECS_OUT_OF_BAND_SSH_RECOVERY_AND_RESUME_V2_HOME_PREVIEW_DEPLOY_V1";
@@ -20,7 +152,7 @@ const checks: Check[] = [];
 const check = (name: string, pass: boolean, details?: unknown) =>
   checks.push({ name, pass, ...(details === undefined ? {} : { details }) });
 const read = (relativePath: string) => fs.readFileSync(path.join(ROOT, relativePath), "utf8");
-const json = (relativePath: string): Json => JSON.parse(read(relativePath)) as Json;
+const json = <T>(relativePath: string): T => JSON.parse(read(relativePath)) as T;
 const git = (args: string[]) => execFileSync("git", args, { cwd: ROOT, encoding: "utf8" }).trim();
 
 const countBy = (records: Json[], key: string) =>
@@ -36,15 +168,15 @@ const sameRecord = (left: Record<string, number>, right: Record<string, number>)
 };
 
 const main = () => {
-  const ssot = json("docs/project/PROJECT_SSOT.json");
-  const statusModel = json("docs/project/STATUS_MODEL_V1.json");
-  const currentTask = json("docs/project/current-task.json");
-  const contract = json(`${TASK_DIR}/task-contract.json`);
-  const evidence = json(`${TASK_DIR}/evidence.json`);
-  const gate = json(`${TASK_DIR}/gate-manifest.json`);
-  const dataContract = json("docs/project/V2_HOME_DATA_CONTRACT.json");
-  const routeMatrix = json("docs/project/ROUTE_DATA_SOURCE_MATRIX.json");
-  const registry = json("docs/project/VALIDATOR_REGISTRY.json");
+  const ssot = json<ProjectSsot>("docs/project/PROJECT_SSOT.json");
+  const statusModel = json<StatusModel>("docs/project/STATUS_MODEL_V1.json");
+  const currentTask = json<CurrentTaskRecord>("docs/project/current-task.json");
+  const contract = json<PassStatusRecord>(`${TASK_DIR}/task-contract.json`);
+  const evidence = json<EvidenceRecord>(`${TASK_DIR}/evidence.json`);
+  const gate = json<GateManifestRecord>(`${TASK_DIR}/gate-manifest.json`);
+  const dataContract = json<DataContractRecord>("docs/project/V2_HOME_DATA_CONTRACT.json");
+  const routeMatrix = json<RouteMatrixRecord>("docs/project/ROUTE_DATA_SOURCE_MATRIX.json");
+  const registry = json<RegistryRecord>("docs/project/VALIDATOR_REGISTRY.json");
 
   check("taskContractCompleted", contract.taskId === TASK_ID && contract.status === "PASS");
   check("gateManifestCompleted", gate.deliverable_status === "complete");
@@ -101,9 +233,9 @@ const main = () => {
       dataContract.humanAccepted === false,
   );
 
-  const v2Routes = routeMatrix.routes.filter((route: Json) => route.route.startsWith("/v2/"));
-  const home = v2Routes.find((route: Json) => route.route === "/v2/home");
-  const staticRoutes = v2Routes.filter((route: Json) => route.route !== "/v2/home");
+  const v2Routes = routeMatrix.routes.filter((route) => route.route.startsWith("/v2/"));
+  const home = v2Routes.find((route) => route.route === "/v2/home");
+  const staticRoutes = v2Routes.filter((route) => route.route !== "/v2/home");
   check(
     "routeMatrixRecordsOnePublicDataBoundPreview",
     v2Routes.length === 9 &&
@@ -178,7 +310,7 @@ const main = () => {
     .filter((file) => file.startsWith("validate-") && file.endsWith(".ts"))
     .map((file) => `scripts/private-audit/${file}`)
     .sort();
-  const registeredFiles = registry.validators.map((record: Json) => record.file).sort();
+  const registeredFiles = registry.validators.map((record) => record.file).sort();
   check("validatorRegistryMatchesFiles", JSON.stringify(validatorFiles) === JSON.stringify(registeredFiles));
   check(
     "validatorRegistryCountsDerived",

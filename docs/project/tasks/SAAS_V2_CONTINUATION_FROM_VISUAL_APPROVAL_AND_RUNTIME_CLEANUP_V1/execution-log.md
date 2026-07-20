@@ -1,0 +1,34 @@
+# Execution Log
+
+- 2026-07-20 21:05 +08:00 — Created continuation task contract, context pack, plan, and execution log.
+- 2026-07-20 21:05 +08:00 — Confirmed prior `/v2/home` deployment task remains `PENDING_POST_DEPLOY_OWNER_REVIEW`; no-redo boundary for SSH recovery and upload18 deployment remains in force for that completed slice.
+- 2026-07-20 21:05 +08:00 — Began rebuilding the V2 continuation gap matrix from SSOT, blueprint, current route files, and historical contracts.
+- 2026-07-20 21:18 +08:00 — Switched `docs/project/current-task.json` and `docs/project/PROJECT_SSOT.json` to the new continuation task pointer without changing the prior `/v2/home` acceptance state.
+- 2026-07-20 21:28 +08:00 — Replaced `/v2/series-board` static mock shell with `V2SeriesBoardDashboard`, reusing `loadSeriesBoardContext`, `buildV2SeriesBoardViewModel`, and legacy fallback boundaries.
+- 2026-07-20 21:31 +08:00 — Extended shared V2 table and chart containers so the series slice can render interactive cells and runtime chart content without touching BI formulas.
+- 2026-07-20 21:35 +08:00 — Added `scripts/private-audit/validate-v2-series-board-runtime-binding-v1.mjs` and registered it in `docs/project/VALIDATOR_REGISTRY.json`.
+- 2026-07-20 21:36 +08:00 — Local targeted ESLint for changed files: PASS.
+- 2026-07-20 21:36 +08:00 — `node scripts/private-audit/validate-v2-series-board-runtime-binding-v1.mjs`: PASS.
+- 2026-07-20 21:36 +08:00 — `npm run build`: PASS.
+- 2026-07-20 21:37 +08:00 — `npm run lint`: FAIL due to one pre-existing unrelated repo error in `scripts/private-audit/validate-v2-home-preview-deployment-current-state-v1.ts` (`@typescript-eslint/no-explicit-any`), plus two historical warnings; no new lint errors from the continuation slice.
+- 2026-07-20 21:45 +08:00 — Read external coordination log at `AI_ASSISTANT_OS/jobs/2026-07-20_platform_visual_approved_continuation_and_p1c_material_v9/EXECUTION_LOG.md` and recorded already executed browser-origin cleanup evidence into this task; did not repeat deletion.
+- 2026-07-20 21:45 +08:00 — Recorded exact pre-delete browser inventory: `airburg-runtime-dataset-v1` snapshot/pointer `1/1`, `airburg-debug-context-v1` `1`, `airburg-target-drafts-v1` `0`, `airburg-v05` business stores `0`, localStorage only `airburg:demo-session`.
+- 2026-07-20 21:45 +08:00 — Recorded exact externally deleted stores: `airburg-runtime-dataset-v1` and `airburg-debug-context-v1`, both reported as `deleted`.
+- 2026-07-20 21:45 +08:00 — Recorded post-delete observation: refreshing `/v2/home` produced `当前尚未导入经营数据`; prior June values disappeared; empty-state CTA still points to legacy `/upload` and remains unchanged in this task.
+- 2026-07-20 21:46 +08:00 — Replaced `/v2/store-board` and `/v2/product-board` static shells with real runtime-bound V2 dashboards on top of existing V0.5 store/product context builders; no metric formula changes.
+- 2026-07-20 21:47 +08:00 — Added V2 board guardrail fixes across series/store/product: `mtdTarget` no longer mirrors total target, trend charts no longer bridge null gaps, and trend-metric detection now uses own-property checks.
+- 2026-07-20 21:47 +08:00 — Added `scripts/private-audit/validate-v2-board-target-and-trend-guards-v1.mjs`; local validator PASS.
+- 2026-07-20 21:48 +08:00 — Converted `/v2/upload` to an embedded adapter of `UploadPageV1Dashboard` with explicit `layoutMode=\"embedded\"` and `routeVariant=\"v2\"`; legacy default behavior preserved.
+- 2026-07-20 21:49 +08:00 — Added route-variant-aware `/v2` adapters for data-center links in `lib/v05/data-center/context.ts`, `DataQualityClient`, and `ImportHistoryClient`, and created `/v2/upload/history`.
+- 2026-07-20 21:50 +08:00 — Replaced `/v2/target-center` static placeholder with the real target-management client through a V2 route-mapping wrapper; legacy target-management defaults remain unchanged.
+- 2026-07-20 21:51 +08:00 — Added `scripts/private-audit/validate-v2-upload-data-health-embedded-routing-v1.mjs` and `scripts/private-audit/validate-v2-target-center-routing-variant-v1.mjs`; both PASS.
+- 2026-07-20 21:52 +08:00 — Browser regression via system Chrome + local preview confirmed `/v2/upload`, `/v2/upload/history`, `/v2/data-health`, and `/v2/target-center` remain inside the V2 workspace, keep cross-page links on `/v2`, and no longer expose the legacy upload fixed overlay or V1 sidebar inside the V2 route.
+- 2026-07-20 21:53 +08:00 — Browser regression surfaced one global V2 shell leak (`返回 V1 内测版` -> `/home`); fixed `components/saas-v2/layout/saas-v2-page-header.tsx` to point to `/v2/home`, reran validator/browser regression, and confirmed no remaining legacy cross-page links on the checked routes.
+- 2026-07-20 — Replaced `/v2/search-assets` static shell with a real search-asset workspace bound to the existing cross-page brand-word / center-word configuration path; removed static mock comparison tables and kept unsupported analytics surfaces explicit.
+- 2026-07-20 — Replaced `/v2/exclusion-rules` static shell with an explicit `BLOCKED_BY_MISSING_CONTRACT` route state; removed read-only fake inputs and mock rule tables instead of overclaiming unsupported persistence.
+- 2026-07-20 — Fixed `/v2/home` metric-settings persistence regression: kept the v2 preference key migration, removed forced 17-metric restoration for valid saved subsets, and preserved the historical “可勾选展示 + 排序后刷新保持” behavior.
+- 2026-07-20 — Added `validate-v2-board-route-mapping-and-home-empty-cta-v1.mjs`, `validate-v2-search-assets-and-exclusion-contract-boundaries-v1.mjs`, and `validate-v2-home-metric-settings-defaults-v1.mjs`; all PASS.
+- 2026-07-20 — Enhanced `validate-v2-home-upload18-system-chrome-local-v1.mjs` to assert four real browser cases on `/v2/home`: first-load 17 metrics, saved subset persists after refresh, ordering persists after refresh, and reset restores the full 17-metric grid.
+- 2026-07-20 — `node scripts/private-audit/validate-v2-home-upload18-system-chrome-local-v1.mjs`: PASS with `18 success / 0 failed / 0 skipped`, metric-settings persistence checks PASS, mobile overflow PASS, and `0` business console/network errors. Key persisted screenshots copied to `docs/project/tasks/SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1/artifacts/upload18-local-2026-07-20/`.
+- 2026-07-20 — `npm run build`: PASS after the continuation slices.
+- 2026-07-20 — Repaired the single repo-lint error in `scripts/private-audit/validate-v2-home-preview-deployment-current-state-v1.ts` by removing `any`; `npm run lint` now exits cleanly with only two pre-existing warnings outside the continuation scope.

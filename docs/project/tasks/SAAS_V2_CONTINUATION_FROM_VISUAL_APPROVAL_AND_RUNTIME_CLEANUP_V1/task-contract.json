@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "SAAS_V2_CONTINUATION_FROM_VISUAL_APPROVAL_AND_RUNTIME_CLEANUP_V1",
+  "status": "IN_PROGRESS",
+  "taskMeaning": "Resume the authorized SaaS UI V2 build after the owner accepted the current /v2/home visual direction, rebuild the blueprint-to-implementation gap matrix from current SSOT and historical task truth, clean only explicitly safe obsolete runtime artifacts, continue the authorized historical-detail slices by blueprint priority without changing formulas or deferred AI scope, complete every route or requirement that already has trustworthy data or contract support, keep unsupported capabilities in safe empty or blocked states instead of mock completion, then run full local regression and deploy the V2 preview once as an integrated slice set.",
+  "baselineCommit": "e9acdb1733a06620b983169bfdbc0a8662d0b21d",
+  "activeBranch": "feature/saas-ui-v2-shell",
+  "authorized": true,
+  "authorizedAt": "2026-07-20T21:05:00+08:00",
+  "allowedActions": [
+    "Record the current /v2/home visual-direction acceptance evidence without upgrading it to final human acceptance",
+    "Read SSOT, blueprint, route/data/metric contracts, and historical task contracts to build an auditable SaaS UI V2 gap matrix",
+    "Modify the minimum V2 route, component, browser-runtime, validator, and supporting docs required for the next authorized route slices",
+    "Delete only inventoried obsolete runtime snapshots, import-history summaries, old preview runtime data, and valueless temporary artifacts after documenting dependency and risk checks",
+    "Run local lint, build, targeted validators, and the real upload18 regression required by the changed slice",
+    "Deploy only the authorized changed slices through the existing Aliyun protocol and record public verification evidence"
+  ],
+  "forbiddenActions": [
+    "Claim visualAccepted or humanAccepted for any route without explicit owner review",
+    "Implement or deploy the deferred AI advisor",
+    "Invent or change BI formulas, ETL semantics, metric definitions, or target semantics without explicit task authorization",
+    "Delete source code, git history, task evidence, validation reports, release or rollback materials, raw business samples, secrets, cookies, or browser sessions",
+    "Treat build, lint, screenshots, or HTTP 200 alone as business completion",
+    "Modify unrelated product areas outside the authorized SaaS UI V2 continuation scope",
+    "Stop after only one completed V2 route slice and present the task as ready for deployment",
+    "Treat static mock tables or placeholder shells as historical-detail completion"
+  ],
+  "implementationSequence": [
+    "/v2/series-board",
+    "/v2/store-board",
+    "/v2/product-board",
+    "/v2/upload",
+    "/v2/data-health",
+    "/v2/target-center",
+    "/v2/search-assets",
+    "/v2/exclusion-rules",
+    "/v2/home metric settings, visible-metric selection, and ordering requirements"
+  ],
+  "routeCompletionPolicy": {
+    "singleRouteCompletionIsNotTaskCompletion": true,
+    "deployOnlyAfterIntegratedLocalRegression": true,
+    "staticMockTablesDoNotCountAsComplete": true,
+    "missingStableContractHandling": "BLOCKED_BY_MISSING_CONTRACT"
+  },
+  "primaryLayer": "UI",
+  "secondaryLayers": [
+    "Docs",
+    "Persistence",
+    "Deploy",
+    "Audit"
+  ],
+  "modifiesETL": false,
+  "modifiesBI": false,
+  "modifiesTarget": false,
+  "modifiesUI": true,
+  "modifiesPersistence": true,
+  "needsDeploy": true,
+  "needsPublicRegression": true,
+  "needsUserCheck": true,
+  "ownerGate": {
+    "status": "OPEN",
+    "meaning": "The owner has accepted the current /v2/home visual direction for implementation continuation, but final page acceptance for newly implemented routes remains pending and must stay human-reviewed."
+  },
+  "acceptanceCriteria": [
+    "A new continuation context pack, plan, execution log, validation report, handoff, gap matrix, and deletion inventory exist",
+    "The current /v2/home direction acceptance evidence is recorded as implementation authority only, not final human acceptance",
+    "The gap matrix covers the authorized V2 routes, current implementation state, reusable real-data path, and deferred scope",
+    "Only explicitly safe obsolete runtime or temporary artifacts are deleted, and every deletion has pre-delete and post-delete evidence",
+    "The continuation keeps advancing beyond the first route slice and does not stop at series-board alone",
+    "Every historical-detail module with trustworthy existing data or contract support is moved from static shell toward real authorized vertical binding without formula drift",
+    "Any capability that lacks a stable domain, persistence, or field contract remains a safe empty state or explicit BLOCKED_BY_MISSING_CONTRACT state rather than mock completion",
+    "Local lint, build, changed-slice validators, and required upload18 regression pass for the integrated V2 continuation set",
+    "Deployment happens only after integrated local regression across the authorized V2 continuation set, not after a single route slice",
+    "Deployment evidence records commit, release, public URL, PM2/Nginx/loopback checks, and post-deploy page-by-page V2 verification",
+    "The final task state remains pending owner review for any newly implemented route experience"
+  ],
+  "deferredScope": [
+    "AI advisor and any AI consultation workflow",
+    "Any route or board not explicitly mentioned in the authorized SaaS UI V2 continuation scope",
+    "New metric or target formulas",
+    "Route replacement of legacy V1 pages",
+    "Multi-platform real production adapters beyond the currently trustworthy Tmall-backed path",
+    "Activity targets",
+    "Overwrite upload, version management, and rollback upload capability"
+  ]
+}

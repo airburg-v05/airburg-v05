@@ -4,7 +4,7 @@ interface DataTableV2Props {
   title: string;
   description: string;
   columns: string[];
-  rows: string[][];
+  rows: ReactNode[][];
   action?: ReactNode;
 }
 

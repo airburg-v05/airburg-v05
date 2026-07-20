@@ -16,7 +16,7 @@ export function SaasV2PageHeader() {
             本地 preview 工作区基于确认模板方案创建。当前页面不替换旧路由，不写入真实数据，不改变 ETL / BI / Target / Persistence。
           </p>
         </div>
-        <a className="secondary-button" href="/home">返回 V1 内测版</a>
+        <a className="secondary-button" href="/v2/home">返回 V2 首页</a>
       </div>
     </section>
   );

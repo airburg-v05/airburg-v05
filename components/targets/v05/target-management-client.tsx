@@ -5,6 +5,7 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type Mouse
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionCard } from "@/components/ui/section-card";
 import { StatusPill } from "@/components/ui/status-pill";
+import { dataCenterHref, type DataCenterRouteVariant } from "@/lib/v05/data-center";
 import {
   allocateChildTargetMutation,
   buildTargetParentOptions,
@@ -85,6 +86,14 @@ const formatNumber = (value: number): string =>
   Number.isFinite(value) ? new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(value) : "--";
 
 const formatTime = (value: string): string => value.replace("T", " ").slice(0, 16);
+
+const remapPrimaryActionHref = (href: string, routeVariant: DataCenterRouteVariant): string => {
+  if (routeVariant !== "v2") return href;
+  if (href === "/upload") return dataCenterHref("upload", null, { routeVariant });
+  if (href === "/upload/quality") return dataCenterHref("quality", null, { routeVariant });
+  if (href === "/home") return "/v2/home";
+  return href;
+};
 
 const toneForStatus = (status: TargetRecord["status"]): "success" | "warning" | "neutral" =>
   status === "active" ? "success" : status === "paused" ? "warning" : "neutral";
@@ -877,7 +886,7 @@ function AllocationDrawer({
   );
 }
 
-function TargetManagementPageInner() {
+function TargetManagementPageInner({ routeVariant }: { routeVariant: DataCenterRouteVariant }) {
   const [loadResult, setLoadResult] = useState<TargetManagementLoadResult>(initialLoadResult);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -966,7 +975,16 @@ function TargetManagementPageInner() {
     await runSave(allocateChildTargetMutation({ parentTargetId, childOptionValue, targetValue }), closeAllocationDrawer);
   };
 
-  const viewModel = loadResult.viewModel;
+  const viewModel = useMemo<TargetManagementViewModel>(
+    () => ({
+      ...loadResult.viewModel,
+      primaryActions: loadResult.viewModel.primaryActions.map((action) => ({
+        ...action,
+        href: remapPrimaryActionHref(action.href, routeVariant),
+      })),
+    }),
+    [loadResult.viewModel, routeVariant],
+  );
   const safeState =
     !loading && loadResult.status !== "valid"
       ? {
@@ -1042,7 +1060,19 @@ function TargetManagementPageInner() {
 export function TargetManagementClient() {
   return (
     <Suspense fallback={<SafeState title="正在读取目标数据" description="正在加载目标管理页面。" actions={[]} />}>
-      <TargetManagementPageInner />
+      <TargetManagementPageInner routeVariant="legacy" />
+    </Suspense>
+  );
+}
+
+export function RoutedTargetManagementClient({
+  routeVariant = "legacy",
+}: {
+  routeVariant?: DataCenterRouteVariant;
+}) {
+  return (
+    <Suspense fallback={<SafeState title="正在读取目标数据" description="正在加载目标管理页面。" actions={[]} />}>
+      <TargetManagementPageInner routeVariant={routeVariant} />
     </Suspense>
   );
 }

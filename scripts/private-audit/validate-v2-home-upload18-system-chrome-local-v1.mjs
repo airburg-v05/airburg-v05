@@ -223,6 +223,22 @@ const click = async (client, selector) => {
   await wait(200);
 };
 
+const clickText = async (client, text, selector = "button") => {
+  await evaluate(
+    client,
+    `(() => {
+      const target = Array.from(document.querySelectorAll(${JSON.stringify(selector)})).find((element) => {
+        if (!(element instanceof HTMLElement)) return false;
+        return (element.textContent ?? "").trim() === ${JSON.stringify(text)};
+      });
+      if (!(target instanceof HTMLElement)) throw new Error("click_text_target_missing");
+      target.click();
+      return true;
+    })()`,
+  );
+  await wait(200);
+};
+
 const submitLoginAfterHydration = async (client) => {
   await waitForExpression(
     client,
@@ -358,18 +374,95 @@ const run = async () => {
     check("v2HomeLeavesEmptyState", homeState.hasUploadPrompt === false, homeState);
     const homeDesktopScreenshot = await capture(client, "v2-home-desktop");
 
-    currentStage = "refresh_restore";
+    currentStage = "metric_settings_customize";
+    await clickText(client, "指标设置");
+    await waitForExpression(client, `Boolean(document.querySelector('[data-testid="v2-home-metric-settings"]'))`, 10000);
+    const metricSettingsCount = await evaluate(
+      client,
+      `document.querySelectorAll('[data-testid="v2-home-metric-settings"] input[type="checkbox"]').length`,
+    );
+    check("metricSettingsHas17Controls", metricSettingsCount === 17, { count: metricSettingsCount });
+    await click(client, "[aria-label='显示投入产出比']");
+    await click(client, "[aria-label='显示品牌词访客']");
+    await click(client, "[aria-label='下移GMV']");
+    await clickText(client, "完成", "[data-testid='v2-home-metric-settings'] button");
+    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 15`, 10000);
+    const customizedMetricState = await evaluate(
+      client,
+      `(() => {
+        const keys = Array.from(document.querySelectorAll('[data-metric-key]')).map((item) => item.getAttribute('data-metric-key'));
+        return {
+          count: keys.length,
+          firstKey: keys[0] ?? null,
+          hasAdRoi: keys.includes('adRoi'),
+          hasBrandVisitors: keys.includes('brandVisitors'),
+        };
+      })()`,
+    );
+    check(
+      "metricVisibilityAndOrderingInteractive",
+      customizedMetricState.count === 15 &&
+        customizedMetricState.firstKey === "gsv" &&
+        customizedMetricState.hasAdRoi === false &&
+        customizedMetricState.hasBrandVisitors === false,
+      customizedMetricState,
+    );
+
+    currentStage = "refresh_restore_customized_metrics";
     await client.send("Page.reload", { ignoreCache: false });
     await waitForHomeReady(client, 45000);
-    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 17`, 30000);
+    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 15`, 30000);
     const refreshedState = await evaluate(
       client,
       `(() => ({
         metricCount: document.querySelectorAll('[data-metric-key]').length,
         dataHealthText: document.querySelector('[data-testid="v2-home-data-health-summary"]')?.textContent ?? "",
+        firstMetricKey: document.querySelector('[data-metric-key]')?.getAttribute('data-metric-key') ?? null,
+        hasAdRoi: Array.from(document.querySelectorAll('[data-metric-key]')).some((item) => item.getAttribute('data-metric-key') === 'adRoi'),
+        hasBrandVisitors: Array.from(document.querySelectorAll('[data-metric-key]')).some((item) => item.getAttribute('data-metric-key') === 'brandVisitors'),
       }))()`,
     );
-    check("refreshRestoresV2HomeState", refreshedState.metricCount === 17 && String(refreshedState.dataHealthText).includes("安全跳过0"), refreshedState);
+    check(
+      "refreshPreservesMetricSubsetAndOrdering",
+      refreshedState.metricCount === 15 &&
+        String(refreshedState.dataHealthText).includes("安全跳过0") &&
+        refreshedState.firstMetricKey === "gsv" &&
+        refreshedState.hasAdRoi === false &&
+        refreshedState.hasBrandVisitors === false,
+      refreshedState,
+    );
+
+    currentStage = "metric_settings_reset";
+    await clickText(client, "指标设置");
+    await waitForExpression(client, `Boolean(document.querySelector('[data-testid="v2-home-metric-settings"]'))`, 10000);
+    await clickText(client, "恢复默认", "[data-testid='v2-home-metric-settings'] button");
+    await clickText(client, "完成", "[data-testid='v2-home-metric-settings'] button");
+    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 17`, 10000);
+    const resetState = await evaluate(
+      client,
+      `(() => ({
+        metricCount: document.querySelectorAll('[data-metric-key]').length,
+        firstMetricKey: document.querySelector('[data-metric-key]')?.getAttribute('data-metric-key') ?? null,
+      }))()`,
+    );
+    check("resetRestores17Metrics", resetState.metricCount === 17 && resetState.firstMetricKey === "gmv", resetState);
+
+    currentStage = "refresh_restore_reset_metrics";
+    await client.send("Page.reload", { ignoreCache: false });
+    await waitForHomeReady(client, 45000);
+    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 17`, 30000);
+    const resetRefreshedState = await evaluate(
+      client,
+      `(() => ({
+        metricCount: document.querySelectorAll('[data-metric-key]').length,
+        firstMetricKey: document.querySelector('[data-metric-key]')?.getAttribute('data-metric-key') ?? null,
+      }))()`,
+    );
+    check(
+      "refreshAfterResetRestores17Metrics",
+      resetRefreshedState.metricCount === 17 && resetRefreshedState.firstMetricKey === "gmv",
+      resetRefreshedState,
+    );
 
     currentStage = "v2_home_mobile";
     await setViewport(client, 390, 900);
@@ -404,6 +497,8 @@ const run = async () => {
           counts,
           homeState,
           refreshedState,
+          resetState,
+          resetRefreshedState,
           mobileSafety,
         },
         null,
