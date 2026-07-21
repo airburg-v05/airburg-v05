@@ -1,6 +1,6 @@
 # Validation
 
-Status: `LOCAL_PASS_PUBLIC_PENDING`
+Status: `PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW`
 
 ## Local Checks
 
@@ -19,6 +19,19 @@ Status: `LOCAL_PASS_PUBLIC_PENDING`
 
 Evidence: `artifacts/local/board-simplification-production-2026-07-21-final/summary.json`.
 
+## Public Checks
+
+- Exact deployed commit: `f772af503bcfd29b331798866d9efc2635958bc2`.
+- Release and rollback material: `PASS`.
+- Remote dependency install and 27-route production build: `PASS`.
+- PM2/Nginx/loopback/public-route alignment: `PASS`.
+- Public port 3000 exposure check: `PASS` (not reachable).
+- Isolated public system-Chrome regression: `PASS` (46/46).
+- Public real upload: 18 success, 0 failed, 0 skipped.
+- Public console/business network errors: 0/0.
+
+Evidence: `artifacts/public/board-simplification-public-f772af5-2026-07-21/summary.json` and `deployment-evidence.json`.
+
 ## Remaining Gate
 
-Public deployment and the same isolated public regression are pending. Local technical PASS is not owner visual acceptance or business completion.
+Owner visual/business review remains pending. Public technical PASS is not owner acceptance or final product completion.

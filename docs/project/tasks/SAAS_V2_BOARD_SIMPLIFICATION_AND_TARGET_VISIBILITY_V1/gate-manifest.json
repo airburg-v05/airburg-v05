@@ -45,5 +45,5 @@
   ],
   "archive_target": "docs/project/tasks/SAAS_V2_BOARD_SIMPLIFICATION_AND_TARGET_VISIBILITY_V1",
   "owner_gate": "PENDING_POST_DEPLOY_OWNER_REVIEW",
-  "deliverable_status": "local_pass_public_pending"
+  "deliverable_status": "public_e2e_pass_pending_post_deploy_owner_review"
 }

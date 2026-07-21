@@ -5,28 +5,29 @@
 ## 单轨统一状态
 
 - 唯一 active product track：`SAAS_UI_V2`。
-- SaaS UI V2 当前状态：`/v2/home = PREVIEW_DEPLOYED_PENDING_HUMAN_REVIEW`；整个 V2 不得据此称为完成。
-- `/v2/home` 已通过一个 canonical adapter 绑定真实安全聚合数据并部署公网预览；其余 8 个 `/v2/*` 路由仅为 `STATIC_SHELL_ROUTE_200`。
-- `dataBound = true` 仅表示 `/v2/home`；`visualAccepted = false`、`previewDeployed = true`、`humanAccepted = false`。
+- SaaS UI V2 当前状态：`PUBLIC_E2E_PASS_AFTER_BOARD_SIMPLIFICATION_PENDING_POST_DEPLOY_OWNER_REVIEW`；技术 PASS 不得称为产品完成。
+- Home、系列、店铺、商品、数据健康和导入历史共用当前品牌的活动运行时快照；目标中心独立读写品牌目标。
+- `visualAccepted = false`、`previewDeployed = true`、`humanAccepted = false`。
 - 冻结 fallback：天猫 V1 公网内测版。
 - 可信数据基础：天猫 V1 ETL / Runtime / BI 真实 18 文件链路。
 - foundation candidate：V0.5 domain / repository / persistence；当前只部分 route-bound。
-- 当前任务：`V2_HOME_UPLOAD18_AD_PLAN_LAYERING_AND_DEPLOY_GATE_V1`，状态 `PENDING_POST_DEPLOY_OWNER_REVIEW`。
-- 下一唯一入口：`V2_HOME_HUMAN_VISUAL_REVIEW`；自动化截图不能替代用户视觉确认。
-- 当前任务和证据：`docs/project/current-task.json`、`docs/project/tasks/V2_HOME_UPLOAD18_AD_PLAN_LAYERING_AND_DEPLOY_GATE_V1/`。
+- 当前任务：`SAAS_V2_BOARD_SIMPLIFICATION_AND_TARGET_VISIBILITY_V1`，状态 `PENDING_POST_DEPLOY_OWNER_REVIEW`。
+- 下一唯一入口：宗骥的公网页面视觉/业务复核；自动化截图不能替代用户确认。
+- 当前任务和证据：`docs/project/current-task.json`、`docs/project/tasks/SAAS_V2_BOARD_SIMPLIFICATION_AND_TARGET_VISIBILITY_V1/`。
 
-## SaaS UI V2 Home 公网预览
+## SaaS UI V2 公网预览
 
 - 当前分支：`feature/saas-ui-v2-shell`。
-- 最新已验证业务实现与公网部署源：`de1a65feafe7f83d678654ccf77d448aa2c71159`。
+- 最新已验证业务实现与公网部署源：`f772af503bcfd29b331798866d9efc2635958bc2`。
 - 公网预览：[V2 Home](http://123.57.49.121/v2/home)。
-- `/v2/home`：17 个指标、真实 18 文件、目标 overlay、重点系列、MTD / DLY、时间范围、刷新恢复、关闭重开恢复、1440px / 390px 浏览器 E2E 均通过。
+- `/v2/home`：17 个指标、最多 5 个手动选择系列的同构筛选、MTD / DLY 双指标趋势、自定义日期和真实同比/环比状态已公网回归。
+- `/v2/series-board`：粘贴商品 ID 绑定、同一套 17 指标/趋势、底部系列卡片编辑删除已公网回归。
+- `/v2/store-board` 与 `/v2/product-board`：仅保留紧凑范围、KPI 和趋势决策面。
 - 真实经营对账保持不变：GMV `125596`、GSV `85455.96`、访客 `143076`、支付买家 `128`、推广花费 `7625.95`、点击 `6692`、退款金额 `29602.18`。
 - 上传结果与数据健康摘要已对齐：`18 success / 0 failed / 0 skipped`，首页安全跳过计数为 `0`。
-- 跨月范围不会误套用单个月份目标；回到单月后目标正常恢复。
-- 公网回归为 `18 success / 0 failed / 0 skipped`，重复导入不翻倍，console 业务错误与 failed business requests 均为 `0`。
+- 跨月金额目标按月份交集天数折算；比例/均值目标不按天缩小，跨月缺月时保持 unknown。
+- 公网系统浏览器回归为 `46/46 PASS`，console 业务错误与 failed business requests 均为 `0`。
 - `visualAccepted=false`、`humanAccepted=false`、`visualReviewStatus=PENDING_HUMAN_REVIEW`；当前只等待用户打开公网 `/v2/home` 核查。
-- 其它八个 V2 路由虽然 HTTP 200，但仍是静态壳，不得称为 data-bound 或已验收。
 
 ## Legacy V1 fallback 定位
 
@@ -100,7 +101,7 @@
 
 ## 当前已知风险
 
-1. SaaS UI V2 只有 `/v2/home` 完成真实数据纵向切片并部署预览，其余 8 个 V2 路由仍是静态壳，不能把整个 V2 称为完整工作区或已验收产品。
+1. SaaS UI V2 已有多个 data-bound 路由通过公网回归，但数据/配置仍是浏览器本地边界，未证明跨设备共享、服务端多租户、权限体系或云端持久化完成。
 2. 页面问题一 + 二小范围 UI 修正已完成人工核查；后续新页面问题仍必须先进入 `PAGE_PROBLEM_MATRIX_V2.md`，不能凭记忆直接修 UI。
 3. UI 层存在 IA / KPI / Target 多语义叠加风险，后续 UI 任务必须先读取 `docs/UI_BASELINE_LOCK_V2.md`，并判定是否会误改 BI 或 Target。
 4. `/v2/home` 已公网预览部署，但尚未通过用户视觉核查；禁止把自动化截图结果写成视觉验收。
@@ -127,7 +128,7 @@
 
 1. 先读取 `docs/project/PROJECT_SSOT.json`。
 2. 再读取 `docs/project/current-task.json` 和其中指定的 task contract。
-3. `/v2/home` 已 `PREVIEW_DEPLOYED` 且公网真实数据 E2E PASS；下一步是用户视觉核查，核查前不得记录 `VISUAL_ACCEPTED` 或 `HUMAN_ACCEPTED`。
+3. 本轮 Home / Series / Store / Product 简化版已 `PUBLIC_E2E_PASS`；下一步是用户视觉/业务核查，核查前不得记录 `VISUAL_ACCEPTED` 或 `HUMAN_ACCEPTED`。
 4. Legacy V1 UI 任务仍需读取 `docs/UI_BASELINE_LOCK_V2.md` 和 `PAGE_PROBLEM_MATRIX_V2.md`；V2 不继承其具体布局锁。
 5. 如果跨层，拆任务，不允许在页面里自行拼接或重算数据。
 6. 每次完成后使用 `STATUS_MODEL_V1.json` 中的精确状态，不能只写一个 `PASS`。

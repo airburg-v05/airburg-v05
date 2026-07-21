@@ -1,0 +1,35 @@
+{
+  "status": "PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW",
+  "deployedAt": "2026-07-21T19:08:08+08:00",
+  "commit": "f772af503bcfd29b331798866d9efc2635958bc2",
+  "archiveSha256": "a422660197b2247af07928592c4e694d56bcaa90e5734fe9b5149e4073c1a404",
+  "release": "/opt/airburg/releases/saas-v2-board-simplification-f772af5-20260721T190306",
+  "rollbackPm2Snapshot": "/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-board-simplification-f772af5-20260721T190306.pm2.json",
+  "service": {
+    "pm2App": "airburg-tmall-v1",
+    "pm2Status": "online",
+    "restartCount": 9,
+    "nginx": "active_and_config_valid",
+    "nodeBinding": "127.0.0.1:3000",
+    "publicPort3000Reachable": false,
+    "publicHomeHttpStatus": 200
+  },
+  "build": {
+    "npmCi": "PASS",
+    "productionBuild": "PASS",
+    "staticRoutes": 27,
+    "knownModerateDependencyFindings": 2
+  },
+  "publicRegression": {
+    "status": "PASS",
+    "checks": 46,
+    "uploadSuccess": 18,
+    "uploadFailed": 0,
+    "uploadSkipped": 0,
+    "consoleBusinessErrors": 0,
+    "networkBusinessErrors": 0,
+    "evidence": "artifacts/public/board-simplification-public-f772af5-2026-07-21/summary.json"
+  },
+  "visualAccepted": false,
+  "humanAccepted": false
+}

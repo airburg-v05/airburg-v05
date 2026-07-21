@@ -15,3 +15,9 @@
 - Added focused contract validation and extended the isolated system-browser regression with June target, six-series, mobile-board and state-isolation checks.
 - Corrected non-additive target handling: rates, ratios and averages remain unchanged within a month; complete cross-month targets use a day-weighted average and incomplete month coverage remains unknown.
 - Local production regression passed 46/46 checks with real 18-file upload, two-store append, zero business console errors and zero business network errors.
+- Created exact implementation commit `f772af503bcfd29b331798866d9efc2635958bc2`.
+- Built release `/opt/airburg/releases/saas-v2-board-simplification-f772af5-20260721T190306`; package SHA-256 matched locally/remotely and forbidden-file scans found no CSV, Excel, environment or key files.
+- Remote `npm ci` and 27-route production build passed; the existing two moderate Next/PostCSS dependency findings remain unchanged.
+- Saved PM2 rollback snapshot `/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-board-simplification-f772af5-20260721T190306.pm2.json`, atomically switched the active release and restarted only `airburg-tmall-v1`.
+- PM2 online at restart count 9; Nginx active/config valid; Node listens only on `127.0.0.1:3000`; public port 3000 remains closed; public `/v2/home` returns HTTP 200.
+- Isolated public system-browser regression passed 46/46 checks with zero business console/network errors and cleaned its isolated runtime afterward.
