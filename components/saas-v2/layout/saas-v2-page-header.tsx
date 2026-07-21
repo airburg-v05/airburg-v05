@@ -47,7 +47,7 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
 
 export function SaasV2PageHeader() {
   const pathname = usePathname();
-  if (pathname === "/v2/home") return null;
+  if (["/v2/home", "/v2/series-board", "/v2/store-board", "/v2/product-board"].includes(pathname)) return null;
   const meta = PAGE_META[pathname] ?? {
     title: "经营工作区",
     description: "当前页面按已接入的数据与业务口径展示。",

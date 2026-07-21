@@ -81,13 +81,22 @@ export interface V2HomeScopeOption {
   storeId: string | null;
 }
 
+export interface V2HomeSeriesOption {
+  id: string;
+  label: string;
+  productCount: number;
+  showOnHome: boolean;
+}
+
 export interface V2HomeScope {
   brandId: string;
   brandName: string;
   selectedPlatform: string | null;
   selectedStoreIds: string[];
+  selectedSeriesId: string | null;
   platformOptions: V2HomeScopeOption[];
   storeOptions: V2HomeScopeOption[];
+  seriesOptions: V2HomeSeriesOption[];
 }
 
 export interface V2HomeDatasetIdentity {
@@ -193,6 +202,8 @@ export interface V2HomeLoadOptions {
   brandId?: string;
   selectedPlatform?: string | null;
   selectedStoreIds?: string[];
+  selectedSeriesId?: string | null;
+  seriesOptionVisibility?: "home" | "all";
   timeRange?: V2HomeTimeRange;
   chartMode?: V2HomeChartMode;
   chartPairId?: string;

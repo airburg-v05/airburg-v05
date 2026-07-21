@@ -1,0 +1,49 @@
+{
+  "task_id": "SAAS_V2_BOARD_SIMPLIFICATION_AND_TARGET_VISIBILITY_V1",
+  "task_type": "data_dashboard",
+  "business_purpose": "Reduce board complexity while preserving one verified metric/runtime contract and making configured targets visible for the selected operating range.",
+  "raw_data_files": [
+    "Existing browser-local safe aggregate runtime snapshot only"
+  ],
+  "field_map": [
+    "Existing 17 home metric contracts remain authoritative",
+    "Series scope is derived only from configured platform/store/product references",
+    "Monthly target overlap is prorated by calendar-day intersection"
+  ],
+  "decision_questions": [
+    "Can an operator filter the same 17 metrics by a configured series?",
+    "Can series/store/product boards stay useful after removing secondary modules?",
+    "Can cross-month ranges show target progress without mislabeling one monthly total?"
+  ],
+  "evidence_sources": [
+    "Latest direct instruction from 宗骥 on 2026-07-21",
+    "Current public browser state inspected on 2026-07-21",
+    "docs/project/PROJECT_SSOT.json",
+    "Existing runtime, BI metric, target and brand-series contracts"
+  ],
+  "scope": {
+    "allowed": [
+      "SaaS V2 board UI",
+      "Series configuration UI and browser-local records",
+      "Series-scoped view-model adaptation",
+      "Range-aware target overlay",
+      "Validators and controlled deployment"
+    ],
+    "forbidden": [
+      "Raw business rows or secrets",
+      "Unverified metric formula changes",
+      "Fake platform integrations",
+      "Push or merge",
+      "Automatic owner acceptance"
+    ]
+  },
+  "validation_plan": [
+    "Focused series-scope and cross-month target contracts",
+    "TypeScript, lint and production build",
+    "Isolated desktop/mobile browser regression",
+    "Public route and service health regression"
+  ],
+  "archive_target": "docs/project/tasks/SAAS_V2_BOARD_SIMPLIFICATION_AND_TARGET_VISIBILITY_V1",
+  "owner_gate": "PENDING_POST_DEPLOY_OWNER_REVIEW",
+  "deliverable_status": "local_pass_public_pending"
+}

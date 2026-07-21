@@ -1,7 +1,6 @@
 import dataContract from "@/docs/project/V2_HOME_DATA_CONTRACT.json";
 import {
   buildHomeBIViewModel,
-  type HomeBIKpiCard,
 } from "@/lib/bi/bi.home-view-model";
 import {
   loadHomeBIDataSource,
@@ -37,6 +36,10 @@ import {
   targetDatabaseNameForBrand,
 } from "@/lib/v2/workspace/brand-workspace";
 import {
+  loadBrandSeries,
+  type BrandSeriesRecord,
+} from "@/lib/v2/workspace/brand-series";
+import {
   V2_HOME_METRIC_KEYS,
   type V2HomeChartMode,
   type V2HomeChartPair,
@@ -54,7 +57,6 @@ import {
   type V2HomeMetricSourceStatus,
   type V2HomeReconciliationSummary,
   type V2HomeScope,
-  type V2HomeSeriesGsvCard,
   type V2HomeTargetOverlay,
   type V2HomeTargetRule,
   type V2HomeTimeRange,
@@ -340,14 +342,54 @@ const seriesPointsForDefinitions = (
       .map((series) => ({ ...point, seriesId: series.seriesId, seriesName: series.seriesName })),
   );
 
-const mergeDebugSeries = (
+const brandSeriesDefinitionsForSource = (
   source: BIHomeDataSource,
-  items: DebugContextTempSeriesItem[],
+  records: BrandSeriesRecord[],
+): BIHomeSeriesDefinition[] => {
+  const labels = new Map<string, { platformName: string | null; storeName: string | null }>();
+  source.points.forEach((point) => {
+    if (!point.storeId) return;
+    const key = `${point.platformCode}::${point.storeId}`;
+    if (!labels.has(key)) {
+      labels.set(key, { platformName: point.platformName, storeName: point.storeName });
+    }
+  });
+
+  return records.flatMap((record) => {
+    const refsByStore = new Map<string, typeof record.productRefs>();
+    record.productRefs.forEach((ref) => {
+      const key = `${ref.platformCode}::${ref.storeId}`;
+      refsByStore.set(key, [...(refsByStore.get(key) ?? []), ref]);
+    });
+    return Array.from(refsByStore.entries()).map(([key, refs]) => {
+      const [platformCode, storeId] = key.split("::", 2);
+      const scopeLabels = labels.get(key);
+      return {
+        platformCode,
+        platformName: scopeLabels?.platformName ?? PLATFORM_LABELS[platformCode] ?? platformCode,
+        storeId,
+        storeName: scopeLabels?.storeName ?? storeId,
+        seriesId: record.seriesId,
+        seriesName: record.name,
+        productIds: uniqueText(refs.map((ref) => ref.productId)),
+      };
+    });
+  });
+};
+
+const mergeSeriesDefinitions = (
+  source: BIHomeDataSource,
+  items: BIHomeSeriesDefinition[],
 ): BIHomeDataSource => {
-  const definitions = [...debugSeriesDefinitions(items), ...source.seriesDefinitions].reduce<BIHomeSeriesDefinition[]>(
+  const definitions = [...items, ...source.seriesDefinitions].reduce<BIHomeSeriesDefinition[]>(
     (result, item) => {
       const key = `${item.platformCode}:${item.storeId}:${item.seriesId}`;
-      if (!result.some((current) => `${current.platformCode}:${current.storeId}:${current.seriesId}` === key)) {
+      const current = result.find(
+        (candidate) => `${candidate.platformCode}:${candidate.storeId}:${candidate.seriesId}` === key,
+      );
+      if (current) {
+        current.productIds = uniqueText([...current.productIds, ...item.productIds]);
+      } else {
         result.push({ ...item, productIds: uniqueText(item.productIds) });
       }
       return result;
@@ -358,6 +400,36 @@ const mergeDebugSeries = (
     ...source,
     seriesDefinitions: definitions,
     seriesPoints: seriesPointsForDefinitions(source.points, definitions),
+  };
+};
+
+const mergeDebugSeries = (
+  source: BIHomeDataSource,
+  items: DebugContextTempSeriesItem[],
+): BIHomeDataSource => mergeSeriesDefinitions(source, debugSeriesDefinitions(items));
+
+const sourceForSelectedSeries = (
+  source: BIHomeDataSource,
+  seriesId: string | null,
+): BIHomeDataSource => {
+  if (!seriesId) return source;
+  const definitions = source.seriesDefinitions.filter((series) => series.seriesId === seriesId);
+  const productKeys = new Set(
+    definitions.flatMap((series) =>
+      series.productIds.map((productId) => `${series.platformCode}::${series.storeId}::${productId}`),
+    ),
+  );
+  const points = source.seriesPoints.filter((point) => point.seriesId === seriesId);
+  return {
+    ...source,
+    points,
+    seriesPoints: points,
+    seriesDefinitions: definitions,
+    searchTotalKeywords: [],
+    searchProductKeywords: source.searchProductKeywords.filter((row) =>
+      productKeys.has(`${row.platformCode}::${row.storeId}::${row.productId}`),
+    ),
+    selectedDate: points.map((point) => point.businessDate).filter(Boolean).sort().at(-1) ?? source.selectedDate,
   };
 };
 
@@ -443,6 +515,7 @@ const buildScope = (
     brandName: brand.name,
     selectedPlatform,
     selectedStoreIds,
+    selectedSeriesId: null,
     platformOptions: platforms.map((platformCode) => ({
       id: platformCode,
       label: PLATFORM_LABELS[platformCode] ?? platformCode,
@@ -455,6 +528,60 @@ const buildScope = (
       platformCode: scope.platformCode,
       storeId: scope.storeId,
     })),
+    seriesOptions: [],
+  };
+};
+
+const withSeriesScope = ({
+  scope,
+  source,
+  records,
+  requestedSeriesId,
+  visibility,
+}: {
+  scope: V2HomeScope;
+  source: BIHomeDataSource;
+  records: BrandSeriesRecord[];
+  requestedSeriesId: string | null | undefined;
+  visibility: "home" | "all";
+}): V2HomeScope => {
+  const recordsById = new Map(records.map((record) => [record.seriesId, record]));
+  const options = Array.from(
+    source.seriesDefinitions
+      .filter((series) =>
+        (!scope.selectedPlatform || series.platformCode === scope.selectedPlatform) &&
+        scope.selectedStoreIds.includes(series.storeId),
+      )
+      .reduce((result, series) => {
+        const current = result.get(series.seriesId);
+        const record = recordsById.get(series.seriesId);
+        if (visibility === "home" && !record?.showOnHome) return result;
+        const productIds = new Set([...(current?.productIds ?? []), ...series.productIds]);
+        result.set(series.seriesId, {
+          id: series.seriesId,
+          label: record?.name ?? series.seriesName,
+          productIds,
+          showOnHome: record?.showOnHome ?? false,
+        });
+        return result;
+      }, new Map<string, { id: string; label: string; productIds: Set<string>; showOnHome: boolean }>()),
+  )
+    .map(([, option]) => ({
+      id: option.id,
+      label: option.label,
+      productCount: option.productIds.size,
+      showOnHome: option.showOnHome,
+    }))
+    .sort((left, right) => left.label.localeCompare(right.label, "zh-CN"));
+  const requestedIsAvailable = Boolean(requestedSeriesId && options.some((option) => option.id === requestedSeriesId));
+  return {
+    ...scope,
+    selectedSeriesId: requestedIsAvailable
+      ? requestedSeriesId ?? null
+      : visibility === "all"
+        ? options[0]?.id ?? null
+        : null,
+    seriesOptions: options,
   };
 };
 
@@ -485,12 +612,18 @@ const stateForScopeAndRange = ({
     : DEFAULT_BRAND_FILTER,
 });
 
-const monthForRange = (range: V2HomeTimeRange): string => range.endDate.slice(0, 7);
-
-const targetMonthForRange = (range: V2HomeTimeRange): string | null => {
-  const startMonth = range.startDate.slice(0, 7);
+const targetMonthsForRange = (range: V2HomeTimeRange): string[] => {
+  const months: string[] = [];
+  const cursor = new Date(`${range.startDate.slice(0, 7)}-01T00:00:00Z`);
   const endMonth = range.endDate.slice(0, 7);
-  return startMonth === endMonth ? endMonth : null;
+  while (!Number.isNaN(cursor.getTime())) {
+    const month = cursor.toISOString().slice(0, 7);
+    months.push(month);
+    if (month === endMonth) break;
+    cursor.setUTCMonth(cursor.getUTCMonth() + 1);
+    if (months.length > 13) break;
+  }
+  return months;
 };
 
 const recordsToDraftMap = (records: TargetDraftRecord[]): Record<string, number> => {
@@ -504,16 +637,38 @@ const recordsToDraftMap = (records: TargetDraftRecord[]): Record<string, number>
   return values;
 };
 
-const loadPlatformTargetRecords = async (
+const loadTargetRecordsForMonth = async (
   scope: V2HomeScope,
-  range: V2HomeTimeRange,
+  source: BIHomeDataSource,
+  month: string,
 ): Promise<TargetDraftRecord[]> => {
-  const targetMonth = targetMonthForRange(range);
-  if (!targetMonth) return [];
   const databaseName = targetDatabaseNameForBrand(scope.brandId);
+  if (scope.selectedSeriesId) {
+    const seriesScopes = Array.from(
+      new Map(
+        source.seriesDefinitions
+          .filter((series) =>
+            series.seriesId === scope.selectedSeriesId &&
+            (!scope.selectedPlatform || series.platformCode === scope.selectedPlatform) &&
+            scope.selectedStoreIds.includes(series.storeId),
+          )
+          .map((series) => [`${series.platformCode}::${series.storeId}`, series]),
+      ).values(),
+    );
+    if (seriesScopes.length !== 1) return [];
+    const series = seriesScopes[0]!;
+    const result = await loadActiveTargetDrafts({
+      scope: "series",
+      platformCode: series.platformCode,
+      storeId: series.storeId,
+      seriesId: series.seriesId,
+      month,
+    }, { databaseName });
+    return result.status === "ok" ? result.records : [];
+  }
   const brandResult = await loadActiveTargetDrafts({
     scope: "brand",
-    month: targetMonth,
+    month,
   }, { databaseName });
   if (brandResult.status === "ok") return brandResult.records;
   if (!scope.selectedPlatform || scope.selectedStoreIds.length !== 1) return [];
@@ -521,10 +676,15 @@ const loadPlatformTargetRecords = async (
     scope: "platform",
     platformCode: scope.selectedPlatform,
     storeId: scope.selectedStoreIds[0],
-    month: targetMonth,
+    month,
   }, { databaseName });
   return platformResult.status === "ok" ? platformResult.records : [];
 };
+
+interface MonthlyTargetDrafts {
+  month: string;
+  drafts: Record<string, number>;
+}
 
 const targetRuleForMetric = (metricKey: V2HomeMetricKey): V2HomeTargetRule => {
   if (metricKey === "brandKeywordPaidShare") return "unsupported";
@@ -564,30 +724,90 @@ const mtdTargetRawValue = (
   return targetValue * (overlapDays / monthDays);
 };
 
+export const aggregateV2HomeMonthlyTargetForRange = (
+  targets: Array<{ month: string; targetValue: number | null }>,
+  range: V2HomeTimeRange,
+): number | null => {
+  const parts = targets
+    .map(({ month, targetValue }) => mtdTargetRawValue(targetValue, month, range))
+    .filter((value): value is number => value !== null);
+  return parts.length > 0 ? parts.reduce((sum, value) => sum + value, 0) : null;
+};
+
+export const aggregateV2HomeNonAdditiveTargetForRange = (
+  targets: Array<{ month: string; targetValue: number | null }>,
+  range: V2HomeTimeRange,
+): number | null => {
+  const valuesByMonth = new Map(targets.map(({ month, targetValue }) => [month, targetValue]));
+  const weightedParts = targetMonthsForRange(range).map((month) => {
+    const targetValue = valuesByMonth.get(month) ?? null;
+    if (targetValue === null) return null;
+    const monthRange = targetMonthBounds(month);
+    const overlapStart = range.startDate > monthRange.startDate ? range.startDate : monthRange.startDate;
+    const overlapEnd = range.endDate < monthRange.endDate ? range.endDate : monthRange.endDate;
+    const overlapDays = inclusiveDayCount(overlapStart, overlapEnd);
+    return overlapDays > 0 ? { targetValue, overlapDays } : null;
+  });
+  if (weightedParts.some((part) => part === null)) return null;
+  const completeParts = weightedParts.filter(
+    (part): part is { targetValue: number; overlapDays: number } => part !== null,
+  );
+  const totalDays = completeParts.reduce((sum, part) => sum + part.overlapDays, 0);
+  if (totalDays <= 0) return null;
+  return completeParts.reduce(
+    (sum, part) => sum + part.targetValue * part.overlapDays,
+    0,
+  ) / totalDays;
+};
+
+const ADDITIVE_TARGET_METRICS = new Set<V2HomeMetricKey>(["gmv", "gsv", "adSpend"]);
+
 const targetOverlayForMetric = ({
   contract,
-  legacyCard,
-  targetDrafts,
+  actual,
+  targetMonths,
   range,
 }: {
   contract: V2HomeMetricContract;
-  legacyCard: HomeBIKpiCard | null;
-  targetDrafts: Record<string, number>;
+  actual: number | null;
+  targetMonths: MonthlyTargetDrafts[];
   range: V2HomeTimeRange;
 }): V2HomeTargetOverlay => {
   const rule = targetRuleForMetric(contract.metricKey);
-  const totalRaw = targetRawValue(contract.metricKey, targetDrafts);
-  const mtdRaw = mtdTargetRawValue(totalRaw, monthForRange(range), range);
-  const hasTarget = totalRaw !== null;
+  const monthsInRange = targetMonthsForRange(range);
+  const targetValues = targetMonths.map(({ month, drafts }) => ({
+    month,
+    value: targetRawValue(contract.metricKey, drafts),
+  }));
+  const targetValuesForRange = targetValues.map(({ month, value }) => ({ month, targetValue: value }));
+  const mtdRaw = ADDITIVE_TARGET_METRICS.has(contract.metricKey)
+    ? aggregateV2HomeMonthlyTargetForRange(targetValuesForRange, range)
+    : aggregateV2HomeNonAdditiveTargetForRange(targetValuesForRange, range);
+  const singleMonth = monthsInRange.length === 1 ? monthsInRange[0] : null;
+  const totalRaw = singleMonth
+    ? targetValues.find((item) => item.month === singleMonth)?.value ?? null
+    : null;
+  const progressTarget = totalRaw ?? mtdRaw;
+  const definition = getTargetMetricDefinitionByKey(contract.metricKey);
+  const progressRate = actual === null || progressTarget === null || progressTarget <= 0
+    ? null
+    : definition?.direction === "higher_is_better"
+      ? actual / progressTarget
+      : actual === 0
+        ? 1
+        : progressTarget / actual;
+  const difference = actual === null || progressTarget === null
+    ? null
+    : definition?.direction === "higher_is_better"
+      ? actual - progressTarget
+      : progressTarget - actual;
   return {
     rule,
     mtdTarget: formatV2HomeMetricValue(mtdRaw, contract.format),
     totalTarget: formatV2HomeMetricValue(totalRaw, contract.format),
-    difference: hasTarget ? legacyCard?.difference ?? "--" : "--",
-    completionRate: hasTarget ? legacyCard?.completionRate ?? "--" : "--",
-    progress: hasTarget && legacyCard && legacyCard.completionRate !== "--"
-      ? Math.max(0, Math.min(100, legacyCard.progress))
-      : null,
+    difference: formatV2HomeMetricValue(difference, contract.format, true),
+    completionRate: formatV2HomeMetricValue(progressRate, "percent"),
+    progress: progressRate === null ? null : Math.max(0, Math.min(100, progressRate * 100)),
   };
 };
 
@@ -619,14 +839,16 @@ const metricCards = ({
   source,
   state,
   range,
-  targetDrafts,
+  targetMonths,
   comparison,
+  seriesScoped,
 }: {
   source: BIHomeDataSource;
   state: UIState;
   range: V2HomeTimeRange;
-  targetDrafts: Record<string, number>;
+  targetMonths: MonthlyTargetDrafts[];
   comparison: ReturnType<typeof comparisonState>;
+  seriesScoped: boolean;
 }): V2HomeMetricCard[] => {
   const viewModel = buildHomeBIViewModel(source, state);
   const referenceValues = comparison.referenceRange
@@ -637,7 +859,12 @@ const metricCards = ({
     const legacyCard = legacyTitle
       ? viewModel.kpiCards.find((card) => !card.coreSeriesId && card.title === legacyTitle) ?? null
       : null;
-    const actual = contract.availability === "PENDING_IMPLEMENTATION" || contract.availability === "UNAVAILABLE"
+    const seriesSourceUnavailable = seriesScoped && (
+      contract.metricKey === "brandVisitors" ||
+      contract.metricKey === "brandPaidBuyers" ||
+      contract.metricKey === "brandKeywordPaidShare"
+    );
+    const actual = seriesSourceUnavailable || contract.availability === "PENDING_IMPLEMENTATION" || contract.availability === "UNAVAILABLE"
       ? null
       : finiteOrNull(legacyCard?.rawValue);
     const sourceStatus = sourceStatusForMetric(contract, actual);
@@ -651,8 +878,10 @@ const metricCards = ({
       actual: formatV2HomeMetricValue(actual, contract.format),
       actualRaw: actual,
       sourceStatus,
-      note: noteForMetric(contract, sourceStatus),
-      target: targetOverlayForMetric({ contract, legacyCard, targetDrafts, range }),
+      note: seriesSourceUnavailable
+        ? "当前搜索数据没有稳定的商品到系列归因，暂不按系列拆分。"
+        : noteForMetric(contract, sourceStatus),
+      target: targetOverlayForMetric({ contract, actual, targetMonths, range }),
       comparison: comparison.mode === "none" || !comparison.referenceRange
         ? null
         : {
@@ -742,71 +971,6 @@ const chartModel = ({
     points,
     empty: points.length === 0 || points.every((point) => point.leftValue === null && point.rightValue === null),
   };
-};
-
-const seriesCards = async ({
-  source,
-  state,
-  scope,
-  range,
-}: {
-  source: BIHomeDataSource;
-  state: UIState;
-  scope: V2HomeScope;
-  range: V2HomeTimeRange;
-}): Promise<V2HomeSeriesGsvCard[]> => {
-  const eligibleDefinitions = source.seriesDefinitions
-    .filter(
-      (series) =>
-        (!scope.selectedPlatform || series.platformCode === scope.selectedPlatform) &&
-        scope.selectedStoreIds.includes(series.storeId) &&
-        series.productIds.length > 0,
-    );
-  const uniqueEligibleDefinitions = Array.from(
-    new Map(eligibleDefinitions.map((series) => [series.seriesId, series])).values(),
-  ).slice(0, 5);
-  if (uniqueEligibleDefinitions.length === 0) return [];
-
-  const actualViewModel = buildHomeBIViewModel(source, { ...state, targetDrafts: {} });
-  return Promise.all(
-    uniqueEligibleDefinitions.map(async (series) => {
-      const targetMonth = targetMonthForRange(range);
-      const targetResult = targetMonth
-        ? await loadActiveTargetDrafts({
-            scope: "series",
-            platformCode: series.platformCode,
-            storeId: series.storeId,
-            seriesId: series.seriesId,
-            month: targetMonth,
-          }, { databaseName: targetDatabaseNameForBrand(scope.brandId) })
-        : null;
-      const targetDrafts = targetResult?.status === "ok" ? recordsToDraftMap(targetResult.records) : {};
-      const targetViewModel = buildHomeBIViewModel(source, { ...state, targetDrafts });
-      const actualCard = actualViewModel.kpiCards.find((card) => card.coreSeriesId === series.seriesId) ?? null;
-      const targetCard = targetViewModel.kpiCards.find((card) => card.coreSeriesId === series.seriesId) ?? null;
-      const totalTarget = finiteOrNull(targetDrafts.gsv);
-      const mtdTarget = targetMonth ? mtdTargetRawValue(totalTarget, targetMonth, range) : null;
-      return {
-        seriesId: series.seriesId,
-        seriesName: series.seriesName,
-        href: `/v2/series-board?${new URLSearchParams({
-          platform: series.platformCode,
-          storeId: series.storeId,
-          seriesId: series.seriesId,
-        }).toString()}`,
-        actual: formatV2HomeMetricValue(finiteOrNull(actualCard?.rawValue), "money"),
-        actualRaw: finiteOrNull(actualCard?.rawValue),
-        mtdTarget: formatV2HomeMetricValue(mtdTarget, "money"),
-        totalTarget: formatV2HomeMetricValue(totalTarget, "money"),
-        difference: totalTarget !== null ? targetCard?.difference ?? "--" : "--",
-        completionRate: totalTarget !== null ? targetCard?.completionRate ?? "--" : "--",
-        progress:
-          totalTarget !== null && targetCard && targetCard.completionRate !== "--"
-            ? Math.max(0, Math.min(100, targetCard.progress))
-            : null,
-      };
-    }),
-  );
 };
 
 const dataHealthSummary = (
@@ -947,9 +1111,14 @@ export const loadV2HomeViewModel = async (
     }
 
     const debugSnapshot = debugResult.status === "ok" ? debugResult.snapshot : null;
-    const source = mergeDebugSeries(
+    const brandSeriesRecords = loadBrandSeries(brand.id);
+    const sourceWithDebugSeries = mergeDebugSeries(
       sourceResult,
       debugSnapshot?.pages.series.temporarySeriesProductIds ?? [],
+    );
+    const source = mergeSeriesDefinitions(
+      sourceWithDebugSeries,
+      brandSeriesDefinitionsForSource(sourceWithDebugSeries, brandSeriesRecords),
     );
     const snapshotResult = await loadActiveRuntimeDatasetSnapshot({
       brandId: brand.id,
@@ -989,14 +1158,27 @@ export const loadV2HomeViewModel = async (
       if (error) return { status: "error", message: error };
     }
     const selectedRange = normalizeSelectedRange(requestedRange, datasetRange);
-    const scope = buildScope(
+    const baseScope = buildScope(
       source,
       brand,
       options.selectedPlatform !== undefined ? options.selectedPlatform : baseState.selectedPlatform,
       options.selectedStoreIds ?? baseState.selectedStores,
     );
-    const platformTargetRecords = await loadPlatformTargetRecords(scope, selectedRange);
-    const targetDrafts = recordsToDraftMap(platformTargetRecords);
+    const scope = withSeriesScope({
+      scope: baseScope,
+      source,
+      records: brandSeriesRecords,
+      requestedSeriesId: options.selectedSeriesId,
+      visibility: options.seriesOptionVisibility ?? "home",
+    });
+    const metricSource = sourceForSelectedSeries(source, scope.selectedSeriesId);
+    const targetMonths = await Promise.all(
+      targetMonthsForRange(selectedRange).map(async (month) => ({
+        month,
+        drafts: recordsToDraftMap(await loadTargetRecordsForMonth(scope, source, month)),
+      })),
+    );
+    const targetDrafts = targetMonths.length === 1 ? targetMonths[0]?.drafts ?? {} : {};
     const state = stateForScopeAndRange({
       scope,
       range: selectedRange,
@@ -1005,8 +1187,16 @@ export const loadV2HomeViewModel = async (
     });
     const chartMode = options.chartMode ?? debugSnapshot?.pages.home.chartMode ?? "mtd";
     const comparisonMode = options.comparisonMode ?? "none";
-    const comparison = comparisonState(comparisonMode, selectedRange, datasetDates);
-    const metrics = metricCards({ source, state, range: selectedRange, targetDrafts, comparison });
+    const scopedDatasetDates = businessDatesFromSource(metricSource);
+    const comparison = comparisonState(comparisonMode, selectedRange, scopedDatasetDates);
+    const metrics = metricCards({
+      source: metricSource,
+      state,
+      range: selectedRange,
+      targetMonths,
+      comparison,
+      seriesScoped: Boolean(scope.selectedSeriesId),
+    });
     const viewModel: V2HomeViewModel = {
       status: "ready",
       dataStatusLabel: source.dataStatus.label,
@@ -1021,17 +1211,17 @@ export const loadV2HomeViewModel = async (
       timeRange: selectedRange,
       comparison,
       metrics,
-      keySeries: await seriesCards({ source, state, scope, range: selectedRange }),
+      keySeries: [],
       chart: chartModel({
-        source,
+        source: metricSource,
         state,
-        datasetDates,
+        datasetDates: scopedDatasetDates,
         selectedRange,
         chartMode,
         chartPairId: options.chartPairId,
       }),
       dataHealth: dataHealthSummary(snapshotResult),
-      reconciliation: reconciliationSummary(source, state),
+      reconciliation: reconciliationSummary(metricSource, state),
       preferencePersistence: "LOCAL_UI_PREFERENCE",
     };
     return { status: "ready", viewModel };

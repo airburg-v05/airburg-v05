@@ -10,6 +10,8 @@ import type {
 } from "@/types/v2/home";
 
 interface V2HomeToolbarProps {
+  title?: string;
+  showOperatingActions?: boolean;
   scope: V2HomeScope;
   timeRange: V2HomeTimeRange;
   comparisonMode: V2HomeComparisonMode;
@@ -17,6 +19,7 @@ interface V2HomeToolbarProps {
   interactionError: string | null;
   onPlatformChange: (platformCode: string | null) => void;
   onStoresChange: (storeIds: string[]) => void;
+  onSeriesChange: (seriesId: string | null) => void;
   onTimeModeChange: (mode: V2HomeTimeRangeMode) => void;
   onCustomRangeChange: (range: V2HomeTimeRange) => void;
   onComparisonModeChange: (mode: V2HomeComparisonMode) => void;
@@ -41,6 +44,8 @@ const COMPARISON_MODES: Array<{ mode: V2HomeComparisonMode; label: string; title
 ];
 
 export function V2HomeToolbar({
+  title = "品牌经营驾驶舱",
+  showOperatingActions = true,
   scope,
   timeRange,
   comparisonMode,
@@ -48,6 +53,7 @@ export function V2HomeToolbar({
   interactionError,
   onPlatformChange,
   onStoresChange,
+  onSeriesChange,
   onTimeModeChange,
   onCustomRangeChange,
   onComparisonModeChange,
@@ -81,7 +87,7 @@ export function V2HomeToolbar({
     >
       <div className="flex min-w-0 items-center justify-between gap-3">
         <div className="min-w-0 flex-1 sm:flex sm:items-center sm:gap-3">
-          <h1 className="shrink-0 text-xl font-semibold text-slate-900">品牌经营驾驶舱</h1>
+          <h1 className="shrink-0 text-xl font-semibold text-slate-900">{title}</h1>
           <details className="relative mt-0.5 min-w-0 sm:mt-0">
             <summary className="flex max-w-full cursor-pointer list-none items-center gap-1 truncate text-xs text-slate-500 sm:max-w-[42vw] [&::-webkit-details-marker]:hidden">
               <span className="truncate">{scope.brandName} · {platformLabel} · {storeLabel}</span>
@@ -134,7 +140,7 @@ export function V2HomeToolbar({
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5">
-          <details className="relative" data-testid="v2-home-operating-settings">
+          {showOperatingActions ? <details className="relative" data-testid="v2-home-operating-settings">
             <summary className="flex h-8 cursor-pointer list-none items-center gap-1 rounded-md border border-slate-200 px-2.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
               经营设置 <span aria-hidden="true" className="text-slate-400">⌄</span>
             </summary>
@@ -149,7 +155,7 @@ export function V2HomeToolbar({
                 </a>
               ))}
             </nav>
-          </details>
+          </details> : null}
           <a className="flex h-8 items-center rounded-md border border-slate-200 px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50" href="/v2/data-health">
             数据健康
           </a>
@@ -239,6 +245,24 @@ export function V2HomeToolbar({
         <span className="truncate text-xs tabular-nums text-slate-500">
           {timeRange.startDate} ~ {timeRange.endDate}
         </span>
+
+        {scope.seriesOptions.length > 0 ? (
+          <label className="flex h-8 min-w-0 items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-500">
+            <span className="shrink-0">系列</span>
+            <select
+              className="min-w-0 max-w-44 bg-transparent font-semibold text-slate-700 outline-none"
+              data-testid="v2-home-series-filter"
+              disabled={busy}
+              onChange={(event) => onSeriesChange(event.target.value || null)}
+              value={scope.selectedSeriesId ?? ""}
+            >
+              <option value="">品牌整体</option>
+              {scope.seriesOptions.map((item) => (
+                <option key={item.id} value={item.id}>{item.label}（{item.productCount}）</option>
+              ))}
+            </select>
+          </label>
+        ) : null}
 
         <div className="ml-auto flex items-center gap-2">
           <span className="hidden text-[11px] text-slate-400 sm:inline" title="同比比较去年同期；环比比较紧邻上一等长区间">指标变化</span>
