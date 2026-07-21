@@ -5,28 +5,29 @@
 ## 单轨统一状态
 
 - 唯一 active product track：`SAAS_UI_V2`。
-- SaaS UI V2 当前状态：`PUBLIC_E2E_PASS_AFTER_BOARD_SIMPLIFICATION_PENDING_POST_DEPLOY_OWNER_REVIEW`；技术 PASS 不得称为产品完成。
+- SaaS UI V2 当前状态：`PUBLIC_E2E_PASS_AFTER_COMMERCIAL_REFINEMENT_PENDING_POST_DEPLOY_OWNER_REVIEW`；技术 PASS 不得称为产品完成。
 - Home、系列、店铺、商品、数据健康和导入历史共用当前品牌的活动运行时快照；目标中心独立读写品牌目标。
 - `visualAccepted = false`、`previewDeployed = true`、`humanAccepted = false`。
 - 冻结 fallback：天猫 V1 公网内测版。
 - 可信数据基础：天猫 V1 ETL / Runtime / BI 真实 18 文件链路。
 - foundation candidate：V0.5 domain / repository / persistence；当前只部分 route-bound。
-- 当前任务：`SAAS_V2_BOARD_SIMPLIFICATION_AND_TARGET_VISIBILITY_V1`，状态 `PENDING_POST_DEPLOY_OWNER_REVIEW`。
+- 当前任务：`SAAS_V2_COMMERCIAL_DASHBOARD_AND_MANUAL_PRODUCT_REFINEMENT_V1`，状态 `PENDING_POST_DEPLOY_OWNER_REVIEW`。
 - 下一唯一入口：宗骥的公网页面视觉/业务复核；自动化截图不能替代用户确认。
-- 当前任务和证据：`docs/project/current-task.json`、`docs/project/tasks/SAAS_V2_BOARD_SIMPLIFICATION_AND_TARGET_VISIBILITY_V1/`。
+- 当前任务和证据：`docs/project/current-task.json`、`docs/project/tasks/SAAS_V2_COMMERCIAL_DASHBOARD_AND_MANUAL_PRODUCT_REFINEMENT_V1/`。
 
 ## SaaS UI V2 公网预览
 
 - 当前分支：`feature/saas-ui-v2-shell`。
-- 最新已验证业务实现与公网部署源：`f772af503bcfd29b331798866d9efc2635958bc2`。
+- 最新已验证业务实现与公网部署源：`e25660c67539bc82405e00e4f354df855e82e05c`。
 - 公网预览：[V2 Home](http://123.57.49.121/v2/home)。
-- `/v2/home`：17 个指标、最多 5 个手动选择系列的同构筛选、MTD / DLY 双指标趋势、自定义日期和真实同比/环比状态已公网回归。
-- `/v2/series-board`：粘贴商品 ID 绑定、同一套 17 指标/趋势、底部系列卡片编辑删除已公网回归。
-- `/v2/store-board` 与 `/v2/product-board`：仅保留紧凑范围、KPI 和趋势决策面。
+- `/v2/home`：16 个商用显示指标形成 4×4 桌面网格；首页保持品牌范围，指标设置最多勾选 5 个系列并在同一经营指标区域追加系列摘要。
+- `/v2/series-board`：粘贴商品 ID 绑定、同一套 16 指标/趋势、紧凑维护条和底部系列卡片编辑删除已公网回归。
+- `/v2/store-board`：已恢复完整 16 指标和趋势，并使用明确的店铺目标范围。
+- `/v2/product-board`：仅手动添加商品，支持可选方图、选择、编辑、删除、底部卡片及完整 16 指标/趋势。
 - 真实经营对账保持不变：GMV `125596`、GSV `85455.96`、访客 `143076`、支付买家 `128`、推广花费 `7625.95`、点击 `6692`、退款金额 `29602.18`。
 - 上传结果与数据健康摘要已对齐：`18 success / 0 failed / 0 skipped`，首页安全跳过计数为 `0`。
 - 跨月金额目标按月份交集天数折算；比例/均值目标不按天缩小，跨月缺月时保持 unknown。
-- 公网系统浏览器回归为 `46/46 PASS`，console 业务错误与 failed business requests 均为 `0`。
+- 公网隔离系统浏览器回归为 `52/52 PASS`，console 业务错误与 failed business requests 均为 `0`。
 - `visualAccepted=false`、`humanAccepted=false`、`visualReviewStatus=PENDING_HUMAN_REVIEW`；当前只等待用户打开公网 `/v2/home` 核查。
 
 ## Legacy V1 fallback 定位
