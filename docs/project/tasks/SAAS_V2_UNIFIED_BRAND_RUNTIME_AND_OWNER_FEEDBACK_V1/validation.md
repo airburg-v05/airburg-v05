@@ -1,6 +1,6 @@
 # Validation
 
-Status: `LOCAL_PASS_PENDING_PUBLIC_DEPLOYMENT`
+Status: `PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW`
 
 Passed local gates:
 
@@ -26,9 +26,30 @@ Evidence:
 - `artifacts/local/unified-runtime-production-2026-07-21/v2-home-desktop.png`
 - `artifacts/local/unified-runtime-production-2026-07-21/v2-home-mobile.png`
 
-Pending gate:
+Passed deployment and public gates:
 
-- Controlled public deployment, service checks and public browser regression.
+- Deployed exact implementation commit: `52cff7bc753743a6aca303c79adfcd1b6b2d29d0`.
+- Release: `/opt/airburg/releases/saas-v2-unified-runtime-52cff7b-20260721T173216`.
+- Rollback PM2 snapshot: `/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-unified-runtime-52cff7b-20260721T173216.pm2.json`.
+- Remote dependency install and production build: PASS.
+- PM2 `airburg-tmall-v1`: online, restart count stable at 8 after public regression.
+- Nginx: active and `nginx -t` PASS.
+- Node bind: `127.0.0.1:3000` only.
+- Public port 3000: TCP was accepted upstream but returned no HTTP bytes and timed out; the application did not serve a response.
+- Public route matrix: 11/11 HTTP 200.
+- Public isolated system-Chrome regression: 40/40 PASS, 18/18 Replace plus 18/18 Append, GMV `125596` to `251192`, two snapshot rows, desktop/mobile safe.
+- PM2 error-log size: unchanged at 4374 bytes.
+
+Public evidence:
+
+- `artifacts/public/unified-runtime-public-52cff7b-2026-07-21/summary.json`
+- `artifacts/public/unified-runtime-public-52cff7b-2026-07-21/upload-desktop.png`
+- `artifacts/public/unified-runtime-public-52cff7b-2026-07-21/v2-home-desktop.png`
+- `artifacts/public/unified-runtime-public-52cff7b-2026-07-21/v2-home-mobile.png`
+
+Non-gate observation:
+
+- `validate-project-execution-guardrails-current-state-v1.ts` still requires several historical page-matrix rows to be `human_review_pass`. It is not used to claim this task passed because satisfying it would contradict the required open owner-review gate.
 
 Owner gates remain:
 

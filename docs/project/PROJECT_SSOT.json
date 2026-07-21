@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "updatedAt": "2026-07-21T01:00:00+08:00",
+  "updatedAt": "2026-07-21T17:37:15+08:00",
   "authority": {
     "machineReadableSource": "docs/project/PROJECT_SSOT.json",
     "derivedHumanReadableSources": [
@@ -19,8 +19,8 @@
   },
   "repository": {
     "activeBranch": "feature/saas-ui-v2-shell",
-    "headCommit": "79a503be3988a66dd22b9c0c789a284223fe7c23",
-    "headCommitMeaning": "exact deployed runtime-changing commit for the SaaS V2 brand-owner UX refinement plus board empty-state CTA increment; subsequent post-deploy evidence commits are intentionally not self-referenced here",
+    "headCommit": "52cff7bc753743a6aca303c79adfcd1b6b2d29d0",
+    "headCommitMeaning": "exact deployed runtime-changing commit for the SaaS V2 unified brand/runtime and owner-feedback repair; subsequent post-deploy evidence commits are intentionally not self-referenced here",
     "workingTree": "CLEAN_AFTER_POST_DEPLOY_EVIDENCE_COMMIT",
     "remote": "origin=https://github.com/airburg-v05/airburg-v05.git",
     "upstream": "origin/feature/saas-ui-v2-shell",
@@ -107,9 +107,9 @@
     },
     "saasUiV2": {
       "role": "ACTIVE_PRODUCT_TRACK",
-      "status": "PUBLIC_E2E_PASS_AFTER_BRAND_OWNER_UX_REFINEMENT_PENDING_POST_DEPLOY_OWNER_REVIEW",
+      "status": "PUBLIC_E2E_PASS_AFTER_UNIFIED_BRAND_RUNTIME_REPAIR_PENDING_POST_DEPLOY_OWNER_REVIEW",
       "archiveCommit": "7ade2f433d7dbd90e8fd1a0df5efdb00003ec8fa",
-      "routeCount": 10,
+      "routeCount": 11,
       "componentCount": 18,
       "dataBound": true,
       "dataBoundRoutes": [
@@ -125,38 +125,38 @@
         "/v2/upload"
       ],
       "configurationBoundRoutes": [
-        "/v2/search-assets"
+        "/v2/search-assets",
+        "/v2/brand-settings",
+        "/v2/series-board"
       ],
       "blockedByMissingContractRoutes": [
         "/v2/exclusion-rules"
       ],
       "remainingStaticShellRouteCount": 0,
-      "routeTruthRebuiltAt": "2026-07-20T22:18:00+08:00",
-      "routeTruthNotes": "Ten V2 routes exist. dataBoundRoutes only names routes that read current runtime/domain/target state. /v2/upload writes runtime data, /v2/search-assets writes current-browser search configuration, and /v2/exclusion-rules is a safe BLOCKED_BY_MISSING_CONTRACT page; these are not counted as fully business data-bound dashboard routes.",
+      "routeTruthRebuiltAt": "2026-07-21T17:37:15+08:00",
+      "routeTruthNotes": "Eleven V2 routes exist. Home, series, store, product, data-health and import-history now read one active brand runtime snapshot; target center reads brand-scoped target drafts independently from upload. /v2/upload writes safe aggregate runtime data, /v2/search-assets and /v2/brand-settings write browser-local configuration, and /v2/exclusion-rules remains safely blocked by its missing contract.",
       "localRoutesValidated": true,
       "localE2EPassed": true,
       "visualAccepted": false,
       "previewDeployed": true,
       "humanAccepted": false,
-      "publicV2RouteStatus": "TEN_V2_ROUTES_PUBLIC_E2E_PASS_AFTER_BRAND_OWNER_UX_REFINEMENT_AND_RUNTIME_CLEANUP",
-      "activeUxRefinementTask": "SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1",
-      "activeUxRefinementScope": [
-        "compact secondary page header",
-        "empty-state density",
-        "home no-target KPI display",
-        "upload copy hierarchy",
-        "target-center business copy",
-        "search-assets focused modal",
-        "exclusion-rules navigation visibility",
-        "series/store/product empty-state primary CTA to /v2/upload"
+      "publicV2RouteStatus": "ELEVEN_V2_ROUTES_PUBLIC_E2E_PASS_AFTER_UNIFIED_BRAND_RUNTIME_REPAIR",
+      "activeUnifiedRuntimeTask": "SAAS_V2_UNIFIED_BRAND_RUNTIME_AND_OWNER_FEEDBACK_V1",
+      "activeUnifiedRuntimeScope": [
+        "browser-local multi-brand workspace isolation",
+        "one active brand runtime across home/series/store/product/data-health/history",
+        "explicit Replace and Append with two-store aggregation",
+        "brand targets independent from operating upload",
+        "unlimited series with maximum-five home selection",
+        "custom date Apply/Cancel and truthful YoY/MoM references"
       ],
-      "deploymentCommit": "79a503be3988a66dd22b9c0c789a284223fe7c23",
+      "deploymentCommit": "52cff7bc753743a6aca303c79adfcd1b6b2d29d0",
       "previousUxImplementationCommit": "f184d9dd0bb90bb36c468fe572a46957b54e0ccf",
-      "deployedAt": "2026-07-21T00:58:51+08:00",
-      "release": "/opt/airburg/releases/saas-v2-board-cta-79a503b-20260721T005754",
-      "rollbackPm2Snapshot": "/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-board-cta-79a503b-20260721T005754.pm2.json",
+      "deployedAt": "2026-07-21T17:37:15+08:00",
+      "release": "/opt/airburg/releases/saas-v2-unified-runtime-52cff7b-20260721T173216",
+      "rollbackPm2Snapshot": "/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-unified-runtime-52cff7b-20260721T173216.pm2.json",
       "publicPreviewRoute": "http://123.57.49.121/v2/home",
-      "publicScreenshotManifest": "docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/artifacts/public/board-empty-cta-incremental-public-79a503b-2026-07-21/summary.json",
+      "publicScreenshotManifest": "docs/project/tasks/SAAS_V2_UNIFIED_BRAND_RUNTIME_AND_OWNER_FEEDBACK_V1/artifacts/public/unified-runtime-public-52cff7b-2026-07-21/summary.json",
       "businessImportsFound": 1,
       "controlsInteractive": true,
       "visualReviewStatus": "PENDING_HUMAN_REVIEW",
@@ -166,7 +166,7 @@
           "status": "OFFICIAL_SHEETJS_0203_CDN_TARBALL_PUBLIC_E2E_PASS",
           "dependency": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
           "auditHighCriticalAfterUpgrade": 0,
-          "publicRegression": "18_FILE_AND_V05F_TARGET_FOUNDATION_PASS"
+          "publicRegression": "18_FILE_REPLACE_PLUS_18_FILE_APPEND_TWO_STORE_UNIFIED_RUNTIME_PASS"
         },
         "nextPostcss": {
           "status": "BLOCKED_BY_UPSTREAM_STABLE_FIX_LOW_CURRENT_EXPOSURE",
@@ -177,9 +177,9 @@
         }
       },
       "homeVerticalSlice": {
-        "status": "UPLOAD18_TARGET_FOUNDATION_AND_RUNTIME_CLEANUP_PUBLIC_E2E_PASS_AFTER_BRAND_OWNER_UX_REFINEMENT_PENDING_HUMAN_REVIEW",
+        "status": "UNIFIED_BRAND_RUNTIME_REPLACE_APPEND_PUBLIC_E2E_PASS_PENDING_HUMAN_REVIEW",
         "adapter": "lib/v2/home/v2-home-adapter.ts",
-        "latestImplementationCommit": "79a503be3988a66dd22b9c0c789a284223fe7c23",
+        "latestImplementationCommit": "52cff7bc753743a6aca303c79adfcd1b6b2d29d0",
         "previousFull18Plus4TargetValidationCommit": "f184d9dd0bb90bb36c468fe572a46957b54e0ccf",
         "metricCount": 17,
         "realSampleCount": 18,
@@ -191,9 +191,9 @@
         "previewDeployed": true,
         "visualAccepted": false,
         "humanAccepted": false,
-        "evidence": "docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/validation.md",
-        "latestUpload18LocalValidationAt": "2026-07-21T00:42:00+08:00",
-        "latestUpload18PublicValidationAt": "2026-07-21T00:51:00+08:00",
+        "evidence": "docs/project/tasks/SAAS_V2_UNIFIED_BRAND_RUNTIME_AND_OWNER_FEEDBACK_V1/validation.md",
+        "latestUpload18LocalValidationAt": "2026-07-21T17:26:00+08:00",
+        "latestUpload18PublicValidationAt": "2026-07-21T17:36:00+08:00",
         "latestBoardEmptyCtaPublicValidationAt": "2026-07-21T00:59:00+08:00",
         "latestUpload18DeploymentStatus": "PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW",
         "latestUpload18DeploymentBlocker": null,
@@ -204,21 +204,21 @@
   },
   "canonicalSources": {
     "dataPipeline": "lib/etl/runtime/index.ts with lib/etl runtime contracts; frozen Tmall V1 data foundation",
-    "domainModel": "lib/v05/domain/models.ts through lib/v2/home/v2-home-adapter.ts for /v2/home",
+    "domainModel": "lib/v05/domain/models.ts plus lib/v2/runtime/runtime-v2-dataset.ts as the shared V2 runtime adapter",
     "metricViewModel": "lib/bi/bi.home-view-model.ts and lib/bi/bi.home-mapper.ts through lib/v2/home/v2-home-adapter.ts",
     "targetOverlay": "lib/bi/target-metric-definitions.ts plus lib/persistence/target-drafts-persistence.ts; overlay only",
-    "persistence": "lib/v05 persistence foundation plus existing V1 runtime/debug/target browser adapters behind one V2 boundary",
-    "ui": "app/(workspace-v2)/v2/** and components/saas-v2/**; /v2/home is data-bound, the series/store/product/upload/data-health/target/search routes are connected to their authorized current boundaries, and unsupported capabilities remain explicitly blocked instead of mocked"
+    "persistence": "brand-scoped runtime, target and debug IndexedDB boundaries plus browser-local brand and series configuration; raw upload rows are not persisted",
+    "ui": "app/(workspace-v2)/v2/** and components/saas-v2/**; home/series/store/product/data-health/history share one active brand runtime, target center is independent from upload, and unsupported capabilities remain explicitly blocked instead of mocked"
   },
   "routeMatrix": "docs/project/ROUTE_DATA_SOURCE_MATRIX.json",
   "metricSemantics": "docs/project/METRIC_SEMANTIC_RECONCILIATION_V1.json",
   "validatorRegistry": "docs/project/VALIDATOR_REGISTRY.json",
   "currentTask": {
     "taskId": "SAAS_V2_UNIFIED_BRAND_RUNTIME_AND_OWNER_FEEDBACK_V1",
-    "status": "LOCAL_VALIDATED_PENDING_DEPLOY",
+    "status": "PENDING_POST_DEPLOY_OWNER_REVIEW",
     "contract": "docs/project/tasks/SAAS_V2_UNIFIED_BRAND_RUNTIME_AND_OWNER_FEEDBACK_V1/TASK.md"
   },
-  "nextAuthorizedEntryGate": "DEPLOYMENT_SSH_PREFLIGHT",
+  "nextAuthorizedEntryGate": "POST_DEPLOY_OWNER_REVIEW",
   "deprecatedArtifacts": [
     {
       "path": "lib/state/system-state.ts",
@@ -237,6 +237,8 @@
     "V0.5 is the unique data foundation without the documented compatibility-adapter decision",
     "lib/state/system-state.ts is the project SSOT",
     "Tmall V1 public is PUBLIC_ALIGNED while the deployed Git commit is unknown",
-    "build PASS, HTTP 200, generated screenshots, Git push, or one generic PASS proves another product stage"
+    "build PASS, HTTP 200, generated screenshots, Git push, or one generic PASS proves another product stage",
+    "Browser-local brand isolation proves account, organization, permission or cloud multi-tenancy is complete",
+    "A preserved multi-platform data model proves JD or Douyin merchant adapters are connected"
   ]
 }

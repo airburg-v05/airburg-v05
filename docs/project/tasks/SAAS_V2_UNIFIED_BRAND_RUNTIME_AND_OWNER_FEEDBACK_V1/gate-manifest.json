@@ -50,5 +50,5 @@
   ],
   "archive_target": "docs/project/tasks/SAAS_V2_UNIFIED_BRAND_RUNTIME_AND_OWNER_FEEDBACK_V1",
   "owner_gate": "PENDING_POST_DEPLOY_OWNER_REVIEW",
-  "deliverable_status": "local_validated_pending_deploy"
+  "deliverable_status": "public_e2e_pass_pending_owner_review"
 }
