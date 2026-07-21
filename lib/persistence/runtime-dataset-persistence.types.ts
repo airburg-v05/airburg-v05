@@ -60,6 +60,7 @@ export interface RuntimeDatasetSnapshot {
   safeIssues: RuntimeDatasetSafeIssue[];
   importSummary: RuntimeDatasetImportSummary;
   sourceCoverage: RuntimeDatasetSourceCoverage;
+  mergeMode?: "replace" | "append" | "unknown";
 }
 
 export interface RuntimeDatasetSnapshotSummary {
@@ -73,10 +74,12 @@ export interface RuntimeDatasetSnapshotSummary {
   safeIssues: RuntimeDatasetSafeIssue[];
   importSummary: RuntimeDatasetImportSummary;
   sourceCoverage: RuntimeDatasetSourceCoverage;
+  mergeMode?: "replace" | "append" | "unknown";
 }
 
 export interface RuntimeDatasetPersistenceOptions {
   databaseName?: string;
+  brandId?: string;
   indexedDBFactory?: IDBFactory;
   now?: () => Date;
 }
@@ -86,6 +89,7 @@ export interface SaveRuntimeDatasetSnapshotOptions extends RuntimeDatasetPersist
   platformCode?: string;
   storeId?: string;
   dateRange?: RuntimeDatasetDateRange;
+  mergeMode?: "replace" | "append";
 }
 
 export type RuntimeDatasetPersistenceUnavailableReason =

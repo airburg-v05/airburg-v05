@@ -22,10 +22,10 @@ const checks = [
       files.routeMapping.includes('"/upload": "/v2/upload"'),
   },
   {
-    name: "RouteMappingBlocksMissingV2ManagementPages",
+    name: "RouteMappingKeepsManagementInsideV2Workspace",
     pass:
-      files.routeMapping.includes('"/series-board/manage": "系列管理页尚未开放到当前工作区。"') &&
-      files.routeMapping.includes('"/product-board/tracked": "重点商品管理页尚未开放到当前工作区。"'),
+      files.routeMapping.includes('"/series-board/manage": "/v2/series-board"') &&
+      files.routeMapping.includes('"/product-board/tracked": "/v2/product-board"'),
   },
   {
     name: "SeriesBoardUsesExplicitV2RouteMapper",

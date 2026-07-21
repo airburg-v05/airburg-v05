@@ -11,10 +11,11 @@ const checks = [
   {
     name: "topbar-uses-neutral-chinese-status-copy",
     pass:
-      topbar.includes("空气堡经营工作区") &&
+      topbar.includes("useBrandWorkspace") &&
+      topbar.includes("{brand.name}经营工作区") &&
       topbar.includes("数据范围与状态以当前页面为准") &&
-      topbar.includes("品牌：空气堡") &&
-      topbar.includes("平台：天猫"),
+      topbar.includes("品牌：{brand.name}") &&
+      topbar.includes('href="/v2/brand-settings"'),
   },
   {
     name: "topbar-removes-preview-pending-facts",

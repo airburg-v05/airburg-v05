@@ -92,6 +92,15 @@ export function V2HomeMetricGrid({
               {metric.actual}
             </p>
 
+            {metric.comparison ? (
+              <p
+                className={`mt-1 text-[10px] font-semibold ${metric.comparison.available ? (metric.comparison.changeRate! >= 0 ? "text-emerald-700" : "text-rose-700") : "text-slate-400"}`}
+                title={`参考期 ${metric.comparison.referenceRange.startDate} 至 ${metric.comparison.referenceRange.endDate}`}
+              >
+                {metric.comparison.formatted}
+              </p>
+            ) : null}
+
             {showTargetDetail ? (
               <>
                 <dl className="mt-3 grid grid-cols-3 gap-x-1 text-[10px]">

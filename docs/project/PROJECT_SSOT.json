@@ -214,11 +214,11 @@
   "metricSemantics": "docs/project/METRIC_SEMANTIC_RECONCILIATION_V1.json",
   "validatorRegistry": "docs/project/VALIDATOR_REGISTRY.json",
   "currentTask": {
-    "taskId": "SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1",
-    "status": "PENDING_POST_DEPLOY_OWNER_REVIEW",
-    "contract": "docs/project/tasks/SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1/TASK.md"
+    "taskId": "SAAS_V2_UNIFIED_BRAND_RUNTIME_AND_OWNER_FEEDBACK_V1",
+    "status": "LOCAL_VALIDATED_PENDING_DEPLOY",
+    "contract": "docs/project/tasks/SAAS_V2_UNIFIED_BRAND_RUNTIME_AND_OWNER_FEEDBACK_V1/TASK.md"
   },
-  "nextAuthorizedEntryGate": "POST_DEPLOY_OWNER_REVIEW",
+  "nextAuthorizedEntryGate": "DEPLOYMENT_SSH_PREFLIGHT",
   "deprecatedArtifacts": [
     {
       "path": "lib/state/system-state.ts",

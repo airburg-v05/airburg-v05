@@ -7,6 +7,10 @@ import {
   loadCrossPageDebugContext,
   saveCrossPageDebugContextPatch,
 } from "@/lib/persistence/debug-context-persistence";
+import {
+  debugDatabaseNameForBrand,
+} from "@/lib/v2/workspace/brand-workspace";
+import { useBrandWorkspace } from "@/lib/v2/workspace/use-brand-workspace";
 
 const EMPTY_FILTER: BrandModelFilter = {
   brandWords: [],
@@ -21,26 +25,33 @@ const summaryTimestamp = (updatedAt: string | null): string =>
   updatedAt ? new Date(updatedAt).toLocaleString("zh-CN", { hour12: false }) : "--";
 
 export function V2SearchAssetsWorkspace() {
+  const { brand, hydrated } = useBrandWorkspace();
+  const databaseName = debugDatabaseNameForBrand(brand.id);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const [filter, setFilter] = useState<BrandModelFilter>(EMPTY_FILTER);
+  const [loadedDatabaseName, setLoadedDatabaseName] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!hydrated) return;
     let cancelled = false;
-    void loadCrossPageDebugContext().then((result) => {
+    void loadCrossPageDebugContext({ databaseName }).then((result) => {
       if (cancelled) return;
+      setLoadedDatabaseName(databaseName);
       if (result.status === "ok") {
         setFilter(result.snapshot.brandModelFilter);
         setUpdatedAt(result.snapshot.updatedAt);
+        setError(null);
         setLoading(false);
         return;
       }
       if (result.status === "empty") {
         setFilter(EMPTY_FILTER);
         setUpdatedAt(null);
+        setError(null);
         setLoading(false);
         return;
       }
@@ -50,7 +61,7 @@ export function V2SearchAssetsWorkspace() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [databaseName, hydrated]);
 
   const saveFilter = useCallback(async (nextFilter: BrandModelFilter) => {
     setSaving(true);
@@ -58,7 +69,7 @@ export function V2SearchAssetsWorkspace() {
     const result = await saveCrossPageDebugContextPatch({
       brandModelFilter: nextFilter,
       centerWordGroups: nextFilter.centerWordGroups,
-    });
+    }, { databaseName });
     if (result.status !== "saved") {
       setSaving(false);
         setError("搜索资产保存失败：请刷新后重试。");
@@ -68,7 +79,7 @@ export function V2SearchAssetsWorkspace() {
     setUpdatedAt(result.snapshot.updatedAt);
     setSaving(false);
     setEditorOpen(false);
-  }, []);
+  }, [databaseName]);
 
   const clearFilter = useCallback(async () => {
     await saveFilter(EMPTY_FILTER);
@@ -79,7 +90,7 @@ export function V2SearchAssetsWorkspace() {
     [filter.centerWordGroups],
   );
 
-  if (loading) {
+  if (!hydrated || loadedDatabaseName !== databaseName || loading) {
     return (
       <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
         <p className="text-sm text-slate-500">正在读取当前浏览器中的搜索资产上下文…</p>

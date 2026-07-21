@@ -21,6 +21,13 @@ import {
 import type { TmallSeriesGroup } from "../storage/tmall-series-storage";
 import type { TmallStoredAnalysisResult } from "../../types/tmall";
 import type { TmallTargetDefinition } from "../../types/tmall-targets";
+import {
+  activeBrandWorkspace,
+  DEFAULT_BRAND_ID,
+  loadBrandWorkspaceState,
+  runtimeDatabaseNameForBrand,
+} from "../v2/workspace/brand-workspace";
+import { homeSeriesDefinitions } from "../v2/workspace/brand-series";
 
 export interface BIHomeSeriesDefinition {
   platformCode: string;
@@ -63,6 +70,7 @@ export interface BIHomeDataSource {
 
 export interface BIHomeDataSourceOptions {
   includeV05Persistence?: boolean;
+  brandId?: string;
 }
 
 const DEFAULT_TMALL_STORE_ID = "tmall-default-store";
@@ -144,6 +152,22 @@ const buildSeriesPoints = (
       seriesName: series.seriesName,
     })),
   );
+
+const runtimeSeriesForSource = (
+  points: BIDataPoint[],
+  brand = activeBrandWorkspace(),
+): { seriesDefinitions: BIHomeSeriesDefinition[]; seriesPoints: BIDataPoint[] } => {
+  const storeLabels = new Map<string, { platformName: string | null; storeName: string | null }>();
+  points.forEach((point) => {
+    if (!point.storeId) return;
+    const key = `${point.platformCode}::${point.storeId}`;
+    if (!storeLabels.has(key)) {
+      storeLabels.set(key, { platformName: point.platformName, storeName: point.storeName });
+    }
+  });
+  const seriesDefinitions = homeSeriesDefinitions(brand, storeLabels);
+  return { seriesDefinitions, seriesPoints: buildSeriesPoints(points, seriesDefinitions) };
+};
 
 const normalizeV2Targets = (targets: TargetRecord[]): BIHomeTargetDefinition[] =>
   targets.map((target) => ({
@@ -545,17 +569,23 @@ const buildStatus = ({
 
 export const loadHomeBIDataSource = async ({
   includeV05Persistence = true,
+  brandId,
 }: BIHomeDataSourceOptions = {}): Promise<BIHomeDataSource> => {
-  const runtimeDataset = getRuntimeBIDataSet();
+  const brandState = loadBrandWorkspaceState();
+  const requestedBrand = brandId
+    ? brandState.brands.find((brand) => brand.id === brandId) ?? activeBrandWorkspace(brandState)
+    : activeBrandWorkspace(brandState);
+  const runtimeDataset = getRuntimeBIDataSet(requestedBrand.id);
   if (runtimeDataset) {
     const { points, searchTotalKeywords, searchProductKeywords, notices } = buildETLPoints(runtimeDataset);
-    const warningCodes = Array.from(new Set(getRuntimeETLIssues().map((issue) => issue.code)));
+    const warningCodes = Array.from(new Set(getRuntimeETLIssues(requestedBrand.id).map((issue) => issue.code)));
+    const series = runtimeSeriesForSource(points, requestedBrand);
 
     return {
       mode: "v2_valid",
       points,
-      seriesPoints: [],
-      seriesDefinitions: [],
+      seriesPoints: series.seriesPoints,
+      seriesDefinitions: series.seriesDefinitions,
       searchTotalKeywords,
       searchProductKeywords,
       targets: [],
@@ -566,19 +596,23 @@ export const loadHomeBIDataSource = async ({
     };
   }
 
-  const restored = await restoreRuntimeDatasetFromSnapshot();
+  const restored = await restoreRuntimeDatasetFromSnapshot({
+    brandId: requestedBrand.id,
+    databaseName: runtimeDatabaseNameForBrand(requestedBrand.id),
+  });
   if (restored.status === "restored") {
     const warningCodes = restored.snapshot.safeIssues.map((issue) => issue.code);
     const { points, searchTotalKeywords, searchProductKeywords, notices } = buildETLPoints(
       restored.snapshot.dataset,
       "persisted",
     );
+    const series = runtimeSeriesForSource(points, requestedBrand);
 
     return {
       mode: "v2_valid",
       points,
-      seriesPoints: [],
-      seriesDefinitions: [],
+      seriesPoints: series.seriesPoints,
+      seriesDefinitions: series.seriesDefinitions,
       searchTotalKeywords,
       searchProductKeywords,
       targets: [],
@@ -589,7 +623,7 @@ export const loadHomeBIDataSource = async ({
     };
   }
 
-  if (!includeV05Persistence) {
+  if (!includeV05Persistence || requestedBrand.id !== DEFAULT_BRAND_ID) {
     return {
       mode: "empty",
       points: [],

@@ -74,10 +74,12 @@ export const navItems = [
   { href: "/v2/upload", label: "数据接入", group: "工具" },
   { href: "/v2/data-health", label: "数据健康", group: "工具" },
   { href: "/v2/target-center", label: "目标中心", group: "控制" },
+  { href: "/v2/brand-settings", label: "品牌设置", group: "控制" },
   { href: "/v2/search-assets", label: "搜索资产", group: "资产" },
 ];
 
 export const toolEntries = [
+  { href: "/v2/brand-settings", title: "品牌设置", description: "新增、切换并隔离不同品牌的经营工作区。" },
   { href: "/v2/series-board", title: "系列自定义", description: "维护重点系列和商品 ID 清单。" },
   { href: "/v2/search-assets", title: "品牌搜索资产", description: "管理品牌词、中心词、别名词和类目词。" },
   { href: "/v2/target-center", title: "目标中心", description: "集中设置可维护目标并查看联动进度。" },

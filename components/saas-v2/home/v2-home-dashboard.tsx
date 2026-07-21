@@ -84,8 +84,8 @@ function V2HomeEmptyState({ message, uploadHref }: { message: string; uploadHref
 
 function KeySeriesSection({ viewModel }: { viewModel: V2HomeViewModel }) {
   return (
-    <section
-      className="overflow-hidden rounded-xl border border-slate-200 bg-white"
+    <div
+      className="overflow-hidden border-t border-slate-100 bg-slate-50/35"
       data-home-region="series"
       data-testid="v2-home-key-series"
     >
@@ -123,7 +123,7 @@ function KeySeriesSection({ viewModel }: { viewModel: V2HomeViewModel }) {
           ))}
         </div>
       )}
-    </section>
+    </div>
   );
 }
 
@@ -161,6 +161,7 @@ export function V2HomeDashboard() {
     const nextPairId = nextOptions.chartPairId ?? current.chart.pair.id;
     const nextPair = current.chart.availablePairs.find((pair) => pair.id === nextPairId) ?? current.chart.pair;
     void saveV2HomeContext({
+      brandId: current.scope.brandId,
       selectedPlatform: nextOptions.selectedPlatform !== undefined
         ? nextOptions.selectedPlatform
         : current.scope.selectedPlatform,
@@ -271,13 +272,11 @@ export function V2HomeDashboard() {
           selectedMetricKey={readyViewModel.chart.pair.leftMetricKey}
           visibleKeys={preference.visibleKeys}
         />
+        <KeySeriesSection viewModel={readyViewModel} />
       </section>
-
-      <KeySeriesSection viewModel={readyViewModel} />
 
       <V2HomeChart
         comparisonMessage={comparisonMessage}
-        dataHealth={readyViewModel.dataHealth}
         displayMode={preference.chartDisplayMode}
         model={readyViewModel.chart}
         onDisplayModeChange={(chartDisplayMode) => setPreference((current) => ({ ...current, chartDisplayMode }))}

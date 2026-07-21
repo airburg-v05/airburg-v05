@@ -1,0 +1,54 @@
+{
+  "task_id": "SAAS_V2_UNIFIED_BRAND_RUNTIME_AND_OWNER_FEEDBACK_V1",
+  "task_type": "data_dashboard",
+  "business_purpose": "Make the Airburg SaaS V2 data platform a coherent brand operating workspace: one safe uploaded dataset must persist across decision pages, targets must be set independently, and future brands must be isolated.",
+  "raw_data_files": [
+    "Owner-provided Tmall exports used only by existing isolated regression; no source file is copied into Git",
+    "Current browser-local safe aggregate runtime snapshot"
+  ],
+  "field_map": [
+    "Existing verified ETL and BI metric contracts remain authoritative",
+    "Brand workspace adds ownership metadata and isolated persistence only",
+    "Store/product/series/data-health views consume the same safe aggregate runtime snapshot"
+  ],
+  "decision_questions": [
+    "Can a brand owner upload once and use every V2 decision page without state loss?",
+    "Can multiple brands and stores remain isolated while selected stores aggregate correctly?",
+    "Can required brand targets be set before operating data exists?"
+  ],
+  "evidence_sources": [
+    "Latest direct instruction from 宗骥 on 2026-07-21",
+    "docs/project/PROJECT_SSOT.json",
+    "Current public browser route inspection on 2026-07-21",
+    "Current project-manager thread and July 20/21 task handoffs",
+    "Existing ETL, metric, persistence and target contracts"
+  ],
+  "scope": {
+    "allowed": [
+      "Brand workspace configuration",
+      "Safe aggregate runtime persistence and route adapters",
+      "V2 series/store/product/data-health/target-center UI",
+      "Home time, comparison and key-series interactions",
+      "Validators, build, isolated browser tests and controlled deployment"
+    ],
+    "forbidden": [
+      "Secrets, cookies, passwords, private keys or raw browser storage inspection",
+      "Raw uploaded files or raw rows in persistence or Git",
+      "Unverified metric formula changes",
+      "Fake non-Tmall adapters",
+      "Push or merge",
+      "Automatic human acceptance"
+    ]
+  },
+  "validation_plan": [
+    "Brand isolation and runtime persistence validators",
+    "Clean-profile empty state and upload-to-five-route browser regression",
+    "Multi-store aggregation and no-double-count checks",
+    "Target-without-data and max-five-series checks",
+    "TypeScript, lint and build",
+    "Public deployment and service regression"
+  ],
+  "archive_target": "docs/project/tasks/SAAS_V2_UNIFIED_BRAND_RUNTIME_AND_OWNER_FEEDBACK_V1",
+  "owner_gate": "PENDING_POST_DEPLOY_OWNER_REVIEW",
+  "deliverable_status": "local_validated_pending_deploy"
+}

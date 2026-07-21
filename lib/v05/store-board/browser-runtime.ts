@@ -1,149 +1,45 @@
 "use client";
 
-import {
-  parseTmallStoredAnalysisResult,
-} from "../../storage/tmall-analysis-validator";
-import { TMALL_ANALYSIS_STORAGE_KEY } from "../../storage/tmall-analysis-storage";
-import { parseTmallTargetStorage, TMALL_TARGET_STORAGE_KEY } from "../../storage/tmall-target-storage";
-import { IndexedDbV2PersistenceStore } from "../persistence/indexeddb-adapter";
-import type { StoreBoardLoadResult, StoreBoardRuntimeContext } from "./contracts";
-import { isLegacyDefaultStoreRequest } from "./build-view-model";
+import { loadActiveBrandRuntimeV2Dataset } from "@/lib/v2/runtime/runtime-v2-dataset";
+import type { StoreBoardLoadResult } from "./contracts";
 
-declare const process: {
-  env?: {
-    NEXT_PUBLIC_AIRBURG_V05_DATABASE_NAME?: string;
-  };
-};
-
-const CORRUPTED_INSPECTION_STATUSES = new Set([
-  "pointer_corrupted",
-  "active_dataset_missing",
-  "active_dataset_invalid",
-]);
-
-const getStoreBoardDatabaseName = (): string =>
-  process.env?.NEXT_PUBLIC_AIRBURG_V05_DATABASE_NAME?.trim() || "airburg-v05";
-
-const readLegacyContext = () => {
-  const legacyAnalysis = parseTmallStoredAnalysisResult(
-    window.localStorage.getItem(TMALL_ANALYSIS_STORAGE_KEY),
-  );
-  const legacyTargets = parseTmallTargetStorage(
-    window.localStorage.getItem(TMALL_TARGET_STORAGE_KEY),
-  );
-  return {
-    legacyAnalysis,
-    legacyTargets: legacyTargets.status === "valid" ? legacyTargets.targets : [],
-  };
-};
-
-const legacyFallbackContext = ({
-  mode,
-  v2IssueCodes,
-  message,
-  platformCode,
-  storeId,
-}: Pick<StoreBoardRuntimeContext, "mode" | "v2IssueCodes" | "message"> & {
-  platformCode: string | null;
-  storeId: string | null;
-}): StoreBoardRuntimeContext | null => {
-  if (!isLegacyDefaultStoreRequest({ platformCode, storeId })) return null;
-  const legacy = readLegacyContext();
-  if (legacy.legacyAnalysis.status !== "valid" || !legacy.legacyAnalysis.result) return null;
-  return {
-    mode,
-    dataset: null,
-    legacyAnalysis: legacy.legacyAnalysis.result,
-    legacyTargets: legacy.legacyTargets,
-    v2IssueCodes,
-    message,
-  };
-};
-
-export const loadStoreBoardContext = async ({
-  platformCode,
-  storeId,
-  databaseName = getStoreBoardDatabaseName(),
-}: {
+export const loadStoreBoardContext = async (_request: {
   platformCode: string | null;
   storeId: string | null;
   databaseName?: string;
 }): Promise<StoreBoardLoadResult> => {
-  let store: IndexedDbV2PersistenceStore | null = null;
+  void _request;
   try {
-    store = await IndexedDbV2PersistenceStore.open({ databaseName });
-    const inspection = await store.inspectState();
-
-    if (CORRUPTED_INSPECTION_STATUSES.has(inspection.status)) {
-      const fallback = legacyFallbackContext({
-        mode: "v2_corrupted_with_legacy_fallback",
-        v2IssueCodes: inspection.issueCodes,
-        message: "本地多店铺数据状态不可安全读取，当前显示旧版默认店铺数据。",
-        platformCode,
-        storeId,
-      });
-      if (fallback) return { status: "valid", context: fallback, message: fallback.message };
-      return {
-        status: "corrupted",
-        context: {
-          mode: "corrupted",
-          dataset: null,
-          legacyAnalysis: null,
-          legacyTargets: [],
-          v2IssueCodes: inspection.issueCodes,
-          message: "本地店铺数据不可安全读取，请前往数据导入重新处理。",
-        },
-        message: "本地店铺数据不可安全读取。",
-      };
-    }
-
-    const activeDataset = await store.loadActiveDataset();
-    if (activeDataset) {
+    const runtime = await loadActiveBrandRuntimeV2Dataset();
+    if (runtime.status === "ready") {
       return {
         status: "valid",
         context: {
           mode: "v2_valid",
-          dataset: activeDataset,
+          dataset: runtime.dataset,
           legacyAnalysis: null,
           legacyTargets: [],
-          v2IssueCodes: inspection.issueCodes,
-          message: "已读取多店铺店铺数据。",
+          v2IssueCodes: runtime.issueCodes,
+          message: "已读取当前品牌统一经营数据。",
         },
-        message: "已读取多店铺店铺数据。",
+        message: "已读取当前品牌统一经营数据。",
       };
     }
-
-    const fallback = legacyFallbackContext({
-      mode: "legacy_fallback",
-      v2IssueCodes: inspection.issueCodes,
-      message: "当前显示旧版默认店铺数据，完成新数据导入后可查看多店铺看板。",
-      platformCode,
-      storeId,
-    });
-    if (fallback) return { status: "valid", context: fallback, message: fallback.message };
-
+    const corrupted = runtime.status !== "empty";
+    const message = corrupted ? "当前品牌经营数据不可安全读取。" : "当前品牌尚未上传经营数据。";
     return {
-      status: "empty",
+      status: corrupted ? "corrupted" : "empty",
       context: {
-        mode: "empty",
+        mode: corrupted ? "corrupted" : "empty",
         dataset: null,
         legacyAnalysis: null,
         legacyTargets: [],
-        v2IssueCodes: inspection.issueCodes,
-        message: "当前没有可用店铺数据。",
+        v2IssueCodes: runtime.issueCodes,
+        message,
       },
-      message: "当前没有可用店铺数据。",
+      message,
     };
   } catch {
-    const fallback = legacyFallbackContext({
-      mode: "v2_corrupted_with_legacy_fallback",
-      v2IssueCodes: ["store_board_read_error"],
-      message: "多店铺店铺数据读取失败，当前显示旧版默认店铺数据。",
-      platformCode,
-      storeId,
-    });
-    if (fallback) return { status: "valid", context: fallback, message: fallback.message };
-
     return {
       status: "error",
       context: {
@@ -156,7 +52,5 @@ export const loadStoreBoardContext = async ({
       },
       message: "读取店铺数据失败，请刷新后重试。",
     };
-  } finally {
-    store?.close();
   }
 };

@@ -49,7 +49,7 @@ const nowIso = (options: TargetDraftPersistenceOptions = {}): string =>
   (options.now ?? (() => new Date()))().toISOString();
 
 const isTargetDraftScope = (value: unknown): value is TargetDraftScope =>
-  value === "platform" || value === "series" || value === "product";
+  value === "brand" || value === "platform" || value === "series" || value === "product";
 
 const isTargetDraftStatus = (value: unknown): value is TargetDraftStatus =>
   value === "active" || value === "paused";
@@ -110,8 +110,8 @@ export const validateTargetDraftRecord = (
 
   if (!targetId) errors.push("target_id_required");
   if (!isTargetDraftScope(scope)) errors.push("scope_invalid");
-  if (!platformCode) errors.push("platform_code_required");
-  if (!storeId) errors.push("store_id_required");
+  if (scope !== "brand" && !platformCode) errors.push("platform_code_required");
+  if (scope !== "brand" && !storeId) errors.push("store_id_required");
   if (scope === "series" && !seriesId) errors.push("series_id_required");
   if (scope === "product" && !productId) errors.push("product_id_required");
   if (!MONTH_PATTERN.test(month)) errors.push("month_invalid");

@@ -7,6 +7,7 @@ import { MetricGridV2 } from "@/components/saas-v2/cards/metric-grid-v2";
 import { ChartPanelV2 } from "@/components/saas-v2/charts/chart-panel-v2";
 import { SafeEmptyState } from "@/components/saas-v2/empty/safe-empty-state";
 import { DataTableV2 } from "@/components/saas-v2/tables/data-table-v2";
+import { V2BrandSeriesManager } from "@/components/saas-v2/series/v2-brand-series-manager";
 import type { MetricV2 } from "@/components/saas-v2/data";
 import { mapHrefToAuthorizedV2Route } from "@/lib/v2/route-mapping";
 import type { PlatformCode } from "@/lib/v05/domain/models";
@@ -301,6 +302,7 @@ export function V2SeriesBoardDashboard() {
   const trendMode: TrendMode = searchParams.get("chart") === "dly" ? "dly" : "mtd";
 
   const [state, setState] = useState<DashboardState>({ status: "loading" });
+  const [seriesRevision, setSeriesRevision] = useState(0);
 
   const replaceQuery = useCallback((patch: Record<string, string | null>) => {
     const next = new URLSearchParams(searchParams.toString());
@@ -388,7 +390,7 @@ export function V2SeriesBoardDashboard() {
     return () => {
       active = false;
     };
-  }, [customEnd, customStart, requestedPlatform, requestedSeriesId, requestedStoreId, selectedDate, selectedPeriod]);
+  }, [customEnd, customStart, requestedPlatform, requestedSeriesId, requestedStoreId, selectedDate, selectedPeriod, seriesRevision]);
 
   const viewModel = state.status === "ready" ? state.viewModel : null;
 
@@ -456,7 +458,7 @@ export function V2SeriesBoardDashboard() {
     );
   }
 
-  if (!viewModel || !viewModel.storeContext || viewModel.statusLabel === "暂无数据") {
+  if (!viewModel || !viewModel.storeContext) {
     return (
       <SafeEmptyState
         actionHref="/v2/upload"
@@ -467,8 +469,21 @@ export function V2SeriesBoardDashboard() {
     );
   }
 
+  if (viewModel.statusLabel === "暂无数据") {
+    return (
+      <div className="flex flex-col gap-5" data-testid="v2-series-board-dashboard">
+        <V2BrandSeriesManager onChange={() => setSeriesRevision((revision) => revision + 1)} />
+        <section className="rounded-xl border border-dashed border-slate-300 bg-white px-5 py-8 text-center">
+          <h2 className="text-base font-semibold text-slate-950">经营数据已就绪，尚未创建系列</h2>
+          <p className="mt-2 text-sm text-slate-500">请在上方创建系列并勾选商品；保存后本页会直接生成系列经营看板。</p>
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-5" data-testid="v2-series-board-dashboard">
+      <V2BrandSeriesManager onChange={() => setSeriesRevision((revision) => revision + 1)} />
       <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div className="min-w-0 flex-1">

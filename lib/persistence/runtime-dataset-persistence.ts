@@ -300,6 +300,7 @@ const toSummary = (snapshot: RuntimeDatasetSnapshot): RuntimeDatasetSnapshotSumm
   safeIssues: clone(snapshot.safeIssues),
   importSummary: clone(snapshot.importSummary),
   sourceCoverage: clone(snapshot.sourceCoverage),
+  mergeMode: snapshot.mergeMode ?? "unknown",
 });
 
 const buildSnapshot = (
@@ -323,6 +324,7 @@ const buildSnapshot = (
     safeIssues: buildSafeIssues(issues),
     importSummary: buildImportSummary(sanitizedDataSet, summary),
     sourceCoverage: buildSourceCoverage(sanitizedDataSet),
+    mergeMode: options.mergeMode ?? "unknown",
   };
 };
 
@@ -461,7 +463,7 @@ export const restoreRuntimeDatasetFromSnapshot = async (
 ): Promise<RuntimeDatasetSnapshotRestoreResult> => {
   const result = await loadActiveRuntimeDatasetSnapshot(options);
   if (result.status !== "ok") return result;
-  setRuntimeBIDataSet(result.snapshot.dataset, []);
+  setRuntimeBIDataSet(result.snapshot.dataset, [], options.brandId ?? "airburg");
   return {
     status: "restored",
     snapshot: result.snapshot,
@@ -503,6 +505,26 @@ export const clearActiveRuntimeDatasetSnapshot = async (
   try {
     const transaction = db.transaction(ACTIVE_POINTER_STORE, "readwrite");
     transaction.objectStore(ACTIVE_POINTER_STORE).delete(ACTIVE_POINTER_KEY);
+    await transactionToPromise(transaction);
+    db.close();
+    return { status: "cleared" };
+  } catch {
+    db.close();
+    return { status: "unavailable", reason: "clear_failed" };
+  }
+};
+
+export const clearAllRuntimeDatasetSnapshots = async (
+  options: RuntimeDatasetPersistenceOptions = {},
+): Promise<RuntimeDatasetSnapshotClearResult> => {
+  const dbOrReason = await openDatabase(options);
+  if (isUnavailableReason(dbOrReason)) return { status: "unavailable", reason: dbOrReason };
+  const db = dbOrReason;
+
+  try {
+    const transaction = db.transaction([SNAPSHOTS_STORE, ACTIVE_POINTER_STORE], "readwrite");
+    transaction.objectStore(SNAPSHOTS_STORE).clear();
+    transaction.objectStore(ACTIVE_POINTER_STORE).clear();
     await transactionToPromise(transaction);
     db.close();
     return { status: "cleared" };

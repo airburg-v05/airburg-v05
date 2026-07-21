@@ -10,7 +10,7 @@ export function SaasV2Sidebar() {
           AB
         </div>
         <div>
-          <p className="text-sm font-semibold text-slate-950">Airburg 经营云</p>
+          <p className="text-sm font-semibold text-slate-950">品牌经营云</p>
           <p className="text-xs text-slate-500">品牌经营工作区</p>
         </div>
       </div>

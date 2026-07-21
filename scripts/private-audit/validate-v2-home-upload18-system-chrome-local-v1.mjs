@@ -288,24 +288,20 @@ const clickText = async (client, text, selector = "button") => {
   await wait(200);
 };
 
-const setControlValueByLabel = async (client, labelText, value) => {
+const setControlValueBySelector = async (client, selector, value) => {
   await evaluate(
     client,
     `(() => {
-      const label = Array.from(document.querySelectorAll('label')).find((element) =>
-        (element.textContent ?? '').includes(${JSON.stringify(labelText)}),
-      );
-      if (!(label instanceof HTMLElement)) throw new Error("form_label_missing");
-      const control = label.querySelector('select, input');
-      if (!(control instanceof HTMLSelectElement || control instanceof HTMLInputElement)) {
+      const control = document.querySelector(${JSON.stringify(selector)});
+      if (!(control instanceof HTMLInputElement || control instanceof HTMLSelectElement)) {
         throw new Error("form_control_missing");
       }
       const setter = control instanceof HTMLSelectElement
-        ? Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value')?.set
-        : Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+        ? Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value")?.set
+        : Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
       setter?.call(control, ${JSON.stringify(value)});
-      control.dispatchEvent(new Event('input', { bubbles: true }));
-      control.dispatchEvent(new Event('change', { bubbles: true }));
+      control.dispatchEvent(new Event("input", { bubbles: true }));
+      control.dispatchEvent(new Event("change", { bubbles: true }));
       return true;
     })()`,
   );
@@ -394,14 +390,24 @@ const setInputFiles = async (client, filePaths, {
   inputSelector = '[data-testid="upload-page-v2-multiple-input"]',
   clickBySelector = false,
 } = {}) => {
-  await client.send("Page.setInterceptFileChooserDialog", { enabled: true });
-  const chooserPromise = client.waitForEvent("Page.fileChooserOpened", 10000);
-  if (clickBySelector) await nativeClickSelector(client, clickSelector);
-  else await nativeClickText(client, clickTextValue, clickSelector);
-  const chooser = await chooserPromise;
-  if (!chooser?.backendNodeId) throw new Error("file_chooser_backend_node_missing");
-  await client.send("DOM.setFileInputFiles", { backendNodeId: chooser.backendNodeId, files: filePaths });
-  await client.send("Page.setInterceptFileChooserDialog", { enabled: false });
+  await client.send("DOM.enable");
+  const documentNode = await client.send("DOM.getDocument", { depth: -1, pierce: true });
+  const inputNode = await client.send("DOM.querySelector", {
+    nodeId: documentNode.root.nodeId,
+    selector: inputSelector,
+  });
+  if (inputNode.nodeId) {
+    await client.send("DOM.setFileInputFiles", { nodeId: inputNode.nodeId, files: filePaths });
+  } else {
+    await client.send("Page.setInterceptFileChooserDialog", { enabled: true });
+    const chooserPromise = client.waitForEvent("Page.fileChooserOpened", 10000);
+    if (clickBySelector) await nativeClickSelector(client, clickSelector);
+    else await nativeClickText(client, clickTextValue, clickSelector);
+    const chooser = await chooserPromise;
+    if (!chooser?.backendNodeId) throw new Error("file_chooser_backend_node_missing");
+    await client.send("DOM.setFileInputFiles", { backendNodeId: chooser.backendNodeId, files: filePaths });
+    await client.send("Page.setInterceptFileChooserDialog", { enabled: false });
+  }
   return evaluate(
     client,
     `(() => {
@@ -422,42 +428,33 @@ const importCounts = (client) =>
     })()`,
   );
 
-const fourSourceFilePaths = (files) => {
-  const find = (pattern) => files.find((filePath) => pattern.test(path.basename(filePath)));
-  const selected = {
-    businessProduct: find(/^【生意参谋平台】商品_全部_2026-06-30_2026-06-30\.xls$/),
-    adProduct: find(/^商品报表_20260701_160039\.csv$/),
-    adPlan: find(/^计划报表_20260701_160014\.csv$/),
-    afterSales: find(/^4051124186_1782897394563_919\.xlsx$/),
-  };
-  const missing = Object.entries(selected).filter(([, filePath]) => !filePath).map(([key]) => key);
-  check("v05FourSourceCandidateFilesAvailable", missing.length === 0, { selected, missing });
-  return [selected.businessProduct, selected.adProduct, selected.adPlan, selected.afterSales];
-};
-
 const targetCenterPreconditionRegression = async (client) => {
   await setViewport(client, 1440, 1000);
-  await navigate(client, "/v2/target-center", "main");
-  await waitForExpression(client, `document.readyState === "complete"`, 30000);
-  await wait(1500);
+  await navigate(client, "/v2/target-center", "[data-testid='v2-brand-target-center']");
+  await waitForExpression(client, `!Array.from(document.querySelectorAll('[data-testid="v2-brand-target-center"] button')).find((button) => (button.textContent ?? '').trim() === '保存目标')?.disabled`, 30000);
   const preconditionState = await evaluate(
     client,
     `(() => {
-      const links = Array.from(document.querySelectorAll('a')).map((link) => ({ text: (link.textContent ?? '').trim(), href: link.getAttribute('href') }));
+      const main = document.querySelector('main');
+      const buttons = Array.from(main?.querySelectorAll('button') ?? []);
       return {
-        body: document.body.innerText,
-        hasRuntimeButNoTargetFoundationCopy: document.body.innerText.includes("经营数据已导入，但目标中心数据底座尚未初始化") || document.body.innerText.includes("18 文件经营数据"),
-        hasFoundationAction: links.some((link) => link.text.includes("数据接入") && link.href?.startsWith("/v2/upload")),
-        hasDataHealthAction: links.some((link) => link.text.includes("数据健康") && link.href?.startsWith("/v2/data-health")),
-        hasDeleteButton: Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '删除'),
+        body: main?.textContent ?? '',
+        hasIndependentCopy: (main?.textContent ?? '').includes("目标设置独立于数据上传"),
+        brandEnabled: buttons.some((button) => (button.textContent ?? '').trim() === '品牌' && !button.disabled),
+        storeDisabled: buttons.some((button) => (button.textContent ?? '').trim() === '店铺' && button.disabled),
+        hasSaveButton: buttons.some((button) => (button.textContent ?? '').trim() === '保存目标' && !button.disabled),
+        hasUploadFoundationCopy: (main?.textContent ?? '').includes("目标中心数据底座"),
+        hasDeleteButton: buttons.some((button) => (button.textContent ?? '').trim() === '删除'),
       };
     })()`,
   );
   check(
-    "targetCenterExplainsRuntimeVsV05FoundationPrecondition",
-    preconditionState.hasRuntimeButNoTargetFoundationCopy &&
-      preconditionState.hasFoundationAction &&
-      preconditionState.hasDataHealthAction &&
+    "targetCenterBrandTargetsAvailableBeforeOperatingUpload",
+    preconditionState.hasIndependentCopy &&
+      preconditionState.brandEnabled &&
+      preconditionState.storeDisabled &&
+      preconditionState.hasSaveButton &&
+      preconditionState.hasUploadFoundationCopy === false &&
       preconditionState.hasDeleteButton === false,
     preconditionState,
   );
@@ -465,170 +462,279 @@ const targetCenterPreconditionRegression = async (client) => {
 };
 
 const targetCenterWritableRegression = async (client) => {
-  await navigate(client, "/v2/target-center", "main");
-  await waitForExpression(client, `document.body.innerText.includes("目标中心") && document.body.innerText.includes("目标设置说明")`, 30000);
+  await navigate(client, "/v2/target-center", "[data-testid='v2-brand-target-center']");
+  await waitForExpression(client, `!Array.from(document.querySelectorAll('button')).find((button) => (button.textContent ?? '').trim() === '保存目标')?.disabled`, 30000);
   const initialState = await evaluate(
     client,
     `(() => ({
-      hasBoundary: document.body.innerText.includes("目标设置说明") && document.body.innerText.includes("周、自定义和多月目标暂未开放"),
+      hasBoundary: document.body.innerText.includes("目标设置独立于数据上传") && document.body.innerText.includes("不需要额外上传“目标底座”"),
       hasDeleteButton: Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '删除'),
-      hasWriteTruthCopy: document.body.innerText.includes("点击保存后会写入当前浏览器的目标数据"),
+      hasBrandInput: Boolean(document.querySelector('#v2-target-brand-conversionRate')),
     }))()`,
   );
-  check("targetCenterBoundaryAndNoDelete", initialState.hasBoundary && initialState.hasDeleteButton === false, initialState);
+  check("targetCenterIndependentBoundaryAndNoDelete", initialState.hasBoundary && initialState.hasDeleteButton === false && initialState.hasBrandInput, initialState);
 
-  await clickText(client, "新建目标");
-  await waitForExpression(client, `document.querySelector('[role="dialog"]')?.textContent?.includes("新建目标")`, 10000);
-  const drawerCopy = await evaluate(client, `document.querySelector('[role="dialog"]')?.textContent ?? ""`);
-  check("targetCenterTruthfulSaveCopy", String(drawerCopy).includes("点击保存后会写入当前浏览器的目标数据"), { drawerCopy });
-
-  await setControlValueByLabel(client, "目标层级", "store");
-  await waitForExpression(client, `document.querySelector('[role="dialog"]')?.textContent?.includes("平台和店铺")`, 10000);
-  const storeScopeDrawerState = await evaluate(
-    client,
-    `(() => {
-      const dialog = document.querySelector('[role="dialog"]');
-      const labelCount = Array.from(dialog?.querySelectorAll('span') ?? []).filter((element) => (element.textContent ?? '').trim() === '平台和店铺').length;
-      return {
-        labelCount,
-        drawerText: dialog?.textContent ?? '',
-      };
-    })()`,
-  );
-  check("targetCenterStoreScopeShowsSinglePlatformStoreLabel", storeScopeDrawerState.labelCount === 1, storeScopeDrawerState);
-
-  await setControlValueByLabel(client, "指标", "conversionRate");
-  await setControlValueByLabel(client, "目标值", "92%");
-  await setControlValueByLabel(client, "父目标关系", "");
-  await clickText(client, "保存目标", "[role='dialog'] button");
+  await setControlValueBySelector(client, "#v2-target-brand-conversionRate", "92");
+  await clickText(client, "保存目标", "[data-testid='v2-brand-target-center'] button");
   await waitForExpression(
     client,
-    `(() => {
-      const text = document.body.innerText;
-      return !document.querySelector('[role="dialog"]') ||
-        text.includes("保存成功") ||
-        text.includes("请明确选择独立目标") ||
-        text.includes("目标值必须大于 0") ||
-        text.includes("百分比目标需保存") ||
-        text.includes("父目标不符合") ||
-        text.includes("当前目标指标不在") ||
-        text.includes("保存前数据校验失败") ||
-        text.includes("当前数据已被其他操作更新") ||
-        text.includes("本地保存");
-    })()`,
+    `document.body.innerText.includes("已保存 1 项品牌目标。")`,
     30000,
   );
   const saveAttemptState = await evaluate(
     client,
     `(() => ({
       body: document.body.innerText,
-      hasSuccess: document.body.innerText.includes("保存成功"),
-      hasPercentTarget: document.body.innerText.includes("92%"),
-      dialogOpen: Boolean(document.querySelector('[role="dialog"]')),
+      hasSuccess: document.body.innerText.includes("已保存 1 项品牌目标。"),
+      percentValue: document.querySelector('#v2-target-brand-conversionRate')?.value ?? null,
     }))()`,
   );
-  check("targetCenterPercentTargetSaveSucceeds", saveAttemptState.hasSuccess && saveAttemptState.hasPercentTarget, saveAttemptState);
+  check("targetCenterPercentTargetSaveSucceeds", saveAttemptState.hasSuccess && saveAttemptState.percentValue === "92", saveAttemptState);
 
   await reloadPage(client);
-  await waitForExpression(client, `document.body.innerText.includes("目标中心") && document.body.innerText.includes("92%")`, 30000);
+  await waitForExpression(client, `document.querySelector('#v2-target-brand-conversionRate')?.value === "92"`, 30000);
   const savedState = await evaluate(
     client,
     `(() => ({
-      hasPercentTarget: document.body.innerText.includes("92%"),
-      hasPauseButton: Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '暂停'),
+      percentValue: document.querySelector('#v2-target-brand-conversionRate')?.value ?? null,
+      hasPauseButton: Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '暂停此目标'),
       hasDeleteButton: Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '删除'),
     }))()`,
   );
-  check("targetCenterPercentTargetSavedAndReadBack", savedState.hasPercentTarget && savedState.hasPauseButton && savedState.hasDeleteButton === false, savedState);
+  check("targetCenterPercentTargetSavedAndReadBack", savedState.percentValue === "92" && savedState.hasPauseButton && savedState.hasDeleteButton === false, savedState);
 
-  await clickText(client, "暂停");
-  await waitForExpression(client, `document.body.innerText.includes("保存成功") && document.body.innerText.includes("重新启用")`, 30000);
+  await clickText(client, "暂停此目标");
+  await waitForExpression(client, `document.body.innerText.includes("目标状态已更新。") && document.body.innerText.includes("重新启用")`, 30000);
   await reloadPage(client);
   await waitForExpression(client, `document.body.innerText.includes("目标中心") && document.body.innerText.includes("重新启用")`, 30000);
   const pausedState = await evaluate(
     client,
     `(() => ({
-      hasPaused: document.body.innerText.includes("暂停"),
       hasReactivateButton: Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '重新启用'),
-      hasPercentTarget: document.body.innerText.includes("92%"),
+      percentValue: document.querySelector('#v2-target-brand-conversionRate')?.value ?? null,
     }))()`,
   );
-  check("targetCenterPauseStateReadsBack", pausedState.hasReactivateButton && pausedState.hasPercentTarget, pausedState);
+  check("targetCenterPauseStateReadsBack", pausedState.hasReactivateButton && pausedState.percentValue === "92", pausedState);
 
   await clickText(client, "重新启用");
-  await waitForExpression(client, `document.body.innerText.includes("保存成功") && Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '暂停')`, 30000);
+  await waitForExpression(client, `document.body.innerText.includes("目标状态已更新。") && Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '暂停此目标')`, 30000);
   const reactivatedState = await evaluate(
     client,
     `(() => ({
-      hasPauseButton: Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '暂停'),
-      hasPercentTarget: document.body.innerText.includes("92%"),
+      hasPauseButton: Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '暂停此目标'),
+      percentValue: document.querySelector('#v2-target-brand-conversionRate')?.value ?? null,
       hasDeleteButton: Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '删除'),
     }))()`,
   );
-  check("targetCenterReactivateKeepsTarget", reactivatedState.hasPauseButton && reactivatedState.hasPercentTarget && reactivatedState.hasDeleteButton === false, reactivatedState);
+  check("targetCenterReactivateKeepsTarget", reactivatedState.hasPauseButton && reactivatedState.percentValue === "92" && reactivatedState.hasDeleteButton === false, reactivatedState);
   return { initialState, savedState, pausedState, reactivatedState };
 };
 
-const targetFoundationImportRegression = async (client, files) => {
-  const fourFiles = fourSourceFilePaths(files);
-  await setViewport(client, 1440, 1200);
-  await navigate(client, "/v2/upload", "[data-testid='v2-upload-target-foundation']");
-  await waitForExpression(
+const uploadTargetFoundationRemovedRegression = async (client) => {
+  await navigate(client, "/v2/upload", "[data-testid='upload-page-v1-dashboard']");
+  await waitForExpression(client, `document.readyState === "complete"`, 30000);
+  const state = await evaluate(
     client,
-    `document.body.innerText.includes("目标中心数据底座") && document.body.innerText.includes("下方四类报表用于初始化目标中心")`,
-    30000,
+    `(() => ({
+      hasTargetFoundation: Boolean(document.querySelector('[data-testid="v2-upload-target-foundation"]')) || document.body.innerText.includes("目标中心数据底座"),
+      replaceChecked: Boolean(Array.from(document.querySelectorAll('input[type="radio"]')).find((input) => input.checked && input.closest('label')?.textContent?.includes("替换当前品牌数据"))),
+      hasAdapterBoundary: document.body.innerText.includes("当前真实文件适配器只开放天猫") && document.body.innerText.includes("京东/抖音仍需独立授权与字段验证"),
+    }))()`,
   );
-  const selectedFileCount = await setInputFiles(client, fourFiles, {
-    clickSelector: "label[for='v05-batch-file-input']",
-    inputSelector: "[data-testid='v05-batch-file-input']",
-    clickBySelector: true,
-  });
-  check("v05FoundationInputReceivesFourSourceFiles", selectedFileCount === 4, { selectedFileCount, fourFiles });
-  await waitForExpression(
+  check("v2UploadRemovesTargetFoundationAndDefaultsToReplace", state.hasTargetFoundation === false && state.replaceChecked && state.hasAdapterBoundary, state);
+  return state;
+};
+
+const homeCustomComparisonRegression = async (client) => {
+  await navigate(client, "/v2/home", "[data-testid='v2-home-dashboard']");
+  await waitForHomeReady(client, 45000);
+  await clickText(client, "自定义", "[data-testid='v2-home-toolbar'] button");
+  await waitForExpression(client, `Boolean(document.querySelector('#v2-home-custom-start')) && Boolean(document.querySelector('#v2-home-custom-end'))`, 10000);
+  const currentRange = await evaluate(
+    client,
+    `(() => ({
+      start: document.querySelector('#v2-home-custom-start')?.value ?? '',
+      end: document.querySelector('#v2-home-custom-end')?.value ?? '',
+    }))()`,
+  );
+  await setControlValueBySelector(client, "#v2-home-custom-start", currentRange.start);
+  await setControlValueBySelector(client, "#v2-home-custom-end", currentRange.end);
+  await clickText(client, "应用", "[data-testid='v2-home-toolbar'] button");
+  await waitForExpression(client, `!document.querySelector('#v2-home-custom-start')`, 10000);
+  const customState = await evaluate(
     client,
     `(() => {
-      const text = document.body.innerText;
-      return text.includes("四类报表已完整识别，可以点击导入。") ||
-        text.includes("文件识别未通过") ||
-        text.includes("还缺少：") ||
-        text.includes("存在重复来源") ||
-        text.includes("存在未识别文件") ||
-        text.includes("存在读取失败文件");
+      const custom = Array.from(document.querySelectorAll('[data-testid="v2-home-toolbar"] button')).find((button) => (button.textContent ?? '').trim() === '自定义');
+      return {
+        start: ${JSON.stringify(currentRange.start)},
+        end: ${JSON.stringify(currentRange.end)},
+        active: custom?.className.includes('text-blue-700') ?? false,
+      };
     })()`,
-    120000,
   );
-  const detectionState = await evaluate(
+  check("homeCustomRangeRequiresExplicitApplyAndActivates", customState.active && Boolean(customState.start) && Boolean(customState.end), customState);
+
+  await clickText(client, "环比", "[aria-label='指标区间对比'] button");
+  await waitForExpression(client, `Array.from(document.querySelectorAll('[aria-label="指标区间对比"] button')).some((button) => (button.textContent ?? '').trim() === '环比' && button.getAttribute('aria-pressed') === 'true')`, 10000);
+  const previousPeriodState = await evaluate(
     client,
     `(() => ({
-      body: document.body.innerText,
-      hasCompleteMessage: document.body.innerText.includes("四类报表已完整识别，可以点击导入。"),
-      hasBusinessProduct: document.body.innerText.includes("生意参谋商品表") && document.body.innerText.includes("已识别"),
-      hasAdProduct: document.body.innerText.includes("商品推广报表") && document.body.innerText.includes("已识别"),
-      hasAdPlan: document.body.innerText.includes("计划推广报表") && document.body.innerText.includes("已识别"),
-      hasAfterSales: document.body.innerText.includes("售后退货表") && document.body.innerText.includes("已识别"),
+      pressed: Array.from(document.querySelectorAll('[aria-label="指标区间对比"] button')).some((button) => (button.textContent ?? '').trim() === '环比' && button.getAttribute('aria-pressed') === 'true'),
+      hasMetricCopy: document.querySelector('[data-metric-key="gmv"]')?.textContent?.includes('环比') ?? false,
+      hasReferenceCopy: document.body.innerText.includes('环比参考期'),
     }))()`,
   );
-  check(
-    "v05FoundationFourSourcesDetected",
-    detectionState.hasCompleteMessage &&
-      detectionState.hasBusinessProduct &&
-      detectionState.hasAdProduct &&
-      detectionState.hasAdPlan &&
-      detectionState.hasAfterSales,
-    detectionState,
-  );
-  await clickText(client, "导入", "[data-testid='v2-upload-target-foundation'] button");
-  await waitForExpression(client, `document.body.innerText.includes("导入完成，V2 数据集已激活。") || document.body.innerText.includes("这批文件已经导入过")`, 120000);
-  const importState = await evaluate(
+  check("homePreviousPeriodControlHasTruthfulReferenceState", previousPeriodState.pressed && previousPeriodState.hasMetricCopy && previousPeriodState.hasReferenceCopy, previousPeriodState);
+
+  await clickText(client, "同比", "[aria-label='指标区间对比'] button");
+  await waitForExpression(client, `Array.from(document.querySelectorAll('[aria-label="指标区间对比"] button')).some((button) => (button.textContent ?? '').trim() === '同比' && button.getAttribute('aria-pressed') === 'true')`, 10000);
+  const yoyState = await evaluate(
     client,
     `(() => ({
-      body: document.body.innerText,
-      hasHistoryLink: Array.from(document.querySelectorAll('[data-testid="v2-upload-target-foundation"] a')).some((link) => link.getAttribute('href')?.startsWith('/v2/upload/history')),
-      hasQualityLink: Array.from(document.querySelectorAll('[data-testid="v2-upload-target-foundation"] a')).some((link) => link.getAttribute('href')?.startsWith('/v2/data-health')),
+      pressed: Array.from(document.querySelectorAll('[aria-label="指标区间对比"] button')).some((button) => (button.textContent ?? '').trim() === '同比' && button.getAttribute('aria-pressed') === 'true'),
+      hasMetricCopy: document.querySelector('[data-metric-key="gmv"]')?.textContent?.includes('同比') ?? false,
+      hasReferenceCopy: document.body.innerText.includes('同比参考期'),
     }))()`,
   );
-  check("v05FoundationImportActivatesDatasetAndKeepsV2Links", importState.hasHistoryLink && importState.hasQualityLink, importState);
-  return { fourFiles, detectionState, importState };
+  check("homeYoyControlHasTruthfulReferenceState", yoyState.pressed && yoyState.hasMetricCopy && yoyState.hasReferenceCopy, yoyState);
+  await clickText(client, "关闭", "[aria-label='指标区间对比'] button");
+  return { customState, previousPeriodState, yoyState };
+};
+
+const unifiedRouteRegression = async (client) => {
+  const specs = [
+    { route: "/v2/series-board", selector: "[data-testid='v2-series-board-dashboard']", name: "series" },
+    { route: "/v2/store-board", selector: "[data-testid='v2-store-board-dashboard']", name: "store" },
+    { route: "/v2/product-board", selector: "[data-testid='v2-product-board-dashboard']", name: "product" },
+    { route: "/v2/data-health", selector: "[data-testid='v2-runtime-data-health']", name: "dataHealth" },
+    { route: "/v2/upload/history", selector: "[data-testid='v2-runtime-import-history']", name: "history" },
+  ];
+  const states = {};
+  for (const spec of specs) {
+    await navigate(client, spec.route, spec.selector);
+    await waitForExpression(client, `!document.body.innerText.includes("正在读取")`, 45000);
+    const state = await evaluate(
+      client,
+      `(() => ({
+        pathname: window.location.pathname,
+        hasReadySelector: Boolean(document.querySelector(${JSON.stringify(spec.selector)})),
+        hasUploadPrompt: Array.from(document.querySelectorAll('main a')).some((link) => (link.textContent ?? '').includes('前往数据接入')),
+        body: document.querySelector('main')?.textContent ?? '',
+      }))()`,
+    );
+    check(`unifiedRuntimeRoute.${spec.name}`, state.pathname === spec.route && state.hasReadySelector && state.hasUploadPrompt === false, state);
+    states[spec.name] = state;
+  }
+  check("dataHealthAndHistoryUseActiveRuntimeSnapshot", states.dataHealth.body.includes("当前活动") && states.history.body.includes("当前活动"), {
+    dataHealth: states.dataHealth.body,
+    history: states.history.body,
+  });
+  return states;
+};
+
+const seriesConfigurationRegression = async (client) => {
+  await navigate(client, "/v2/series-board", "[data-testid='v2-brand-series-manager']");
+  for (let index = 1; index <= 6; index += 1) {
+    await setControlValueBySelector(client, '[data-testid="v2-brand-series-manager"] input[placeholder="新系列名称"]', `E2E系列${index}`);
+    await clickText(client, "创建系列", "[data-testid='v2-brand-series-manager'] button");
+    await waitForExpression(client, `document.querySelector('[data-testid="v2-brand-series-manager"]')?.textContent?.includes("共 ${index} 个")`, 10000);
+    if (index === 1) {
+      await waitForExpression(client, `Boolean(document.querySelector('[data-testid="v2-brand-series-manager"] input[type="checkbox"]'))`, 45000);
+      await click(client, '[data-testid="v2-brand-series-manager"] input[type="checkbox"]');
+      await waitForExpression(client, `document.body.innerText.includes("系列商品范围已保存。")`, 10000);
+    }
+  }
+  const managerState = await evaluate(
+    client,
+    `(() => {
+      const manager = document.querySelector('[data-testid="v2-brand-series-manager"]');
+      return {
+        body: manager?.textContent ?? '',
+        dashboardBadges: Array.from(manager?.querySelectorAll('button span') ?? []).filter((item) => (item.textContent ?? '').trim() === '驾驶舱').length,
+        hasUploadPrompt: Array.from(document.querySelectorAll('main a')).some((link) => (link.textContent ?? '').includes('前往数据接入')),
+      };
+    })()`,
+  );
+  check("seriesCenterSupportsMoreThanFiveAndCapsHomeAtFive", managerState.body.includes("共 6 个 · 驾驶舱 5/5") && managerState.dashboardBadges === 5 && managerState.hasUploadPrompt === false, managerState);
+
+  await navigate(client, "/v2/home", "[data-testid='v2-home-dashboard']");
+  await waitForHomeReady(client, 45000);
+  await waitForExpression(client, `document.querySelector('[data-testid="v2-home-key-series"]')?.textContent?.includes("E2E系列1")`, 30000);
+  const homeSeriesState = await evaluate(
+    client,
+    `(() => ({
+      body: document.querySelector('[data-testid="v2-home-key-series"]')?.textContent ?? '',
+      insideMetricPanel: document.querySelector('[data-home-region="metrics"] [data-testid="v2-home-key-series"]') !== null,
+    }))()`,
+  );
+  check("selectedSeriesAppearsInsideHomeMetricPanel", homeSeriesState.body.includes("E2E系列1") && homeSeriesState.insideMetricPanel, homeSeriesState);
+  return { managerState, homeSeriesState };
+};
+
+const homeGmvValue = async (client) => evaluate(
+  client,
+  `(() => {
+    const value = document.querySelector('[data-metric-key="gmv"] p[title]')?.getAttribute('title') ?? '';
+    const parsed = Number(value.replace(/[^0-9.-]+/g, ''));
+    return Number.isFinite(parsed) ? parsed : null;
+  })()`,
+);
+
+const appendSecondStoreRegression = async (client, files, firstGmv) => {
+  await navigate(client, "/v2/upload", "[data-testid='upload-page-v1-dashboard']");
+  await waitForExpression(client, `document.readyState === "complete"`, 30000);
+  await wait(500);
+  await setControlValueBySelector(client, 'input[placeholder="店铺名称"]', "E2E第二店");
+  await setControlValueBySelector(client, 'input[placeholder^="店铺 ID"]', "e2e-store-2");
+  await clickText(client, "添加并选择");
+  await waitForExpression(client, `document.body.innerText.includes("新店铺已选为本次上传目标")`, 10000);
+  const preUploadState = await evaluate(
+    client,
+    `(() => ({
+      selectedStore: document.querySelector('select')?.value ?? null,
+      appendChecked: Boolean(Array.from(document.querySelectorAll('input[type="radio"]')).find((input) => input.checked && input.closest('label')?.textContent?.includes("追加店铺/批次"))),
+    }))()`,
+  );
+  check("secondStoreDefaultsToExplicitAppend", preUploadState.selectedStore === "tmall::e2e-store-2" && preUploadState.appendChecked, preUploadState);
+  const selectedFileCount = await setInputFiles(client, files);
+  check("secondStoreUploadReceives18Files", selectedFileCount === 18, { selectedFileCount });
+  await waitForExpression(client, `document.querySelectorAll('[data-testid="upload-page-v2-recognition-item"]').length === 18`, 120000);
+  await click(client, "[data-testid='upload-page-v2-import-button']");
+  await waitForExpression(client, `Boolean(document.querySelector('[data-testid="upload-page-v2-result-summary"]'))`, 120000);
+  const counts = await importCounts(client);
+  check("secondStoreUpload18Counts", counts.success === 18 && counts.failed === 0 && counts.skipped === 0, counts);
+
+  await navigate(client, "/v2/home", "[data-testid='v2-home-dashboard']");
+  await waitForHomeReady(client, 45000);
+  await waitForExpression(client, `document.querySelector('[data-testid="v2-home-toolbar"]')?.textContent?.includes("全部店铺 (2)")`, 30000);
+  const secondGmv = await homeGmvValue(client);
+  const state = await evaluate(
+    client,
+    `(() => ({
+      toolbar: document.querySelector('[data-testid="v2-home-toolbar"]')?.textContent ?? '',
+      storeCheckboxes: document.querySelectorAll('[data-testid="v2-home-toolbar"] details input[type="checkbox"]').length,
+    }))()`,
+  );
+  const expected = typeof firstGmv === "number" ? firstGmv * 2 : null;
+  const tolerance = expected === null ? null : Math.max(0.02, Math.abs(expected) * 0.000001);
+  check("twoStoreHomeAggregatesWithoutCrossStoreDedup", expected !== null && secondGmv !== null && Math.abs(secondGmv - expected) <= tolerance && state.storeCheckboxes === 2, {
+    firstGmv,
+    secondGmv,
+    expected,
+    tolerance,
+    ...state,
+  });
+
+  await navigate(client, "/v2/data-health", "[data-testid='v2-runtime-data-health']");
+  const healthState = await evaluate(
+    client,
+    `(() => ({
+      body: document.querySelector('main')?.textContent ?? '',
+      snapshotRows: document.querySelectorAll('[data-testid="v2-runtime-data-health"] section:last-child > div:last-child > div').length,
+    }))()`,
+  );
+  check("appendStrategyAndSnapshotAuditVisible", healthState.body.includes("追加导入") && healthState.body.includes("append") && healthState.body.includes("仅审计"), healthState);
+  return { preUploadState, counts, firstGmv, secondGmv, healthState };
 };
 
 const capture = async (client, name) => {
@@ -734,6 +840,13 @@ const run = async () => {
       { emptyStateText },
     );
 
+    currentStage = "v2_target_center_without_operating_data";
+    const targetCenterPreconditionState = await targetCenterPreconditionRegression(client);
+    const targetCenterWritableState = await targetCenterWritableRegression(client);
+
+    currentStage = "v2_upload_target_foundation_removed";
+    const uploadTargetFoundationState = await uploadTargetFoundationRemovedRegression(client);
+
     currentStage = "login";
     await navigate(client, "/login", "button");
     await submitLoginAfterHydration(client);
@@ -770,12 +883,23 @@ const run = async () => {
     );
     check("v2HomeShows17Metrics", homeState.metricCount === 17, homeState);
     check(
-      "v2HomeNoLongerShowsSafeSkip",
-      String(homeState.dataHealthText).includes("跳过文件0") || String(homeState.dataHealthText).includes("安全跳过0"),
+      "v2HomeTrendFooterHealthRowRemoved",
+      homeState.dataHealthText === "",
       homeState,
     );
     check("v2HomeLeavesEmptyState", homeState.hasUploadPrompt === false, homeState);
+    const firstStoreGmv = await homeGmvValue(client);
+    check("v2HomeGmvIsNumericAfterUpload", typeof firstStoreGmv === "number" && firstStoreGmv > 0, { firstStoreGmv });
     const homeDesktopScreenshot = await capture(client, "v2-home-desktop");
+
+    currentStage = "v2_home_custom_and_comparison";
+    const homeInteractionState = await homeCustomComparisonRegression(client);
+
+    currentStage = "v2_unified_runtime_routes";
+    const unifiedRouteState = await unifiedRouteRegression(client);
+
+    currentStage = "v2_series_configuration";
+    const seriesConfigurationState = await seriesConfigurationRegression(client);
 
     currentStage = "metric_settings_customize";
     await clickText(client, "指标设置");
@@ -828,7 +952,7 @@ const run = async () => {
     check(
       "refreshPreservesMetricSubsetAndOrdering",
       refreshedState.metricCount === 15 &&
-        (String(refreshedState.dataHealthText).includes("跳过文件0") || String(refreshedState.dataHealthText).includes("安全跳过0")) &&
+        refreshedState.dataHealthText === "" &&
         refreshedState.firstMetricKey === "gsv" &&
         refreshedState.hasAdRoi === false &&
         refreshedState.hasBrandVisitors === false,
@@ -882,14 +1006,8 @@ const run = async () => {
     check("mobileHomeHasNoPageWideOverflow", mobileSafety.horizontalOverflow === false, mobileSafety);
     const homeMobileScreenshot = await capture(client, "v2-home-mobile");
 
-    currentStage = "v2_target_center_runtime_precondition";
-    const targetCenterPreconditionState = await targetCenterPreconditionRegression(client);
-
-    currentStage = "v2_target_foundation_import";
-    const targetFoundationState = await targetFoundationImportRegression(client, files);
-
-    currentStage = "v2_target_center_writable_regression";
-    const targetCenterWritableState = await targetCenterWritableRegression(client);
+    currentStage = "v2_second_store_append";
+    const appendSecondStoreState = await appendSecondStoreRegression(client, files, firstStoreGmv);
 
     if (CLEANUP_AFTER_REGRESSION) {
       currentStage = "cleanup_after_regression";
@@ -917,9 +1035,14 @@ const run = async () => {
           resetState,
           resetRefreshedState,
           mobileSafety,
+          firstStoreGmv,
+          homeInteractionState,
+          unifiedRouteState,
+          seriesConfigurationState,
           targetCenterPreconditionState,
-          targetFoundationState,
           targetCenterWritableState,
+          uploadTargetFoundationState,
+          appendSecondStoreState,
           cleanupState,
         },
         null,

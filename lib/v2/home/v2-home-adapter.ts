@@ -30,10 +30,18 @@ import {
   type StoreScope,
 } from "@/lib/v05/domain/models";
 import {
+  activeBrandWorkspace,
+  debugDatabaseNameForBrand,
+  loadBrandWorkspaceState,
+  runtimeDatabaseNameForBrand,
+  targetDatabaseNameForBrand,
+} from "@/lib/v2/workspace/brand-workspace";
+import {
   V2_HOME_METRIC_KEYS,
   type V2HomeChartMode,
   type V2HomeChartPair,
   type V2HomeComparisonMode,
+  type V2HomeComparisonState,
   type V2HomeContextPatch,
   type V2HomeDataHealthSummary,
   type V2HomeLoadOptions,
@@ -397,6 +405,7 @@ const isPlatformCode = (value: string): value is PlatformCode =>
 
 const buildScope = (
   source: BIHomeDataSource,
+  brand: { id: string; name: string },
   selectedPlatformInput: string | null | undefined,
   selectedStoreInput: string[] | undefined,
 ): V2HomeScope => {
@@ -430,8 +439,8 @@ const buildScope = (
     );
 
   return {
-    brandId: "airburg",
-    brandName: "空气堡",
+    brandId: brand.id,
+    brandName: brand.name,
     selectedPlatform,
     selectedStoreIds,
     platformOptions: platforms.map((platformCode) => ({
@@ -499,16 +508,22 @@ const loadPlatformTargetRecords = async (
   scope: V2HomeScope,
   range: V2HomeTimeRange,
 ): Promise<TargetDraftRecord[]> => {
-  if (!scope.selectedPlatform || scope.selectedStoreIds.length !== 1) return [];
   const targetMonth = targetMonthForRange(range);
   if (!targetMonth) return [];
-  const result = await loadActiveTargetDrafts({
+  const databaseName = targetDatabaseNameForBrand(scope.brandId);
+  const brandResult = await loadActiveTargetDrafts({
+    scope: "brand",
+    month: targetMonth,
+  }, { databaseName });
+  if (brandResult.status === "ok") return brandResult.records;
+  if (!scope.selectedPlatform || scope.selectedStoreIds.length !== 1) return [];
+  const platformResult = await loadActiveTargetDrafts({
     scope: "platform",
     platformCode: scope.selectedPlatform,
     storeId: scope.selectedStoreIds[0],
     month: targetMonth,
-  });
-  return result.status === "ok" ? result.records : [];
+  }, { databaseName });
+  return platformResult.status === "ok" ? platformResult.records : [];
 };
 
 const targetRuleForMetric = (metricKey: V2HomeMetricKey): V2HomeTargetRule => {
@@ -605,13 +620,18 @@ const metricCards = ({
   state,
   range,
   targetDrafts,
+  comparison,
 }: {
   source: BIHomeDataSource;
   state: UIState;
   range: V2HomeTimeRange;
   targetDrafts: Record<string, number>;
+  comparison: ReturnType<typeof comparisonState>;
 }): V2HomeMetricCard[] => {
   const viewModel = buildHomeBIViewModel(source, state);
+  const referenceValues = comparison.referenceRange
+    ? metricsByKeyForRange(source, state, { mode: "custom", ...comparison.referenceRange })
+    : null;
   return V2_HOME_METRIC_CONTRACTS.map((contract) => {
     const legacyTitle = LEGACY_TITLE_BY_KEY[contract.metricKey];
     const legacyCard = legacyTitle
@@ -621,6 +641,11 @@ const metricCards = ({
       ? null
       : finiteOrNull(legacyCard?.rawValue);
     const sourceStatus = sourceStatusForMetric(contract, actual);
+    const referenceValue = referenceValues?.get(contract.metricKey) ?? null;
+    const changeRate = actual !== null && referenceValue !== null && referenceValue !== 0
+      ? (actual - referenceValue) / Math.abs(referenceValue)
+      : null;
+    const comparisonLabel = comparison.mode === "yoy" ? "同比" : "环比";
     return {
       ...contract,
       actual: formatV2HomeMetricValue(actual, contract.format),
@@ -628,6 +653,19 @@ const metricCards = ({
       sourceStatus,
       note: noteForMetric(contract, sourceStatus),
       target: targetOverlayForMetric({ contract, legacyCard, targetDrafts, range }),
+      comparison: comparison.mode === "none" || !comparison.referenceRange
+        ? null
+        : {
+            mode: comparison.mode,
+            label: comparisonLabel,
+            referenceRange: comparison.referenceRange,
+            referenceValue,
+            changeRate,
+            formatted: changeRate === null
+              ? `${comparisonLabel}不可比`
+              : `${comparisonLabel}${changeRate > 0 ? "+" : ""}${formatNumber(changeRate * 100, 1)}%`,
+            available: changeRate !== null,
+          },
     };
   });
 };
@@ -723,13 +761,15 @@ const seriesCards = async ({
         (!scope.selectedPlatform || series.platformCode === scope.selectedPlatform) &&
         scope.selectedStoreIds.includes(series.storeId) &&
         series.productIds.length > 0,
-    )
-    .slice(0, 5);
-  if (eligibleDefinitions.length === 0) return [];
+    );
+  const uniqueEligibleDefinitions = Array.from(
+    new Map(eligibleDefinitions.map((series) => [series.seriesId, series])).values(),
+  ).slice(0, 5);
+  if (uniqueEligibleDefinitions.length === 0) return [];
 
   const actualViewModel = buildHomeBIViewModel(source, { ...state, targetDrafts: {} });
   return Promise.all(
-    eligibleDefinitions.map(async (series) => {
+    uniqueEligibleDefinitions.map(async (series) => {
       const targetMonth = targetMonthForRange(range);
       const targetResult = targetMonth
         ? await loadActiveTargetDrafts({
@@ -738,7 +778,7 @@ const seriesCards = async ({
             storeId: series.storeId,
             seriesId: series.seriesId,
             month: targetMonth,
-          })
+          }, { databaseName: targetDatabaseNameForBrand(scope.brandId) })
         : null;
       const targetDrafts = targetResult?.status === "ok" ? recordsToDraftMap(targetResult.records) : {};
       const targetViewModel = buildHomeBIViewModel(source, { ...state, targetDrafts });
@@ -749,7 +789,11 @@ const seriesCards = async ({
       return {
         seriesId: series.seriesId,
         seriesName: series.seriesName,
-        href: `/v2/series-board?seriesId=${encodeURIComponent(series.seriesId)}`,
+        href: `/v2/series-board?${new URLSearchParams({
+          platform: series.platformCode,
+          storeId: series.storeId,
+          seriesId: series.seriesId,
+        }).toString()}`,
         actual: formatV2HomeMetricValue(finiteOrNull(actualCard?.rawValue), "money"),
         actualRaw: finiteOrNull(actualCard?.rawValue),
         mtdTarget: formatV2HomeMetricValue(mtdTarget, "money"),
@@ -797,11 +841,55 @@ const dataHealthSummary = (
   };
 };
 
-const comparisonState = (mode: V2HomeComparisonMode) => ({
-  mode,
-  available: false as const,
-  message: mode === "none" ? "未开启对比" : "当前范围暂无可比数据",
-});
+const previousYearDate = (value: string): string => {
+  const [year, month, day] = value.split("-").map(Number);
+  if (!year || !month || !day) return value;
+  const targetYear = year - 1;
+  const maxDay = new Date(Date.UTC(targetYear, month, 0)).getUTCDate();
+  return `${targetYear}-${String(month).padStart(2, "0")}-${String(Math.min(day, maxDay)).padStart(2, "0")}`;
+};
+
+const referenceRangeForComparison = (
+  mode: V2HomeComparisonMode,
+  range: V2HomeTimeRange,
+): { startDate: string; endDate: string } | null => {
+  if (mode === "none") return null;
+  if (mode === "yoy") {
+    return {
+      startDate: previousYearDate(range.startDate),
+      endDate: previousYearDate(range.endDate),
+    };
+  }
+  const dayCount = inclusiveDayCount(range.startDate, range.endDate);
+  const endDate = addDays(range.startDate, -1);
+  return {
+    startDate: addDays(endDate, -(Math.max(dayCount, 1) - 1)),
+    endDate,
+  };
+};
+
+const comparisonState = (
+  mode: V2HomeComparisonMode,
+  range: V2HomeTimeRange,
+  datasetDates: string[],
+): V2HomeComparisonState => {
+  const referenceRange = referenceRangeForComparison(mode, range);
+  if (!referenceRange) {
+    return { mode, available: false, message: "未开启区间对比", referenceRange: null };
+  }
+  const available = datasetDates.some(
+    (date) => date >= referenceRange.startDate && date <= referenceRange.endDate,
+  );
+  const label = mode === "yoy" ? "同比" : "环比";
+  return {
+    mode,
+    available,
+    referenceRange,
+    message: available
+      ? `${label}参考期 ${referenceRange.startDate} 至 ${referenceRange.endDate}，变化率显示在指标卡。`
+      : `${label}参考期 ${referenceRange.startDate} 至 ${referenceRange.endDate} 暂无数据。`,
+  };
+};
 
 const reconciliationSummary = (
   source: BIHomeDataSource,
@@ -842,9 +930,13 @@ export const loadV2HomeViewModel = async (
   options: V2HomeLoadOptions = {},
 ): Promise<V2HomeLoadResult> => {
   try {
+    const brandState = loadBrandWorkspaceState();
+    const brand = options.brandId
+      ? brandState.brands.find((item) => item.id === options.brandId) ?? activeBrandWorkspace(brandState)
+      : activeBrandWorkspace(brandState);
     const [sourceResult, debugResult] = await Promise.all([
-      loadHomeBIDataSource({ includeV05Persistence: false }),
-      loadCrossPageDebugContext(),
+      loadHomeBIDataSource({ includeV05Persistence: false, brandId: brand.id }),
+      loadCrossPageDebugContext({ databaseName: debugDatabaseNameForBrand(brand.id) }),
     ]);
     if (!sourceResult.dataStatus.hasRealData || sourceResult.points.length === 0) {
       return {
@@ -859,7 +951,10 @@ export const loadV2HomeViewModel = async (
       sourceResult,
       debugSnapshot?.pages.series.temporarySeriesProductIds ?? [],
     );
-    const snapshotResult = await loadActiveRuntimeDatasetSnapshot();
+    const snapshotResult = await loadActiveRuntimeDatasetSnapshot({
+      brandId: brand.id,
+      databaseName: runtimeDatabaseNameForBrand(brand.id),
+    });
     const datasetDates = businessDatesFromSource(source);
     if (datasetDates.length === 0) {
       return {
@@ -896,6 +991,7 @@ export const loadV2HomeViewModel = async (
     const selectedRange = normalizeSelectedRange(requestedRange, datasetRange);
     const scope = buildScope(
       source,
+      brand,
       options.selectedPlatform !== undefined ? options.selectedPlatform : baseState.selectedPlatform,
       options.selectedStoreIds ?? baseState.selectedStores,
     );
@@ -909,7 +1005,8 @@ export const loadV2HomeViewModel = async (
     });
     const chartMode = options.chartMode ?? debugSnapshot?.pages.home.chartMode ?? "mtd";
     const comparisonMode = options.comparisonMode ?? "none";
-    const metrics = metricCards({ source, state, range: selectedRange, targetDrafts });
+    const comparison = comparisonState(comparisonMode, selectedRange, datasetDates);
+    const metrics = metricCards({ source, state, range: selectedRange, targetDrafts, comparison });
     const viewModel: V2HomeViewModel = {
       status: "ready",
       dataStatusLabel: source.dataStatus.label,
@@ -922,7 +1019,7 @@ export const loadV2HomeViewModel = async (
         updatedAt: snapshotResult.status === "ok" ? snapshotResult.snapshot.updatedAt : null,
       },
       timeRange: selectedRange,
-      comparison: comparisonState(comparisonMode),
+      comparison,
       metrics,
       keySeries: await seriesCards({ source, state, scope, range: selectedRange }),
       chart: chartModel({
@@ -965,6 +1062,6 @@ export const saveV2HomeContext = async (patch: V2HomeContextPatch): Promise<bool
         chartMode: patch.chartMode,
       },
     },
-  });
+  }, { databaseName: debugDatabaseNameForBrand(patch.brandId) });
   return result.status === "saved";
 };

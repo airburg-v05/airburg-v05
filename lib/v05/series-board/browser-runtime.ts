@@ -1,32 +1,8 @@
 "use client";
 
-import {
-  parseTmallStoredAnalysisResult,
-} from "../../storage/tmall-analysis-validator";
-import { TMALL_ANALYSIS_STORAGE_KEY } from "../../storage/tmall-analysis-storage";
-import { parseTmallTargetStorage, TMALL_TARGET_STORAGE_KEY } from "../../storage/tmall-target-storage";
-import {
-  parseTmallSeriesGroupStorage,
-  TMALL_SERIES_STORAGE_KEY,
-} from "../../storage/tmall-series-storage";
-import { IndexedDbV2PersistenceStore } from "../persistence/indexeddb-adapter";
-import type { SeriesBoardLoadResult, SeriesBoardRuntimeContext } from "./contracts";
+import { loadActiveBrandRuntimeV2Dataset } from "@/lib/v2/runtime/runtime-v2-dataset";
+import type { SeriesBoardLoadResult } from "./contracts";
 import { DEFAULT_TMALL_STORE_ID } from "../store-board/store-context";
-
-declare const process: {
-  env?: {
-    NEXT_PUBLIC_AIRBURG_V05_DATABASE_NAME?: string;
-  };
-};
-
-const CORRUPTED_INSPECTION_STATUSES = new Set([
-  "pointer_corrupted",
-  "active_dataset_missing",
-  "active_dataset_invalid",
-]);
-
-const getSeriesBoardDatabaseName = (): string =>
-  process.env?.NEXT_PUBLIC_AIRBURG_V05_DATABASE_NAME?.trim() || "airburg-v05";
 
 export const isLegacyDefaultSeriesRequest = ({
   platformCode,
@@ -38,134 +14,45 @@ export const isLegacyDefaultSeriesRequest = ({
   (!platformCode || platformCode === "tmall") &&
   (!storeId || storeId === DEFAULT_TMALL_STORE_ID);
 
-const readLegacyContext = () => {
-  const legacyAnalysis = parseTmallStoredAnalysisResult(
-    window.localStorage.getItem(TMALL_ANALYSIS_STORAGE_KEY),
-  );
-  const legacyTargets = parseTmallTargetStorage(
-    window.localStorage.getItem(TMALL_TARGET_STORAGE_KEY),
-  );
-  const legacySeries = parseTmallSeriesGroupStorage(
-    window.localStorage.getItem(TMALL_SERIES_STORAGE_KEY),
-  );
-  return {
-    legacyAnalysis,
-    legacyTargets: legacyTargets.status === "valid" ? legacyTargets.targets : [],
-    legacySeriesGroups: legacySeries.status === "valid" ? legacySeries.groups : [],
-  };
-};
-
-const legacyFallbackContext = ({
-  mode,
-  v2IssueCodes,
-  message,
-  platformCode,
-  storeId,
-}: Pick<SeriesBoardRuntimeContext, "mode" | "v2IssueCodes" | "message"> & {
-  platformCode: string | null;
-  storeId: string | null;
-}): SeriesBoardRuntimeContext | null => {
-  if (!isLegacyDefaultSeriesRequest({ platformCode, storeId })) return null;
-  const legacy = readLegacyContext();
-  if (legacy.legacyAnalysis.status !== "valid" || !legacy.legacyAnalysis.result) return null;
-  return {
-    mode,
-    dataset: null,
-    legacyAnalysis: legacy.legacyAnalysis.result,
-    legacySeriesGroups: legacy.legacySeriesGroups,
-    legacyTargets: legacy.legacyTargets,
-    v2IssueCodes,
-    message,
-  };
-};
-
-export const loadSeriesBoardContext = async ({
-  platformCode,
-  storeId,
-  databaseName = getSeriesBoardDatabaseName(),
-}: {
+export const loadSeriesBoardContext = async (_request: {
   platformCode: string | null;
   storeId: string | null;
   databaseName?: string;
 }): Promise<SeriesBoardLoadResult> => {
-  let store: IndexedDbV2PersistenceStore | null = null;
+  void _request;
   try {
-    store = await IndexedDbV2PersistenceStore.open({ databaseName });
-    const inspection = await store.inspectState();
-
-    if (CORRUPTED_INSPECTION_STATUSES.has(inspection.status)) {
-      const fallback = legacyFallbackContext({
-        mode: "v2_corrupted_with_legacy_fallback",
-        v2IssueCodes: inspection.issueCodes,
-        message: "本地多店铺数据状态不可安全读取，当前显示旧版默认店铺系列数据。",
-        platformCode,
-        storeId,
-      });
-      if (fallback) return { status: "valid", context: fallback, message: fallback.message };
-      return {
-        status: "corrupted",
-        context: {
-          mode: "corrupted",
-          dataset: null,
-          legacyAnalysis: null,
-          legacySeriesGroups: [],
-          legacyTargets: [],
-          v2IssueCodes: inspection.issueCodes,
-          message: "本地系列数据不可安全读取，请前往数据导入重新处理。",
-        },
-        message: "本地系列数据不可安全读取。",
-      };
-    }
-
-    const activeDataset = await store.loadActiveDataset();
-    if (activeDataset) {
+    const runtime = await loadActiveBrandRuntimeV2Dataset();
+    if (runtime.status === "ready") {
       return {
         status: "valid",
         context: {
           mode: "v2_valid",
-          dataset: activeDataset,
+          dataset: runtime.dataset,
           legacyAnalysis: null,
           legacySeriesGroups: [],
           legacyTargets: [],
-          v2IssueCodes: inspection.issueCodes,
-          message: "已读取多店铺系列数据。",
+          v2IssueCodes: runtime.issueCodes,
+          message: "已读取当前品牌统一经营数据。",
         },
-        message: "已读取多店铺系列数据。",
+        message: "已读取当前品牌统一经营数据。",
       };
     }
-
-    const fallback = legacyFallbackContext({
-      mode: "legacy_fallback",
-      v2IssueCodes: inspection.issueCodes,
-      message: "当前显示旧版默认店铺系列数据，完成新数据导入后可查看多店铺系列看板。",
-      platformCode,
-      storeId,
-    });
-    if (fallback) return { status: "valid", context: fallback, message: fallback.message };
-
+    const corrupted = runtime.status !== "empty";
+    const message = corrupted ? "当前品牌经营数据不可安全读取。" : "当前品牌尚未上传经营数据。";
     return {
-      status: "empty",
+      status: corrupted ? "corrupted" : "empty",
       context: {
-        mode: "empty",
+        mode: corrupted ? "corrupted" : "empty",
         dataset: null,
         legacyAnalysis: null,
         legacySeriesGroups: [],
         legacyTargets: [],
-        v2IssueCodes: inspection.issueCodes,
-        message: "当前没有可用系列数据。",
+        v2IssueCodes: runtime.issueCodes,
+        message,
       },
-      message: "当前没有可用系列数据。",
+      message,
     };
   } catch {
-    const fallback = legacyFallbackContext({
-      mode: "v2_corrupted_with_legacy_fallback",
-      v2IssueCodes: ["series_board_read_error"],
-      message: "多店铺系列数据读取失败，当前显示旧版默认店铺系列数据。",
-      platformCode,
-      storeId,
-    });
-    if (fallback) return { status: "valid", context: fallback, message: fallback.message };
-
     return {
       status: "error",
       context: {
@@ -179,7 +66,5 @@ export const loadSeriesBoardContext = async ({
       },
       message: "读取系列数据失败，请刷新后重试。",
     };
-  } finally {
-    store?.close();
   }
 };

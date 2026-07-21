@@ -13,11 +13,11 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
   },
   "/v2/product-board": {
     title: "商品中心",
-    description: "查看已维护重点商品的经营表现。",
+    description: "查看当前品牌已接入商品的经营表现。",
   },
   "/v2/upload": {
     title: "数据接入",
-    description: "上传经营数据，并按需初始化目标中心数据底座。",
+    description: "为当前品牌替换或追加经营数据，默认替换以避免历史混入。",
   },
   "/v2/upload/history": {
     title: "导入历史",
@@ -25,11 +25,15 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
   },
   "/v2/data-health": {
     title: "数据健康",
-    description: "查看导入覆盖、异常提示和可重导入口。",
+    description: "查看与经营看板同源的活动快照、来源覆盖和历史审计。",
   },
   "/v2/target-center": {
     title: "目标中心",
-    description: "新建、编辑、暂停和重新启用经营目标。",
+    description: "独立设置品牌目标，并按现有店铺、系列、商品细分。",
+  },
+  "/v2/brand-settings": {
+    title: "品牌设置",
+    description: "新增、切换并隔离不同品牌的经营工作区。",
   },
   "/v2/search-assets": {
     title: "搜索资产",

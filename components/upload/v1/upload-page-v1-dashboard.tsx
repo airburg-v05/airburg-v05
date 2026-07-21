@@ -10,6 +10,7 @@ import {
 import { parseExcelWorkbook } from "@/lib/etl/parse-excel";
 import {
   detectFileType,
+  restoreRuntimeDatasetFromSnapshot,
   runETLRuntime,
   saveRuntimeDatasetSnapshot,
   type ETLIssue,
@@ -18,6 +19,15 @@ import {
 } from "@/lib/etl/runtime";
 import { dataCenterHref, type DataCenterRouteVariant } from "@/lib/v05/data-center";
 import {
+  runtimeDatabaseNameForBrand,
+  debugDatabaseNameForBrand,
+} from "@/lib/v2/workspace/brand-workspace";
+import {
+  loadCrossPageDebugContext,
+  saveCrossPageDebugContextPatch,
+} from "@/lib/persistence/debug-context-persistence";
+import { useBrandWorkspace } from "@/lib/v2/workspace/use-brand-workspace";
+import {
   V1DimensionScopeBar,
   V1Sidebar,
   V1TopBar,
@@ -25,6 +35,7 @@ import {
 
 type PreviewStatus = "待识别" | "已识别" | "重复已剔除" | "识别失败" | "待导入" | "导入成功" | "导入失败";
 type ProductUploadStatus = "成功" | "失败" | "skipped";
+type ImportMergeMode = "replace" | "append";
 
 interface StoreOption {
   key: string;
@@ -49,6 +60,19 @@ interface PendingUploadFile {
   removed: boolean;
   errorMessage: string | null;
 }
+
+const runtimeStoreIds = (dataset: ETLRuntimeResult["dataset"], platformCode: string): string[] =>
+  Array.from(new Set([
+    ...dataset.products,
+    ...dataset.productMetrics,
+    ...dataset.planMetrics,
+    ...dataset.searchTotalKeywords,
+    ...dataset.searchProductKeywords,
+    ...dataset.afterSalesMetrics,
+  ]
+    .filter((record) => record.platformCode === platformCode)
+    .map((record) => record.storeId)
+    .filter(Boolean)));
 
 interface CoverageConfig {
   fileType: SupportedETLSourceType;
@@ -257,10 +281,12 @@ function ControlBar({
   stores,
   selectedStoreKey,
   onSelectStore,
+  brandName,
 }: {
   stores: StoreOption[];
   selectedStoreKey: string;
   onSelectStore: (key: string) => void;
+  brandName: string;
 }) {
   const selectedStore = stores.find((store) => store.key === selectedStoreKey);
   const selectedPlatform = selectedStore?.platformName ?? "--";
@@ -273,6 +299,7 @@ function ControlBar({
             LOGO
           </div>
           <div className="min-w-[240px]">
+            <p className="mb-2 text-xs font-semibold text-blue-700">当前品牌 · {brandName}</p>
             <label className="block text-xs font-semibold text-slate-600">
               目标店铺
               <select
@@ -475,8 +502,15 @@ export function UploadPageV1Dashboard({
   layoutMode?: "legacy" | "embedded";
   routeVariant?: DataCenterRouteVariant;
 } = {}) {
+  const { brand, hydrated } = useBrandWorkspace();
   const [dataSource, setDataSource] = useState<BIHomeDataSource>(() => createEmptyHomeBIDataSource("loading", "读取中"));
+  const [dataSourceBrandId, setDataSourceBrandId] = useState<string | null>(null);
   const [selectedStoreKey, setSelectedStoreKey] = useState(DEFAULT_STORE.key);
+  const [manualStores, setManualStores] = useState<StoreOption[]>([]);
+  const [newStoreName, setNewStoreName] = useState("");
+  const [newStoreId, setNewStoreId] = useState("");
+  const [storeMessage, setStoreMessage] = useState<string | null>(null);
+  const [mergeMode, setMergeMode] = useState<ImportMergeMode>("replace");
   const [pendingFiles, setPendingFiles] = useState<PendingUploadFile[]>([]);
   const [importing, setImporting] = useState(false);
   const [result, setResult] = useState<"idle" | "success" | "partial" | "failed">("idle");
@@ -484,11 +518,16 @@ export function UploadPageV1Dashboard({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (!hydrated) return;
     let active = true;
-    loadHomeBIDataSource()
+    loadHomeBIDataSource({
+      includeV05Persistence: routeVariant !== "v2",
+      brandId: brand.id,
+    })
       .then((source) => {
         if (!active) return;
         setDataSource(source);
+        setDataSourceBrandId(brand.id);
         const stores = buildStoreOptions(source);
         setSelectedStoreKey((current) => (stores.some((store) => store.key === current) ? current : stores[0]?.key ?? DEFAULT_STORE.key));
       })
@@ -499,17 +538,53 @@ export function UploadPageV1Dashboard({
     return () => {
       active = false;
     };
-  }, []);
+  }, [brand.id, hydrated, routeVariant]);
 
-  const stores = useMemo(() => buildStoreOptions(dataSource), [dataSource]);
+  const stores = useMemo(() => {
+    const merged = new Map<string, StoreOption>();
+    [...buildStoreOptions(dataSource), ...manualStores].forEach((store) => merged.set(store.key, store));
+    return Array.from(merged.values());
+  }, [dataSource, manualStores]);
   const selectedStore = stores.find((store) => store.key === selectedStoreKey);
   const coveredTypes = summarizeCoverage(pendingFiles);
   const missingTypes = COVERAGE_CONFIGS.filter((config) => !coveredTypes.has(config.fileType)).map((config) => config.title);
   const activeFiles = pendingFiles.filter((file) => !file.removed && !file.duplicate);
   const importableFiles = activeFiles.filter((file) => file.status !== "识别失败" && isSupportedImportType(file.fileType));
   const statusCounts = summarizeProductStatuses(pendingFiles);
-  const canImport = !!selectedStore && selectedStore.open && importableFiles.length > 0 && !importing;
+  const canImport = hydrated && dataSourceBrandId === brand.id && !!selectedStore && selectedStore.open && importableFiles.length > 0 && !importing;
   const isEmbedded = layoutMode === "embedded";
+
+  const addStore = () => {
+    const storeName = newStoreName.trim();
+    if (!storeName) {
+      setStoreMessage("请输入店铺名称。");
+      return;
+    }
+    const normalizedId = newStoreId
+      .trim()
+      .replace(/[^a-z0-9_-]+/gi, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 80) || `tmall-store-${Date.now()}`;
+    const key = storeKey("tmall", normalizedId);
+    if (stores.some((store) => store.key === key)) {
+      setStoreMessage("该店铺 ID 已存在，请直接选择或更换 ID。");
+      return;
+    }
+    const store: StoreOption = {
+      key,
+      platformCode: "tmall",
+      platformName: "天猫",
+      storeId: normalizedId,
+      storeName,
+      open: true,
+    };
+    setManualStores((current) => [...current, store]);
+    setSelectedStoreKey(key);
+    setNewStoreName("");
+    setNewStoreId("");
+    setStoreMessage("新店铺已选为本次上传目标；如需保留已有店铺数据，请选择“追加店铺/批次”。");
+    if (dataSource.dataStatus.hasRealData) setMergeMode("append");
+  };
 
   const previewFile = async (file: File, id: string, signature: string, duplicate: boolean): Promise<PendingUploadFile> => {
     const safeCode = safeCodeFor(signature);
@@ -604,7 +679,10 @@ export function UploadPageV1Dashboard({
   };
 
   const handleImport = async () => {
-    if (!selectedStore || !selectedStore.open || importableFiles.length === 0) return;
+    if (!hydrated || !selectedStore || !selectedStore.open || importableFiles.length === 0) return;
+    const previousStoreIds = buildStoreOptions(dataSource)
+      .filter((store) => store.platformCode === selectedStore.platformCode)
+      .map((store) => store.storeId);
     setImporting(true);
     setResult("idle");
     setPersistenceStatus("idle");
@@ -612,6 +690,12 @@ export function UploadPageV1Dashboard({
     setPendingFiles((current) => current.map((file) => (importableIds.has(file.id) ? { ...file, status: "待导入" } : file)));
 
     try {
+      if (mergeMode === "append") {
+        await restoreRuntimeDatasetFromSnapshot({
+          brandId: brand.id,
+          databaseName: runtimeDatabaseNameForBrand(brand.id),
+        });
+      }
       const runtimeResult = await runETLRuntime(
         importableFiles.map((item) => ({
           file: item.file,
@@ -620,6 +704,7 @@ export function UploadPageV1Dashboard({
           storeId: selectedStore.storeId,
           storeName: selectedStore.storeName,
         })),
+        { brandId: brand.id, mergeMode },
       );
       const safeSkippedIssues = buildSafeSkippedIssues(pendingFiles);
       const hasRecords = hasDataSetRecords(runtimeResult);
@@ -630,11 +715,28 @@ export function UploadPageV1Dashboard({
           [...runtimeResult.issues, ...runtimeResult.errorQueue, ...safeSkippedIssues],
           runtimeResult.summary,
           {
+            brandId: brand.id,
+            databaseName: runtimeDatabaseNameForBrand(brand.id),
             platformCode: selectedStore.platformCode,
             storeId: selectedStore.storeId,
+            mergeMode,
           },
         );
         persisted = saveResult.status === "saved";
+        if (persisted && mergeMode === "append") {
+          const debugOptions = { databaseName: debugDatabaseNameForBrand(brand.id) };
+          const debugResult = await loadCrossPageDebugContext(debugOptions);
+          const nextStoreIds = runtimeStoreIds(runtimeResult.dataset, selectedStore.platformCode);
+          if (
+            debugResult.status === "ok" &&
+            debugResult.snapshot.selectedStores.length > 0 &&
+            previousStoreIds.length > 0 &&
+            previousStoreIds.every((storeId) => debugResult.snapshot.selectedStores.includes(storeId)) &&
+            nextStoreIds.length > previousStoreIds.length
+          ) {
+            await saveCrossPageDebugContextPatch({ selectedStores: nextStoreIds }, debugOptions);
+          }
+        }
       }
       setPendingFiles((current) =>
         current.map((file) =>
@@ -645,7 +747,8 @@ export function UploadPageV1Dashboard({
       );
       setPersistenceStatus(hasRecords ? (persisted ? "saved" : "failed") : "idle");
       setResult(hasRecords ? (runtimeResult.summary.filesFailed > 0 || missingTypes.length > 0 ? "partial" : "success") : "failed");
-      setDataSource(await loadHomeBIDataSource());
+      setDataSource(await loadHomeBIDataSource({ includeV05Persistence: false, brandId: brand.id }));
+      setDataSourceBrandId(brand.id);
     } catch {
       setPendingFiles((current) => current.map((file) => (importableIds.has(file.id) ? { ...file, status: "导入失败" } : file)));
       setResult("failed");
@@ -670,7 +773,44 @@ export function UploadPageV1Dashboard({
       <main className={isEmbedded ? "min-w-0" : "flex min-w-0 flex-1 flex-col overflow-hidden"}>
         {isEmbedded ? null : <TopBar />}
         <div className={isEmbedded ? "min-w-0" : "min-h-0 flex-1 overflow-y-auto overflow-x-hidden"}>
-          <ControlBar stores={stores} selectedStoreKey={selectedStoreKey} onSelectStore={setSelectedStoreKey} />
+          <ControlBar
+            brandName={brand.name}
+            stores={stores}
+            selectedStoreKey={selectedStoreKey}
+            onSelectStore={setSelectedStoreKey}
+          />
+          {routeVariant === "v2" ? (
+            <section className="mx-4 mb-4 rounded-xl border border-slate-200 bg-white p-4" data-testid="v2-upload-brand-store-strategy">
+              <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(22rem,0.8fr)]">
+                <div>
+                  <h2 className="text-sm font-semibold text-slate-950">导入策略</h2>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">默认替换可避免历史经营事实继续混入；只有新增店铺或连续批次确需合并时才使用追加。</p>
+                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                    <label className={`cursor-pointer rounded-lg border p-3 ${mergeMode === "replace" ? "border-blue-300 bg-blue-50" : "border-slate-200"}`}>
+                      <input checked={mergeMode === "replace"} onChange={() => setMergeMode("replace")} type="radio" />
+                      <span className="ml-2 text-sm font-semibold text-slate-800">替换当前品牌数据</span>
+                      <span className="mt-1 block text-xs text-slate-500">推荐。活动快照只包含本次成功导入的数据。</span>
+                    </label>
+                    <label className={`cursor-pointer rounded-lg border p-3 ${mergeMode === "append" ? "border-blue-300 bg-blue-50" : "border-slate-200"}`}>
+                      <input checked={mergeMode === "append"} onChange={() => setMergeMode("append")} type="radio" />
+                      <span className="ml-2 text-sm font-semibold text-slate-800">追加店铺/批次</span>
+                      <span className="mt-1 block text-xs text-slate-500">用于多店铺汇总；合并后按事实主键安全去重。</span>
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <h2 className="text-sm font-semibold text-slate-950">新增天猫店铺</h2>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">多平台数据模型已保留；当前真实文件适配器只开放天猫，京东/抖音仍需独立授权与字段验证。</p>
+                  <div className="mt-3 grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
+                    <input className="form-input" onChange={(event) => setNewStoreName(event.target.value)} placeholder="店铺名称" value={newStoreName} />
+                    <input className="form-input" onChange={(event) => setNewStoreId(event.target.value)} placeholder="店铺 ID（可留空）" value={newStoreId} />
+                    <button className="secondary-button justify-center" onClick={addStore} type="button">添加并选择</button>
+                  </div>
+                  {storeMessage ? <p className="mt-2 text-xs font-medium text-blue-700">{storeMessage}</p> : null}
+                </div>
+              </div>
+            </section>
+          ) : null}
           {isEmbedded ? null : (
             <V1DimensionScopeBar
               testId="upload-page-v1-dimension-scope"

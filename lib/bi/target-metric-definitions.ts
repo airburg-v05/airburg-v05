@@ -1,4 +1,4 @@
-export type TargetMetricScope = "platform" | "series" | "product";
+export type TargetMetricScope = "brand" | "platform" | "series" | "product";
 
 export type TargetMetricFormat = "money" | "integer" | "percent" | "ratio" | "days";
 
@@ -36,8 +36,8 @@ export interface BoardTargetKpiDefinition {
   unsupportedReason?: string;
 }
 
-const ALL_SCOPES: TargetMetricScope[] = ["platform", "series", "product"];
-const PLATFORM_ONLY: TargetMetricScope[] = ["platform"];
+const ALL_SCOPES: TargetMetricScope[] = ["brand", "platform", "series", "product"];
+const PLATFORM_ONLY: TargetMetricScope[] = ["brand", "platform"];
 
 const requiredTarget = {
   targetRule: "required" as const,

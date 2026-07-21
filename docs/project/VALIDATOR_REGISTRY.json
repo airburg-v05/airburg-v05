@@ -1,17 +1,18 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-07-20",
+  "generatedAt": "2026-07-21",
   "sourceDirectory": "scripts/private-audit",
-  "totalValidators": 198,
+  "totalValidators": 200,
   "countsByTier": {
-    "TIER_B_MODULE_REGRESSION": 98,
+    "TIER_B_MODULE_REGRESSION": 105,
     "TIER_D_LEGACY_OR_SUPERSEDED": 9,
     "TIER_A_RELEASE_CRITICAL": 18,
-    "TIER_C_STAGE_ONLY": 67
+    "TIER_C_STAGE_ONLY": 67,
+    "TIER_B_LOCAL_GUARDRAIL": 1
   },
   "countsByValidationType": {
     "STATE_GOVERNANCE": 30,
-    "SOURCE_STRUCTURE": 81,
+    "SOURCE_STRUCTURE": 83,
     "REAL_LOGIC_DATA": 73,
     "SECURITY": 2,
     "BROWSER_INTERACTION_E2E": 12
@@ -125,6 +126,20 @@
       "requiresBrowser": false,
       "requiresHumanReview": false,
       "notes": "Current route-boundary validator for the /v2/target-center continuation slice; proves the real target-management client is used and its legacy primary actions are remapped to /v2 routes without changing default legacy behavior."
+    },
+    {
+      "file": "scripts/private-audit/validate-v2-unified-brand-runtime-and-owner-feedback-v1.mjs",
+      "taskName": "V2_UNIFIED_BRAND_RUNTIME_AND_OWNER_FEEDBACK_V1",
+      "track": "SAAS_UI_V2",
+      "tier": "TIER_B_MODULE_REGRESSION",
+      "validationType": "SOURCE_STRUCTURE",
+      "current": true,
+      "legacy": false,
+      "stageOnly": false,
+      "requiresRealSamples": false,
+      "requiresBrowser": false,
+      "requiresHumanReview": false,
+      "notes": "Current source-contract guard for brand-scoped runtime persistence, shared V2 board readers, explicit append recovery, independent brand targets, max-five home series selection, and home time/comparison interactions; it does not replace browser, deployment, or owner acceptance gates."
     },
     {
       "file": "scripts/private-audit/validate-v2-board-route-mapping-and-home-empty-cta-v1.mjs",

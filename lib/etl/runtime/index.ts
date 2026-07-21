@@ -1,9 +1,10 @@
-export { runETLRuntime } from "./engine";
+export { runETLRuntime, type RunETLRuntimeOptions } from "./engine";
 export { detectFileType } from "./file-router";
 export {
   clearRuntimeBIDataSet,
   createEmptyBIDataSet,
   getRuntimeBIDataSet,
+  getRuntimeBIDataSetBrandId,
   getRuntimeETLIssues,
   setRuntimeBIDataSet,
   type BIDataSet,

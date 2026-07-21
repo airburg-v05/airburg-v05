@@ -18,12 +18,11 @@ const EXACT_V2_ROUTE_MAP: Record<string, string> = {
   "/upload": "/v2/upload",
   "/upload/history": "/v2/upload/history",
   "/upload/quality": "/v2/data-health",
+  "/series-board/manage": "/v2/series-board",
+  "/product-board/tracked": "/v2/product-board",
 };
 
-const MISSING_V2_ROUTE_REASON: Record<string, string> = {
-  "/series-board/manage": "系列管理页尚未开放到当前工作区。",
-  "/product-board/tracked": "重点商品管理页尚未开放到当前工作区。",
-};
+const MISSING_V2_ROUTE_REASON: Record<string, string> = {};
 
 export const mapHrefToAuthorizedV2Route = (
   href: string | null | undefined,

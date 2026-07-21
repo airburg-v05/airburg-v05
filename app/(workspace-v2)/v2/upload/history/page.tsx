@@ -1,5 +1,5 @@
-import { ImportHistoryClient } from "@/components/upload/import-history/import-history-client";
+import { V2RuntimeImportHistory } from "@/components/saas-v2/upload/v2-runtime-import-history";
 
 export default function SaasV2UploadHistoryPage() {
-  return <ImportHistoryClient routeVariant="v2" />;
+  return <V2RuntimeImportHistory />;
 }

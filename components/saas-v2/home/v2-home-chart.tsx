@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import type {
   V2HomeChartMode,
   V2HomeChartModel,
-  V2HomeDataHealthSummary,
 } from "@/types/v2/home";
 
 type DisplayMode = "single" | "dual";
@@ -86,7 +85,6 @@ const areaSegments = (
 
 export function V2HomeChart({
   model,
-  dataHealth,
   displayMode,
   comparisonMessage,
   onModeChange,
@@ -94,7 +92,6 @@ export function V2HomeChart({
   onDisplayModeChange,
 }: {
   model: V2HomeChartModel;
-  dataHealth: V2HomeDataHealthSummary;
   displayMode: DisplayMode;
   comparisonMessage: string | null;
   onModeChange: (mode: V2HomeChartMode) => void;
@@ -126,12 +123,6 @@ export function V2HomeChart({
   const activePoint = activeIndex === null ? null : model.points[activeIndex] ?? null;
   const primaryPairs = Array.from(new Map(model.availablePairs.map((pair) => [pair.leftMetricKey, pair])).values());
   const comparisonPairs = model.availablePairs.filter((pair) => pair.leftMetricKey === model.pair.leftMetricKey);
-  const healthRows = [
-    { label: "缺失", value: dataHealth.missingSourceCount },
-    { label: "跳过文件", value: dataHealth.safeSkippedCount },
-    { label: "重复", value: dataHealth.dedupedRecordCount },
-    { label: "不可计算", value: dataHealth.nonComputableMetricCount },
-  ];
 
   return (
     <section
@@ -297,18 +288,6 @@ export function V2HomeChart({
         </div>
       )}
 
-      <a
-        className="grid grid-cols-2 divide-x divide-slate-100 px-4 py-2.5 transition hover:bg-slate-50 sm:grid-cols-4 sm:px-5"
-        data-testid="v2-home-data-health-summary"
-        href="/v2/data-health"
-      >
-        {healthRows.map((row) => (
-          <span key={row.label} className="flex items-center justify-between gap-2 px-2 py-1 text-xs first:pl-0 last:pr-0">
-            <span className="text-slate-500">{row.label}</span>
-            <strong className="tabular-nums text-slate-900">{row.value}</strong>
-          </span>
-        ))}
-      </a>
     </section>
   );
 }

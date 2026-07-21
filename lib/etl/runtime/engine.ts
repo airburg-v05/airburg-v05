@@ -19,6 +19,11 @@ const recordCount = (dataset: BIDataSet): number =>
   dataset.searchProductKeywords.length +
   dataset.afterSalesMetrics.length;
 
+export interface RunETLRuntimeOptions {
+  brandId?: string;
+  mergeMode?: "replace" | "append";
+}
+
 const mergeDataSets = (existing: BIDataSet | null, incoming: BIDataSet): BIDataSet => ({
   products: [...(existing?.products ?? []), ...incoming.products],
   productMetrics: [...(existing?.productMetrics ?? []), ...incoming.productMetrics],
@@ -28,11 +33,16 @@ const mergeDataSets = (existing: BIDataSet | null, incoming: BIDataSet): BIDataS
   afterSalesMetrics: [...(existing?.afterSalesMetrics ?? []), ...incoming.afterSalesMetrics],
 });
 
-export async function runETLRuntime(files: UploadedFile[]): Promise<ETLRuntimeResult> {
+export async function runETLRuntime(
+  files: UploadedFile[],
+  options: RunETLRuntimeOptions = {},
+): Promise<ETLRuntimeResult> {
+  const brandId = options.brandId ?? "airburg";
+  const mergeMode = options.mergeMode ?? "append";
   const context = createETLRuntimeContext(files);
   const completedContext = await executeETLPipeline(context);
-  const existingDataset = getRuntimeBIDataSet();
-  const existingIssues = getRuntimeETLIssues();
+  const existingDataset = mergeMode === "append" ? getRuntimeBIDataSet(brandId) : null;
+  const existingIssues = mergeMode === "append" ? getRuntimeETLIssues(brandId) : [];
   const incomingRecordCount = recordCount(completedContext.dataset);
 
   if (incomingRecordCount > 0) {
@@ -41,7 +51,7 @@ export async function runETLRuntime(files: UploadedFile[]): Promise<ETLRuntimeRe
     completedContext.dataset = merged.dataset;
     completedContext.summary.dedupedRecords += merged.removedCount;
     completedContext.summary.mergedRecords = recordCount(merged.dataset);
-    setRuntimeBIDataSet(merged.dataset, [...existingIssues, ...completedContext.issues]);
+    setRuntimeBIDataSet(merged.dataset, [...existingIssues, ...completedContext.issues], brandId);
   } else if (existingDataset) {
     completedContext.dataset = existingDataset;
     completedContext.summary.mergedRecords = recordCount(existingDataset);

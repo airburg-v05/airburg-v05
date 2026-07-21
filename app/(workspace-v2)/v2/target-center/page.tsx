@@ -1,5 +1,5 @@
-import { RoutedTargetManagementClient } from "@/components/targets/v05/target-management-client";
+import { V2BrandTargetCenter } from "@/components/saas-v2/targets/v2-brand-target-center";
 
 export default function SaasV2TargetCenterPage() {
-  return <RoutedTargetManagementClient routeVariant="v2" />;
+  return <V2BrandTargetCenter />;
 }

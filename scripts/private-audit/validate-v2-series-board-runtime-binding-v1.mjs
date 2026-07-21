@@ -59,6 +59,7 @@ const checks = [
     pass: [
       "SAAS_V2_FULL_QUALITY_AND_TARGET_CENTER_CLOSURE_V1",
       "SAAS_V2_BRAND_OWNER_UX_REFINEMENT_V1",
+      "SAAS_V2_UNIFIED_BRAND_RUNTIME_AND_OWNER_FEEDBACK_V1",
     ].includes(currentTask.taskId) &&
       ["IN_PROGRESS", "PENDING_POST_DEPLOY_OWNER_REVIEW"].includes(currentTask.status) &&
       ssot.currentTask.taskId === currentTask.taskId,

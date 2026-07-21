@@ -1,5 +1,5 @@
-import { DataQualityClient } from "@/components/upload/data-quality/data-quality-client";
+import { V2RuntimeDataHealth } from "@/components/saas-v2/data-health/v2-runtime-data-health";
 
 export default function SaasV2DataHealthPage() {
-  return <DataQualityClient routeVariant="v2" />;
+  return <V2RuntimeDataHealth />;
 }

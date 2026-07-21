@@ -61,6 +61,17 @@ export interface V2HomeMetricCard extends V2HomeMetricContract {
   sourceStatus: V2HomeMetricSourceStatus;
   note: string | null;
   target: V2HomeTargetOverlay;
+  comparison: V2HomeMetricComparison | null;
+}
+
+export interface V2HomeMetricComparison {
+  mode: Exclude<V2HomeComparisonMode, "none">;
+  label: "同比" | "环比";
+  referenceRange: { startDate: string; endDate: string };
+  referenceValue: number | null;
+  changeRate: number | null;
+  formatted: string;
+  available: boolean;
 }
 
 export interface V2HomeScopeOption {
@@ -131,8 +142,9 @@ export interface V2HomeChartModel {
 
 export interface V2HomeComparisonState {
   mode: V2HomeComparisonMode;
-  available: false;
+  available: boolean;
   message: string;
+  referenceRange: { startDate: string; endDate: string } | null;
 }
 
 export interface V2HomeDataHealthSummary {
@@ -178,6 +190,7 @@ export type V2HomeLoadResult =
   | { status: "error"; message: string };
 
 export interface V2HomeLoadOptions {
+  brandId?: string;
   selectedPlatform?: string | null;
   selectedStoreIds?: string[];
   timeRange?: V2HomeTimeRange;
@@ -187,6 +200,7 @@ export interface V2HomeLoadOptions {
 }
 
 export interface V2HomeContextPatch {
+  brandId: string;
   selectedPlatform: string | null;
   selectedStoreIds: string[];
   timeRange: V2HomeTimeRange;

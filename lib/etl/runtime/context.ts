@@ -206,18 +206,31 @@ export const createETLRuntimeContext = (files: UploadedFile[]): ETLRuntimeContex
 
 let runtimeBIDataSet: BIDataSet | null = null;
 let runtimeIssues: ETLIssue[] = [];
+let runtimeBrandId = "airburg";
 
-export const setRuntimeBIDataSet = (dataset: BIDataSet, issues: ETLIssue[] = []) => {
+export const setRuntimeBIDataSet = (
+  dataset: BIDataSet,
+  issues: ETLIssue[] = [],
+  brandId = "airburg",
+) => {
   runtimeBIDataSet = structuredClone(dataset);
   runtimeIssues = structuredClone(issues);
+  runtimeBrandId = brandId;
 };
 
-export const getRuntimeBIDataSet = (): BIDataSet | null =>
-  runtimeBIDataSet ? structuredClone(runtimeBIDataSet) : null;
+export const getRuntimeBIDataSet = (brandId?: string): BIDataSet | null =>
+  runtimeBIDataSet && (!brandId || brandId === runtimeBrandId)
+    ? structuredClone(runtimeBIDataSet)
+    : null;
 
-export const getRuntimeETLIssues = (): ETLIssue[] => structuredClone(runtimeIssues);
+export const getRuntimeETLIssues = (brandId?: string): ETLIssue[] =>
+  !brandId || brandId === runtimeBrandId ? structuredClone(runtimeIssues) : [];
+
+export const getRuntimeBIDataSetBrandId = (): string | null =>
+  runtimeBIDataSet ? runtimeBrandId : null;
 
 export const clearRuntimeBIDataSet = () => {
   runtimeBIDataSet = null;
   runtimeIssues = [];
+  runtimeBrandId = "airburg";
 };
