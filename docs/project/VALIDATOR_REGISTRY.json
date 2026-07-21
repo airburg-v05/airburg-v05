@@ -2,9 +2,9 @@
   "schemaVersion": "1.0.0",
   "generatedAt": "2026-07-21",
   "sourceDirectory": "scripts/private-audit",
-  "totalValidators": 200,
+  "totalValidators": 201,
   "countsByTier": {
-    "TIER_B_MODULE_REGRESSION": 105,
+    "TIER_B_MODULE_REGRESSION": 106,
     "TIER_D_LEGACY_OR_SUPERSEDED": 9,
     "TIER_A_RELEASE_CRITICAL": 18,
     "TIER_C_STAGE_ONLY": 67,
@@ -12,7 +12,7 @@
   },
   "countsByValidationType": {
     "STATE_GOVERNANCE": 30,
-    "SOURCE_STRUCTURE": 83,
+    "SOURCE_STRUCTURE": 84,
     "REAL_LOGIC_DATA": 73,
     "SECURITY": 2,
     "BROWSER_INTERACTION_E2E": 12
@@ -140,6 +140,20 @@
       "requiresBrowser": false,
       "requiresHumanReview": false,
       "notes": "Current source-contract guard for brand-scoped runtime persistence, shared V2 board readers, explicit append recovery, independent brand targets, max-five home series selection, and home time/comparison interactions; it does not replace browser, deployment, or owner acceptance gates."
+    },
+    {
+      "file": "scripts/private-audit/validate-v2-commercial-dashboard-and-manual-product-refinement-v1.ts",
+      "taskName": "SAAS_V2_COMMERCIAL_DASHBOARD_AND_MANUAL_PRODUCT_REFINEMENT_V1",
+      "track": "SAAS_UI_V2",
+      "tier": "TIER_B_MODULE_REGRESSION",
+      "validationType": "SOURCE_STRUCTURE",
+      "current": true,
+      "legacy": false,
+      "stageOnly": false,
+      "requiresRealSamples": false,
+      "requiresBrowser": false,
+      "requiresHumanReview": false,
+      "notes": "Current source-contract guard for the balanced 16-metric surface, explicit home series selection, manual-only product center, full store indicators, target month guidance and scoped target readers; browser, deployment and owner acceptance remain separate gates."
     },
     {
       "file": "scripts/private-audit/validate-v2-board-route-mapping-and-home-empty-cta-v1.mjs",

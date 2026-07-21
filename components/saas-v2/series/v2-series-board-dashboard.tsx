@@ -13,7 +13,7 @@ import {
   validateV2HomeTimeRange,
 } from "@/lib/v2/home/v2-home-adapter";
 import {
-  V2_HOME_METRIC_KEYS,
+  V2_HOME_DISPLAY_METRIC_KEYS,
   type V2HomeComparisonMode,
   type V2HomeLoadOptions,
   type V2HomeLoadResult,
@@ -32,6 +32,7 @@ export function V2SeriesBoardDashboard() {
     selectedStoreIds: searchParams.get("storeId") ? [searchParams.get("storeId")!] : undefined,
     selectedSeriesId: searchParams.get("seriesId") || undefined,
     seriesOptionVisibility: "all",
+    targetScope: "series",
   }));
   const [busy, setBusy] = useState(true);
   const [interactionError, setInteractionError] = useState<string | null>(null);
@@ -41,7 +42,7 @@ export function V2SeriesBoardDashboard() {
   useEffect(() => {
     const currentRequest = ++requestId.current;
     let active = true;
-    void loadV2HomeViewModel({ ...options, seriesOptionVisibility: "all" }).then((nextResult) => {
+    void loadV2HomeViewModel({ ...options, seriesOptionVisibility: "all", targetScope: "series" }).then((nextResult) => {
       if (active && requestId.current === currentRequest) {
         setResult(nextResult);
         setBusy(false);
@@ -135,10 +136,6 @@ export function V2SeriesBoardDashboard() {
           replaceQuery({ platform: selectedPlatform, storeId: null, seriesId: null });
           updateOptions({ selectedPlatform, selectedStoreIds: [], selectedSeriesId: null });
         }}
-        onSeriesChange={(selectedSeriesId) => {
-          if (!selectedSeriesId) return;
-          selectSeries(selectedSeriesId);
-        }}
         onStoresChange={(selectedStoreIds) => {
           replaceQuery({ storeId: selectedStoreIds.length === 1 ? selectedStoreIds[0] : null, seriesId: null });
           updateOptions({ selectedStoreIds, selectedSeriesId: null });
@@ -168,9 +165,12 @@ export function V2SeriesBoardDashboard() {
               </div>
               <V2HomeMetricGrid
                 metrics={readyViewModel.metrics}
-                order={[...V2_HOME_METRIC_KEYS]}
+                order={[...V2_HOME_DISPLAY_METRIC_KEYS]}
                 selectedMetricKey={readyViewModel.chart.pair.leftMetricKey}
-                visibleKeys={[...V2_HOME_METRIC_KEYS]}
+                targetPeriodLabel={readyViewModel.timeRange.startDate.slice(0, 7) === readyViewModel.timeRange.endDate.slice(0, 7)
+                  ? readyViewModel.timeRange.startDate.slice(0, 7)
+                  : `${readyViewModel.timeRange.startDate.slice(0, 7)}~${readyViewModel.timeRange.endDate.slice(0, 7)}`}
+                visibleKeys={[...V2_HOME_DISPLAY_METRIC_KEYS]}
               />
             </section>
 

@@ -622,16 +622,17 @@ const homeCrossMonthTargetRegression = async (client) => {
     client,
     `(() => {
       const card = document.querySelector('[data-metric-key="gmv"]');
-      const valueFromTitle = (prefix) => {
-        const title = Array.from(card?.querySelectorAll('[title]') ?? []).map((item) => item.getAttribute('title') ?? '').find((item) => item.startsWith(prefix)) ?? '';
-        const parsed = Number(title.slice(prefix.length).replace(/[^0-9.-]+/g, ''));
+      const label = card?.getAttribute('aria-label') ?? '';
+      const valueFromLabel = (prefix) => {
+        const raw = label.match(new RegExp(prefix + ' ([^，]+)'))?.[1] ?? '';
+        const parsed = Number(raw.replace(/[^0-9.-]+/g, ''));
         return Number.isFinite(parsed) ? parsed : null;
       };
       return {
         range: document.querySelector('[data-testid="v2-home-toolbar"]')?.textContent ?? '',
         targetState: card?.getAttribute('data-target-state') ?? null,
-        mtdTarget: valueFromTitle('MTD目标 '),
-        totalTargetTitle: Array.from(card?.querySelectorAll('[title]') ?? []).map((item) => item.getAttribute('title') ?? '').find((item) => item.startsWith('总目标 ')) ?? '',
+        mtdTarget: valueFromLabel('MTD目标'),
+        totalTargetMissing: label.includes('总目标 --'),
       };
     })()`,
   );
@@ -640,7 +641,7 @@ const homeCrossMonthTargetRegression = async (client) => {
     state.range.includes("2026-06-29 ~ 2026-07-05") &&
       state.targetState === "ready" &&
       state.mtdTarget === 20000 &&
-      state.totalTargetTitle === "总目标 --",
+      state.totalTargetMissing,
     state,
   );
   return state;
@@ -696,7 +697,7 @@ const seriesConfigurationRegression = async (client, brandGmv) => {
       })()`,
     );
     await clickText(client, "加载并绑定", "[data-testid='v2-series-editor'] button");
-    await waitForExpression(client, `document.querySelector('[data-testid="v2-brand-series-manager"]')?.textContent?.includes("${index} 个 · 驾驶舱")`, 30000);
+    await waitForExpression(client, `document.querySelector('[data-testid="v2-brand-series-manager"]')?.textContent?.includes("${index} 个系列")`, 30000);
   }
   const managerState = await evaluate(
     client,
@@ -716,9 +717,9 @@ const seriesConfigurationRegression = async (client, brandGmv) => {
   );
   check(
     "seriesCenterUsesPastedIdsAndHomeAlignedDecisionSurface",
-    managerState.body.includes("6 个 · 驾驶舱 5/5") &&
+    managerState.body.includes("6 个系列") &&
       managerState.cardCount === 6 &&
-      managerState.metricCount === 17 &&
+      managerState.metricCount === 16 &&
       managerState.hasHomeChart &&
       managerState.hasLegacySections === false &&
       managerState.hasUploadPrompt === false,
@@ -728,46 +729,132 @@ const seriesConfigurationRegression = async (client, brandGmv) => {
 
   await navigate(client, "/v2/home", "[data-testid='v2-home-dashboard']");
   await waitForHomeReady(client, 45000);
-  await waitForExpression(client, `Boolean(document.querySelector('[data-testid="v2-home-series-filter"]'))`, 30000);
-  const firstSeriesValue = await evaluate(
-    client,
-    `(() => Array.from(document.querySelector('[data-testid="v2-home-series-filter"]')?.options ?? []).find((option) => option.textContent?.includes('E2E系列1'))?.value ?? '')()`,
-  );
-  if (!firstSeriesValue) throw new Error("home_series_filter_option_missing");
-  await setControlValueBySelector(client, '[data-testid="v2-home-series-filter"]', firstSeriesValue);
-  await waitForExpression(client, `document.querySelector('[data-testid="v2-home-series-filter"]')?.value === ${JSON.stringify(firstSeriesValue)}`, 30000);
-  await waitForExpression(
-    client,
-    `(() => {
-      const raw = document.querySelector('[data-metric-key="gmv"] p[title]')?.getAttribute('title') ?? '';
-      const value = Number(raw.replace(/[^0-9.-]+/g, ''));
-      return Number.isFinite(value) && value > 0 && value < ${JSON.stringify(brandGmv)};
-    })()`,
-    30000,
-  );
-  const seriesGmv = await homeGmvValue(client);
+  const rangeBrandGmvBeforeSeriesSelection = await homeGmvValue(client);
+  await clickText(client, "指标设置");
+  await waitForExpression(client, `Boolean(document.querySelector('[data-testid="v2-home-metric-settings"]'))`, 10000);
+  for (let index = 1; index <= 5; index += 1) {
+    await click(client, `[aria-label="首页展示E2E系列${index}"]`);
+  }
+  await waitForExpression(client, `Boolean(document.querySelector('[aria-label="首页展示E2E系列6"]')?.disabled)`, 10000);
+  await clickText(client, "完成", "[data-testid='v2-home-metric-settings'] button");
+  await waitForExpression(client, `document.querySelectorAll('[data-testid="v2-home-selected-series"] a').length === 5`, 30000);
+  const homeBrandGmv = await homeGmvValue(client);
   const homeSeriesState = await evaluate(
     client,
     `(() => ({
-      options: Array.from(document.querySelector('[data-testid="v2-home-series-filter"]')?.options ?? []).map((option) => option.textContent ?? ''),
-      selectedText: document.querySelector('[data-testid="v2-home-series-filter"]')?.selectedOptions?.[0]?.textContent ?? '',
-      hasSeparateSeriesBlock: Boolean(document.querySelector('[data-testid="v2-home-key-series"]')),
+      hasTopSeriesFilter: Boolean(document.querySelector('[data-testid="v2-home-series-filter"]')),
+      selectedSeriesCards: document.querySelectorAll('[data-testid="v2-home-selected-series"] a').length,
+      selectedSeriesText: document.querySelector('[data-testid="v2-home-selected-series"]')?.textContent ?? '',
     }))()`,
   );
   check(
-    "homeSeriesFilterReplacesSeparateSeriesBlock",
-    homeSeriesState.options.length === 6 &&
-      homeSeriesState.options.some((text) => text.includes("E2E系列1")) &&
-      homeSeriesState.options.some((text) => text.includes("E2E系列5")) &&
-      homeSeriesState.options.every((text) => !text.includes("E2E系列6")) &&
-      homeSeriesState.selectedText.includes("E2E系列1") &&
-      homeSeriesState.hasSeparateSeriesBlock === false &&
-      typeof seriesGmv === "number" &&
-      seriesGmv > 0 &&
-      seriesGmv < brandGmv,
-    { ...homeSeriesState, seriesGmv, brandGmv },
+    "homeSeriesSelectionStaysInMetricSettingsAndPreservesBrandMetrics",
+    homeSeriesState.hasTopSeriesFilter === false &&
+      homeSeriesState.selectedSeriesCards === 5 &&
+      homeSeriesState.selectedSeriesText.includes("E2E系列1") &&
+      homeSeriesState.selectedSeriesText.includes("E2E系列5") &&
+      !homeSeriesState.selectedSeriesText.includes("E2E系列6") &&
+      typeof homeBrandGmv === "number" &&
+      typeof rangeBrandGmvBeforeSeriesSelection === "number" &&
+      Math.abs(homeBrandGmv - rangeBrandGmvBeforeSeriesSelection) < 0.01,
+    { ...homeSeriesState, homeBrandGmv, rangeBrandGmvBeforeSeriesSelection, originalFullRangeBrandGmv: brandGmv },
   );
-  return { managerState, homeSeriesState, seriesGmv, seriesDesktopScreenshot };
+  return { managerState, homeSeriesState, homeBrandGmv, seriesDesktopScreenshot };
+};
+
+const manualProductRegression = async (client) => {
+  await navigate(client, "/v2/product-board", "[data-testid='v2-brand-product-manager']");
+  await clickText(client, "添加商品", "[data-testid='v2-brand-product-manager'] button");
+  await waitForExpression(client, `Boolean(document.querySelector('[data-testid="v2-product-editor"]'))`, 10000);
+  await setControlValueBySelector(client, '[data-testid="v2-product-editor"] input[placeholder="手动粘贴商品 ID"]', "824014970181");
+  await setControlValueBySelector(client, '[data-testid="v2-product-name-input"]', "E2E手动商品");
+  const imagePath = path.join(ARTIFACT_DIR, "e2e-product-square.png");
+  fs.writeFileSync(imagePath, Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Z7NwAAAAASUVORK5CYII=", "base64"));
+  const imageFileCount = await setInputFiles(client, [imagePath], { inputSelector: '[data-testid="v2-product-image-input"]' });
+  check("manualProductSquareImageInputReceivesFile", imageFileCount === 1, { imageFileCount });
+  await waitForExpression(client, `document.querySelector('[data-testid="v2-brand-product-manager"]')?.textContent?.includes("方图已裁切为 1:1")`, 10000);
+  await clickText(client, "加载并保存", "[data-testid='v2-product-editor'] button");
+  await waitForExpression(client, `document.querySelectorAll('[data-testid="v2-product-library"] article').length === 1`, 30000);
+  await waitForExpression(client, `document.querySelectorAll('[data-testid="v2-product-metrics"] [data-metric-key]').length === 16`, 30000);
+  const state = await evaluate(
+    client,
+    `(() => ({
+      cardCount: document.querySelectorAll('[data-testid="v2-product-library"] article').length,
+      selectorCount: document.querySelectorAll('[data-testid="v2-brand-product-manager"] select option').length,
+      metricCount: document.querySelectorAll('[data-testid="v2-product-metrics"] [data-metric-key]').length,
+      hasImage: Boolean(document.querySelector('[data-testid="v2-product-library"] article img')),
+      hasEdit: Array.from(document.querySelectorAll('[data-testid="v2-product-library"] button')).some((button) => (button.textContent ?? '').trim() === '编辑'),
+      hasDelete: Array.from(document.querySelectorAll('[data-testid="v2-product-library"] button')).some((button) => (button.textContent ?? '').trim() === '删除'),
+      body: document.querySelector('[data-testid="v2-product-library"]')?.textContent ?? '',
+    }))()`,
+  );
+  check(
+    "manualProductCenterUsesOneExplicitProductWithSquareCardAndFullMetrics",
+    state.cardCount === 1 && state.selectorCount === 1 && state.metricCount === 16 && state.hasImage && state.hasEdit && state.hasDelete && state.body.includes("E2E手动商品"),
+    state,
+  );
+  const screenshot = await capture(client, "v2-product-manual-desktop");
+  return { ...state, screenshot };
+};
+
+const scopedTargetRegression = async (client) => {
+  const switchToFullJuneRange = async () => {
+    await clickText(client, "月", "[data-testid='v2-home-toolbar'] button");
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="v2-home-toolbar"]')?.innerText.includes('2026-06-01 ~ 2026-06-30')`,
+      30000,
+    );
+  };
+
+  const setScopeTarget = async (scopeLabel, scopeKey, value) => {
+    await navigate(client, "/v2/target-center", "[data-testid='v2-brand-target-center']");
+    await waitForExpression(
+      client,
+      `Array.from(document.querySelectorAll('[data-testid="v2-brand-target-center"] button')).some((button) => (button.textContent ?? '').trim() === ${JSON.stringify(scopeLabel)} && !button.disabled)`,
+      30000,
+    );
+    await clickText(client, scopeLabel, "[data-testid='v2-brand-target-center'] button");
+    await waitForExpression(client, `Boolean(document.querySelector('#v2-target-${scopeKey}-gmv'))`, 30000);
+    await setControlValueBySelector(client, 'input[type="month"]', "2026-06");
+    await setControlValueBySelector(client, `#v2-target-${scopeKey}-gmv`, String(value));
+    await waitForExpression(client, `!Array.from(document.querySelectorAll('[data-testid="v2-brand-target-center"] button')).find((button) => (button.textContent ?? '').trim() === '保存目标')?.disabled`, 30000);
+    await clickText(client, "保存目标", "[data-testid='v2-brand-target-center'] button");
+    await waitForExpression(client, `document.body.innerText.includes("已保存 1 项${scopeLabel}目标。")`, 30000);
+    return evaluate(
+      client,
+      `(() => ({
+        month: document.querySelector('input[type="month"]')?.value ?? null,
+        dataMonthVisible: document.body.innerText.includes('经营数据最新月份 2026-06'),
+        value: document.querySelector('#v2-target-${scopeKey}-gmv')?.value ?? null,
+        selectedSeriesId: ${JSON.stringify(scopeKey)} === 'series' ? Array.from(document.querySelectorAll('select')).at(-1)?.value ?? null : null,
+      }))()`,
+    );
+  };
+
+  const storeTarget = await setScopeTarget("店铺", "platform", 200000);
+  await navigate(client, "/v2/store-board", "[data-testid='v2-store-board-dashboard']");
+  await switchToFullJuneRange();
+  await waitForExpression(client, `document.querySelector('[data-testid="v2-store-metrics"] [data-metric-key="gmv"]')?.getAttribute('data-target-state') === 'ready'`, 30000);
+  const storeState = await evaluate(client, `(() => ({ metricCount: document.querySelectorAll('[data-testid="v2-store-metrics"] [data-metric-key]').length, targetLabel: document.querySelector('[data-testid="v2-store-metrics"] [data-metric-key="gmv"]')?.getAttribute('aria-label') ?? '' }))()`);
+  check("storeTargetAppearsOnFullMetricSurface", storeTarget.month === "2026-06" && storeTarget.dataMonthVisible && storeState.metricCount === 16 && storeState.targetLabel.includes("总目标 200,000"), { storeTarget, storeState });
+
+  const seriesTarget = await setScopeTarget("系列", "series", 100000);
+  if (!seriesTarget.selectedSeriesId) throw new Error("series_target_selection_missing");
+  await navigate(client, `/v2/series-board?seriesId=${encodeURIComponent(seriesTarget.selectedSeriesId)}`, "[data-testid='v2-series-board-dashboard']");
+  await switchToFullJuneRange();
+  await waitForExpression(client, `document.querySelector('[data-testid="v2-series-metrics"] [data-metric-key="gmv"]')?.getAttribute('data-target-state') === 'ready'`, 30000);
+  const seriesState = await evaluate(client, `document.querySelector('[data-testid="v2-series-metrics"] [data-metric-key="gmv"]')?.getAttribute('aria-label') ?? ''`);
+  check("seriesTargetAppearsForMatchingJuneSeries", seriesTarget.month === "2026-06" && String(seriesState).includes("总目标 100,000"), { seriesTarget, seriesState });
+
+  const productTarget = await setScopeTarget("商品", "product", 50000);
+  await navigate(client, "/v2/product-board", "[data-testid='v2-product-board-dashboard']");
+  await switchToFullJuneRange();
+  await waitForExpression(client, `document.querySelector('[data-testid="v2-product-metrics"] [data-metric-key="gmv"]')?.getAttribute('data-target-state') === 'ready'`, 30000);
+  const productState = await evaluate(client, `document.querySelector('[data-testid="v2-product-metrics"] [data-metric-key="gmv"]')?.getAttribute('aria-label') ?? ''`);
+  check("manualProductTargetAppearsForMatchingJuneProduct", productTarget.month === "2026-06" && String(productState).includes("总目标 50,000"), { productTarget, productState });
+
+  return { storeTarget, storeState, seriesTarget, seriesState, productTarget, productState };
 };
 
 const homeGmvValue = async (client) => evaluate(
@@ -782,22 +869,9 @@ const homeGmvValue = async (client) => evaluate(
 const appendSecondStoreRegression = async (client, files) => {
   await navigate(client, "/v2/home", "[data-testid='v2-home-dashboard']");
   await waitForHomeReady(client, 45000);
-  const brandSeriesValue = await evaluate(
-    client,
-    `document.querySelector('[data-testid="v2-home-series-filter"]')?.options?.[0]?.value ?? ''`,
-  );
-  if (brandSeriesValue) {
-    await setControlValueBySelector(client, '[data-testid="v2-home-series-filter"]', brandSeriesValue);
-    await waitForExpression(
-      client,
-      `document.querySelector('[data-testid="v2-home-series-filter"]')?.value === ${JSON.stringify(brandSeriesValue)}`,
-      30000,
-    );
-  }
   const firstGmv = await homeGmvValue(client);
   check("secondStoreBaselineUsesBrandScope", typeof firstGmv === "number" && firstGmv > 0, {
     firstGmv,
-    brandSeriesValue,
   });
 
   await navigate(client, "/v2/upload", "[data-testid='upload-page-v1-dashboard']");
@@ -990,30 +1064,38 @@ const run = async () => {
     currentStage = "v2_home_desktop";
     await navigate(client, "/v2/home", "[data-testid='v2-home-dashboard']");
     await waitForHomeReady(client, 45000);
-    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 17`, 30000);
+    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 16`, 30000);
     const homeState = await evaluate(
       client,
       `(() => {
         const conversionCard = document.querySelector('[data-metric-key="conversionRate"]');
+        const gmvCard = document.querySelector('[data-metric-key="gmv"]');
         return {
           metricCount: document.querySelectorAll('[data-metric-key]').length,
           dataHealthText: document.querySelector('[data-testid="v2-home-data-health-summary"]')?.textContent ?? "",
           toolbarText: document.querySelector('[data-testid="v2-home-toolbar"]')?.textContent ?? "",
           hasUploadPrompt: document.body.innerText.includes("前往上传"),
-          conversionMtdTargetTitle: Array.from(conversionCard?.querySelectorAll('[title]') ?? [])
-            .map((item) => item.getAttribute('title') ?? '')
-            .find((item) => item.startsWith('MTD目标 ')) ?? '',
+          conversionLabel: conversionCard?.getAttribute('aria-label') ?? '',
+          gmvLabel: gmvCard?.getAttribute('aria-label') ?? '',
+          hasBrandKeywordPaidShare: Boolean(document.querySelector('[data-metric-key="brandKeywordPaidShare"]')),
         };
       })()`,
     );
-    check("v2HomeShows17Metrics", homeState.metricCount === 17, homeState);
+    check("v2HomeShowsBalanced16Metrics", homeState.metricCount === 16 && homeState.hasBrandKeywordPaidShare === false, homeState);
     check(
       "v2HomeTrendFooterHealthRowRemoved",
       homeState.dataHealthText === "",
       homeState,
     );
     check("v2HomeLeavesEmptyState", homeState.hasUploadPrompt === false, homeState);
-    check("v2HomeRateTargetIsNotDayProrated", homeState.conversionMtdTargetTitle === "MTD目标 92%", homeState);
+    check("v2HomeRateTargetIsNotDayProrated", homeState.conversionLabel.includes("MTD目标 92%"), homeState);
+    check(
+      "v2HomeAdditiveTargetProgressUsesDisplayedStageTarget",
+      homeState.gmvLabel.includes("MTD目标 50,000") &&
+        homeState.gmvLabel.includes("差值 +75,596") &&
+        homeState.gmvLabel.includes("完成率 251.19%"),
+      homeState,
+    );
     const firstStoreGmv = await homeGmvValue(client);
     check("v2HomeGmvIsNumericAfterUpload", typeof firstStoreGmv === "number" && firstStoreGmv > 0, { firstStoreGmv });
     const homeDesktopScreenshot = await capture(client, "v2-home-desktop");
@@ -1030,19 +1112,28 @@ const run = async () => {
     currentStage = "v2_series_configuration";
     const seriesConfigurationState = await seriesConfigurationRegression(client, firstStoreGmv);
 
+    currentStage = "v2_manual_product_configuration";
+    const manualProductState = await manualProductRegression(client);
+
+    currentStage = "v2_scoped_target_visibility";
+    const scopedTargetState = await scopedTargetRegression(client);
+
+    await navigate(client, "/v2/home", "[data-testid='v2-home-dashboard']");
+    await waitForHomeReady(client, 45000);
+
     currentStage = "metric_settings_customize";
     await clickText(client, "指标设置");
     await waitForExpression(client, `Boolean(document.querySelector('[data-testid="v2-home-metric-settings"]'))`, 10000);
     const metricSettingsCount = await evaluate(
       client,
-      `document.querySelectorAll('[data-testid="v2-home-metric-settings"] input[type="checkbox"]').length`,
+      `document.querySelectorAll('[data-testid="v2-home-metric-settings"] input[aria-label^="显示"]').length`,
     );
-    check("metricSettingsHas17Controls", metricSettingsCount === 17, { count: metricSettingsCount });
+    check("metricSettingsHas16MetricControls", metricSettingsCount === 16, { count: metricSettingsCount });
     await click(client, "[aria-label='显示投入产出比']");
     await click(client, "[aria-label='显示品牌词访客']");
     await click(client, "[aria-label='下移GMV']");
     await clickText(client, "完成", "[data-testid='v2-home-metric-settings'] button");
-    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 15`, 10000);
+    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 14`, 10000);
     const customizedMetricState = await evaluate(
       client,
       `(() => {
@@ -1057,7 +1148,7 @@ const run = async () => {
     );
     check(
       "metricVisibilityAndOrderingInteractive",
-      customizedMetricState.count === 15 &&
+      customizedMetricState.count === 14 &&
         customizedMetricState.firstKey === "gsv" &&
         customizedMetricState.hasAdRoi === false &&
         customizedMetricState.hasBrandVisitors === false,
@@ -1067,7 +1158,7 @@ const run = async () => {
     currentStage = "refresh_restore_customized_metrics";
     await reloadPage(client);
     await waitForHomeReady(client, 45000);
-    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 15`, 30000);
+    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 14`, 30000);
     const refreshedState = await evaluate(
       client,
       `(() => ({
@@ -1080,7 +1171,7 @@ const run = async () => {
     );
     check(
       "refreshPreservesMetricSubsetAndOrdering",
-      refreshedState.metricCount === 15 &&
+      refreshedState.metricCount === 14 &&
         refreshedState.dataHealthText === "" &&
         refreshedState.firstMetricKey === "gsv" &&
         refreshedState.hasAdRoi === false &&
@@ -1093,7 +1184,7 @@ const run = async () => {
     await waitForExpression(client, `Boolean(document.querySelector('[data-testid="v2-home-metric-settings"]'))`, 10000);
     await clickText(client, "恢复默认", "[data-testid='v2-home-metric-settings'] button");
     await clickText(client, "完成", "[data-testid='v2-home-metric-settings'] button");
-    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 17`, 10000);
+    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 16`, 10000);
     const resetState = await evaluate(
       client,
       `(() => ({
@@ -1101,12 +1192,12 @@ const run = async () => {
         firstMetricKey: document.querySelector('[data-metric-key]')?.getAttribute('data-metric-key') ?? null,
       }))()`,
     );
-    check("resetRestores17Metrics", resetState.metricCount === 17 && resetState.firstMetricKey === "gmv", resetState);
+    check("resetRestores16Metrics", resetState.metricCount === 16 && resetState.firstMetricKey === "gmv", resetState);
 
     currentStage = "refresh_restore_reset_metrics";
     await reloadPage(client);
     await waitForHomeReady(client, 45000);
-    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 17`, 30000);
+    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 16`, 30000);
     const resetRefreshedState = await evaluate(
       client,
       `(() => ({
@@ -1115,8 +1206,8 @@ const run = async () => {
       }))()`,
     );
     check(
-      "refreshAfterResetRestores17Metrics",
-      resetRefreshedState.metricCount === 17 && resetRefreshedState.firstMetricKey === "gmv",
+      "refreshAfterResetRestores16Metrics",
+      resetRefreshedState.metricCount === 16 && resetRefreshedState.firstMetricKey === "gmv",
       resetRefreshedState,
     );
 
@@ -1124,7 +1215,7 @@ const run = async () => {
     await setViewport(client, 390, 900);
     await reloadPage(client);
     await waitForHomeReady(client, 45000);
-    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 17`, 30000);
+    await waitForExpression(client, `document.querySelectorAll('[data-metric-key]').length === 16`, 30000);
     const mobileSafety = await evaluate(
       client,
       `(() => ({
@@ -1188,6 +1279,8 @@ const run = async () => {
       homeCrossMonthTargetState,
       unifiedRouteState,
       seriesConfigurationState,
+      manualProductState,
+      scopedTargetState,
       mobileBoardSafety,
       targetCenterPreconditionState,
       targetCenterWritableState,

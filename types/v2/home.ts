@@ -19,6 +19,18 @@ export const V2_HOME_METRIC_KEYS = [
 ] as const;
 
 export type V2HomeMetricKey = (typeof V2_HOME_METRIC_KEYS)[number];
+
+export const V2_HOME_DISPLAY_METRIC_KEYS = V2_HOME_METRIC_KEYS.filter(
+  (metricKey) => metricKey !== "brandKeywordPaidShare",
+);
+
+export type V2HomeTargetScope = "brand" | "platform" | "series" | "product";
+
+export interface V2HomeProductRef {
+  platformCode: string;
+  storeId: string;
+  productId: string;
+}
 export type V2HomeMetricFormat = "money" | "integer" | "percent" | "ratio" | "days";
 export type V2HomeMetricAvailability =
   | "AVAILABLE"
@@ -203,6 +215,9 @@ export interface V2HomeLoadOptions {
   selectedPlatform?: string | null;
   selectedStoreIds?: string[];
   selectedSeriesId?: string | null;
+  selectedHomeSeriesIds?: string[];
+  selectedProductRef?: V2HomeProductRef | null;
+  targetScope?: V2HomeTargetScope;
   seriesOptionVisibility?: "home" | "all";
   timeRange?: V2HomeTimeRange;
   chartMode?: V2HomeChartMode;

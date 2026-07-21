@@ -19,7 +19,6 @@ interface V2HomeToolbarProps {
   interactionError: string | null;
   onPlatformChange: (platformCode: string | null) => void;
   onStoresChange: (storeIds: string[]) => void;
-  onSeriesChange: (seriesId: string | null) => void;
   onTimeModeChange: (mode: V2HomeTimeRangeMode) => void;
   onCustomRangeChange: (range: V2HomeTimeRange) => void;
   onComparisonModeChange: (mode: V2HomeComparisonMode) => void;
@@ -53,7 +52,6 @@ export function V2HomeToolbar({
   interactionError,
   onPlatformChange,
   onStoresChange,
-  onSeriesChange,
   onTimeModeChange,
   onCustomRangeChange,
   onComparisonModeChange,
@@ -245,24 +243,6 @@ export function V2HomeToolbar({
         <span className="truncate text-xs tabular-nums text-slate-500">
           {timeRange.startDate} ~ {timeRange.endDate}
         </span>
-
-        {scope.seriesOptions.length > 0 ? (
-          <label className="flex h-8 min-w-0 items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-500">
-            <span className="shrink-0">系列</span>
-            <select
-              className="min-w-0 max-w-44 bg-transparent font-semibold text-slate-700 outline-none"
-              data-testid="v2-home-series-filter"
-              disabled={busy}
-              onChange={(event) => onSeriesChange(event.target.value || null)}
-              value={scope.selectedSeriesId ?? ""}
-            >
-              <option value="">品牌整体</option>
-              {scope.seriesOptions.map((item) => (
-                <option key={item.id} value={item.id}>{item.label}（{item.productCount}）</option>
-              ))}
-            </select>
-          </label>
-        ) : null}
 
         <div className="ml-auto flex items-center gap-2">
           <span className="hidden text-[11px] text-slate-400 sm:inline" title="同比比较去年同期；环比比较紧邻上一等长区间">指标变化</span>

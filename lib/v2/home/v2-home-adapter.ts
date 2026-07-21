@@ -55,10 +55,13 @@ import {
   type V2HomeMetricFormat,
   type V2HomeMetricKey,
   type V2HomeMetricSourceStatus,
+  type V2HomeProductRef,
   type V2HomeReconciliationSummary,
+  type V2HomeSeriesGsvCard,
   type V2HomeScope,
   type V2HomeTargetOverlay,
   type V2HomeTargetRule,
+  type V2HomeTargetScope,
   type V2HomeTimeRange,
   type V2HomeTimeRangeMode,
   type V2HomeViewModel,
@@ -433,6 +436,27 @@ const sourceForSelectedSeries = (
   };
 };
 
+const sourceForSelectedProduct = (
+  source: BIHomeDataSource,
+  productRef: V2HomeProductRef | null,
+): BIHomeDataSource => {
+  if (!productRef) return source;
+  const matchesProduct = (point: Pick<BIDataPoint, "platformCode" | "storeId" | "productId">) =>
+    point.platformCode === productRef.platformCode &&
+    point.storeId === productRef.storeId &&
+    point.productId === productRef.productId;
+  const points = source.points.filter(matchesProduct);
+  return {
+    ...source,
+    points,
+    seriesPoints: [],
+    seriesDefinitions: [],
+    searchTotalKeywords: [],
+    searchProductKeywords: source.searchProductKeywords.filter(matchesProduct),
+    selectedDate: points.map((point) => point.businessDate).filter(Boolean).sort().at(-1) ?? source.selectedDate,
+  };
+};
+
 const pointHasOperatingMetric = (point: BIDataPoint): boolean =>
   [
     "gmv",
@@ -576,11 +600,13 @@ const withSeriesScope = ({
   const requestedIsAvailable = Boolean(requestedSeriesId && options.some((option) => option.id === requestedSeriesId));
   return {
     ...scope,
-    selectedSeriesId: requestedIsAvailable
-      ? requestedSeriesId ?? null
-      : visibility === "all"
-        ? options[0]?.id ?? null
-        : null,
+    selectedSeriesId: requestedSeriesId === null
+      ? null
+      : requestedIsAvailable
+        ? requestedSeriesId ?? null
+        : visibility === "all"
+          ? options[0]?.id ?? null
+          : null,
     seriesOptions: options,
   };
 };
@@ -638,12 +664,14 @@ const recordsToDraftMap = (records: TargetDraftRecord[]): Record<string, number>
 };
 
 const loadTargetRecordsForMonth = async (
+  targetScope: V2HomeTargetScope,
   scope: V2HomeScope,
   source: BIHomeDataSource,
   month: string,
+  selectedProductRef: V2HomeProductRef | null,
 ): Promise<TargetDraftRecord[]> => {
   const databaseName = targetDatabaseNameForBrand(scope.brandId);
-  if (scope.selectedSeriesId) {
+  if (targetScope === "series" && scope.selectedSeriesId) {
     const seriesScopes = Array.from(
       new Map(
         source.seriesDefinitions
@@ -666,19 +694,28 @@ const loadTargetRecordsForMonth = async (
     }, { databaseName });
     return result.status === "ok" ? result.records : [];
   }
-  const brandResult = await loadActiveTargetDrafts({
-    scope: "brand",
-    month,
-  }, { databaseName });
-  if (brandResult.status === "ok") return brandResult.records;
-  if (!scope.selectedPlatform || scope.selectedStoreIds.length !== 1) return [];
-  const platformResult = await loadActiveTargetDrafts({
-    scope: "platform",
-    platformCode: scope.selectedPlatform,
-    storeId: scope.selectedStoreIds[0],
-    month,
-  }, { databaseName });
-  return platformResult.status === "ok" ? platformResult.records : [];
+  if (targetScope === "product" && selectedProductRef) {
+    const productResult = await loadActiveTargetDrafts({
+      scope: "product",
+      platformCode: selectedProductRef.platformCode,
+      storeId: selectedProductRef.storeId,
+      productId: selectedProductRef.productId,
+      month,
+    }, { databaseName });
+    return productResult.status === "ok" ? productResult.records : [];
+  }
+  if (targetScope === "platform") {
+    if (!scope.selectedPlatform || scope.selectedStoreIds.length !== 1) return [];
+    const platformResult = await loadActiveTargetDrafts({
+      scope: "platform",
+      platformCode: scope.selectedPlatform,
+      storeId: scope.selectedStoreIds[0],
+      month,
+    }, { databaseName });
+    return platformResult.status === "ok" ? platformResult.records : [];
+  }
+  const brandResult = await loadActiveTargetDrafts({ scope: "brand", month }, { databaseName });
+  return brandResult.status === "ok" ? brandResult.records : [];
 };
 
 interface MonthlyTargetDrafts {
@@ -787,7 +824,7 @@ const targetOverlayForMetric = ({
   const totalRaw = singleMonth
     ? targetValues.find((item) => item.month === singleMonth)?.value ?? null
     : null;
-  const progressTarget = totalRaw ?? mtdRaw;
+  const progressTarget = mtdRaw ?? totalRaw;
   const definition = getTargetMetricDefinitionByKey(contract.metricKey);
   const progressRate = actual === null || progressTarget === null || progressTarget <= 0
     ? null
@@ -897,6 +934,78 @@ const metricCards = ({
           },
     };
   });
+};
+
+const selectedSeriesCards = async ({
+  source,
+  state,
+  scope,
+  range,
+  selectedSeriesIds,
+}: {
+  source: BIHomeDataSource;
+  state: UIState;
+  scope: V2HomeScope;
+  range: V2HomeTimeRange;
+  selectedSeriesIds: string[];
+}): Promise<V2HomeSeriesGsvCard[]> => {
+  const requestedIds = uniqueText(selectedSeriesIds).slice(0, 5);
+  if (requestedIds.length === 0) return [];
+  const eligibleDefinitions = source.seriesDefinitions.filter((series) =>
+    requestedIds.includes(series.seriesId) &&
+    (!scope.selectedPlatform || series.platformCode === scope.selectedPlatform) &&
+    scope.selectedStoreIds.includes(series.storeId) &&
+    series.productIds.length > 0,
+  );
+  const gsvContract = V2_HOME_METRIC_CONTRACTS.find((contract) => contract.metricKey === "gsv");
+  if (!gsvContract) return [];
+  const actualViewModel = buildHomeBIViewModel(source, { ...state, targetDrafts: {} });
+  const months = targetMonthsForRange(range);
+  const databaseName = targetDatabaseNameForBrand(scope.brandId);
+
+  return Promise.all(requestedIds.flatMap((seriesId) => {
+    const definitions = eligibleDefinitions.filter((series) => series.seriesId === seriesId);
+    if (definitions.length === 0) return [];
+    const uniqueScopes = Array.from(
+      new Map(definitions.map((series) => [`${series.platformCode}::${series.storeId}`, series])).values(),
+    );
+    const option = scope.seriesOptions.find((item) => item.id === seriesId);
+    return [Promise.all(months.map(async (month) => {
+      const scopedResults = await Promise.all(uniqueScopes.map((series) => loadActiveTargetDrafts({
+        scope: "series",
+        platformCode: series.platformCode,
+        storeId: series.storeId,
+        seriesId,
+        month,
+      }, { databaseName })));
+      const gsvTargets = scopedResults.map((result) => {
+        if (result.status !== "ok") return null;
+        const record = result.records.find((item) => item.metricKey === "gsv" && item.status === "active");
+        return record?.targetValue ?? null;
+      });
+      const complete = gsvTargets.length > 0 && gsvTargets.every((value) => value !== null);
+      const drafts: Record<string, number> = complete
+        ? { gsv: gsvTargets.reduce((sum, value) => sum + (value ?? 0), 0) }
+        : {};
+      return { month, drafts } satisfies MonthlyTargetDrafts;
+    })).then((targetMonths) => {
+      const actualCard = actualViewModel.kpiCards.find((card) => card.coreSeriesId === seriesId) ?? null;
+      const actual = finiteOrNull(actualCard?.rawValue);
+      const overlay = targetOverlayForMetric({ contract: gsvContract, actual, targetMonths, range });
+      return {
+        seriesId,
+        seriesName: option?.label ?? definitions[0]!.seriesName,
+        href: `/v2/series-board?${new URLSearchParams({ seriesId }).toString()}`,
+        actual: formatV2HomeMetricValue(actual, "money"),
+        actualRaw: actual,
+        mtdTarget: overlay.mtdTarget,
+        totalTarget: overlay.totalTarget,
+        difference: overlay.difference,
+        completionRate: overlay.completionRate,
+        progress: overlay.progress,
+      } satisfies V2HomeSeriesGsvCard;
+    })];
+  }));
 };
 
 const metricsByKeyForRange = (
@@ -1171,11 +1280,20 @@ export const loadV2HomeViewModel = async (
       requestedSeriesId: options.selectedSeriesId,
       visibility: options.seriesOptionVisibility ?? "home",
     });
-    const metricSource = sourceForSelectedSeries(source, scope.selectedSeriesId);
+    const seriesSource = sourceForSelectedSeries(source, scope.selectedSeriesId);
+    const selectedProductRef = options.selectedProductRef ?? null;
+    const metricSource = sourceForSelectedProduct(seriesSource, selectedProductRef);
+    const targetScope = options.targetScope ?? (scope.selectedSeriesId ? "series" : "brand");
     const targetMonths = await Promise.all(
       targetMonthsForRange(selectedRange).map(async (month) => ({
         month,
-        drafts: recordsToDraftMap(await loadTargetRecordsForMonth(scope, source, month)),
+        drafts: recordsToDraftMap(await loadTargetRecordsForMonth(
+          targetScope,
+          scope,
+          source,
+          month,
+          selectedProductRef,
+        )),
       })),
     );
     const targetDrafts = targetMonths.length === 1 ? targetMonths[0]?.drafts ?? {} : {};
@@ -1211,7 +1329,13 @@ export const loadV2HomeViewModel = async (
       timeRange: selectedRange,
       comparison,
       metrics,
-      keySeries: [],
+      keySeries: await selectedSeriesCards({
+        source,
+        state,
+        scope,
+        range: selectedRange,
+        selectedSeriesIds: options.selectedHomeSeriesIds ?? [],
+      }),
       chart: chartModel({
         source: metricSource,
         state,

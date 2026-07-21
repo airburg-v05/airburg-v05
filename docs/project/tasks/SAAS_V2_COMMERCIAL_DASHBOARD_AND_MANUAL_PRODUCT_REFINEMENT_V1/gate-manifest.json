@@ -1,0 +1,47 @@
+{
+  "task_id": "SAAS_V2_COMMERCIAL_DASHBOARD_AND_MANUAL_PRODUCT_REFINEMENT_V1",
+  "task_type": "data_dashboard",
+  "risk_level": "A2_AUTHORIZED",
+  "business_purpose": "Correct dashboard interaction and target scope while simplifying the current commercial operating surfaces.",
+  "evidence_sources": [
+    "Latest direct instruction from Zongji on 2026-07-21",
+    "Current public browser state inspected on 2026-07-21",
+    "docs/project/PROJECT_SSOT.json",
+    "Current runtime, metric, target, brand-series and product contracts"
+  ],
+  "truth_rules": [
+    "Do not apply a target outside its configured calendar month",
+    "Do not display imported products as manually managed products",
+    "Do not fabricate unsupported metrics or cross-device persistence",
+    "Technical PASS does not imply visual or business acceptance"
+  ],
+  "scope": {
+    "allowed": [
+      "SaaS V2 dashboard UI and browser-local configuration",
+      "Shared read-only operating-data adapters",
+      "Target matching and period guidance",
+      "Validators and controlled deployment requested by the owner"
+    ],
+    "forbidden": [
+      "Raw business rows or secrets",
+      "Unverified metric formula changes",
+      "Commercial image or presentation generation",
+      "Push or merge",
+      "Automatic owner acceptance"
+    ]
+  },
+  "rollback": {
+    "git_tag": "rollback/saas-v2-pre-commercial-refinement-20260721",
+    "baseline_head": "dad63e1",
+    "deployed_runtime_commit": "f772af503bcfd29b331798866d9efc2635958bc2",
+    "release": "/opt/airburg/releases/saas-v2-board-simplification-f772af5-20260721T190306",
+    "pm2_snapshot": "/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-board-simplification-f772af5-20260721T190306.pm2.json"
+  },
+  "validation_plan": [
+    "Focused unit and persistence validators",
+    "TypeScript, lint and production build",
+    "Desktop and mobile browser interaction regression",
+    "Public route, runtime and rollback-preservation regression"
+  ],
+  "owner_gate": "PENDING_POST_DEPLOY_OWNER_REVIEW"
+}

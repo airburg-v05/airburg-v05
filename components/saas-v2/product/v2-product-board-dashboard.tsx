@@ -1,95 +1,49 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { MetricGridV2 } from "@/components/saas-v2/cards/metric-grid-v2";
-import {
-  V2SimpleTrendChart,
-  type V2SimpleTrendMetricOption,
-} from "@/components/saas-v2/charts/v2-simple-trend-chart";
 import { SafeEmptyState } from "@/components/saas-v2/empty/safe-empty-state";
-import type { MetricV2 } from "@/components/saas-v2/data";
-import type { PlatformCode } from "@/lib/v05/domain/models";
+import { V2HomeChart } from "@/components/saas-v2/home/v2-home-chart";
+import { V2HomeMetricGrid } from "@/components/saas-v2/home/v2-home-metric-grid";
+import { V2HomeToolbar } from "@/components/saas-v2/home/v2-home-toolbar";
+import { V2BrandProductManager } from "@/components/saas-v2/product/v2-brand-product-manager";
 import {
-  buildEmptyProductBoardViewModel,
-  buildLegacyUntrackedProductBoardViewModel,
-  buildV2ProductBoardViewModel,
-  formatPercent,
-  formatProductTargetMetricValue,
-  loadProductBoardContext,
-  type ProductBoardMetricKey,
-  type ProductBoardPeriod,
-  type ProductBoardViewModel,
-} from "@/lib/v05/product-board";
+  loadV2HomeViewModel,
+  resolveV2HomeTimeRangePreset,
+  validateV2HomeTimeRange,
+} from "@/lib/v2/home/v2-home-adapter";
+import type { BrandProductRecord } from "@/lib/v2/workspace/brand-products";
+import {
+  V2_HOME_DISPLAY_METRIC_KEYS,
+  type V2HomeComparisonMode,
+  type V2HomeLoadOptions,
+  type V2HomeLoadResult,
+  type V2HomeTimeRange,
+  type V2HomeTimeRangeMode,
+} from "@/types/v2/home";
 
-type DashboardState =
-  | { status: "loading" }
-  | { status: "ready"; viewModel: ProductBoardViewModel }
-  | { status: "error"; message: string };
-
-type TrendMode = "mtd" | "dly";
-
-const PERIODS: ProductBoardPeriod[] = ["day", "week", "month", "custom"];
-const PERIOD_LABEL: Record<ProductBoardPeriod, string> = { day: "日", week: "周", month: "月", custom: "自定义" };
-const TREND_OPTIONS: V2SimpleTrendMetricOption[] = [
-  { key: "gmv", label: "GMV", format: "money" },
-  { key: "gsv", label: "GSV", format: "money" },
-  { key: "visitors", label: "访客", format: "integer" },
-  { key: "paidBuyers", label: "支付买家", format: "integer" },
-  { key: "conversionRate", label: "转化率", format: "percent" },
-  { key: "adSpend", label: "推广花费", format: "money" },
-];
-
-const isPeriod = (value: string | null): value is ProductBoardPeriod =>
-  value !== null && PERIODS.includes(value as ProductBoardPeriod);
-
-const isTrendMetric = (value: string | null): value is ProductBoardMetricKey =>
-  value !== null && TREND_OPTIONS.some((item) => item.key === value);
-
-const clampProgress = (value: number | null): number => {
-  if (value === null || !Number.isFinite(value)) return 0;
-  return Math.max(0, Math.min(100, value * 100));
-};
-
-const metricCardUnit = (label: string): string | undefined => {
-  if (label.includes("率")) return "%";
-  if (label === "ROI") return "倍";
-  if (label.includes("访客") || label.includes("买家")) return "人";
-  if (label.includes("花费") || label.includes("GMV") || label.includes("GSV")) return "元";
-  return undefined;
-};
-
-const metricRowsFromViewModel = (viewModel: ProductBoardViewModel): MetricV2[] =>
-  viewModel.metrics.map((metric, index) => {
-    const target = viewModel.targetProgress.find((item) => item.metricLabel === metric.label || item.metricKey === metric.key);
-    return {
-      label: metric.label,
-      value: metric.formattedValue,
-      unit: metricCardUnit(metric.label),
-      mtdTarget: "--",
-      totalTarget: target ? formatProductTargetMetricValue(target.metricKey, target.targetValue) : "--",
-      delta: target ? formatProductTargetMetricValue(target.metricKey, target.gapValue) : "--",
-      completion: target?.progressRate !== null && target?.progressRate !== undefined ? formatPercent(target.progressRate) : "--",
-      progress: target ? clampProgress(target.progressRate) : 0,
-      note: index === 0 ? viewModel.notices[0] ?? "按当前商品范围展示。" : metric.helper,
-    };
-  });
+const targetPeriodLabel = (range: V2HomeTimeRange): string =>
+  range.startDate.slice(0, 7) === range.endDate.slice(0, 7)
+    ? range.startDate.slice(0, 7)
+    : `${range.startDate.slice(0, 7)}~${range.endDate.slice(0, 7)}`;
 
 export function V2ProductBoardDashboard() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const requestedPlatform = searchParams.get("platform");
-  const requestedStoreId = searchParams.get("storeId");
-  const trackedProductId = searchParams.get("trackedProductId");
-  const productId = searchParams.get("productId");
-  const selectedPeriod = isPeriod(searchParams.get("period")) ? searchParams.get("period") as ProductBoardPeriod : "day";
-  const selectedDate = searchParams.get("date");
-  const customStart = searchParams.get("start");
-  const customEnd = searchParams.get("end");
-  const trendMetric = isTrendMetric(searchParams.get("metric")) ? searchParams.get("metric") as ProductBoardMetricKey : "gsv";
-  const trendMode: TrendMode = searchParams.get("chart") === "dly" ? "dly" : "mtd";
-  const [state, setState] = useState<DashboardState>({ status: "loading" });
+  const requestId = useRef(0);
+  const recordsRef = useRef<BrandProductRecord[]>([]);
+  const [records, setRecords] = useState<BrandProductRecord[]>([]);
+  const [selectedRecordId, setSelectedRecordId] = useState<string | null>(searchParams.get("product"));
+  const [result, setResult] = useState<V2HomeLoadResult | null>(null);
+  const [options, setOptions] = useState<V2HomeLoadOptions>(() => ({
+    selectedPlatform: searchParams.get("platform") || undefined,
+    selectedStoreIds: searchParams.get("storeId") ? [searchParams.get("storeId")!] : undefined,
+    targetScope: "product",
+  }));
+  const [busy, setBusy] = useState(true);
+  const [interactionError, setInteractionError] = useState<string | null>(null);
+  const [chartDisplayMode, setChartDisplayMode] = useState<"single" | "dual">("dual");
 
   const replaceQuery = useCallback((patch: Record<string, string | null>) => {
     const next = new URLSearchParams(searchParams.toString());
@@ -101,119 +55,191 @@ export function V2ProductBoardDashboard() {
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
   }, [pathname, router, searchParams]);
 
+  const updateOptions = useCallback((patch: Partial<V2HomeLoadOptions>) => {
+    setInteractionError(null);
+    setBusy(true);
+    setOptions((current) => ({ ...current, ...patch, targetScope: "product" }));
+  }, []);
+
+  const selectProduct = useCallback((recordId: string) => {
+    const record = recordsRef.current.find((item) => item.recordId === recordId);
+    if (!record) return;
+    setSelectedRecordId(record.recordId);
+    replaceQuery({
+      product: record.recordId,
+      platform: record.platformCode,
+      storeId: record.storeId,
+    });
+    updateOptions({
+      selectedPlatform: record.platformCode,
+      selectedStoreIds: [record.storeId],
+      selectedProductRef: {
+        platformCode: record.platformCode,
+        storeId: record.storeId,
+        productId: record.productId,
+      },
+    });
+  }, [replaceQuery, updateOptions]);
+
+  const handleRecordsChange = useCallback((next: BrandProductRecord[]) => {
+    recordsRef.current = next;
+    setRecords(next);
+  }, []);
+
   useEffect(() => {
+    let cancelled = false;
+    void Promise.resolve().then(() => {
+      if (cancelled) return;
+      if (records.length === 0) {
+        if (selectedRecordId) setSelectedRecordId(null);
+        return;
+      }
+      if (selectedRecordId && records.some((record) => record.recordId === selectedRecordId)) return;
+      selectProduct(records[0]!.recordId);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [records, selectProduct, selectedRecordId]);
+
+  const selectedProduct = records.find((record) => record.recordId === selectedRecordId) ?? null;
+
+  useEffect(() => {
+    const currentRequest = ++requestId.current;
     let active = true;
-    void loadProductBoardContext({ platformCode: requestedPlatform, storeId: requestedStoreId }).then((result) => {
-      if (!active) return;
-      if (!result.context) {
-        setState({ status: "ready", viewModel: buildEmptyProductBoardViewModel(result.message) });
-        return;
+    const selectedProductRef = selectedProduct ? {
+      platformCode: selectedProduct.platformCode,
+      storeId: selectedProduct.storeId,
+      productId: selectedProduct.productId,
+    } : null;
+    void loadV2HomeViewModel({
+      ...options,
+      selectedProductRef,
+      targetScope: "product",
+    }).then((nextResult) => {
+      if (active && requestId.current === currentRequest) {
+        setResult(nextResult);
+        setBusy(false);
       }
-      if (result.status === "error") {
-        setState({ status: "error", message: result.message });
-        return;
-      }
-      const context = result.context;
-      if (context.dataset) {
-        const defaultStore = context.dataset.stores.find((item) => item.status === "active") ?? null;
-        const platformCode = (requestedPlatform ?? defaultStore?.platformCode ?? null) as PlatformCode | null;
-        const storeId = requestedStoreId ?? defaultStore?.storeId ?? null;
-        if (!platformCode || !storeId) {
-          setState({ status: "ready", viewModel: buildEmptyProductBoardViewModel("当前没有可读取的商品数据。") });
-          return;
-        }
-        setState({
-          status: "ready",
-          viewModel: buildV2ProductBoardViewModel({
-            dataset: context.dataset,
-            platformCode,
-            storeId,
-            trackedProductId,
-            productId,
-            selectedPeriod,
-            selectedDate,
-            customDateRange: { start: customStart, end: customEnd },
-          }),
-        });
-        return;
-      }
-      if (context.legacyAnalysis) {
-        setState({ status: "ready", viewModel: buildLegacyUntrackedProductBoardViewModel(context.message) });
-        return;
-      }
-      setState({ status: "ready", viewModel: buildEmptyProductBoardViewModel(result.message) });
-    }).catch(() => {
-      if (active) setState({ status: "error", message: "读取商品数据失败，请刷新后重试。" });
     });
     return () => {
       active = false;
     };
-  }, [customEnd, customStart, productId, requestedPlatform, requestedStoreId, selectedDate, selectedPeriod, trackedProductId]);
+  }, [options, selectedProduct]);
 
-  const viewModel = state.status === "ready" ? state.viewModel : null;
-  const metricRows = useMemo(() => viewModel ? metricRowsFromViewModel(viewModel) : [], [viewModel]);
-  const trendPoints = useMemo(() => viewModel?.trendPoints.map((point) => ({
-    date: point.date,
-    values: {
-      gmv: point.gmv,
-      gsv: point.gsv,
-      visitors: point.visitors,
-      paidBuyers: point.paidBuyers,
-      conversionRate: point.conversionRate,
-      adSpend: point.adSpend,
-    },
-    cumulative: {
-      gmv: point.cumulative.gmv,
-      gsv: point.cumulative.gsv,
-      visitors: point.cumulative.visitors,
-      paidBuyers: point.cumulative.paidBuyers,
-      conversionRate: point.cumulative.conversionRate,
-      adSpend: point.cumulative.adSpend,
-    },
-  })) ?? [], [viewModel]);
+  const viewModel = result?.status === "ready" ? result.viewModel : null;
+  const comparisonMessage = useMemo(() => {
+    if (!viewModel || viewModel.comparison.mode === "none") return null;
+    return viewModel.comparison.message;
+  }, [viewModel]);
 
-  if (state.status === "loading") return <div className="flex min-h-[62vh] items-center justify-center text-sm text-slate-500">正在读取商品经营数据…</div>;
-  if (state.status === "error") return <section className="rounded-xl border border-rose-200 bg-white p-6 text-center"><p className="font-semibold text-slate-900">商品数据暂时无法读取</p><p className="mt-2 text-sm text-slate-500">{state.message}</p></section>;
-  if (!viewModel?.storeContext || viewModel.statusLabel === "暂无数据") {
-    return <SafeEmptyState actionHref="/v2/upload" actionLabel="前往数据接入" description="完成数据导入后，再返回查看商品中心。" title="暂无商品数据" />;
+  const changeTimeMode = (mode: V2HomeTimeRangeMode) => {
+    if (!viewModel?.dataset.dateRange) return;
+    updateOptions({
+      timeRange: resolveV2HomeTimeRangePreset(mode, viewModel.dataset.dateRange, viewModel.timeRange),
+    });
+  };
+
+  const changeCustomRange = (timeRange: V2HomeTimeRange) => {
+    const error = validateV2HomeTimeRange(timeRange);
+    if (error) {
+      setInteractionError(error);
+      return;
+    }
+    updateOptions({ timeRange });
+  };
+
+  const selectForScope = (platformCode: string | null, storeIds: string[]) => {
+    const nextRecord = records.find((record) =>
+      (!platformCode || record.platformCode === platformCode) &&
+      (storeIds.length === 0 || storeIds.includes(record.storeId)),
+    ) ?? null;
+    if (nextRecord) {
+      selectProduct(nextRecord.recordId);
+      return;
+    }
+    setSelectedRecordId(null);
+    replaceQuery({ product: null });
+  };
+
+  if (!result) {
+    return <div className="flex min-h-[62vh] items-center justify-center text-sm text-slate-500">正在读取商品经营数据…</div>;
+  }
+  if (result.status === "empty") {
+    return <SafeEmptyState actionHref={result.uploadHref} actionLabel="前往数据接入" description="先导入经营数据，再手动添加需要跟踪的商品。" title="暂无商品数据" />;
+  }
+  if (result.status === "error") {
+    return <section className="rounded-xl border border-rose-200 bg-white p-6 text-center"><p className="font-semibold text-slate-900">商品数据暂时无法读取</p><p className="mt-2 text-sm text-slate-500">{result.message}</p></section>;
   }
 
-  const platformCodes = Array.from(new Set(viewModel.storeContext.availableStores.map((item) => item.platformCode)));
+  const readyViewModel = result.viewModel;
 
   return (
     <div className="flex min-w-0 flex-col gap-4" data-testid="v2-product-board-dashboard">
-      <section className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 sm:px-4" data-testid="v2-product-scope-bar">
-        <div className="flex flex-wrap items-center gap-2">
-          <h1 className="mr-1 text-xl font-semibold text-slate-900">商品经营</h1>
-          <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{viewModel.statusLabel}</span>
-          <span className="text-xs text-slate-500">{viewModel.storeContext.platformLabel} · {viewModel.storeContext.storeName}</span>
-        </div>
-        <div className="mt-2 flex flex-wrap items-end gap-2 border-t border-slate-100 pt-2">
-          <div className="flex h-8 items-center rounded-md bg-slate-100 p-0.5">
-            {PERIODS.map((period) => <button key={period} className={`h-7 rounded px-2.5 text-xs font-semibold ${selectedPeriod === period ? "bg-white text-blue-700 shadow-sm" : "text-slate-500"}`} onClick={() => replaceQuery({ period, date: null })} type="button">{PERIOD_LABEL[period]}</button>)}
-          </div>
-          <label className="text-[11px] font-semibold text-slate-500">平台<select className="ml-1 h-8 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700" onChange={(event) => replaceQuery({ platform: event.target.value || null, storeId: null, trackedProductId: null, productId: null })} value={viewModel.storeContext.platformCode}>{platformCodes.map((code) => <option key={code} value={code}>{code}</option>)}</select></label>
-          <label className="text-[11px] font-semibold text-slate-500">店铺<select className="ml-1 h-8 max-w-48 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700" onChange={(event) => {
-            const selected = viewModel.storeContext?.availableStores.find((item) => item.value === event.target.value);
-            const params = new URLSearchParams(selected?.href.split("?")[1] ?? "");
-            replaceQuery({ platform: params.get("platform"), storeId: params.get("storeId"), trackedProductId: null, productId: null });
-          }} value={viewModel.storeContext.storeKey}>{viewModel.storeContext.availableStores.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
-          <label className="text-[11px] font-semibold text-slate-500">商品<select className="ml-1 h-8 max-w-56 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700" onChange={(event) => replaceQuery({ trackedProductId: event.target.value || null, productId: null })} value={viewModel.selectedTrackedProduct.trackedProductId ?? ""}>{viewModel.trackedOptions.map((item) => <option key={item.trackedProductId} value={item.trackedProductId}>{item.displayName}</option>)}</select></label>
-          <label className="text-[11px] font-semibold text-slate-500">日期<select className="ml-1 h-8 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700" onChange={(event) => replaceQuery({ date: event.target.value || null })} value={viewModel.dateRange.selectedDate ?? ""}>{viewModel.availableDates.map((date) => <option key={date} value={date}>{date}</option>)}</select></label>
-          <span className="ml-auto text-xs text-slate-500">{viewModel.dateRange.coverageText}</span>
-        </div>
-        {selectedPeriod === "custom" ? <div className="mt-2 flex flex-wrap gap-2 border-t border-slate-100 pt-2"><input className="h-8 rounded-md border border-slate-200 px-2 text-xs" aria-label="起始日期" onChange={(event) => replaceQuery({ start: event.target.value || null })} type="date" value={customStart ?? ""} /><input className="h-8 rounded-md border border-slate-200 px-2 text-xs" aria-label="结束日期" onChange={(event) => replaceQuery({ end: event.target.value || null })} type="date" value={customEnd ?? ""} /></div> : null}
-      </section>
+      <V2HomeToolbar
+        busy={busy}
+        comparisonMode={readyViewModel.comparison.mode}
+        interactionError={interactionError}
+        onComparisonModeChange={(comparisonMode: V2HomeComparisonMode) => updateOptions({ comparisonMode })}
+        onCustomRangeChange={changeCustomRange}
+        onPlatformChange={(selectedPlatform) => {
+          replaceQuery({ platform: selectedPlatform, storeId: null, product: null });
+          updateOptions({ selectedPlatform, selectedStoreIds: [] });
+          selectForScope(selectedPlatform, []);
+        }}
+        onStoresChange={(selectedStoreIds) => {
+          replaceQuery({ storeId: selectedStoreIds.length === 1 ? selectedStoreIds[0] : null, product: null });
+          updateOptions({ selectedStoreIds });
+          selectForScope(readyViewModel.scope.selectedPlatform, selectedStoreIds);
+        }}
+        onTimeModeChange={changeTimeMode}
+        scope={readyViewModel.scope}
+        showOperatingActions={false}
+        timeRange={readyViewModel.timeRange}
+        title="商品经营"
+      />
 
-      <section className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-        <div className="flex h-11 items-center justify-between gap-3 px-4"><h2 className="truncate text-base font-semibold text-slate-900">{viewModel.selectedTrackedProduct.displayName || viewModel.selectedTrackedProduct.productId} · 经营指标</h2></div>
-        <MetricGridV2 metrics={metricRows} />
-      </section>
+      <V2BrandProductManager
+        onRecordsChange={handleRecordsChange}
+        onSelectProduct={selectProduct}
+        selectedPlatform={readyViewModel.scope.selectedPlatform}
+        selectedRecordId={selectedRecordId}
+        selectedStoreIds={readyViewModel.scope.selectedStoreIds}
+      >
+        {selectedProduct ? (
+          <>
+            <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white" data-testid="v2-product-metrics">
+              <div className="flex min-h-11 items-center justify-between gap-3 px-4 py-2">
+                <div className="min-w-0">
+                  <h2 className="truncate text-base font-semibold text-slate-900">{selectedProduct.displayName} · 经营指标</h2>
+                  <p className="mt-0.5 truncate font-mono text-[10px] text-slate-400">ID {selectedProduct.productId}</p>
+                </div>
+              </div>
+              <V2HomeMetricGrid
+                metrics={readyViewModel.metrics}
+                order={[...V2_HOME_DISPLAY_METRIC_KEYS]}
+                selectedMetricKey={readyViewModel.chart.pair.leftMetricKey}
+                targetPeriodLabel={targetPeriodLabel(readyViewModel.timeRange)}
+                visibleKeys={[...V2_HOME_DISPLAY_METRIC_KEYS]}
+              />
+            </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-4">
-        <h2 className="mb-4 text-base font-semibold text-slate-900">商品趋势</h2>
-        <V2SimpleTrendChart emptyTitle="当前范围暂无商品趋势数据" metricKey={trendMetric} metricOptions={TREND_OPTIONS} mode={trendMode} onMetricChange={(metric) => replaceQuery({ metric })} onModeChange={(chart) => replaceQuery({ chart })} points={trendPoints} />
-      </section>
+            <V2HomeChart
+              comparisonMessage={comparisonMessage}
+              displayMode={chartDisplayMode}
+              model={readyViewModel.chart}
+              onDisplayModeChange={setChartDisplayMode}
+              onModeChange={(chartMode) => updateOptions({ chartMode })}
+              onPairChange={(chartPairId) => updateOptions({ chartPairId })}
+            />
+          </>
+        ) : (
+          <section className="rounded-xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center">
+            <h2 className="text-base font-semibold text-slate-900">尚未手动添加商品</h2>
+            <p className="mt-2 text-sm text-slate-500">点击“添加商品”，粘贴商品 ID 并可上传方图；保存后才会进入商品中心。</p>
+          </section>
+        )}
+      </V2BrandProductManager>
     </div>
   );
 }
