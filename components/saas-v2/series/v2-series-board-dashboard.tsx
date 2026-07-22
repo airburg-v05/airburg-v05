@@ -6,7 +6,12 @@ import { SafeEmptyState } from "@/components/saas-v2/empty/safe-empty-state";
 import { V2HomeChart } from "@/components/saas-v2/home/v2-home-chart";
 import { V2HomeMetricGrid } from "@/components/saas-v2/home/v2-home-metric-grid";
 import { V2HomeToolbar } from "@/components/saas-v2/home/v2-home-toolbar";
+import {
+  V2SeriesAnalysisLensSwitch,
+  type V2SeriesAnalysisLens,
+} from "@/components/saas-v2/series/v2-series-analysis-lens";
 import { V2BrandSeriesManager } from "@/components/saas-v2/series/v2-brand-series-manager";
+import { V2SeriesStoreBreakdown } from "@/components/saas-v2/series/v2-series-store-breakdown";
 import {
   loadV2HomeViewModel,
   resolveV2HomeTimeRangePreset,
@@ -25,14 +30,22 @@ export function V2SeriesBoardDashboard() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const initialLens: V2SeriesAnalysisLens = searchParams.get("lens") === "store" ? "store" : "brand";
   const requestId = useRef(0);
   const [result, setResult] = useState<V2HomeLoadResult | null>(null);
+  const [analysisLens, setAnalysisLens] = useState<V2SeriesAnalysisLens>(initialLens);
   const [options, setOptions] = useState<V2HomeLoadOptions>(() => ({
-    selectedPlatform: searchParams.get("platform") || undefined,
-    selectedStoreIds: searchParams.get("storeId") ? [searchParams.get("storeId")!] : undefined,
+    selectedPlatform: initialLens === "brand" ? null : searchParams.get("platform") || undefined,
+    selectedStoreIds: initialLens === "brand"
+      ? []
+      : searchParams.get("storeId")
+        ? [searchParams.get("storeId")!]
+        : undefined,
     selectedSeriesId: searchParams.get("seriesId") || undefined,
     seriesOptionVisibility: "all",
     targetScope: "series",
+    suppressTargets: initialLens === "brand",
+    includeStoreBreakdown: true,
   }));
   const [busy, setBusy] = useState(true);
   const [interactionError, setInteractionError] = useState<string | null>(null);
@@ -42,7 +55,12 @@ export function V2SeriesBoardDashboard() {
   useEffect(() => {
     const currentRequest = ++requestId.current;
     let active = true;
-    void loadV2HomeViewModel({ ...options, seriesOptionVisibility: "all", targetScope: "series" }).then((nextResult) => {
+    void loadV2HomeViewModel({
+      ...options,
+      seriesOptionVisibility: "all",
+      targetScope: "series",
+      includeStoreBreakdown: true,
+    }).then((nextResult) => {
       if (active && requestId.current === currentRequest) {
         setResult(nextResult);
         setBusy(false);
@@ -70,6 +88,34 @@ export function V2SeriesBoardDashboard() {
   }, []);
 
   const viewModel = result?.status === "ready" ? result.viewModel : null;
+
+  useEffect(() => {
+    if (
+      analysisLens !== "store" ||
+      !viewModel ||
+      (viewModel.scope.selectedPlatform && viewModel.scope.selectedStoreIds.length === 1)
+    ) {
+      return;
+    }
+    const topStore = viewModel.storeBreakdown[0];
+    const firstStore = viewModel.scope.storeOptions[0];
+    const platformCode = topStore?.platformCode ?? firstStore?.platformCode;
+    const storeId = topStore?.storeId ?? firstStore?.storeId ?? firstStore?.id;
+    if (!platformCode || !storeId) return;
+    let cancelled = false;
+    void Promise.resolve().then(() => {
+      if (cancelled) return;
+      replaceQuery({ lens: "store", platform: platformCode, storeId });
+      updateOptions({
+        selectedPlatform: platformCode,
+        selectedStoreIds: [storeId],
+        suppressTargets: false,
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [analysisLens, replaceQuery, updateOptions, viewModel]);
 
   const changeTimeMode = (mode: V2HomeTimeRangeMode) => {
     if (!viewModel?.dataset.dateRange) return;
@@ -124,6 +170,36 @@ export function V2SeriesBoardDashboard() {
     updateOptions({ selectedSeriesId: seriesId });
   };
 
+  const changeAnalysisLens = (nextLens: V2SeriesAnalysisLens) => {
+    if (nextLens === analysisLens) return;
+    setAnalysisLens(nextLens);
+    if (nextLens === "brand") {
+      replaceQuery({ lens: "brand", platform: null, storeId: null });
+      updateOptions({
+        selectedPlatform: null,
+        selectedStoreIds: [],
+        suppressTargets: true,
+      });
+      return;
+    }
+
+    const topStore = readyViewModel.storeBreakdown[0];
+    const firstStore = readyViewModel.scope.storeOptions[0];
+    const platformCode = topStore?.platformCode ?? firstStore?.platformCode;
+    const storeId = topStore?.storeId ?? firstStore?.storeId ?? firstStore?.id;
+    if (!platformCode || !storeId) {
+      setInteractionError("当前系列没有可进入单店拆解的数据。");
+      setAnalysisLens("brand");
+      return;
+    }
+    replaceQuery({ lens: "store", platform: platformCode, storeId });
+    updateOptions({
+      selectedPlatform: platformCode,
+      selectedStoreIds: [storeId],
+      suppressTargets: false,
+    });
+  };
+
   return (
     <div className="flex min-w-0 flex-col gap-4" data-testid="v2-series-board-dashboard">
       <V2HomeToolbar
@@ -133,19 +209,28 @@ export function V2SeriesBoardDashboard() {
         onComparisonModeChange={(comparisonMode: V2HomeComparisonMode) => updateOptions({ comparisonMode })}
         onCustomRangeChange={changeCustomRange}
         onPlatformChange={(selectedPlatform) => {
+          if (analysisLens !== "store" || !selectedPlatform) return;
           replaceQuery({ platform: selectedPlatform, storeId: null, seriesId: null });
-          updateOptions({ selectedPlatform, selectedStoreIds: [], selectedSeriesId: null });
+          updateOptions({ selectedPlatform, selectedStoreIds: [], selectedSeriesId: null, suppressTargets: false });
         }}
         onStoresChange={(selectedStoreIds) => {
-          replaceQuery({ storeId: selectedStoreIds.length === 1 ? selectedStoreIds[0] : null, seriesId: null });
-          updateOptions({ selectedStoreIds, selectedSeriesId: null });
+          if (analysisLens !== "store" || selectedStoreIds.length === 0) return;
+          replaceQuery({ storeId: selectedStoreIds[0], seriesId: null });
+          updateOptions({ selectedStoreIds: [selectedStoreIds[0]], selectedSeriesId: null, suppressTargets: false });
         }}
         onTimeModeChange={changeTimeMode}
         scope={readyViewModel.scope}
+        scopeLocked={analysisLens === "brand"}
+        scopeLockMessage={analysisLens === "brand"
+          ? "品牌汇总固定包含当前品牌下全部已接入平台和店铺，避免把局部店铺误读为品牌结果。"
+          : undefined}
         showOperatingActions={false}
+        storeSelectionMode={analysisLens === "store" ? "single" : "multiple"}
         timeRange={readyViewModel.timeRange}
         title="系列经营"
       />
+
+      <V2SeriesAnalysisLensSwitch lens={analysisLens} onChange={changeAnalysisLens} />
 
       <V2BrandSeriesManager
         onChange={() => setSeriesRevision((revision) => revision + 1)}
@@ -157,13 +242,24 @@ export function V2SeriesBoardDashboard() {
         {selectedSeries ? (
           <>
             <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white" data-testid="v2-series-metrics">
-              <div className="flex h-11 items-center justify-between gap-3 px-4">
+              <div className="flex min-h-12 items-center justify-between gap-3 px-4 py-2">
                 <div className="min-w-0">
                   <h2 className="truncate text-base font-semibold text-slate-900">{selectedSeries.label} · 经营指标</h2>
+                  <p className="mt-0.5 truncate text-[11px] text-slate-400">
+                    {analysisLens === "brand"
+                      ? "品牌汇总 · 全平台全店铺"
+                      : "单店拆解 · 当前平台与店铺"}
+                  </p>
                 </div>
-                <span className="shrink-0 text-xs text-slate-500">{selectedSeries.productCount} 个商品</span>
+                <div className="shrink-0 text-right">
+                  <span className="block text-xs font-semibold text-slate-600">{selectedSeries.productCount} 个商品 ID</span>
+                  {analysisLens === "brand" ? (
+                    <span className="mt-0.5 block text-[10px] text-amber-700">不自动合并单店目标</span>
+                  ) : null}
+                </div>
               </div>
               <V2HomeMetricGrid
+                emptyTargetLabel={analysisLens === "brand" ? "品牌汇总 · 不合并单店目标" : undefined}
                 metrics={readyViewModel.metrics}
                 order={[...V2_HOME_DISPLAY_METRIC_KEYS]}
                 selectedMetricKey={readyViewModel.chart.pair.leftMetricKey}
@@ -173,6 +269,13 @@ export function V2SeriesBoardDashboard() {
                 visibleKeys={[...V2_HOME_DISPLAY_METRIC_KEYS]}
               />
             </section>
+
+            {analysisLens === "brand" ? (
+              <V2SeriesStoreBreakdown
+                items={readyViewModel.storeBreakdown}
+                seriesName={selectedSeries.label}
+              />
+            ) : null}
 
             <V2HomeChart
               comparisonMessage={comparisonMessage}

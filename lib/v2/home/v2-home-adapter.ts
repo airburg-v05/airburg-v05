@@ -59,6 +59,7 @@ import {
   type V2HomeReconciliationSummary,
   type V2HomeSeriesGsvCard,
   type V2HomeScope,
+  type V2HomeStoreBreakdownItem,
   type V2HomeTargetOverlay,
   type V2HomeTargetRule,
   type V2HomeTargetScope,
@@ -81,6 +82,8 @@ const CONTRACT_ROWS = dataContract.metrics as ContractMetricRow[];
 const LEGACY_TITLE_BY_KEY: Partial<Record<V2HomeMetricKey, string>> = {
   gmv: "GMV",
   gsv: "GSV",
+  visitors: "访客数",
+  paidBuyers: "支付买家数",
   adRoi: "投入产出比",
   adSpendRateAfterRefund: "去退费比",
   directTransactionShare: "直接成交占比",
@@ -168,6 +171,17 @@ export const V2_HOME_CHART_PAIRS: V2HomeChartPair[] = [
     rightLabel: "推广花费",
     leftUnit: "元",
     rightUnit: "元",
+    dualAxis: false,
+  },
+  {
+    id: "visitors-paid-buyers",
+    label: "访客数 vs 支付买家数",
+    leftMetricKey: "visitors",
+    rightMetricKey: "paidBuyers",
+    leftLabel: "访客数",
+    rightLabel: "支付买家数",
+    leftUnit: "人",
+    rightUnit: "人",
     dualAxis: false,
   },
   {
@@ -1036,6 +1050,82 @@ const metricsByKeyForRange = (
   );
 };
 
+const storeBreakdownForRange = (
+  source: BIHomeDataSource,
+  state: UIState,
+  range: V2HomeTimeRange,
+): V2HomeStoreBreakdownItem[] => {
+  const stores = Array.from(
+    source.points.reduce((result, point) => {
+      if (!point.storeId) return result;
+      const id = `${point.platformCode}::${point.storeId}`;
+      if (!result.has(id)) {
+        result.set(id, {
+          id,
+          platformCode: point.platformCode,
+          platformName: point.platformName?.trim() || PLATFORM_LABELS[point.platformCode] || point.platformCode,
+          storeId: point.storeId,
+          storeName: point.storeName?.trim() || point.storeId,
+        });
+      }
+      return result;
+    }, new Map<string, {
+      id: string;
+      platformCode: string;
+      platformName: string;
+      storeId: string;
+      storeName: string;
+    }>()),
+  ).map(([, store]) => store);
+
+  const rawItems = stores.map((store) => {
+    const values = metricsByKeyForRange(source, {
+      ...state,
+      selectedPlatform: store.platformCode,
+      selectedStores: [store.storeId],
+      targetDrafts: {},
+    }, range);
+    return {
+      ...store,
+      gmvRaw: values.get("gmv") ?? null,
+      visitorsRaw: values.get("visitors") ?? null,
+      paidBuyersRaw: values.get("paidBuyers") ?? null,
+      conversionRateRaw: values.get("conversionRate") ?? null,
+      averageOrderValueRaw: values.get("averageOrderValue") ?? null,
+      adRoiRaw: values.get("adRoi") ?? null,
+      refundRateRaw: values.get("refundRate") ?? null,
+    };
+  }).filter((item) =>
+    item.gmvRaw !== null || item.visitorsRaw !== null || item.paidBuyersRaw !== null,
+  );
+  const totalGmv = rawItems.reduce((sum, item) => sum + (item.gmvRaw ?? 0), 0);
+
+  return rawItems
+    .map((item) => {
+      const gmvShareRaw = item.gmvRaw !== null && totalGmv > 0 ? item.gmvRaw / totalGmv : null;
+      return {
+        id: item.id,
+        platformCode: item.platformCode,
+        platformName: item.platformName,
+        storeId: item.storeId,
+        storeName: item.storeName,
+        gmv: formatV2HomeMetricValue(item.gmvRaw, "money"),
+        gmvRaw: item.gmvRaw,
+        gmvShare: formatV2HomeMetricValue(gmvShareRaw, "percent"),
+        gmvShareRaw,
+        visitors: formatV2HomeMetricValue(item.visitorsRaw, "integer"),
+        visitorsRaw: item.visitorsRaw,
+        paidBuyers: formatV2HomeMetricValue(item.paidBuyersRaw, "integer"),
+        paidBuyersRaw: item.paidBuyersRaw,
+        conversionRate: formatV2HomeMetricValue(item.conversionRateRaw, "percent"),
+        averageOrderValue: formatV2HomeMetricValue(item.averageOrderValueRaw, "money"),
+        adRoi: formatV2HomeMetricValue(item.adRoiRaw, "ratio"),
+        refundRate: formatV2HomeMetricValue(item.refundRateRaw, "percent"),
+      } satisfies V2HomeStoreBreakdownItem;
+    })
+    .sort((left, right) => (right.gmvRaw ?? Number.NEGATIVE_INFINITY) - (left.gmvRaw ?? Number.NEGATIVE_INFINITY));
+};
+
 const chartModel = ({
   source,
   state,
@@ -1287,13 +1377,15 @@ export const loadV2HomeViewModel = async (
     const targetMonths = await Promise.all(
       targetMonthsForRange(selectedRange).map(async (month) => ({
         month,
-        drafts: recordsToDraftMap(await loadTargetRecordsForMonth(
-          targetScope,
-          scope,
-          source,
-          month,
-          selectedProductRef,
-        )),
+        drafts: options.suppressTargets
+          ? {}
+          : recordsToDraftMap(await loadTargetRecordsForMonth(
+              targetScope,
+              scope,
+              source,
+              month,
+              selectedProductRef,
+            )),
       })),
     );
     const targetDrafts = targetMonths.length === 1 ? targetMonths[0]?.drafts ?? {} : {};
@@ -1344,6 +1436,9 @@ export const loadV2HomeViewModel = async (
         chartMode,
         chartPairId: options.chartPairId,
       }),
+      storeBreakdown: options.includeStoreBreakdown
+        ? storeBreakdownForRange(metricSource, state, selectedRange)
+        : [],
       dataHealth: dataHealthSummary(snapshotResult),
       reconciliation: reconciliationSummary(metricSource, state),
       preferencePersistence: "LOCAL_UI_PREFERENCE",

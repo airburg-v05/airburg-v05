@@ -138,6 +138,7 @@ export function V2StoreBoardDashboard() {
         onTimeModeChange={changeTimeMode}
         scope={readyViewModel.scope}
         showOperatingActions={false}
+        storeSelectionMode="single"
         timeRange={readyViewModel.timeRange}
         title="店铺经营"
       />

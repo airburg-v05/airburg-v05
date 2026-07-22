@@ -5,20 +5,21 @@
 ## 单轨统一状态
 
 - 唯一 active product track：`SAAS_UI_V2`。
-- SaaS UI V2 当前状态：`PUBLIC_E2E_PASS_AFTER_COMMERCIAL_REFINEMENT_PENDING_POST_DEPLOY_OWNER_REVIEW`；技术 PASS 不得称为产品完成。
+- SaaS UI V2 当前状态：`OWNER_APPROVED_PUBLIC_STABLE_BASELINE_WITH_LOCAL_CROSS_PLATFORM_CANDIDATE_PASS`；技术 PASS 不得称为产品完成。
 - Home、系列、店铺、商品、数据健康和导入历史共用当前品牌的活动运行时快照；目标中心独立读写品牌目标。
-- `visualAccepted = false`、`previewDeployed = true`、`humanAccepted = false`。
+- `visualAccepted = true` 仅指当前公网稳定版的视觉方向已由宗骥认可；本地候选版 `localCandidateVisualAccepted = false`，完整产品 `humanAccepted = false`。
 - 冻结 fallback：天猫 V1 公网内测版。
 - 可信数据基础：天猫 V1 ETL / Runtime / BI 真实 18 文件链路。
 - foundation candidate：V0.5 domain / repository / persistence；当前只部分 route-bound。
-- 当前任务：`SAAS_V2_COMMERCIAL_DASHBOARD_AND_MANUAL_PRODUCT_REFINEMENT_V1`，状态 `PENDING_POST_DEPLOY_OWNER_REVIEW`。
-- 下一唯一入口：宗骥的公网页面视觉/业务复核；自动化截图不能替代用户确认。
-- 当前任务和证据：`docs/project/current-task.json`、`docs/project/tasks/SAAS_V2_COMMERCIAL_DASHBOARD_AND_MANUAL_PRODUCT_REFINEMENT_V1/`。
+- 当前任务：`SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1`，状态 `LOCAL_E2E_PASS_PENDING_OWNER_DEPLOY_DECISION`。
+- 下一唯一入口：宗骥决定是否用本地候选版替换当前公网稳定版；自动化截图不能替代用户确认。
+- 当前任务和证据：`docs/project/current-task.json`、`docs/project/tasks/SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1/`。
 
 ## SaaS UI V2 公网预览
 
 - 当前分支：`feature/saas-ui-v2-shell`。
 - 最新已验证业务实现与公网部署源：`e25660c67539bc82405e00e4f354df855e82e05c`。
+- 宗骥认可的稳定版证据标签：`stable/saas-v2-commercial-refinement-20260722`，peel 到 `7f131274713608a98be35983e99b6ac2e4aa2696`。
 - 公网预览：[V2 Home](http://123.57.49.121/v2/home)。
 - `/v2/home`：16 个商用显示指标形成 4×4 桌面网格；首页保持品牌范围，指标设置最多勾选 5 个系列并在同一经营指标区域追加系列摘要。
 - `/v2/series-board`：粘贴商品 ID 绑定、同一套 16 指标/趋势、紧凑维护条和底部系列卡片编辑删除已公网回归。
@@ -28,7 +29,17 @@
 - 上传结果与数据健康摘要已对齐：`18 success / 0 failed / 0 skipped`，首页安全跳过计数为 `0`。
 - 跨月金额目标按月份交集天数折算；比例/均值目标不按天缩小，跨月缺月时保持 unknown。
 - 公网隔离系统浏览器回归为 `52/52 PASS`，console 业务错误与 failed business requests 均为 `0`。
-- `visualAccepted=false`、`humanAccepted=false`、`visualReviewStatus=PENDING_HUMAN_REVIEW`；当前只等待用户打开公网 `/v2/home` 核查。
+- `visualAccepted=true` 仅限这套公网稳定视觉基线；`humanAccepted=false`，不得据此宣称完整产品或多平台能力已完成。
+
+## 本地待上线候选版
+
+- 首页继续作为品牌总盘，默认汇总所有已接入平台和店铺，不允许系列筛选替换品牌口径。
+- 系列中心新增“品牌汇总”和“单店拆解”两个分析镜头：品牌汇总固定覆盖全部平台/店铺并显示店铺贡献；单店拆解固定到一个平台、一个店铺并沿用现有店铺系列目标。
+- 品牌系列汇总不会把覆盖不完整的店铺系列目标相加伪装成品牌系列目标；品牌系列月目标在合同明确前保持 unknown。
+- 首页、系列、店铺和商品的 16 张商用指标卡加入真实总访客和支付买家，移除两个无可靠来源的可见占位指标；底层真值合同保留 19 个字段。
+- 商品中心当前仍代表手动选择的平台/店铺商品链接；跨平台同款合并必须先建立 `brandProductId` 与 listing 映射，不按标题、图片或近似 ID 猜测。
+- TypeScript、lint、production build、专项校验及隔离浏览器回归已通过；最终本地浏览器回归为 `52/52 PASS`，console 业务错误和 failed business requests 均为 `0`。
+- 本地候选版尚未部署、未 push、未 merge，也未获得宗骥视觉确认；当前公网链接仍是上面的稳定版。
 
 ## Legacy V1 fallback 定位
 
@@ -105,7 +116,7 @@
 1. SaaS UI V2 已有多个 data-bound 路由通过公网回归，但数据/配置仍是浏览器本地边界，未证明跨设备共享、服务端多租户、权限体系或云端持久化完成。
 2. 页面问题一 + 二小范围 UI 修正已完成人工核查；后续新页面问题仍必须先进入 `PAGE_PROBLEM_MATRIX_V2.md`，不能凭记忆直接修 UI。
 3. UI 层存在 IA / KPI / Target 多语义叠加风险，后续 UI 任务必须先读取 `docs/UI_BASELINE_LOCK_V2.md`，并判定是否会误改 BI 或 Target。
-4. `/v2/home` 已公网预览部署，但尚未通过用户视觉核查；禁止把自动化截图结果写成视觉验收。
+4. 当前公网稳定版已通过宗骥视觉方向确认，但本地跨平台系列候选版尚未人工核查；禁止把本地 52/52 自动化结果写成视觉验收或上线完成。
 5. 长上下文中容易混淆 validator PASS 与产品成熟度；后续必须使用 `docs/project/STATUS_MODEL_V1.json`。
 6. ECS 当前健康，部署源由本地精确 `git archive` SHA 和 release path 证明；服务器 release 目录仍不包含 `.git`，这是预期安全边界。
 
@@ -129,7 +140,7 @@
 
 1. 先读取 `docs/project/PROJECT_SSOT.json`。
 2. 再读取 `docs/project/current-task.json` 和其中指定的 task contract。
-3. 本轮 Home / Series / Store / Product 简化版已 `PUBLIC_E2E_PASS`；下一步是用户视觉/业务核查，核查前不得记录 `VISUAL_ACCEPTED` 或 `HUMAN_ACCEPTED`。
+3. 当前公网简化版是已留存的稳定视觉基线；下一步仅由宗骥决定是否部署本地跨平台系列候选版，决定前不得改动公网或记录本地候选 `VISUAL_ACCEPTED`。
 4. Legacy V1 UI 任务仍需读取 `docs/UI_BASELINE_LOCK_V2.md` 和 `PAGE_PROBLEM_MATRIX_V2.md`；V2 不继承其具体布局锁。
 5. 如果跨层，拆任务，不允许在页面里自行拼接或重算数据。
 6. 每次完成后使用 `STATUS_MODEL_V1.json` 中的精确状态，不能只写一个 `PASS`。

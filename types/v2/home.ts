@@ -1,6 +1,8 @@
 export const V2_HOME_METRIC_KEYS = [
   "gmv",
   "gsv",
+  "visitors",
+  "paidBuyers",
   "adRoi",
   "adSpendRateAfterRefund",
   "directTransactionShare",
@@ -21,7 +23,10 @@ export const V2_HOME_METRIC_KEYS = [
 export type V2HomeMetricKey = (typeof V2_HOME_METRIC_KEYS)[number];
 
 export const V2_HOME_DISPLAY_METRIC_KEYS = V2_HOME_METRIC_KEYS.filter(
-  (metricKey) => metricKey !== "brandKeywordPaidShare",
+  (metricKey) =>
+    metricKey !== "brandKeywordPaidShare" &&
+    metricKey !== "mtdTurnover" &&
+    metricKey !== "regionalFulfillmentRate",
 );
 
 export type V2HomeTargetScope = "brand" | "platform" | "series" | "product";
@@ -190,6 +195,26 @@ export interface V2HomeReconciliationSummary {
   directTransactionShare: number | null;
 }
 
+export interface V2HomeStoreBreakdownItem {
+  id: string;
+  platformCode: string;
+  platformName: string;
+  storeId: string;
+  storeName: string;
+  gmv: string;
+  gmvRaw: number | null;
+  gmvShare: string;
+  gmvShareRaw: number | null;
+  visitors: string;
+  visitorsRaw: number | null;
+  paidBuyers: string;
+  paidBuyersRaw: number | null;
+  conversionRate: string;
+  averageOrderValue: string;
+  adRoi: string;
+  refundRate: string;
+}
+
 export interface V2HomeViewModel {
   status: "ready";
   dataStatusLabel: string;
@@ -200,6 +225,7 @@ export interface V2HomeViewModel {
   metrics: V2HomeMetricCard[];
   keySeries: V2HomeSeriesGsvCard[];
   chart: V2HomeChartModel;
+  storeBreakdown: V2HomeStoreBreakdownItem[];
   dataHealth: V2HomeDataHealthSummary;
   reconciliation: V2HomeReconciliationSummary;
   preferencePersistence: "LOCAL_UI_PREFERENCE";
@@ -218,6 +244,8 @@ export interface V2HomeLoadOptions {
   selectedHomeSeriesIds?: string[];
   selectedProductRef?: V2HomeProductRef | null;
   targetScope?: V2HomeTargetScope;
+  suppressTargets?: boolean;
+  includeStoreBreakdown?: boolean;
   seriesOptionVisibility?: "home" | "all";
   timeRange?: V2HomeTimeRange;
   chartMode?: V2HomeChartMode;

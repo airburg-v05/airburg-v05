@@ -35,12 +35,14 @@ export function V2HomeMetricGrid({
   order,
   selectedMetricKey,
   targetPeriodLabel = "当前范围",
+  emptyTargetLabel: emptyTargetLabelOverride,
 }: {
   metrics: V2HomeMetricCard[];
   visibleKeys: V2HomeMetricKey[];
   order: V2HomeMetricKey[];
   selectedMetricKey: V2HomeMetricKey;
   targetPeriodLabel?: string;
+  emptyTargetLabel?: string;
 }) {
   const cardsByKey = new Map(metrics.map((metric) => [metric.metricKey, metric]));
   const visible = order
@@ -70,11 +72,11 @@ export function V2HomeMetricGrid({
           : metric.target.totalTarget;
         const showSeparateMonthlyTarget = metric.target.totalTarget !== "--" &&
           metric.target.totalTarget !== metric.target.mtdTarget;
-        const emptyTargetLabel = metric.target.rule === "unsupported"
+        const emptyTargetLabel = emptyTargetLabelOverride ?? (metric.target.rule === "unsupported"
           ? "分析指标 · 暂不设置目标"
           : metric.target.rule === "derived"
             ? `${targetPeriodLabel} · 待补基础目标`
-            : `${targetPeriodLabel} · 未设置目标`;
+            : `${targetPeriodLabel} · 未设置目标`);
         return (
           <article
             key={metric.metricKey}

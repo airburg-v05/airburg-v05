@@ -8,26 +8,35 @@ const types = fs.readFileSync(path.join(ROOT, "types/v2/home.ts"), "utf8");
 
 const checks = [
   {
-    name: "metric-key-list-stays-17",
+    name: "truth-contract-keeps-19-and-commercial-display-keeps-16",
     pass:
+      types.includes('"visitors",') &&
+      types.includes('"paidBuyers",') &&
       types.includes('"regionalFulfillmentRate",') &&
-      (types.match(/"[^"]+",/g)?.length ?? 0) >= 17,
+      types.includes('metricKey !== "mtdTurnover"') &&
+      types.includes('metricKey !== "regionalFulfillmentRate"'),
   },
   {
-    name: "home-preference-key-bumped-to-v2",
-    pass: dashboard.includes('const PREFERENCE_KEY = "airburg:v2-home:ui-preference:v2";'),
+    name: "home-preference-is-brand-scoped",
+    pass: dashboard.includes('const PREFERENCE_KEY_PREFIX = "airburg:v2-home:ui-preference:v3:";'),
   },
   {
-    name: "default-preference-starts-with-full-17-metrics",
+    name: "default-preference-starts-with-commercial-16-metrics",
     pass:
-      dashboard.includes("visibleKeys: [...V2_HOME_METRIC_KEYS]") &&
-      dashboard.includes("order: [...V2_HOME_METRIC_KEYS]"),
+      dashboard.includes("visibleKeys: [...V2_HOME_DISPLAY_METRIC_KEYS]") &&
+      dashboard.includes("order: [...V2_HOME_DISPLAY_METRIC_KEYS]"),
   },
   {
     name: "valid-non-empty-subset-is-preserved",
     pass:
-      dashboard.includes("visibleKeys: uniqueVisibleKeys.length > 0 ? uniqueVisibleKeys : [...V2_HOME_METRIC_KEYS]") &&
+      dashboard.includes("visibleKeys: uniqueVisibleKeys.length > 0 ? uniqueVisibleKeys : [...V2_HOME_DISPLAY_METRIC_KEYS]") &&
       !dashboard.includes("coversAllVisibleMetrics"),
+  },
+  {
+    name: "retired-visible-metrics-migrate-to-real-growth-drivers",
+    pass:
+      dashboard.includes('if (value === "mtdTurnover") return "visitors";') &&
+      dashboard.includes('if (value === "regionalFulfillmentRate") return "paidBuyers";'),
   },
   {
     name: "metric-settings-still-supports-checkbox-and-order-controls",

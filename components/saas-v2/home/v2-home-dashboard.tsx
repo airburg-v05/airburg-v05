@@ -45,11 +45,21 @@ const DEFAULT_PREFERENCE: HomePreference = {
 const isMetricKey = (value: unknown): value is V2HomeMetricKey =>
   typeof value === "string" && (V2_HOME_DISPLAY_METRIC_KEYS as readonly string[]).includes(value);
 
+const migrateDisplayMetricKey = (value: unknown): unknown => {
+  if (value === "mtdTurnover") return "visitors";
+  if (value === "regionalFulfillmentRate") return "paidBuyers";
+  return value;
+};
+
 const preferenceFromRaw = (raw: string | null): HomePreference => {
   if (!raw) return DEFAULT_PREFERENCE;
   const parsed = JSON.parse(raw) as Partial<HomePreference>;
-  const visibleKeys = Array.isArray(parsed.visibleKeys) ? parsed.visibleKeys.filter(isMetricKey) : [];
-  const parsedOrder = Array.isArray(parsed.order) ? parsed.order.filter(isMetricKey) : [];
+  const visibleKeys = Array.isArray(parsed.visibleKeys)
+    ? parsed.visibleKeys.map(migrateDisplayMetricKey).filter(isMetricKey)
+    : [];
+  const parsedOrder = Array.isArray(parsed.order)
+    ? parsed.order.map(migrateDisplayMetricKey).filter(isMetricKey)
+    : [];
   const uniqueVisibleKeys = Array.from(new Set(visibleKeys));
   const uniqueOrder = Array.from(new Set(parsedOrder));
   const missingOrderKeys = V2_HOME_DISPLAY_METRIC_KEYS.filter((key) => !uniqueOrder.includes(key));

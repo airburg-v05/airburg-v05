@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "updatedAt": "2026-07-22T00:42:08+08:00",
+  "updatedAt": "2026-07-22T09:19:29+08:00",
   "authority": {
     "machineReadableSource": "docs/project/PROJECT_SSOT.json",
     "derivedHumanReadableSources": [
@@ -19,9 +19,11 @@
   },
   "repository": {
     "activeBranch": "feature/saas-ui-v2-shell",
-    "headCommit": "e25660c67539bc82405e00e4f354df855e82e05c",
-    "headCommitMeaning": "exact deployed runtime-changing commit for SaaS V2 commercial dashboard, scoped targets, full store metrics and manual product refinement; subsequent post-deploy evidence commits are intentionally not self-referenced here",
-    "workingTree": "CLEAN_AFTER_POST_DEPLOY_EVIDENCE_COMMIT",
+    "headCommit": "7f131274713608a98be35983e99b6ac2e4aa2696",
+    "headCommitMeaning": "owner-approved public stable-baseline evidence commit; the cross-platform series candidate remains an authorized uncommitted local worktree and is not deployed",
+    "workingTree": "DIRTY_AUTHORIZED_LOCAL_CANDIDATE_AFTER_LOCAL_E2E_PASS",
+    "stableBaselineTag": "stable/saas-v2-commercial-refinement-20260722",
+    "stableBaselineImplementationCommit": "e25660c67539bc82405e00e4f354df855e82e05c",
     "remote": "origin=https://github.com/airburg-v05/airburg-v05.git",
     "upstream": "origin/feature/saas-ui-v2-shell",
     "fallbackComparisonRef": "origin/feature/g6-preview",
@@ -107,10 +109,10 @@
     },
     "saasUiV2": {
       "role": "ACTIVE_PRODUCT_TRACK",
-      "status": "PUBLIC_E2E_PASS_AFTER_COMMERCIAL_REFINEMENT_PENDING_POST_DEPLOY_OWNER_REVIEW",
+      "status": "OWNER_APPROVED_PUBLIC_STABLE_BASELINE_WITH_LOCAL_CROSS_PLATFORM_CANDIDATE_PASS",
       "archiveCommit": "7ade2f433d7dbd90e8fd1a0df5efdb00003ec8fa",
       "routeCount": 11,
-      "componentCount": 18,
+      "componentCount": 20,
       "dataBound": true,
       "dataBoundRoutes": [
         "/v2/home",
@@ -134,15 +136,17 @@
         "/v2/exclusion-rules"
       ],
       "remainingStaticShellRouteCount": 0,
-      "routeTruthRebuiltAt": "2026-07-22T00:42:08+08:00",
-      "routeTruthNotes": "Eleven V2 routes exist. Home, series, store, product, data-health and import-history read one active brand runtime snapshot. Home, series, store and manually selected product boards share the balanced 16-metric commercial display and full trend surface; brandKeywordPaidShare remains in the truth contract but is not commercially displayed. Target center reads explicit brand/store/series/product target scopes independently from upload. /v2/upload writes safe aggregate runtime data, /v2/search-assets, /v2/brand-settings, /v2/series-board and /v2/product-board write browser-local configuration, and /v2/exclusion-rules remains safely blocked by its missing contract.",
+      "routeTruthRebuiltAt": "2026-07-22T09:19:29+08:00",
+      "routeTruthNotes": "Eleven V2 routes exist. The owner-approved public stable baseline remains deployed. The local-only candidate keeps Home as the all-platform/all-store brand cockpit, adds explicit brand-summary and single-store series lenses, adds a series store-contribution breakdown, and replaces two unavailable visible placeholders with trustworthy total visitors and paid buyers while retaining a balanced 16-card display. Product center remains a manually selected platform/store listing surface until an explicit brand-product master mapping exists. Target center remains independent from upload, and brand-series targets remain unknown rather than inferred from incomplete store-series targets.",
       "localRoutesValidated": true,
       "localE2EPassed": true,
-      "visualAccepted": false,
+      "visualAccepted": true,
+      "visualAcceptedScope": "OWNER_APPROVED_PUBLIC_STABLE_BASELINE_ONLY",
+      "localCandidateVisualAccepted": false,
       "previewDeployed": true,
       "humanAccepted": false,
-      "publicV2RouteStatus": "ELEVEN_V2_ROUTES_PUBLIC_E2E_PASS_AFTER_COMMERCIAL_REFINEMENT",
-      "activeUnifiedRuntimeTask": "SAAS_V2_COMMERCIAL_DASHBOARD_AND_MANUAL_PRODUCT_REFINEMENT_V1",
+      "publicV2RouteStatus": "ELEVEN_V2_ROUTES_OWNER_APPROVED_STABLE_BASELINE_PUBLIC_E2E_PASS",
+      "activeUnifiedRuntimeTask": "SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1",
       "activeUnifiedRuntimeScope": [
         "browser-local multi-brand workspace isolation",
         "one active brand runtime across home/series/store/product/data-health/history",
@@ -151,6 +155,10 @@
         "unlimited series with pasted product-ID binding and maximum-five metric-settings selection",
         "brand-scope home plus selected-series summaries without replacing brand metrics",
         "balanced 16-metric and dual-trend contracts across home, series, store and manual product boards",
+        "brand-summary and single-store series analysis lenses",
+        "brand-series platform/store contribution breakdown without target fabrication",
+        "trustworthy total visitors and paid buyers in the shared commercial metric surface",
+        "explicit listing-level product identity pending a brand-product master mapping",
         "manual-only product cards with optional browser-local square images and edit/delete",
         "explicit brand/store/series/product target matching",
         "custom date Apply/Cancel, range-aware targets and truthful YoY/MoM references"
@@ -164,7 +172,7 @@
       "publicScreenshotManifest": "docs/project/tasks/SAAS_V2_COMMERCIAL_DASHBOARD_AND_MANUAL_PRODUCT_REFINEMENT_V1/deployment-evidence.json",
       "businessImportsFound": 1,
       "controlsInteractive": true,
-      "visualReviewStatus": "PENDING_HUMAN_REVIEW",
+      "visualReviewStatus": "PUBLIC_STABLE_BASELINE_OWNER_APPROVED_LOCAL_CANDIDATE_PENDING_OWNER_REVIEW",
       "humanReviewRequired": true,
       "dependencySecurity": {
         "xlsx": {
@@ -182,11 +190,14 @@
         }
       },
       "homeVerticalSlice": {
-        "status": "COMMERCIAL_REFINEMENT_AND_SCOPED_TARGETS_PUBLIC_E2E_PASS_PENDING_HUMAN_REVIEW",
+        "status": "PUBLIC_STABLE_BASELINE_OWNER_APPROVED_LOCAL_CANDIDATE_E2E_PASS_PENDING_DEPLOY_DECISION",
         "adapter": "lib/v2/home/v2-home-adapter.ts",
         "latestImplementationCommit": "e25660c67539bc82405e00e4f354df855e82e05c",
+        "localCandidateBaseCommit": "7f131274713608a98be35983e99b6ac2e4aa2696",
+        "localCandidateImplementationState": "UNCOMMITTED_AUTHORIZED_WORKTREE_NOT_DEPLOYED",
         "previousFull18Plus4TargetValidationCommit": "f184d9dd0bb90bb36c468fe572a46957b54e0ccf",
         "metricCount": 16,
+        "truthMetricCount": 19,
         "realSampleCount": 18,
         "safeSkippedCount": 0,
         "multiMonthTargetPolicy": "ADDITIVE_DAY_OVERLAP_AND_COMPLETE_NON_ADDITIVE_DAY_WEIGHTING",
@@ -194,13 +205,16 @@
         "mobile390PageWideOverflow": false,
         "publicE2EPassed": true,
         "previewDeployed": true,
-        "visualAccepted": false,
+        "visualAccepted": true,
+        "visualAcceptedScope": "OWNER_APPROVED_PUBLIC_STABLE_BASELINE_ONLY",
+        "localCandidateVisualAccepted": false,
         "humanAccepted": false,
-        "evidence": "docs/project/tasks/SAAS_V2_COMMERCIAL_DASHBOARD_AND_MANUAL_PRODUCT_REFINEMENT_V1/validation.md",
-        "latestUpload18LocalValidationAt": "2026-07-22T00:32:34+08:00",
+        "evidence": "docs/project/tasks/SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1/validation.md",
+        "latestUpload18LocalValidationAt": "2026-07-22T09:19:29+08:00",
         "latestUpload18PublicValidationAt": "2026-07-22T00:42:08+08:00",
         "latestBoardEmptyCtaPublicValidationAt": "2026-07-21T00:59:00+08:00",
-        "latestUpload18DeploymentStatus": "PUBLIC_E2E_52_OF_52_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW",
+        "latestUpload18DeploymentStatus": "LOCAL_CANDIDATE_E2E_52_OF_52_PASS_NOT_DEPLOYED",
+        "latestLocalBrowserArtifact": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-upload18-local-nLVt5h",
         "latestUpload18DeploymentBlocker": null,
         "latestUpload18DeploymentLikelyCause": "RESOLVED_STALE_SINGLE_SOURCE_SECURITY_GROUP_RULE",
         "latestUpload18ConsoleState": "ALIYUN_AUTHENTICATED_SECURITY_GROUP_CURRENT_SOURCE_BOUND"
@@ -213,17 +227,17 @@
     "metricViewModel": "lib/bi/bi.home-view-model.ts and lib/bi/bi.home-mapper.ts through lib/v2/home/v2-home-adapter.ts",
     "targetOverlay": "lib/bi/target-metric-definitions.ts plus lib/persistence/target-drafts-persistence.ts; overlay only",
     "persistence": "brand-scoped runtime, target and debug IndexedDB boundaries plus browser-local brand, series, metric and manual-product configuration; raw upload rows are not persisted",
-    "ui": "app/(workspace-v2)/v2/** and components/saas-v2/**; home/series/store/product/data-health/history share one active brand runtime, home preserves brand scope while selected series render as summaries, target center is independent from upload, and unsupported capabilities remain explicitly blocked instead of mocked"
+    "ui": "app/(workspace-v2)/v2/** and components/saas-v2/**; home remains brand-wide, the local series candidate separates brand summary from one-store execution, product remains listing-level until explicit brand-product mapping exists, target center is independent from upload, and unsupported capabilities remain explicitly unknown or blocked instead of mocked"
   },
   "routeMatrix": "docs/project/ROUTE_DATA_SOURCE_MATRIX.json",
   "metricSemantics": "docs/project/METRIC_SEMANTIC_RECONCILIATION_V1.json",
   "validatorRegistry": "docs/project/VALIDATOR_REGISTRY.json",
   "currentTask": {
-    "taskId": "SAAS_V2_COMMERCIAL_DASHBOARD_AND_MANUAL_PRODUCT_REFINEMENT_V1",
-    "status": "PENDING_POST_DEPLOY_OWNER_REVIEW",
-    "contract": "docs/project/tasks/SAAS_V2_COMMERCIAL_DASHBOARD_AND_MANUAL_PRODUCT_REFINEMENT_V1/TASK.md"
+    "taskId": "SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1",
+    "status": "LOCAL_E2E_PASS_PENDING_OWNER_DEPLOY_DECISION",
+    "contract": "docs/project/tasks/SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1/TASK.md"
   },
-  "nextAuthorizedEntryGate": "POST_DEPLOY_OWNER_REVIEW",
+  "nextAuthorizedEntryGate": "OWNER_DEPLOY_DECISION",
   "deprecatedArtifacts": [
     {
       "path": "lib/state/system-state.ts",
@@ -237,8 +251,8 @@
   ],
   "forbiddenClaims": [
     "All SaaS UI V2 routes are DATA_BOUND because the /v2/home vertical slice passed",
-    "/v2/home is VISUAL_ACCEPTED or HUMAN_ACCEPTED before explicit user full-page review",
-    "SaaS UI V2 as a whole is a complete product, release candidate, or human-accepted UI because only /v2/home is preview-deployed",
+    "The local cross-platform series candidate is VISUAL_ACCEPTED, HUMAN_ACCEPTED or public before explicit owner review and deployment",
+    "Owner approval of the public stable visual baseline proves the SaaS UI V2 product, multi-platform data model or business workflow is complete",
     "V0.5 is the unique data foundation without the documented compatibility-adapter decision",
     "lib/state/system-state.ts is the project SSOT",
     "Tmall V1 public is PUBLIC_ALIGNED while the deployed Git commit is unknown",

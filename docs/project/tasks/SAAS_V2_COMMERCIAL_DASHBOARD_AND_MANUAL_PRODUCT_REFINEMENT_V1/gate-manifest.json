@@ -43,7 +43,7 @@
     "pm2_rollback_snapshot": "/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-commercial-refinement-e25660c-20260722T003453.pm2.json",
     "public_url": "http://123.57.49.121/v2/home",
     "public_e2e": "52_OF_52_PASS",
-    "visual_accepted": false,
+    "visual_accepted": true,
     "human_accepted": false
   },
   "validation_plan": [
@@ -52,5 +52,5 @@
     "Desktop and mobile browser interaction regression",
     "Public route, runtime and rollback-preservation regression"
   ],
-  "owner_gate": "PENDING_POST_DEPLOY_OWNER_REVIEW"
+  "owner_gate": "CLOSED_FOR_STABLE_VISUAL_BASELINE_FULL_PRODUCT_ACCEPTANCE_OPEN"
 }

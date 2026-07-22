@@ -72,8 +72,9 @@
   "acceptance": {
     "technicalValidation": "PASS",
     "technicalScreenshotInspection": "PASS",
-    "visualAccepted": false,
+    "visualAccepted": true,
+    "visualAcceptedScope": "OWNER_APPROVED_STABLE_VISUAL_BASELINE_ONLY",
     "humanAccepted": false,
-    "nextGate": "PENDING_POST_DEPLOY_OWNER_REVIEW"
+    "nextGate": "CLOSED_FOR_STABLE_VISUAL_BASELINE_FULL_PRODUCT_ACCEPTANCE_OPEN"
   }
 }

@@ -12,6 +12,9 @@ import type {
 interface V2HomeToolbarProps {
   title?: string;
   showOperatingActions?: boolean;
+  scopeLocked?: boolean;
+  scopeLockMessage?: string;
+  storeSelectionMode?: "multiple" | "single";
   scope: V2HomeScope;
   timeRange: V2HomeTimeRange;
   comparisonMode: V2HomeComparisonMode;
@@ -45,6 +48,9 @@ const COMPARISON_MODES: Array<{ mode: V2HomeComparisonMode; label: string; title
 export function V2HomeToolbar({
   title = "品牌经营驾驶舱",
   showOperatingActions = true,
+  scopeLocked = false,
+  scopeLockMessage,
+  storeSelectionMode = "multiple",
   scope,
   timeRange,
   comparisonMode,
@@ -71,6 +77,11 @@ export function V2HomeToolbar({
     : selectedStoreLabels.join("、");
 
   const toggleStore = (storeId: string) => {
+    if (scopeLocked) return;
+    if (storeSelectionMode === "single") {
+      onStoresChange([storeId]);
+      return;
+    }
     const next = scope.selectedStoreIds.includes(storeId)
       ? scope.selectedStoreIds.filter((id) => id !== storeId)
       : [...scope.selectedStoreIds, storeId];
@@ -93,6 +104,11 @@ export function V2HomeToolbar({
             </summary>
             <div className="absolute left-0 top-7 z-40 w-72 max-w-[calc(100vw-2rem)] rounded-lg border border-slate-200 bg-white p-3 shadow-xl">
               <p className="text-xs font-semibold text-slate-800">当前经营范围</p>
+              {scopeLockMessage ? (
+                <p className="mt-1.5 rounded-md bg-blue-50 px-2.5 py-2 text-[11px] leading-5 text-blue-800">
+                  {scopeLockMessage}
+                </p>
+              ) : null}
               <div className="mt-3 grid gap-3">
                 <div className="text-xs text-slate-500">
                   品牌
@@ -106,11 +122,11 @@ export function V2HomeToolbar({
                   <select
                     id="v2-home-platform"
                     className="mt-1 h-8 w-full rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-700"
-                    disabled={busy || scope.platformOptions.length <= 1}
+                    disabled={busy || scopeLocked || scope.platformOptions.length <= 1}
                     onChange={(event) => onPlatformChange(event.target.value || null)}
                     value={scope.selectedPlatform ?? ""}
                   >
-                    {scope.platformOptions.length > 1 ? <option value="">全部平台</option> : null}
+                    {scope.platformOptions.length > 1 && storeSelectionMode === "multiple" ? <option value="">全部平台</option> : null}
                     {scope.platformOptions.map((item) => (
                       <option key={item.id} value={item.platformCode}>{item.label}</option>
                     ))}
@@ -120,12 +136,16 @@ export function V2HomeToolbar({
                   <p className="text-xs text-slate-500">店铺</p>
                   <div className="mt-1 rounded-md border border-slate-200 p-1">
                     {scope.storeOptions.map((item) => (
-                      <label key={`${item.platformCode}:${item.id}`} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-xs text-slate-700 hover:bg-slate-50">
+                      <label
+                        key={`${item.platformCode}:${item.id}`}
+                        className={`flex items-center gap-2 rounded px-2 py-1.5 text-xs text-slate-700 ${scopeLocked ? "cursor-default opacity-65" : "cursor-pointer hover:bg-slate-50"}`}
+                      >
                         <input
                           checked={scope.selectedStoreIds.includes(item.id)}
-                          disabled={busy}
+                          disabled={busy || scopeLocked}
                           onChange={() => toggleStore(item.id)}
-                          type="checkbox"
+                          name={storeSelectionMode === "single" ? "v2-toolbar-store" : undefined}
+                          type={storeSelectionMode === "single" ? "radio" : "checkbox"}
                         />
                         <span className="truncate">{item.label}</span>
                       </label>

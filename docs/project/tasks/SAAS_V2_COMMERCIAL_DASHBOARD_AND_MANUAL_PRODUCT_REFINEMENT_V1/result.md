@@ -1,8 +1,8 @@
 # Result
 
-Status: `PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW`
+Status: `OWNER_APPROVED_STABLE_VISUAL_BASELINE`
 
-The authorized implementation is deployed and public technical regression is complete at `http://123.57.49.121/v2/home`. Owner visual/business acceptance remains open.
+The authorized implementation is deployed and public technical regression is complete at `http://123.57.49.121/v2/home`. On 2026-07-22, Zongji explicitly accepted this refinement as the latest stable visual baseline. This acceptance does not claim that the full multi-platform product or its future data model is business-complete.
 
 ## Implemented Outcome
 
@@ -21,3 +21,4 @@ The authorized implementation is deployed and public technical regression is com
 - Rollback tag: `rollback/saas-v2-pre-commercial-refinement-20260721` at `dad63e1`.
 - PM2 rollback snapshot: `/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-commercial-refinement-e25660c-20260722T003453.pm2.json`.
 - Public regression: 52/52 PASS; technical PASS does not imply owner acceptance.
+- Owner-approved stable tag: `stable/saas-v2-commercial-refinement-20260722` at repository evidence commit `7f131274713608a98be35983e99b6ac2e4aa2696`.

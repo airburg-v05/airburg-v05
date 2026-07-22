@@ -1,6 +1,6 @@
 # Validation
 
-Status: `PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW`
+Status: `OWNER_APPROVED_STABLE_VISUAL_BASELINE`
 
 ## Automated Evidence
 
@@ -29,6 +29,7 @@ Status: `PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW`
 - Desktop series/product screenshots and the mobile home screenshot were inspected; no page-wide overflow or orphan metric card was observed.
 - Public screenshots for home desktop/mobile, series desktop and manual-product desktop were inspected after deployment; this is technical layout evidence, not owner visual acceptance.
 
-## Remaining Gates
+## Owner Review Record
 
-- Human visual/business acceptance by Zongji: pending.
+- On 2026-07-22, Zongji explicitly accepted this deployed refinement as the latest stable visual baseline.
+- This closes the visual-baseline gate only; full-product and multi-platform business acceptance remain out of scope.

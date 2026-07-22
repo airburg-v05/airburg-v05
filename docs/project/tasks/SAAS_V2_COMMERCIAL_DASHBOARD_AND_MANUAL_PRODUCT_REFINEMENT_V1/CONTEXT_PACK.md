@@ -38,9 +38,9 @@ Zongji requested a new SaaS V2 refinement that removes the unsupported brand-key
 ## Material Unknowns
 
 - Product images remain browser-local until an account-backed asset service is explicitly designed; cross-device image synchronization is `unknown`.
-- Owner visual acceptance is `unknown` until Zongji reviews the deployed pages.
+- Owner visual acceptance was initially unknown; on 2026-07-22 Zongji accepted the deployed refinement as the stable visual baseline.
 - JD/Douyin merchant integrations are not proven by the multi-platform data model.
 
 ## Owner Gate
 
-Keep `visualAccepted=false` and `humanAccepted=false` after technical and public validation. Final status must remain `PENDING_POST_DEPLOY_OWNER_REVIEW` until Zongji explicitly accepts the deployed UI.
+The initial gate required `visualAccepted=false` and `humanAccepted=false` after technical and public validation. Zongji explicitly closed the visual-baseline gate on 2026-07-22, so `visualAccepted=true` now applies only to that preserved public baseline; full-product `humanAccepted=false` remains unchanged.

@@ -28,9 +28,13 @@ const adapter = read("lib/v2/home/v2-home-adapter.ts");
 
 check(
   "displayContractKeepsTruthButHidesUnsupportedCard",
-  V2_HOME_METRIC_KEYS.length === 17 &&
+  V2_HOME_METRIC_KEYS.length === 19 &&
     V2_HOME_DISPLAY_METRIC_KEYS.length === 16 &&
-    !(V2_HOME_DISPLAY_METRIC_KEYS as readonly string[]).includes("brandKeywordPaidShare"),
+    (V2_HOME_DISPLAY_METRIC_KEYS as readonly string[]).includes("visitors") &&
+    (V2_HOME_DISPLAY_METRIC_KEYS as readonly string[]).includes("paidBuyers") &&
+    !(V2_HOME_DISPLAY_METRIC_KEYS as readonly string[]).includes("brandKeywordPaidShare") &&
+    !(V2_HOME_DISPLAY_METRIC_KEYS as readonly string[]).includes("mtdTurnover") &&
+    !(V2_HOME_DISPLAY_METRIC_KEYS as readonly string[]).includes("regionalFulfillmentRate"),
   { contract: V2_HOME_METRIC_KEYS.length, display: V2_HOME_DISPLAY_METRIC_KEYS.length },
 );
 check(

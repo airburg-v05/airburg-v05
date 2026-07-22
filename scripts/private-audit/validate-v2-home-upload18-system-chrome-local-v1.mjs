@@ -540,6 +540,11 @@ const targetCenterWritableRegression = async (client) => {
 const uploadTargetFoundationRemovedRegression = async (client) => {
   await navigate(client, "/v2/upload", "[data-testid='upload-page-v1-dashboard']");
   await waitForExpression(client, `document.readyState === "complete"`, 30000);
+  await waitForExpression(
+    client,
+    `document.body.innerText.includes("当前真实文件适配器只开放天猫") && document.body.innerText.includes("京东/抖音仍需独立授权与字段验证")`,
+    30000,
+  );
   const state = await evaluate(
     client,
     `(() => ({
@@ -709,6 +714,13 @@ const seriesConfigurationRegression = async (client, brandGmv) => {
         libraryText: library?.textContent ?? '',
         cardCount: library?.querySelectorAll('article').length ?? 0,
         metricCount: document.querySelectorAll('[data-metric-key]').length,
+        hasVisitors: Boolean(document.querySelector('[data-metric-key="visitors"]')),
+        hasPaidBuyers: Boolean(document.querySelector('[data-metric-key="paidBuyers"]')),
+        hasUnavailablePlaceholders:
+          Boolean(document.querySelector('[data-metric-key="mtdTurnover"]')) ||
+          Boolean(document.querySelector('[data-metric-key="regionalFulfillmentRate"]')),
+        hasAnalysisLens: Boolean(document.querySelector('[data-testid="v2-series-analysis-lens"]')),
+        hasStoreBreakdown: Boolean(document.querySelector('[data-testid="v2-series-store-breakdown"]')),
         hasHomeChart: Boolean(document.querySelector('[data-testid="v2-home-chart"]')),
         hasLegacySections: ['当前系列概览', '系列商品贡献', '系列目标进度', '系列搜索表现', '数据状态与健康提示'].some((text) => document.body.innerText.includes(text)),
         hasUploadPrompt: Array.from(document.querySelectorAll('main a')).some((link) => (link.textContent ?? '').includes('前往数据接入')),
@@ -720,6 +732,11 @@ const seriesConfigurationRegression = async (client, brandGmv) => {
     managerState.body.includes("6 个系列") &&
       managerState.cardCount === 6 &&
       managerState.metricCount === 16 &&
+      managerState.hasVisitors &&
+      managerState.hasPaidBuyers &&
+      managerState.hasUnavailablePlaceholders === false &&
+      managerState.hasAnalysisLens &&
+      managerState.hasStoreBreakdown &&
       managerState.hasHomeChart &&
       managerState.hasLegacySections === false &&
       managerState.hasUploadPrompt === false,
@@ -842,6 +859,28 @@ const scopedTargetRegression = async (client) => {
   const seriesTarget = await setScopeTarget("系列", "series", 100000);
   if (!seriesTarget.selectedSeriesId) throw new Error("series_target_selection_missing");
   await navigate(client, `/v2/series-board?seriesId=${encodeURIComponent(seriesTarget.selectedSeriesId)}`, "[data-testid='v2-series-board-dashboard']");
+  await waitForExpression(client, `Boolean(document.querySelector('[data-testid="v2-series-store-breakdown"]'))`, 30000);
+  const brandSeriesTargetState = await evaluate(
+    client,
+    `(() => ({
+      targetState: document.querySelector('[data-testid="v2-series-metrics"] [data-metric-key="gmv"]')?.getAttribute('data-target-state') ?? null,
+      targetText: document.querySelector('[data-testid="v2-series-metrics"] [data-metric-key="gmv"]')?.textContent ?? '',
+      scopeText: document.querySelector('[data-testid="v2-series-metrics"]')?.textContent ?? '',
+    }))()`,
+  );
+  check(
+    "brandSeriesSummaryDoesNotMergeStoreTargets",
+    brandSeriesTargetState.targetState === "empty" &&
+      brandSeriesTargetState.targetText.includes("不合并单店目标") &&
+      brandSeriesTargetState.scopeText.includes("品牌汇总"),
+    brandSeriesTargetState,
+  );
+  await click(client, '[data-testid="v2-series-analysis-lens"] [aria-label="单店拆解"]');
+  await waitForExpression(
+    client,
+    `window.location.search.includes('lens=store') && Boolean(document.querySelector('[data-testid="v2-home-toolbar"] input[type="radio"]:checked'))`,
+    30000,
+  );
   await switchToFullJuneRange();
   await waitForExpression(client, `document.querySelector('[data-testid="v2-series-metrics"] [data-metric-key="gmv"]')?.getAttribute('data-target-state') === 'ready'`, 30000);
   const seriesState = await evaluate(client, `document.querySelector('[data-testid="v2-series-metrics"] [data-metric-key="gmv"]')?.getAttribute('aria-label') ?? ''`);
@@ -1078,10 +1117,23 @@ const run = async () => {
           conversionLabel: conversionCard?.getAttribute('aria-label') ?? '',
           gmvLabel: gmvCard?.getAttribute('aria-label') ?? '',
           hasBrandKeywordPaidShare: Boolean(document.querySelector('[data-metric-key="brandKeywordPaidShare"]')),
+          visitorsValue: document.querySelector('[data-metric-key="visitors"] p[title]')?.getAttribute('title') ?? '',
+          paidBuyersValue: document.querySelector('[data-metric-key="paidBuyers"] p[title]')?.getAttribute('title') ?? '',
+          hasUnavailablePlaceholders:
+            Boolean(document.querySelector('[data-metric-key="mtdTurnover"]')) ||
+            Boolean(document.querySelector('[data-metric-key="regionalFulfillmentRate"]')),
         };
       })()`,
     );
-    check("v2HomeShowsBalanced16Metrics", homeState.metricCount === 16 && homeState.hasBrandKeywordPaidShare === false, homeState);
+    check(
+      "v2HomeShowsBalanced16RealMetricSurface",
+      homeState.metricCount === 16 &&
+        homeState.hasBrandKeywordPaidShare === false &&
+        homeState.hasUnavailablePlaceholders === false &&
+        homeState.visitorsValue === "143,076" &&
+        homeState.paidBuyersValue === "128",
+      homeState,
+    );
     check(
       "v2HomeTrendFooterHealthRowRemoved",
       homeState.dataHealthText === "",

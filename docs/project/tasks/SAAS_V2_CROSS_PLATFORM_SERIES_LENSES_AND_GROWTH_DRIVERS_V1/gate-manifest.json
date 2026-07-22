@@ -1,0 +1,50 @@
+{
+  "task_id": "SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1",
+  "task_type": "data_dashboard_and_semantic_contract",
+  "risk_level": "A2_AUTHORIZED",
+  "business_purpose": "Make cross-platform brand series analysis distinct from single-store execution without fabricating identity or target truth.",
+  "evidence_sources": [
+    "Latest direct instruction from Zongji on 2026-07-22",
+    "Current series, product, metric, target and runtime contracts",
+    "docs/project/PROJECT_SSOT.json",
+    "Existing cross-platform roadmap and handoff evidence"
+  ],
+  "truth_rules": [
+    "Home is brand-wide by default",
+    "A brand series may contain multiple platform and store listing references",
+    "Store-series targets must not be silently summed into a brand-series target",
+    "Listing identity must not be relabeled as brand-product identity",
+    "Only currently bound facts may become commercial indicators",
+    "Technical PASS does not imply owner or business acceptance"
+  ],
+  "scope": {
+    "allowed": [
+      "SaaS V2 home, series, store and product presentation",
+      "Shared read-only metric adapters and target derivation metadata",
+      "Local configuration and focused validators",
+      "Project task and SSOT evidence"
+    ],
+    "forbidden": [
+      "Raw business data, raw uploads or secrets",
+      "Fabricated marketplace, product identity or target data",
+      "Commercial image or presentation generation",
+      "Deploy, push or merge",
+      "Automatic owner acceptance of the new version"
+    ]
+  },
+  "rollback": {
+    "stable_tag": "stable/saas-v2-commercial-refinement-20260722",
+    "repository_evidence_commit": "7f131274713608a98be35983e99b6ac2e4aa2696",
+    "deployed_implementation_commit": "e25660c67539bc82405e00e4f354df855e82e05c",
+    "release": "/opt/airburg/releases/saas-v2-commercial-refinement-e25660c-20260722T003453"
+  },
+  "validation_plan": [
+    "Focused semantic and source-contract validator",
+    "TypeScript, lint and production build",
+    "Desktop and mobile local browser interaction regression"
+  ],
+  "deployment_gate": "A3_NOT_AUTHORIZED",
+  "validation_result": "LOCAL_E2E_52_OF_52_PASS",
+  "public_state": "OWNER_APPROVED_STABLE_BASELINE_UNCHANGED",
+  "owner_gate": "OWNER_DEPLOY_DECISION"
+}

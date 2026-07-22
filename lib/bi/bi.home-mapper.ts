@@ -86,6 +86,8 @@ const PLATFORM_LABELS: Record<string, string> = {
 export const HOME_BI_KPI_DEFINITIONS: MetricDefinition[] = [
   { title: "GMV", metricKey: "GMV", sourceMetric: "gmv", targetMetricKey: "gmv", unit: "元", format: "money" },
   { title: "GSV", metricKey: "GSV", sourceMetric: "gsv", targetMetricKey: "gsv", unit: "元", format: "money" },
+  { title: "访客数", metricKey: "访客数", sourceMetric: "visitors", targetMetricKey: null, unit: "人", format: "integer" },
+  { title: "支付买家数", metricKey: "支付买家数", sourceMetric: "paidBuyers", targetMetricKey: null, unit: "人", format: "integer" },
   { title: "去退费比", metricKey: "去退费比", sourceMetric: "adSpendRateAfterRefund", targetMetricKey: "adSpendRateAfterRefund", unit: "%", format: "percent" },
   { title: "品牌词访客", metricKey: "品牌词访客", sourceMetric: null, targetMetricKey: "brandVisitors", unit: "人", format: "integer" },
   { title: "品牌词支付人数", metricKey: "品牌词支付人数", sourceMetric: null, targetMetricKey: "brandPaidBuyers", unit: "人", format: "integer" },

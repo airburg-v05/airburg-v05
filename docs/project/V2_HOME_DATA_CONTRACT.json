@@ -5,21 +5,26 @@
   "consumerRoute": "/v2/home",
   "adapterImplemented": true,
   "adapterPath": "lib/v2/home/v2-home-adapter.ts",
-  "implementationStatus": "PREVIEW_DEPLOYED_PENDING_HUMAN_REVIEW",
-  "latestImplementationCommit": "8b69e46fee532379be5f5f0b2ef4fe44c87a87aa",
-  "deploymentCommit": "a293db7e75b14853d68d9711e131cc348d2f3ea0",
+  "implementationStatus": "LOCAL_E2E_PASS_PENDING_OWNER_DEPLOY_DECISION",
+  "latestImplementationCommit": null,
+  "deploymentCommit": "e25660c67539bc82405e00e4f354df855e82e05c",
   "previewDeployed": true,
-  "visualAccepted": false,
+  "visualAccepted": true,
+  "visualAcceptedScope": "OWNER_APPROVED_PUBLIC_STABLE_BASELINE_ONLY",
+  "localCandidateDeployed": false,
+  "localCandidateVisualAccepted": false,
   "humanAccepted": false,
-  "updatedAt": "2026-07-15T19:27:34+08:00",
-  "metricCount": 17,
+  "updatedAt": "2026-07-22T09:19:29+08:00",
+  "metricCount": 19,
+  "commercialDisplayMetricCount": 16,
   "globalRules": {
     "missingValueDisplay": "--",
     "syntheticZeroForbidden": true,
     "uiFormulaComputationForbidden": true,
     "ratioAggregation": "sum numerator and denominator over the selected scope/time range, then divide",
     "scopeDimensions": ["platformCode", "storeId", "seriesId", "productId"],
-    "targetOverlayChangesActuals": false
+    "targetOverlayChangesActuals": false,
+    "commercialDisplayExcludes": ["brandKeywordPaidShare", "mtdTurnover", "regionalFulfillmentRate"]
   },
   "metrics": [
     {
@@ -47,6 +52,32 @@
       "timeBehavior": "sum over selected date range",
       "availability": "AVAILABLE",
       "semanticStatus": "CURRENT_VERIFIED"
+    },
+    {
+      "metricKey": "visitors",
+      "displayName": "访客数",
+      "actualSource": "lib/bi/bi.home-mapper.ts aggregateMetric: sum BIDataPoint.metrics.visitors",
+      "targetSource": "UNAVAILABLE until the owner confirms whether this is an independent target or derived from GMV, AOV and conversion targets",
+      "unit": "人",
+      "format": "integer",
+      "missingBehavior": "--",
+      "scopeBehavior": "sum after platform/store/series/product filters",
+      "timeBehavior": "sum over selected date range",
+      "availability": "AVAILABLE",
+      "semanticStatus": "CURRENT_VERIFIED_TARGET_CONTRACT_PENDING"
+    },
+    {
+      "metricKey": "paidBuyers",
+      "displayName": "支付买家数",
+      "actualSource": "lib/bi/bi.home-mapper.ts aggregateMetric: sum BIDataPoint.metrics.paidBuyers",
+      "targetSource": "UNAVAILABLE until the owner confirms whether this is an independent target or derived from GMV and AOV targets",
+      "unit": "人",
+      "format": "integer",
+      "missingBehavior": "--",
+      "scopeBehavior": "sum after platform/store/series/product filters",
+      "timeBehavior": "sum over selected date range",
+      "availability": "AVAILABLE",
+      "semanticStatus": "CURRENT_VERIFIED_TARGET_CONTRACT_PENDING"
     },
     {
       "metricKey": "adRoi",
