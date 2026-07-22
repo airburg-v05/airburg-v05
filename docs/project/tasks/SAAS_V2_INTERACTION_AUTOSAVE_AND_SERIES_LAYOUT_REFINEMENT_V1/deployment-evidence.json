@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1",
+  "deployedAt": "2026-07-22T19:02:06+08:00",
+  "validatedAt": "2026-07-22T19:04:56+08:00",
+  "implementationCommit": "8c95d8154d463d17216dae14efc74a4b5a800ed4",
+  "safeArchiveSha256": "3039cecb01d3b6edd8d13e8040c1a31a7105096ace9ce137f1e069274d1e240e",
+  "safeArchiveEntryCount": 518,
+  "forbiddenFileCount": 0,
+  "activeRelease": "/opt/airburg/releases/saas-v2-interaction-autosave-8c95d81-20260722T185925",
+  "activeSymlink": "/opt/airburg/ecommerce-platform-optimized",
+  "previousRelease": "/opt/airburg/releases/saas-v2-cross-platform-series-dface84-20260722T092433",
+  "rollback": {
+    "stableTag": "stable/saas-v2-commercial-refinement-20260722",
+    "stableTagImplementationCommit": "e25660c67539bc82405e00e4f354df855e82e05c",
+    "previousPublicImplementationCommit": "dface84eefdd87a55c819fd323626efb436b19b2",
+    "pm2Snapshot": "/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-interaction-autosave-8c95d81-20260722T190120.pm2.json",
+    "pm2SnapshotBytes": 4387
+  },
+  "packagingDiagnostic": {
+    "firstArchiveSha256": "d513098a470170a1e6d7e31d7416239600b00b71681b90899319b20b36691130",
+    "firstArchiveEntryCount": 515,
+    "abandonedRelease": "/opt/airburg/releases/saas-v2-interaction-autosave-8c95d81-20260722T185550",
+    "activated": false,
+    "buildStatus": "FAILED_BEFORE_SWITCH_MISSING_V2_HOME_DATA_CONTRACT",
+    "correctiveAction": "Regenerated the exact-commit runtime archive with docs/project/V2_HOME_DATA_CONTRACT.json, then repeated checksum, install and build in a new release."
+  },
+  "server": {
+    "pm2App": "airburg-tmall-v1",
+    "pm2Status": "online",
+    "pm2RestartCount": 12,
+    "pm2ProcessCwdMatchesActiveRelease": true,
+    "nginx": "active_and_config_valid",
+    "nodeBinding": "127.0.0.1:3000",
+    "publicPort3000ServedApplication": false,
+    "loopbackHomeHttpStatus": 200,
+    "errorLogBytes": 4374,
+    "errorLogUnixMtime": 1784592570,
+    "errorLogChangedDuringDeploymentOrRegression": false
+  },
+  "build": {
+    "npmCi": "PASS",
+    "installedPackages": 366,
+    "productionBuild": "PASS",
+    "generatedRoutes": 27,
+    "auditModerate": 1,
+    "auditHigh": 2,
+    "auditCritical": 0,
+    "auditStatus": "PASS_WITH_LOW_CURRENT_EXPOSURE_NOT_SECURITY_CLOSURE",
+    "packageMutationPerformed": false
+  },
+  "publicRoutes": {
+    "status": "PASS",
+    "expectedHttpStatus": 200,
+    "routes": [
+      "/v2/home",
+      "/v2/upload",
+      "/v2/upload/history",
+      "/v2/series-board",
+      "/v2/store-board",
+      "/v2/product-board",
+      "/v2/target-center",
+      "/v2/data-health",
+      "/v2/brand-settings",
+      "/v2/exclusion-rules",
+      "/v2/search-assets"
+    ],
+    "unauthorizedRemoteImageOptimizerStatus": 400
+  },
+  "publicBrowserRegression": {
+    "validator": "validate-v2-home-upload18-system-chrome-local-v1",
+    "status": "PASS",
+    "coreChecksPassed": 54,
+    "cleanupChecksPassed": 1,
+    "totalChecksPassed": 55,
+    "checksFailed": 0,
+    "firstUploadSuccess": 18,
+    "firstUploadFailed": 0,
+    "firstUploadSkipped": 0,
+    "secondUploadSuccess": 18,
+    "secondUploadFailed": 0,
+    "secondUploadSkipped": 0,
+    "homeVisibleMetricCount": 16,
+    "metricCardTrendSynchronizationPassed": true,
+    "targetAutosaveRefreshReadbackPassed": true,
+    "dayTerminologyAcrossConfiguredBoardsPassed": true,
+    "customDateTrailingWhiteBlockAbsent": true,
+    "seriesBreakdownRemoved": true,
+    "twoStoreAggregationPassed": true,
+    "firstStoreGmv": 41949,
+    "twoStoreBrandGmv": 83898,
+    "mobileHorizontalOverflow": false,
+    "businessConsoleErrors": 0,
+    "failedBusinessRequests": 0,
+    "isolatedRuntimeCleanupPassed": true,
+    "artifactDirectory": "docs/project/tasks/SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1/artifacts/public/public-8c95d81-2026-07-22"
+  },
+  "validationLimitations": {
+    "targetPersistence": "BROWSER_LOCAL_AND_BRAND_NAMESPACED_NOT_CROSS_DEVICE_SYNC",
+    "dependencySecurityClosed": false,
+    "businessCompletionProven": false
+  },
+  "acceptance": {
+    "technicalValidation": "PASS",
+    "technicalScreenshotInspection": "PASS",
+    "publicAligned": true,
+    "visualAccepted": false,
+    "visualAcceptedScope": null,
+    "humanAccepted": false,
+    "nextGate": "POST_DEPLOY_OWNER_VISUAL_AND_BUSINESS_REVIEW"
+  }
+}

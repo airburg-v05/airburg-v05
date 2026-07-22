@@ -10,13 +10,13 @@ The exact public implementation `dface84eefdd87a55c819fd323626efb436b19b2` passe
 
 ## Current Truth
 
-- Repository baseline: `c34e834b2a37ea6156cbdeba9a1110a32a47eaa1`.
-- Public runtime implementation: `dface84eefdd87a55c819fd323626efb436b19b2`.
+- Repository baseline for this change: `c34e834b2a37ea6156cbdeba9a1110a32a47eaa1`.
+- Exact public runtime implementation: `8c95d8154d463d17216dae14efc74a4b5a800ed4`.
 - Public route: `http://123.57.49.121/v2/home`.
-- Public technical regression: 52/52 PASS; new changes are not deployed.
+- Public technical regression: 54 core checks plus one cleanup check, 55/55 PASS; owner visual/business review remains pending.
 - Target drafts are brand-namespaced IndexedDB records. This proves same-browser persistence only, not cross-device synchronization.
 - The chart's internal `dly` mode already computes one-day points; the requested change is a visible terminology change, not a data-formula change.
-- The active V2 metric grid has 16 visible metrics but the current chart-pair list exposes only seven unique primary metrics.
+- The active V2 metric grid has 16 visible metrics and the deployed chart-pair list now exposes one primary entry for each metric.
 
 ## Authority And History
 
@@ -38,7 +38,6 @@ The exact public implementation `dface84eefdd87a55c819fd323626efb436b19b2` passe
 - ETL and BI formulas: forbidden.
 - Exact-commit commit, push and deployment to the existing public SaaS V2 runtime: A3 owner-authorized by Zongji on 2026-07-22.
 - Merge remains forbidden; visual acceptance remains a post-deployment owner decision.
-- Visual acceptance remains a post-implementation owner decision.
 
 ## Material Unknowns
 
@@ -51,4 +50,4 @@ The exact public implementation `dface84eefdd87a55c819fd323626efb436b19b2` passe
 - Focused source validator for pair coverage, terminology, custom-date structure, target auto-save and series-section removal.
 - Existing metric/target validators plus TypeScript, lint and production build.
 - Isolated desktop/mobile browser regression with target refresh readback and screenshots.
-- Archive: this task directory; no reusable asset or public deployment claim.
+- Public release identity, rollback and browser evidence are archived in this task directory; deployment is technically verified but not owner-accepted.

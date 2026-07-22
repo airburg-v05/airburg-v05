@@ -1,8 +1,10 @@
 # Validation
 
-Status: A3_DEPLOYMENT_AUTHORIZED_IN_PROGRESS
+Status: PUBLIC_E2E_55_OF_55_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW
 
-Completed at: 2026-07-22T16:03:07+08:00
+Local completed at: 2026-07-22T16:03:07+08:00
+
+Public completed at: 2026-07-22T19:04:56+08:00
 
 ## Automated Evidence
 
@@ -36,11 +38,23 @@ Completed at: 2026-07-22T16:03:07+08:00
 - `artifacts/local-browser-final/v2-product-manual-desktop.png`
 - Machine-readable browser result: `artifacts/local-browser-final/summary.json`
 
-The screenshots were inspected locally for hierarchy, custom-date residue, target density and series-lens layout. This is technical and local visual evidence, not owner acceptance.
+The local and public screenshots were inspected for hierarchy, custom-date residue, target density and series-lens layout. This is technical visual evidence, not owner acceptance.
+
+## Deployment And Public Evidence
+
+- Exact implementation commit: `8c95d8154d463d17216dae14efc74a4b5a800ed4`.
+- Active release: `/opt/airburg/releases/saas-v2-interaction-autosave-8c95d81-20260722T185925`.
+- Safe archive SHA-256: `3039cecb01d3b6edd8d13e8040c1a31a7105096ace9ce137f1e069274d1e240e`; 518 entries and zero forbidden files.
+- Production build: PASS, 27 routes. PM2: online, active cwd matched release. Nginx: active and config-valid. Error log: unchanged.
+- All 11 public V2 routes: HTTP 200. Node: loopback-only `127.0.0.1:3000`; public port 3000 remained closed.
+- Public isolated browser: PASS, 54 core checks plus one cleanup check, 55/55 total. Both imports were 18 success / 0 failed / 0 skipped; console and failed business requests were zero.
+- Public artifacts: `artifacts/public/public-8c95d81-2026-07-22`.
+- Full machine-readable proof: `deployment-evidence.json`.
+- Final evidence-state validation: gate PASS, focused source 8/8, cross-platform 11/11, JSON and diff checks PASS, sensitive scan PASS with zero findings.
 
 ## Evidence Boundaries
 
-- Target persistence is browser-local and brand-namespaced. Cross-device synchronization remains `unknown`/unsupported without a server account and persistence contract.
-- No ETL formula, raw fact, runtime schema or target derivation rule was changed.
-- The public runtime still serves implementation `dface84eefdd87a55c819fd323626efb436b19b2`; this local candidate is not deployed.
-- `deploymentAuthorized=true` as of 2026-07-22; `VISUAL_ACCEPTED=false` and `HUMAN_ACCEPTED=false` remain in force.
+- Target persistence is browser-local and brand-namespaced. Cross-device synchronization remains unsupported without a server account and persistence contract.
+- No ETL formula, raw fact, runtime dataset schema or target derivation rule was changed.
+- Npm still reports one moderate and two high advisories; current exposure remains low based on the existing runtime boundary, but dependency security is not closed.
+- `deploymentAuthorized=true`; `VISUAL_ACCEPTED=false` and `HUMAN_ACCEPTED=false` remain in force pending Zongji's public review.

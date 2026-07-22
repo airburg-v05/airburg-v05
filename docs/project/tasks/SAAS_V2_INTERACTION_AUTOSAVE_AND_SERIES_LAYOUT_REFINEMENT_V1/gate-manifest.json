@@ -20,7 +20,8 @@
     "allowed": [
       "SaaS V2 shared metric, chart, toolbar, target-center and series-lens UI",
       "Existing target-draft IndexedDB interaction without schema change",
-      "Focused validators and task evidence"
+      "Focused validators and task evidence",
+      "Exact implementation commit, push and deployment to the existing public SaaS V2 runtime"
     ],
     "forbidden": [
       "ETL, raw data, BI formulas or runtime dataset schema",
@@ -38,8 +39,8 @@
   "archive_target": "docs/project/tasks/SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1",
   "autonomy": "A3_OWNER_AUTHORIZED_FOR_EXACT_COMMIT_PUSH_AND_DEPLOYMENT",
   "deployment_gate": "A3_AUTHORIZED_2026-07-22",
-  "deliverable_status": "deployment_in_progress",
-  "validation_result": "LOCAL_E2E_54_OF_54_PASS",
-  "validation_evidence": "docs/project/tasks/SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1/validation.md",
+  "deliverable_status": "public_technical_pass_pending_owner_review",
+  "validation_result": "LOCAL_54_OF_54_AND_PUBLIC_55_OF_55_PASS",
+  "validation_evidence": "docs/project/tasks/SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1/deployment-evidence.json",
   "owner_gate": "POST_DEPLOY_OWNER_VISUAL_AND_BUSINESS_REVIEW_REQUIRED"
 }

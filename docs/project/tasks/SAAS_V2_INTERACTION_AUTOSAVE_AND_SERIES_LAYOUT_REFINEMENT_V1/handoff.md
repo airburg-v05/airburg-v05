@@ -1,18 +1,26 @@
 # Handoff
 
-Status: A3_DEPLOYMENT_AUTHORIZED_IN_PROGRESS
+Status: PUBLIC_E2E_55_OF_55_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW
 
-## Current Candidate
+## Deployment Truth
 
 - Baseline commit: `c34e834b2a37ea6156cbdeba9a1110a32a47eaa1`.
-- Working tree: validated local candidate; no implementation commit yet.
-- Local browser: 54/54 PASS.
-- Build: PASS.
-- Public implementation: unchanged at `dface84eefdd87a55c819fd323626efb436b19b2`.
+- Exact implementation commit: `8c95d8154d463d17216dae14efc74a4b5a800ed4`.
+- Local browser: 54/54 PASS; public browser: 55/55 PASS including cleanup.
+- Local and remote production builds: PASS, 27 routes.
 - Stable rollback reference remains `stable/saas-v2-commercial-refinement-20260722`; no rollback asset was overwritten.
 
-## Active Release Step
+## Public Release
 
-Zongji authorized deployment on 2026-07-22. Create an intentional implementation commit, preserve the current public release and PM2 rollback snapshot, deploy the exact commit, verify implementation identity, run the public 54-check regression, and then request owner visual/business review.
+- Implementation: `8c95d8154d463d17216dae14efc74a4b5a800ed4`.
+- URL: `http://123.57.49.121/v2/home`.
+- Release: `/opt/airburg/releases/saas-v2-interaction-autosave-8c95d81-20260722T185925`.
+- Public regression: 54 core checks plus one cleanup check, 55/55 PASS.
+- Rollback PM2 snapshot: `/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-interaction-autosave-8c95d81-20260722T190120.pm2.json`.
+- Previous release and stable tag remain preserved.
 
-Do not claim `VISUAL_ACCEPTED`, `HUMAN_ACCEPTED`, cross-device target sync, JD/Douyin merchant integration, or business completion from the local PASS.
+## Next Gate
+
+Zongji should inspect the public URL on another computer and decide visual/business acceptance. Do not claim cross-device target sync, dependency-security closure, `VISUAL_ACCEPTED` or `HUMAN_ACCEPTED` from the technical PASS.
+
+Do not claim `VISUAL_ACCEPTED`, `HUMAN_ACCEPTED`, cross-device target sync, JD/Douyin merchant integration, or business completion from the technical PASS.

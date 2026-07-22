@@ -8,6 +8,6 @@
 6. [x] Remove series contribution display and compact the analysis-lens switch.
 7. [x] Run focused, type, lint, build and isolated browser validation.
 8. [x] Record local evidence and stop at the deployment gate.
-9. [ ] Commit and push the exact locally validated implementation.
-10. [ ] Create an immutable release, preserve rollback evidence and switch only the existing PM2 application.
-11. [ ] Run public runtime and 54-check browser regression, then record the post-deploy owner-review gate.
+9. [x] Commit and push the exact locally validated implementation.
+10. [x] Create an immutable release, preserve rollback evidence and switch only the existing PM2 application.
+11. [x] Run public runtime and 54-check browser regression plus isolated cleanup, then record the post-deploy owner-review gate.

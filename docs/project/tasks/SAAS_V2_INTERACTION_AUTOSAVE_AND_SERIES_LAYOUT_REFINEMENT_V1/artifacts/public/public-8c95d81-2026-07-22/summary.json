@@ -1,0 +1,894 @@
+{
+  "status": "PASS",
+  "validator": "validate-v2-home-upload18-system-chrome-local-v1",
+  "checks": [
+    {
+      "name": "real18FilesAvailable",
+      "pass": true,
+      "details": {
+        "count": 18
+      }
+    },
+    {
+      "name": "v2HomeEmptyStateVisibleBeforeUpload",
+      "pass": true,
+      "details": {
+        "emptyStateText": "AB\n\n品牌经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n品牌设置\n\n资产\n\n搜索资产\n\n当前尚未导入经营数据\n\n请从统一批量上传入口导入天猫经营文件；页面仅读取安全聚合数据，不展示原始行或敏感明细。\n\n前往上传"
+      }
+    },
+    {
+      "name": "targetCenterUsesAutosaveWithoutRedundantUploadOrDerivedSections",
+      "pass": true,
+      "details": {
+        "body": "目标中心独立设置品牌目标，并按现有店铺、系列、商品细分。返回首页目标层级品牌店铺系列商品目标月份2026年07月品牌目标修改后自动保存；百分比输入 0-100，ROI 输入倍数。修改后自动保存GMV元未保存GSV元未保存投入产出比倍未保存退货率（总）%未保存客单价元未保存转化率%未保存直接成交占比%未保存",
+        "hasIndependentCopy": false,
+        "hasAutoDerivedCopy": false,
+        "brandEnabled": true,
+        "storeDisabled": true,
+        "hasSaveButton": false,
+        "hasAutoSaveStatus": true,
+        "hasUploadFoundationCopy": false,
+        "hasDeleteButton": false
+      }
+    },
+    {
+      "name": "targetCenterMonthEditorIsCompactAndAutosaveOnly",
+      "pass": true,
+      "details": {
+        "hasBoundary": false,
+        "hasAutoDerivedCopy": false,
+        "hasManualSave": false,
+        "hasDeleteButton": false,
+        "hasBrandInput": true
+      }
+    },
+    {
+      "name": "targetCenterJuneTargetsAutosaveSucceeds",
+      "pass": true,
+      "details": {
+        "body": "AB\n\n品牌经营云\n\n品牌经营工作区\n\n经营\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n\n工具\n\n数据接入\n数据健康\n\n控制\n\n目标中心\n品牌设置\n\n资产\n\n搜索资产\n\n空气堡经营工作区\n\n数据范围与状态以当前页面为准\n\n品牌：空气堡\n目标中心\n\n独立设置品牌目标，并按现有店铺、系列、商品细分。\n\n返回首页\n\n目标层级\n\n品牌\n店铺\n系列\n商品\n目标月份\n2026年06月\n品牌目标\n\n修改后自动保存；百分比输入 0-100，ROI 输入倍数。\n\n已自动保存\nGMV\n元\n暂停此目标\nGSV\n元\n未保存\n投入产出比\n倍\n未保存\n退货率（总）\n%\n未保存\n客单价\n元\n未保存\n转化率\n%\n暂停此目标\n直接成交占比\n%\n未保存\n\n2026年06月 · 已自动保存 2 项品牌目标。",
+        "hasSuccess": true,
+        "saveState": "saved",
+        "gmvValue": "300000",
+        "percentValue": "92"
+      }
+    },
+    {
+      "name": "targetCenterJuneTargetsSavedAndReadBack",
+      "pass": true,
+      "details": {
+        "gmvValue": "300000",
+        "percentValue": "92",
+        "hasPauseButton": true,
+        "hasDeleteButton": false
+      }
+    },
+    {
+      "name": "targetCenterClearedMetricDeletesOnlyThatRecord",
+      "pass": true,
+      "details": {
+        "gmvValue": "",
+        "percentValue": "92"
+      }
+    },
+    {
+      "name": "targetCenterPauseStateReadsBack",
+      "pass": true,
+      "details": {
+        "hasReactivateButton": true,
+        "percentValue": "92"
+      }
+    },
+    {
+      "name": "targetCenterReactivateKeepsTarget",
+      "pass": true,
+      "details": {
+        "hasPauseButton": true,
+        "percentValue": "92",
+        "hasDeleteButton": false
+      }
+    },
+    {
+      "name": "v2UploadRemovesTargetFoundationAndDefaultsToReplace",
+      "pass": true,
+      "details": {
+        "hasTargetFoundation": false,
+        "replaceChecked": true,
+        "hasAdapterBoundary": true
+      }
+    },
+    {
+      "name": "v2UploadInputReceives18Files",
+      "pass": true,
+      "details": {
+        "selectedFileCount": 18
+      }
+    },
+    {
+      "name": "upload18Counts",
+      "pass": true,
+      "details": {
+        "success": 18,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "v2HomeShowsBalanced16RealMetricSurface",
+      "pass": true,
+      "details": {
+        "metricCount": 16,
+        "dataHealthText": "",
+        "toolbarText": "品牌经营驾驶舱空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌空气堡切换/管理平台天猫店铺天猫默认店铺经营设置 ⌄重点系列搜索资产目标中心数据健康日周月自定义日期2026-06-26 ~ 2026-06-30指标变化关闭同比环比",
+        "hasUploadPrompt": false,
+        "conversionLabel": "转化率，当前值 0.09%，MTD目标 92%，总目标 92%，差值 -91.91%，完成率 0.1%",
+        "gmvLabel": "GMV，当前值 125,596，MTD目标 50,000，总目标 300,000，差值 +75,596，完成率 251.19%",
+        "hasBrandKeywordPaidShare": false,
+        "visitorsValue": "143,076",
+        "paidBuyersValue": "128",
+        "hasUnavailablePlaceholders": false,
+        "hasDayMode": true,
+        "hasDlyMode": false
+      }
+    },
+    {
+      "name": "v2HomeTrendFooterHealthRowRemoved",
+      "pass": true,
+      "details": {
+        "metricCount": 16,
+        "dataHealthText": "",
+        "toolbarText": "品牌经营驾驶舱空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌空气堡切换/管理平台天猫店铺天猫默认店铺经营设置 ⌄重点系列搜索资产目标中心数据健康日周月自定义日期2026-06-26 ~ 2026-06-30指标变化关闭同比环比",
+        "hasUploadPrompt": false,
+        "conversionLabel": "转化率，当前值 0.09%，MTD目标 92%，总目标 92%，差值 -91.91%，完成率 0.1%",
+        "gmvLabel": "GMV，当前值 125,596，MTD目标 50,000，总目标 300,000，差值 +75,596，完成率 251.19%",
+        "hasBrandKeywordPaidShare": false,
+        "visitorsValue": "143,076",
+        "paidBuyersValue": "128",
+        "hasUnavailablePlaceholders": false,
+        "hasDayMode": true,
+        "hasDlyMode": false
+      }
+    },
+    {
+      "name": "v2HomeLeavesEmptyState",
+      "pass": true,
+      "details": {
+        "metricCount": 16,
+        "dataHealthText": "",
+        "toolbarText": "品牌经营驾驶舱空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌空气堡切换/管理平台天猫店铺天猫默认店铺经营设置 ⌄重点系列搜索资产目标中心数据健康日周月自定义日期2026-06-26 ~ 2026-06-30指标变化关闭同比环比",
+        "hasUploadPrompt": false,
+        "conversionLabel": "转化率，当前值 0.09%，MTD目标 92%，总目标 92%，差值 -91.91%，完成率 0.1%",
+        "gmvLabel": "GMV，当前值 125,596，MTD目标 50,000，总目标 300,000，差值 +75,596，完成率 251.19%",
+        "hasBrandKeywordPaidShare": false,
+        "visitorsValue": "143,076",
+        "paidBuyersValue": "128",
+        "hasUnavailablePlaceholders": false,
+        "hasDayMode": true,
+        "hasDlyMode": false
+      }
+    },
+    {
+      "name": "v2HomeRateTargetIsNotDayProrated",
+      "pass": true,
+      "details": {
+        "metricCount": 16,
+        "dataHealthText": "",
+        "toolbarText": "品牌经营驾驶舱空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌空气堡切换/管理平台天猫店铺天猫默认店铺经营设置 ⌄重点系列搜索资产目标中心数据健康日周月自定义日期2026-06-26 ~ 2026-06-30指标变化关闭同比环比",
+        "hasUploadPrompt": false,
+        "conversionLabel": "转化率，当前值 0.09%，MTD目标 92%，总目标 92%，差值 -91.91%，完成率 0.1%",
+        "gmvLabel": "GMV，当前值 125,596，MTD目标 50,000，总目标 300,000，差值 +75,596，完成率 251.19%",
+        "hasBrandKeywordPaidShare": false,
+        "visitorsValue": "143,076",
+        "paidBuyersValue": "128",
+        "hasUnavailablePlaceholders": false,
+        "hasDayMode": true,
+        "hasDlyMode": false
+      }
+    },
+    {
+      "name": "v2HomeAdditiveTargetProgressUsesDisplayedStageTarget",
+      "pass": true,
+      "details": {
+        "metricCount": 16,
+        "dataHealthText": "",
+        "toolbarText": "品牌经营驾驶舱空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌空气堡切换/管理平台天猫店铺天猫默认店铺经营设置 ⌄重点系列搜索资产目标中心数据健康日周月自定义日期2026-06-26 ~ 2026-06-30指标变化关闭同比环比",
+        "hasUploadPrompt": false,
+        "conversionLabel": "转化率，当前值 0.09%，MTD目标 92%，总目标 92%，差值 -91.91%，完成率 0.1%",
+        "gmvLabel": "GMV，当前值 125,596，MTD目标 50,000，总目标 300,000，差值 +75,596，完成率 251.19%",
+        "hasBrandKeywordPaidShare": false,
+        "visitorsValue": "143,076",
+        "paidBuyersValue": "128",
+        "hasUnavailablePlaceholders": false,
+        "hasDayMode": true,
+        "hasDlyMode": false
+      }
+    },
+    {
+      "name": "v2HomeGmvIsNumericAfterUpload",
+      "pass": true,
+      "details": {
+        "firstStoreGmv": 125596
+      }
+    },
+    {
+      "name": "homeMetricCardSynchronizesTrendPrimaryMetric",
+      "pass": true,
+      "details": {
+        "primaryMetric": "conversionRate",
+        "conversionSelected": "true"
+      }
+    },
+    {
+      "name": "homeCustomRangeIsSeparateAndHasNoTrailingWhiteBlock",
+      "pass": true,
+      "details": {
+        "start": "2026-06-26",
+        "end": "2026-06-30",
+        "active": true,
+        "hasWhiteBlock": false,
+        "outsidePresetGroup": true
+      }
+    },
+    {
+      "name": "homePreviousPeriodControlHasTruthfulReferenceState",
+      "pass": true,
+      "details": {
+        "pressed": true,
+        "hasMetricCopy": true,
+        "hasReferenceCopy": true
+      }
+    },
+    {
+      "name": "homeYoyControlHasTruthfulReferenceState",
+      "pass": true,
+      "details": {
+        "pressed": true,
+        "hasMetricCopy": true,
+        "hasReferenceCopy": true
+      }
+    },
+    {
+      "name": "homeCrossMonthRangeLoadsJuneTargetByOverlap",
+      "pass": true,
+      "details": {
+        "range": "品牌经营驾驶舱空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌空气堡切换/管理平台天猫店铺天猫默认店铺经营设置 ⌄重点系列搜索资产目标中心数据健康日周月自定义日期2026-06-29 ~ 2026-07-05指标变化关闭同比环比",
+        "targetState": "ready",
+        "mtdTarget": 20000,
+        "totalTargetMissing": true
+      }
+    },
+    {
+      "name": "unifiedRuntimeRoute.series",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/series-board",
+        "hasReadySelector": true,
+        "hasUploadPrompt": false,
+        "hasDayMode": false,
+        "hasDlyMode": false,
+        "body": "系列经营空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌汇总固定包含当前品牌下全部已接入平台和店铺，避免把局部店铺误读为品牌结果。品牌空气堡切换/管理平台天猫店铺天猫默认店铺数据健康日周月自定义日期2026-06-29 ~ 2026-07-05指标变化关闭同比环比品牌汇总单店拆解看该系列在整个品牌中的规模、增长与经营效率。跨平台 / 全店铺系列维护0 个系列新建系列尚未创建可用系列点击“新建系列”，粘贴商品 ID 并加载绑定后即可生成系列指标和趋势。系列列表当前平台范围内按系列整齐展示；右上角可编辑或删除。当前范围尚未创建系列"
+      }
+    },
+    {
+      "name": "unifiedRuntimeRoute.store",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/store-board",
+        "hasReadySelector": true,
+        "hasUploadPrompt": false,
+        "hasDayMode": true,
+        "hasDlyMode": false,
+        "body": "店铺经营空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌空气堡切换/管理平台天猫店铺天猫默认店铺数据健康日周月自定义日期2026-06-29 ~ 2026-07-05指标变化关闭同比环比店铺经营指标天猫默认店铺GMV元41,9492026-06~2026-07 · 未设置目标GSV元31,217.522026-06~2026-07 · 未设置目标访客数人48,756分析指标 · 暂不设置目标支付买家数人50分析指标 · 暂不设置目标投入产出比倍3.022026-06~2026-07 · 未设置目标去退费比%16.58%2026-06~2026-07 · 待补基础目标直接成交占比%64.44%2026-06~2026-07 · 未设置目标品牌词访客人228分析指标 · 暂不设置目标品牌词支付人数人12分析指标 · 暂不设置目标退货率（总）%44.77%2026-06~2026-07 · 未设置目标发货退货率%30.4%分析指标 · 暂不设置目标已签收退货率%0.17%分析指标 · 暂不设置目标客单价元838.982026-06~2026-07 · 未设置目标转化率%0.1%2026-06~2026-07 · 未设置目标推广花费元2,858.452026-06~2026-07 · 待补基础目标推广点击单价元1.02分析指标 · 暂不设置目标经营趋势主指标GMVGSV支付买家数访客数推广花费ROI退货率去退费比直接成交占比发货退货率已签收退货率品牌词访客品牌词支付人数客单价转化率推广点击单价对比指标不对比GSVMTDDAYGMVGSV4.5万3.7万2.8万2.0万1.1万6/296/30"
+      }
+    },
+    {
+      "name": "unifiedRuntimeRoute.product",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/product-board",
+        "hasReadySelector": true,
+        "hasUploadPrompt": false,
+        "hasDayMode": false,
+        "hasDlyMode": false,
+        "body": "商品经营空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌空气堡切换/管理平台天猫店铺天猫默认店铺数据健康日周月自定义日期2026-06-29 ~ 2026-07-05指标变化关闭同比环比商品维护0 个商品添加商品尚未手动添加商品点击“添加商品”，粘贴商品 ID 并可上传方图；保存后才会进入商品中心。商品列表仅展示手动添加的商品；点击卡片查看，右上角可编辑或删除。当前范围尚未手动添加商品"
+      }
+    },
+    {
+      "name": "unifiedRuntimeRoute.dataHealth",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/data-health",
+        "hasReadySelector": true,
+        "hasUploadPrompt": false,
+        "hasDayMode": false,
+        "hasDlyMode": false,
+        "body": "数据健康查看与经营看板同源的活动快照、来源覆盖和历史审计。返回首页空气堡 活动数据快照与全部 V2 看板同源替换导入：活动快照不继承此前经营事实继续导入清空当前品牌数据数据范围2026-06-26 至 2026-07-01更新时间2026/7/22 19:03:35文件处理成功 18 · 失败 0安全去重126安全提示0来源覆盖缺失来源不等于导入失败，只表示相应指标可能无法计算。商品基础信息已接入安全聚合记录 21商品经营已接入安全聚合记录 90推广计划已接入安全聚合记录 140总搜索词已接入安全聚合记录 506商品搜索词已接入安全聚合记录 202售后退货已接入安全聚合记录 20安全问题代码当前活动快照没有安全问题代码。快照审计只有标记为“当前活动”的快照参与看板计算；其它快照仅用于本浏览器审计，不会混入当前结果。runtime_178471…o1uhrdo92026/7/22 19:03:35replace当前活动"
+      }
+    },
+    {
+      "name": "unifiedRuntimeRoute.history",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/upload/history",
+        "hasReadySelector": true,
+        "hasUploadPrompt": false,
+        "hasDayMode": false,
+        "hasDlyMode": false,
+        "body": "导入历史查看当前浏览器中的导入记录和批次状态。返回首页空气堡 安全聚合快照仅当前活动快照进入经营看板；历史快照不参与计算，也不保存原始文件名或明细行。更新时间日期范围导入策略文件去重状态2026/7/22 19:03:352026-06-26 至 2026-07-01replace成功 18 / 失败 0126当前活动"
+      }
+    },
+    {
+      "name": "dataHealthAndHistoryUseActiveRuntimeSnapshot",
+      "pass": true,
+      "details": {
+        "dataHealth": "数据健康查看与经营看板同源的活动快照、来源覆盖和历史审计。返回首页空气堡 活动数据快照与全部 V2 看板同源替换导入：活动快照不继承此前经营事实继续导入清空当前品牌数据数据范围2026-06-26 至 2026-07-01更新时间2026/7/22 19:03:35文件处理成功 18 · 失败 0安全去重126安全提示0来源覆盖缺失来源不等于导入失败，只表示相应指标可能无法计算。商品基础信息已接入安全聚合记录 21商品经营已接入安全聚合记录 90推广计划已接入安全聚合记录 140总搜索词已接入安全聚合记录 506商品搜索词已接入安全聚合记录 202售后退货已接入安全聚合记录 20安全问题代码当前活动快照没有安全问题代码。快照审计只有标记为“当前活动”的快照参与看板计算；其它快照仅用于本浏览器审计，不会混入当前结果。runtime_178471…o1uhrdo92026/7/22 19:03:35replace当前活动",
+        "history": "导入历史查看当前浏览器中的导入记录和批次状态。返回首页空气堡 安全聚合快照仅当前活动快照进入经营看板；历史快照不参与计算，也不保存原始文件名或明细行。更新时间日期范围导入策略文件去重状态2026/7/22 19:03:352026-06-26 至 2026-07-01replace成功 18 / 失败 0126当前活动"
+      }
+    },
+    {
+      "name": "seriesCenterUsesPastedIdsAndHomeAlignedDecisionSurface",
+      "pass": true,
+      "details": {
+        "body": "系列维护6 个系列当前E2E系列1E2E系列2E2E系列3E2E系列4E2E系列5E2E系列6新建系列已保存“E2E系列6”，共绑定 1 个商品。",
+        "libraryText": "系列列表当前平台范围内按系列整齐展示；右上角可编辑或删除。E2E系列11 个商品编辑删除商品 ID 手动绑定1 个店铺E2E系列21 个商品编辑删除商品 ID 手动绑定1 个店铺E2E系列31 个商品编辑删除商品 ID 手动绑定1 个店铺E2E系列41 个商品编辑删除商品 ID 手动绑定1 个店铺E2E系列51 个商品编辑删除商品 ID 手动绑定1 个店铺E2E系列61 个商品编辑删除商品 ID 手动绑定1 个店铺",
+        "cardCount": 6,
+        "metricCount": 16,
+        "hasVisitors": true,
+        "hasPaidBuyers": true,
+        "hasUnavailablePlaceholders": false,
+        "hasAnalysisLens": true,
+        "hasStoreBreakdown": false,
+        "hasBrandSeriesBreakdownCopy": false,
+        "hasHomeChart": true,
+        "hasDayMode": true,
+        "hasDlyMode": false,
+        "hasLegacySections": false,
+        "hasUploadPrompt": false
+      }
+    },
+    {
+      "name": "homeSeriesSelectionStaysInMetricSettingsAndPreservesBrandMetrics",
+      "pass": true,
+      "details": {
+        "hasTopSeriesFilter": false,
+        "selectedSeriesCards": 5,
+        "selectedSeriesText": "已选系列5/5在指标设置中调整E2E系列2系列 GSV11,366.08目标 ----E2E系列3系列 GSV11,366.08目标 ----E2E系列5系列 GSV11,366.08目标 ----E2E系列1系列 GSV11,366.08目标 ----E2E系列4系列 GSV11,366.08目标 ----",
+        "homeBrandGmv": 41949,
+        "rangeBrandGmvBeforeSeriesSelection": 41949,
+        "originalFullRangeBrandGmv": 125596
+      }
+    },
+    {
+      "name": "manualProductSquareImageInputReceivesFile",
+      "pass": true,
+      "details": {
+        "imageFileCount": 1
+      }
+    },
+    {
+      "name": "manualProductCenterUsesOneExplicitProductWithSquareCardAndFullMetrics",
+      "pass": true,
+      "details": {
+        "cardCount": 1,
+        "selectorCount": 1,
+        "metricCount": 16,
+        "hasImage": true,
+        "hasEdit": true,
+        "hasDelete": true,
+        "body": "商品列表仅展示手动添加的商品；点击卡片查看，右上角可编辑或删除。编辑删除E2E手动商品ID 824014970181"
+      }
+    },
+    {
+      "name": "storeTargetAppearsOnFullMetricSurface",
+      "pass": true,
+      "details": {
+        "storeTarget": {
+          "month": "2026-06",
+          "dataMonthVisible": true,
+          "value": "200000",
+          "selectedSeriesId": null
+        },
+        "storeState": {
+          "metricCount": 16,
+          "targetLabel": "GMV，当前值 125,596，MTD目标 200,000，总目标 200,000，差值 -74,404，完成率 62.8%",
+          "hasDayMode": true,
+          "hasDlyMode": false
+        }
+      }
+    },
+    {
+      "name": "brandSeriesSummaryDoesNotMergeStoreTargets",
+      "pass": true,
+      "details": {
+        "targetState": "empty",
+        "targetText": "GMV元13,799品牌汇总 · 不合并单店目标",
+        "scopeText": "E2E系列1 · 经营指标品牌汇总 · 全平台全店铺1 个商品 ID不自动合并单店目标GMV元13,799品牌汇总 · 不合并单店目标GSV元11,366.08品牌汇总 · 不合并单店目标访客数人13,633品牌汇总 · 不合并单店目标支付买家数人19品牌汇总 · 不合并单店目标投入产出比倍0品牌汇总 · 不合并单店目标去退费比%3.5%品牌汇总 · 不合并单店目标直接成交占比%i--品牌汇总 · 不合并单店目标品牌词访客人i--品牌汇总 · 不合并单店目标品牌词支付人数人i--品牌汇总 · 不合并单店目标退货率（总）%57.6%品牌汇总 · 不合并单店目标发货退货率%36.09%品牌汇总 · 不合并单店目标已签收退货率%i--品牌汇总 · 不合并单店目标客单价元726.26品牌汇总 · 不合并单店目标转化率%0.14%品牌汇总 · 不合并单店目标推广花费元168.65品牌汇总 · 不合并单店目标推广点击单价元3.44品牌汇总 · 不合并单店目标",
+        "hasStoreBreakdown": false
+      }
+    },
+    {
+      "name": "seriesTargetAppearsForMatchingJuneSeries",
+      "pass": true,
+      "details": {
+        "seriesTarget": {
+          "month": "2026-06",
+          "dataMonthVisible": true,
+          "value": "100000",
+          "selectedSeriesId": "series_jn80ez1za0k"
+        },
+        "seriesState": {
+          "targetLabel": "GMV，当前值 34,047，MTD目标 100,000，总目标 100,000，差值 -65,953，完成率 34.05%",
+          "hasDayMode": true,
+          "hasDlyMode": false
+        }
+      }
+    },
+    {
+      "name": "manualProductTargetAppearsForMatchingJuneProduct",
+      "pass": true,
+      "details": {
+        "productTarget": {
+          "month": "2026-06",
+          "dataMonthVisible": true,
+          "value": "50000",
+          "selectedSeriesId": null
+        },
+        "productState": {
+          "targetLabel": "GMV，当前值 34,047，MTD目标 50,000，总目标 50,000，差值 -15,953，完成率 68.09%",
+          "hasDayMode": true,
+          "hasDlyMode": false
+        }
+      }
+    },
+    {
+      "name": "metricSettingsHas16MetricControls",
+      "pass": true,
+      "details": {
+        "count": 16
+      }
+    },
+    {
+      "name": "metricVisibilityAndOrderingInteractive",
+      "pass": true,
+      "details": {
+        "count": 14,
+        "firstKey": "gsv",
+        "hasAdRoi": false,
+        "hasBrandVisitors": false
+      }
+    },
+    {
+      "name": "refreshPreservesMetricSubsetAndOrdering",
+      "pass": true,
+      "details": {
+        "metricCount": 14,
+        "dataHealthText": "",
+        "firstMetricKey": "gsv",
+        "hasAdRoi": false,
+        "hasBrandVisitors": false
+      }
+    },
+    {
+      "name": "resetRestores16Metrics",
+      "pass": true,
+      "details": {
+        "metricCount": 16,
+        "firstMetricKey": "gmv"
+      }
+    },
+    {
+      "name": "refreshAfterResetRestores16Metrics",
+      "pass": true,
+      "details": {
+        "metricCount": 16,
+        "firstMetricKey": "gmv"
+      }
+    },
+    {
+      "name": "mobileHomeHasNoPageWideOverflow",
+      "pass": true,
+      "details": {
+        "horizontalOverflow": false,
+        "metricCount": 16
+      }
+    },
+    {
+      "name": "mobileDecisionBoard.series",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/series-board",
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "mobileDecisionBoard.store",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/store-board",
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "mobileDecisionBoard.product",
+      "pass": true,
+      "details": {
+        "pathname": "/v2/product-board",
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "secondStoreBaselineUsesBrandScope",
+      "pass": true,
+      "details": {
+        "firstGmv": 41949
+      }
+    },
+    {
+      "name": "secondStoreDefaultsToExplicitAppend",
+      "pass": true,
+      "details": {
+        "selectedStore": "tmall::e2e-store-2",
+        "appendChecked": true
+      }
+    },
+    {
+      "name": "secondStoreUploadReceives18Files",
+      "pass": true,
+      "details": {
+        "selectedFileCount": 18
+      }
+    },
+    {
+      "name": "secondStoreUpload18Counts",
+      "pass": true,
+      "details": {
+        "success": 18,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "twoStoreHomeAggregatesWithoutCrossStoreDedup",
+      "pass": true,
+      "details": {
+        "firstGmv": 41949,
+        "secondGmv": 83898,
+        "expected": 83898,
+        "tolerance": 0.083898,
+        "toolbar": "品牌经营驾驶舱空气堡 · 天猫 · 全部店铺 (2)⌄当前经营范围品牌空气堡切换/管理平台天猫店铺天猫默认店铺E2E第二店经营设置 ⌄重点系列搜索资产目标中心数据健康日周月自定义日期2026-06-29 ~ 2026-07-05指标变化关闭同比环比",
+        "storeCheckboxes": 2
+      }
+    },
+    {
+      "name": "appendStrategyAndSnapshotAuditVisible",
+      "pass": true,
+      "details": {
+        "body": "数据健康查看与经营看板同源的活动快照、来源覆盖和历史审计。返回首页空气堡 活动数据快照与全部 V2 看板同源追加导入：活动快照包含此前数据与本次数据，已执行去重继续导入清空当前品牌数据数据范围2026-06-26 至 2026-07-01更新时间2026/7/22 19:03:57文件处理成功 18 · 失败 0安全去重126安全提示0来源覆盖缺失来源不等于导入失败，只表示相应指标可能无法计算。商品基础信息已接入安全聚合记录 42商品经营已接入安全聚合记录 180推广计划已接入安全聚合记录 280总搜索词已接入安全聚合记录 1012商品搜索词已接入安全聚合记录 404售后退货已接入安全聚合记录 40安全问题代码当前活动快照没有安全问题代码。快照审计只有标记为“当前活动”的快照参与看板计算；其它快照仅用于本浏览器审计，不会混入当前结果。runtime_178471…p89o6udj2026/7/22 19:03:57append当前活动runtime_178471…o1uhrdo92026/7/22 19:03:35replace仅审计",
+        "snapshotRows": 2
+      }
+    },
+    {
+      "name": "cleanupAfterRegressionKeepsHomeEmptyAndV2UploadCta",
+      "pass": true,
+      "details": {
+        "body": "AB\n\n品牌经营云\n\n品牌经营工作区\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n数据接入\n数据健康\n目标中心\n品牌设置\n搜索资产\n\n当前尚未导入经营数据\n\n请从统一批量上传入口导入天猫经营文件；页面仅读取安全聚合数据，不展示原始行或敏感明细。\n\n前往上传",
+        "hasEmptyState": true,
+        "uploadCtaIsV2": true,
+        "localStorageKeys": [
+          "airburg:demo-session",
+          "airburg:v2-home:ui-preference:v3:airburg",
+          "airburg:v2:brand-products:v1:airburg",
+          "airburg:v2:brand-series:v1:airburg"
+        ]
+      }
+    },
+    {
+      "name": "consoleBusinessErrorsZero",
+      "pass": true,
+      "details": []
+    },
+    {
+      "name": "networkBusinessErrorsZero",
+      "pass": true,
+      "details": []
+    }
+  ],
+  "artifacts": {
+    "artifactDir": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1/artifacts/public/public-8c95d81-2026-07-22",
+    "uploadScreenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1/artifacts/public/public-8c95d81-2026-07-22/upload-desktop.png",
+    "homeDesktopScreenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1/artifacts/public/public-8c95d81-2026-07-22/v2-home-desktop.png",
+    "homeMobileScreenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1/artifacts/public/public-8c95d81-2026-07-22/v2-home-mobile.png",
+    "seriesDesktopScreenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1/artifacts/public/public-8c95d81-2026-07-22/v2-series-desktop.png",
+    "targetCenterScreenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1/artifacts/public/public-8c95d81-2026-07-22/v2-target-center-autosave-desktop.png"
+  },
+  "counts": {
+    "success": 18,
+    "failed": 0,
+    "skipped": 0
+  },
+  "homeState": {
+    "metricCount": 16,
+    "dataHealthText": "",
+    "toolbarText": "品牌经营驾驶舱空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌空气堡切换/管理平台天猫店铺天猫默认店铺经营设置 ⌄重点系列搜索资产目标中心数据健康日周月自定义日期2026-06-26 ~ 2026-06-30指标变化关闭同比环比",
+    "hasUploadPrompt": false,
+    "conversionLabel": "转化率，当前值 0.09%，MTD目标 92%，总目标 92%，差值 -91.91%，完成率 0.1%",
+    "gmvLabel": "GMV，当前值 125,596，MTD目标 50,000，总目标 300,000，差值 +75,596，完成率 251.19%",
+    "hasBrandKeywordPaidShare": false,
+    "visitorsValue": "143,076",
+    "paidBuyersValue": "128",
+    "hasUnavailablePlaceholders": false,
+    "hasDayMode": true,
+    "hasDlyMode": false
+  },
+  "homeMetricChartSyncState": {
+    "primaryMetric": "conversionRate",
+    "conversionSelected": "true"
+  },
+  "refreshedState": {
+    "metricCount": 14,
+    "dataHealthText": "",
+    "firstMetricKey": "gsv",
+    "hasAdRoi": false,
+    "hasBrandVisitors": false
+  },
+  "resetState": {
+    "metricCount": 16,
+    "firstMetricKey": "gmv"
+  },
+  "resetRefreshedState": {
+    "metricCount": 16,
+    "firstMetricKey": "gmv"
+  },
+  "mobileSafety": {
+    "horizontalOverflow": false,
+    "metricCount": 16
+  },
+  "firstStoreGmv": 125596,
+  "homeInteractionState": {
+    "customState": {
+      "start": "2026-06-26",
+      "end": "2026-06-30",
+      "active": true,
+      "hasWhiteBlock": false,
+      "outsidePresetGroup": true
+    },
+    "previousPeriodState": {
+      "pressed": true,
+      "hasMetricCopy": true,
+      "hasReferenceCopy": true
+    },
+    "yoyState": {
+      "pressed": true,
+      "hasMetricCopy": true,
+      "hasReferenceCopy": true
+    }
+  },
+  "homeCrossMonthTargetState": {
+    "range": "品牌经营驾驶舱空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌空气堡切换/管理平台天猫店铺天猫默认店铺经营设置 ⌄重点系列搜索资产目标中心数据健康日周月自定义日期2026-06-29 ~ 2026-07-05指标变化关闭同比环比",
+    "targetState": "ready",
+    "mtdTarget": 20000,
+    "totalTargetMissing": true
+  },
+  "unifiedRouteState": {
+    "series": {
+      "pathname": "/v2/series-board",
+      "hasReadySelector": true,
+      "hasUploadPrompt": false,
+      "hasDayMode": false,
+      "hasDlyMode": false,
+      "body": "系列经营空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌汇总固定包含当前品牌下全部已接入平台和店铺，避免把局部店铺误读为品牌结果。品牌空气堡切换/管理平台天猫店铺天猫默认店铺数据健康日周月自定义日期2026-06-29 ~ 2026-07-05指标变化关闭同比环比品牌汇总单店拆解看该系列在整个品牌中的规模、增长与经营效率。跨平台 / 全店铺系列维护0 个系列新建系列尚未创建可用系列点击“新建系列”，粘贴商品 ID 并加载绑定后即可生成系列指标和趋势。系列列表当前平台范围内按系列整齐展示；右上角可编辑或删除。当前范围尚未创建系列"
+    },
+    "store": {
+      "pathname": "/v2/store-board",
+      "hasReadySelector": true,
+      "hasUploadPrompt": false,
+      "hasDayMode": true,
+      "hasDlyMode": false,
+      "body": "店铺经营空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌空气堡切换/管理平台天猫店铺天猫默认店铺数据健康日周月自定义日期2026-06-29 ~ 2026-07-05指标变化关闭同比环比店铺经营指标天猫默认店铺GMV元41,9492026-06~2026-07 · 未设置目标GSV元31,217.522026-06~2026-07 · 未设置目标访客数人48,756分析指标 · 暂不设置目标支付买家数人50分析指标 · 暂不设置目标投入产出比倍3.022026-06~2026-07 · 未设置目标去退费比%16.58%2026-06~2026-07 · 待补基础目标直接成交占比%64.44%2026-06~2026-07 · 未设置目标品牌词访客人228分析指标 · 暂不设置目标品牌词支付人数人12分析指标 · 暂不设置目标退货率（总）%44.77%2026-06~2026-07 · 未设置目标发货退货率%30.4%分析指标 · 暂不设置目标已签收退货率%0.17%分析指标 · 暂不设置目标客单价元838.982026-06~2026-07 · 未设置目标转化率%0.1%2026-06~2026-07 · 未设置目标推广花费元2,858.452026-06~2026-07 · 待补基础目标推广点击单价元1.02分析指标 · 暂不设置目标经营趋势主指标GMVGSV支付买家数访客数推广花费ROI退货率去退费比直接成交占比发货退货率已签收退货率品牌词访客品牌词支付人数客单价转化率推广点击单价对比指标不对比GSVMTDDAYGMVGSV4.5万3.7万2.8万2.0万1.1万6/296/30"
+    },
+    "product": {
+      "pathname": "/v2/product-board",
+      "hasReadySelector": true,
+      "hasUploadPrompt": false,
+      "hasDayMode": false,
+      "hasDlyMode": false,
+      "body": "商品经营空气堡 · 天猫 · 全部店铺 (1)⌄当前经营范围品牌空气堡切换/管理平台天猫店铺天猫默认店铺数据健康日周月自定义日期2026-06-29 ~ 2026-07-05指标变化关闭同比环比商品维护0 个商品添加商品尚未手动添加商品点击“添加商品”，粘贴商品 ID 并可上传方图；保存后才会进入商品中心。商品列表仅展示手动添加的商品；点击卡片查看，右上角可编辑或删除。当前范围尚未手动添加商品"
+    },
+    "dataHealth": {
+      "pathname": "/v2/data-health",
+      "hasReadySelector": true,
+      "hasUploadPrompt": false,
+      "hasDayMode": false,
+      "hasDlyMode": false,
+      "body": "数据健康查看与经营看板同源的活动快照、来源覆盖和历史审计。返回首页空气堡 活动数据快照与全部 V2 看板同源替换导入：活动快照不继承此前经营事实继续导入清空当前品牌数据数据范围2026-06-26 至 2026-07-01更新时间2026/7/22 19:03:35文件处理成功 18 · 失败 0安全去重126安全提示0来源覆盖缺失来源不等于导入失败，只表示相应指标可能无法计算。商品基础信息已接入安全聚合记录 21商品经营已接入安全聚合记录 90推广计划已接入安全聚合记录 140总搜索词已接入安全聚合记录 506商品搜索词已接入安全聚合记录 202售后退货已接入安全聚合记录 20安全问题代码当前活动快照没有安全问题代码。快照审计只有标记为“当前活动”的快照参与看板计算；其它快照仅用于本浏览器审计，不会混入当前结果。runtime_178471…o1uhrdo92026/7/22 19:03:35replace当前活动"
+    },
+    "history": {
+      "pathname": "/v2/upload/history",
+      "hasReadySelector": true,
+      "hasUploadPrompt": false,
+      "hasDayMode": false,
+      "hasDlyMode": false,
+      "body": "导入历史查看当前浏览器中的导入记录和批次状态。返回首页空气堡 安全聚合快照仅当前活动快照进入经营看板；历史快照不参与计算，也不保存原始文件名或明细行。更新时间日期范围导入策略文件去重状态2026/7/22 19:03:352026-06-26 至 2026-07-01replace成功 18 / 失败 0126当前活动"
+    }
+  },
+  "seriesConfigurationState": {
+    "managerState": {
+      "body": "系列维护6 个系列当前E2E系列1E2E系列2E2E系列3E2E系列4E2E系列5E2E系列6新建系列已保存“E2E系列6”，共绑定 1 个商品。",
+      "libraryText": "系列列表当前平台范围内按系列整齐展示；右上角可编辑或删除。E2E系列11 个商品编辑删除商品 ID 手动绑定1 个店铺E2E系列21 个商品编辑删除商品 ID 手动绑定1 个店铺E2E系列31 个商品编辑删除商品 ID 手动绑定1 个店铺E2E系列41 个商品编辑删除商品 ID 手动绑定1 个店铺E2E系列51 个商品编辑删除商品 ID 手动绑定1 个店铺E2E系列61 个商品编辑删除商品 ID 手动绑定1 个店铺",
+      "cardCount": 6,
+      "metricCount": 16,
+      "hasVisitors": true,
+      "hasPaidBuyers": true,
+      "hasUnavailablePlaceholders": false,
+      "hasAnalysisLens": true,
+      "hasStoreBreakdown": false,
+      "hasBrandSeriesBreakdownCopy": false,
+      "hasHomeChart": true,
+      "hasDayMode": true,
+      "hasDlyMode": false,
+      "hasLegacySections": false,
+      "hasUploadPrompt": false
+    },
+    "homeSeriesState": {
+      "hasTopSeriesFilter": false,
+      "selectedSeriesCards": 5,
+      "selectedSeriesText": "已选系列5/5在指标设置中调整E2E系列2系列 GSV11,366.08目标 ----E2E系列3系列 GSV11,366.08目标 ----E2E系列5系列 GSV11,366.08目标 ----E2E系列1系列 GSV11,366.08目标 ----E2E系列4系列 GSV11,366.08目标 ----"
+    },
+    "homeBrandGmv": 41949,
+    "seriesDesktopScreenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1/artifacts/public/public-8c95d81-2026-07-22/v2-series-desktop.png"
+  },
+  "manualProductState": {
+    "cardCount": 1,
+    "selectorCount": 1,
+    "metricCount": 16,
+    "hasImage": true,
+    "hasEdit": true,
+    "hasDelete": true,
+    "body": "商品列表仅展示手动添加的商品；点击卡片查看，右上角可编辑或删除。编辑删除E2E手动商品ID 824014970181",
+    "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1/artifacts/public/public-8c95d81-2026-07-22/v2-product-manual-desktop.png"
+  },
+  "scopedTargetState": {
+    "storeTarget": {
+      "month": "2026-06",
+      "dataMonthVisible": true,
+      "value": "200000",
+      "selectedSeriesId": null
+    },
+    "storeState": {
+      "metricCount": 16,
+      "targetLabel": "GMV，当前值 125,596，MTD目标 200,000，总目标 200,000，差值 -74,404，完成率 62.8%",
+      "hasDayMode": true,
+      "hasDlyMode": false
+    },
+    "seriesTarget": {
+      "month": "2026-06",
+      "dataMonthVisible": true,
+      "value": "100000",
+      "selectedSeriesId": "series_jn80ez1za0k"
+    },
+    "seriesState": {
+      "targetLabel": "GMV，当前值 34,047，MTD目标 100,000，总目标 100,000，差值 -65,953，完成率 34.05%",
+      "hasDayMode": true,
+      "hasDlyMode": false
+    },
+    "productTarget": {
+      "month": "2026-06",
+      "dataMonthVisible": true,
+      "value": "50000",
+      "selectedSeriesId": null
+    },
+    "productState": {
+      "targetLabel": "GMV，当前值 34,047，MTD目标 50,000，总目标 50,000，差值 -15,953，完成率 68.09%",
+      "hasDayMode": true,
+      "hasDlyMode": false
+    }
+  },
+  "mobileBoardSafety": {
+    "series": {
+      "pathname": "/v2/series-board",
+      "horizontalOverflow": false
+    },
+    "store": {
+      "pathname": "/v2/store-board",
+      "horizontalOverflow": false
+    },
+    "product": {
+      "pathname": "/v2/product-board",
+      "horizontalOverflow": false
+    }
+  },
+  "targetCenterPreconditionState": {
+    "body": "目标中心独立设置品牌目标，并按现有店铺、系列、商品细分。返回首页目标层级品牌店铺系列商品目标月份2026年07月品牌目标修改后自动保存；百分比输入 0-100，ROI 输入倍数。修改后自动保存GMV元未保存GSV元未保存投入产出比倍未保存退货率（总）%未保存客单价元未保存转化率%未保存直接成交占比%未保存",
+    "hasIndependentCopy": false,
+    "hasAutoDerivedCopy": false,
+    "brandEnabled": true,
+    "storeDisabled": true,
+    "hasSaveButton": false,
+    "hasAutoSaveStatus": true,
+    "hasUploadFoundationCopy": false,
+    "hasDeleteButton": false
+  },
+  "targetCenterWritableState": {
+    "initialState": {
+      "hasBoundary": false,
+      "hasAutoDerivedCopy": false,
+      "hasManualSave": false,
+      "hasDeleteButton": false,
+      "hasBrandInput": true
+    },
+    "savedState": {
+      "gmvValue": "300000",
+      "percentValue": "92",
+      "hasPauseButton": true,
+      "hasDeleteButton": false
+    },
+    "clearedState": {
+      "gmvValue": "",
+      "percentValue": "92"
+    },
+    "pausedState": {
+      "hasReactivateButton": true,
+      "percentValue": "92"
+    },
+    "reactivatedState": {
+      "hasPauseButton": true,
+      "percentValue": "92",
+      "hasDeleteButton": false
+    },
+    "screenshot": "/Users/zongji/Documents/电商数据分析平台/ecommerce-platform-optimized/docs/project/tasks/SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1/artifacts/public/public-8c95d81-2026-07-22/v2-target-center-autosave-desktop.png"
+  },
+  "uploadTargetFoundationState": {
+    "hasTargetFoundation": false,
+    "replaceChecked": true,
+    "hasAdapterBoundary": true
+  },
+  "appendSecondStoreState": {
+    "preUploadState": {
+      "selectedStore": "tmall::e2e-store-2",
+      "appendChecked": true
+    },
+    "counts": {
+      "success": 18,
+      "failed": 0,
+      "skipped": 0
+    },
+    "firstGmv": 41949,
+    "secondGmv": 83898,
+    "healthState": {
+      "body": "数据健康查看与经营看板同源的活动快照、来源覆盖和历史审计。返回首页空气堡 活动数据快照与全部 V2 看板同源追加导入：活动快照包含此前数据与本次数据，已执行去重继续导入清空当前品牌数据数据范围2026-06-26 至 2026-07-01更新时间2026/7/22 19:03:57文件处理成功 18 · 失败 0安全去重126安全提示0来源覆盖缺失来源不等于导入失败，只表示相应指标可能无法计算。商品基础信息已接入安全聚合记录 42商品经营已接入安全聚合记录 180推广计划已接入安全聚合记录 280总搜索词已接入安全聚合记录 1012商品搜索词已接入安全聚合记录 404售后退货已接入安全聚合记录 40安全问题代码当前活动快照没有安全问题代码。快照审计只有标记为“当前活动”的快照参与看板计算；其它快照仅用于本浏览器审计，不会混入当前结果。runtime_178471…p89o6udj2026/7/22 19:03:57append当前活动runtime_178471…o1uhrdo92026/7/22 19:03:35replace仅审计",
+      "snapshotRows": 2
+    }
+  },
+  "cleanupState": {
+    "before": [
+      "airburg-debug-context-v1",
+      "airburg-runtime-dataset-v1",
+      "airburg-target-drafts-v1",
+      "airburg-v05"
+    ],
+    "after": [
+      "airburg-target-drafts-v1",
+      "airburg-v05"
+    ],
+    "runtimeDeleted": false,
+    "debugDeleted": true,
+    "preservedDatabases": [
+      "airburg-target-drafts-v1",
+      "airburg-v05"
+    ],
+    "preservedLocalStorageKeys": [
+      "airburg:demo-session"
+    ],
+    "emptyHomeState": {
+      "body": "AB\n\n品牌经营云\n\n品牌经营工作区\n\n经营驾驶舱\n系列中心\n店铺中心\n商品中心\n数据接入\n数据健康\n目标中心\n品牌设置\n搜索资产\n\n当前尚未导入经营数据\n\n请从统一批量上传入口导入天猫经营文件；页面仅读取安全聚合数据，不展示原始行或敏感明细。\n\n前往上传",
+      "hasEmptyState": true,
+      "uploadCtaIsV2": true,
+      "localStorageKeys": [
+        "airburg:demo-session",
+        "airburg:v2-home:ui-preference:v3:airburg",
+        "airburg:v2:brand-products:v1:airburg",
+        "airburg:v2:brand-series:v1:airburg"
+      ]
+    }
+  }
+}
