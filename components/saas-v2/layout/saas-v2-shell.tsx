@@ -12,6 +12,16 @@ export function SaasV2Shell({ children }: { children: React.ReactNode }) {
           <main className="min-w-0 max-w-full overflow-x-hidden px-4 py-5 sm:px-6 lg:px-8">
             <SaasV2PageHeader />
             {children}
+            <footer className="mt-8 border-t border-slate-200/80 py-5 text-center text-xs text-slate-500">
+              <a
+                className="transition-colors hover:text-slate-800"
+                href="https://beian.miit.gov.cn/"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                京ICP备2026041365号-1
+              </a>
+            </footer>
           </main>
         </div>
       </div>
