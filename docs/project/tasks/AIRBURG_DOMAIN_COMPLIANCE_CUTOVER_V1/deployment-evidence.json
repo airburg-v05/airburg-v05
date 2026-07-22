@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0.0",
+  "deployedAt": "2026-07-22T23:35:18+08:00",
+  "implementationCommit": "87ab45fbf3c21d62388cdb64e487a6709bd93eee",
+  "businessImplementationCommit": "8c95d8154d463d17216dae14efc74a4b5a800ed4",
+  "archiveSha256": "d1601c21285c47612602ff2f55d0a8874fb0dc54dbfd5acdf6d03731e6528a2d",
+  "archiveEntries": 516,
+  "forbiddenPaths": 0,
+  "highConfidenceSecretHits": 0,
+  "activeRelease": "/opt/airburg/releases/domain-compliance-87ab45f-20260722T232423",
+  "activeSymlink": "/opt/airburg/ecommerce-platform-optimized",
+  "previousRelease": "/opt/airburg/releases/saas-v2-interaction-autosave-8c95d81-20260722T185925",
+  "rollback": {
+    "nginxConfig": "/opt/airburg/rollback/airburg-tmall-v1-pre-https-20260722T232423.conf",
+    "pm2Snapshot": "/opt/airburg/rollback/airburg-tmall-v1-pre-domain-compliance-87ab45f-20260722T232423.pm2.json"
+  },
+  "tls": {
+    "domains": ["ailianshou.com", "www.ailianshou.com"],
+    "expiresAt": "2026-10-20T14:28:08Z",
+    "httpRedirect": "PASS",
+    "renewalDryRun": "PASS",
+    "timer": "ACTIVE_AND_ENABLED"
+  },
+  "publicValidation": {
+    "canonicalUrl": "https://ailianshou.com/v2/home",
+    "v2Routes": "11/11 PASS",
+    "wwwHome": "PASS",
+    "filingFooter": "PASS"
+  },
+  "runtime": {
+    "pm2": "ONLINE_RESTART_COUNT_13",
+    "nginx": "ACTIVE_AND_CONFIG_VALID",
+    "nodeBinding": "127.0.0.1:3000"
+  },
+  "acceptance": {
+    "technical": "PASS",
+    "visualAccepted": false,
+    "humanAccepted": false,
+    "publicSecurityFilingSubmitted": false
+  }
+}
