@@ -36,6 +36,7 @@ export function V2HomeMetricGrid({
   selectedMetricKey,
   targetPeriodLabel = "当前范围",
   emptyTargetLabel: emptyTargetLabelOverride,
+  onMetricSelect,
 }: {
   metrics: V2HomeMetricCard[];
   visibleKeys: V2HomeMetricKey[];
@@ -43,6 +44,7 @@ export function V2HomeMetricGrid({
   selectedMetricKey: V2HomeMetricKey;
   targetPeriodLabel?: string;
   emptyTargetLabel?: string;
+  onMetricSelect?: (metricKey: V2HomeMetricKey) => void;
 }) {
   const cardsByKey = new Map(metrics.map((metric) => [metric.metricKey, metric]));
   const visible = order
@@ -83,12 +85,21 @@ export function V2HomeMetricGrid({
             aria-label={showTargetDetail
               ? `${metric.title}，当前值 ${metric.actual}，MTD目标 ${metric.target.mtdTarget}，总目标 ${metric.target.totalTarget}，差值 ${metric.target.difference}，完成率 ${metric.target.completionRate}`
               : `${metric.title}，当前值 ${metric.actual}，未设置目标`}
-            className={`flex min-h-[148px] min-w-0 flex-col border-b border-r border-t-[3px] border-slate-100 px-4 pb-3 pt-3 transition-colors ${
+            aria-pressed={onMetricSelect ? selected : undefined}
+            className={`flex min-h-[148px] min-w-0 flex-col border-b border-r border-t-[3px] border-slate-100 px-4 pb-3 pt-3 text-left transition-colors ${
               selected ? "border-t-blue-600 bg-[#f4f7ff]" : "border-t-transparent bg-white hover:bg-slate-50/70"
-            }`}
+            } ${onMetricSelect ? "cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500" : ""}`}
             data-kpi-cell="true"
             data-metric-key={metric.metricKey}
             data-target-state={showTargetDetail ? "ready" : "empty"}
+            onClick={onMetricSelect ? () => onMetricSelect(metric.metricKey) : undefined}
+            onKeyDown={onMetricSelect ? (event) => {
+              if (event.key !== "Enter" && event.key !== " ") return;
+              event.preventDefault();
+              onMetricSelect(metric.metricKey);
+            } : undefined}
+            role={onMetricSelect ? "button" : undefined}
+            tabIndex={onMetricSelect ? 0 : undefined}
           >
             <div className="flex min-w-0 items-start justify-between gap-2">
               <h3 className="min-w-0 truncate text-[13px] font-semibold text-slate-700" title={metric.title}>{metric.title}</h3>

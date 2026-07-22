@@ -8,6 +8,8 @@ import type {
 
 type DisplayMode = "single" | "dual";
 
+const chartModeLabel = (mode: V2HomeChartMode): "MTD" | "DAY" => mode === "mtd" ? "MTD" : "DAY";
+
 const WIDTH = 1280;
 const HEIGHT = 280;
 const PADDING = { left: 58, right: 58, top: 20, bottom: 38 };
@@ -180,7 +182,7 @@ export function V2HomeChart({
                 onClick={() => onModeChange(mode)}
                 type="button"
               >
-                {mode.toUpperCase()}
+                {chartModeLabel(mode)}
               </button>
             ))}
           </div>
@@ -203,7 +205,7 @@ export function V2HomeChart({
         <div className="relative min-w-0 overflow-hidden border-y border-slate-100 bg-slate-50/40">
           <div className="overflow-x-auto">
             <svg
-              aria-label={`${model.mode.toUpperCase()} ${model.pair.label}趋势图`}
+              aria-label={`${chartModeLabel(model.mode)} ${model.pair.label}趋势图`}
               className="block h-auto w-full min-w-[640px]"
               onMouseLeave={() => setActiveIndex(null)}
               role="img"

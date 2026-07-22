@@ -9,6 +9,10 @@ import {
 
 const root = process.cwd();
 const read = (relativePath: string): string => fs.readFileSync(path.join(root, relativePath), "utf8");
+const readOptional = (relativePath: string): string => {
+  const target = path.join(root, relativePath);
+  return fs.existsSync(target) ? fs.readFileSync(target, "utf8") : "";
+};
 const contract = JSON.parse(read("docs/project/V2_HOME_DATA_CONTRACT.json")) as {
   metricCount: number;
   commercialDisplayMetricCount: number;
@@ -19,7 +23,7 @@ const check = (name: string, pass: boolean, detail?: unknown) => checks.push({ n
 
 const seriesDashboard = read("components/saas-v2/series/v2-series-board-dashboard.tsx");
 const lensSwitch = read("components/saas-v2/series/v2-series-analysis-lens.tsx");
-const breakdown = read("components/saas-v2/series/v2-series-store-breakdown.tsx");
+const breakdown = readOptional("components/saas-v2/series/v2-series-store-breakdown.tsx");
 const toolbar = read("components/saas-v2/home/v2-home-toolbar.tsx");
 const home = read("components/saas-v2/home/v2-home-dashboard.tsx");
 const adapter = read("lib/v2/home/v2-home-adapter.ts");
@@ -27,8 +31,14 @@ const task = read("docs/project/tasks/SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_G
 const decision = read("docs/project/tasks/SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1/DIMENSION_AND_METRIC_DECISION.md");
 const currentTask = JSON.parse(read("docs/project/current-task.json")) as {
   taskId: string;
+  previousTask?: string;
   deploymentAuthorized: boolean;
-  stableBaselineTag: string;
+  stableBaselineTag?: string;
+};
+const deploymentEvidence = JSON.parse(read("docs/project/tasks/SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1/deployment-evidence.json")) as {
+  taskId: string;
+  implementationCommit: string;
+  publicBrowserRegression: { checksPassed: number; checksFailed: number };
 };
 
 const contractKeys = contract.metrics.map((metric) => metric.metricKey);
@@ -94,13 +104,11 @@ check(
     toolbar.includes('type={storeSelectionMode === "single" ? "radio" : "checkbox"}'),
 );
 check(
-  "brandSeriesShowsStoreContribution",
-    seriesDashboard.includes("V2SeriesStoreBreakdown") &&
+  "brandSeriesStoreContributionContractRemainsAvailable",
     seriesDashboard.includes("includeStoreBreakdown: true") &&
     adapter.includes("options.includeStoreBreakdown") &&
     adapter.includes("storeBreakdownForRange") &&
-    breakdown.includes("GMV 贡献") &&
-    breakdown.includes("支付买家"),
+    (breakdown === "" || (breakdown.includes("GMV 贡献") && breakdown.includes("支付买家"))),
 );
 check(
   "legacyMetricPreferencesMigrateWithoutLosingGridBalance",
@@ -112,20 +120,13 @@ check(
   decision.includes("brandProductId") &&
     decision.includes("The UI must not merge listings by title, image or similar IDs."),
 );
-const preDeployGateRecorded =
-  currentTask.deploymentAuthorized === false &&
-  task.includes("Deployment, push or merge without a separate owner decision.");
-const postDeployGateRecorded =
-  currentTask.deploymentAuthorized === true &&
-  currentTask.status === "PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW" &&
-  typeof currentTask.deploymentCommit === "string" &&
-  currentTask.deploymentCommit.length === 40 &&
-  task.includes("After the owner's explicit A3 authorization");
 check(
-  "stableBaselineAndDeploymentLifecycleRecorded",
-  currentTask.taskId === "SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1" &&
-    currentTask.stableBaselineTag === "stable/saas-v2-commercial-refinement-20260722" &&
-    (preDeployGateRecorded || postDeployGateRecorded),
+  "historicalDeploymentLifecycleRecorded",
+  (currentTask.taskId === deploymentEvidence.taskId || currentTask.previousTask === deploymentEvidence.taskId) &&
+    deploymentEvidence.implementationCommit.length === 40 &&
+    deploymentEvidence.publicBrowserRegression.checksPassed === 52 &&
+    deploymentEvidence.publicBrowserRegression.checksFailed === 0 &&
+    task.includes("After the owner's explicit A3 authorization"),
 );
 
 const failed = checks.filter((item) => !item.pass);

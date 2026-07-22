@@ -181,7 +181,7 @@ export function V2HomeToolbar({
       </div>
 
       <div className="mt-2 flex min-w-0 flex-wrap items-center gap-2 border-t border-slate-100 pt-2">
-        <div className="flex h-8 items-center rounded-md bg-slate-100 p-0.5">
+        <div className="flex h-8 items-center rounded-md bg-slate-100 p-0.5" data-testid="v2-time-presets">
           {TIME_MODES.map((item) => (
             <button
               key={item.mode}
@@ -195,21 +195,25 @@ export function V2HomeToolbar({
               {item.label}
             </button>
           ))}
-          <div className="relative">
-            <button
-              className={`flex h-7 cursor-pointer list-none items-center rounded px-2 text-xs font-semibold [&::-webkit-details-marker]:hidden ${
-                timeRange.mode === "custom" || customOpen ? "bg-white text-blue-700 shadow-sm" : "text-slate-500"
-              }`}
-              disabled={busy}
-              onClick={() => {
-                setCustomDraft({ ...timeRange, mode: "custom" });
-                setCustomOpen((open) => !open);
-              }}
-              type="button"
-            >
-              自定义
-            </button>
-            {customOpen ? <div className="absolute left-0 top-9 z-40 w-80 max-w-[calc(100vw-2rem)] rounded-lg border border-slate-200 bg-white p-3 shadow-xl">
+        </div>
+        <div className="relative">
+          <button
+            aria-label="自定义日期"
+            aria-pressed={timeRange.mode === "custom" || customOpen}
+            className={`flex h-8 items-center rounded-md px-2 text-xs font-semibold transition hover:bg-slate-50 ${
+              timeRange.mode === "custom" || customOpen ? "text-blue-700" : "text-slate-500"
+            }`}
+            data-testid="v2-custom-date-trigger"
+            disabled={busy}
+            onClick={() => {
+              setCustomDraft({ ...timeRange, mode: "custom" });
+              setCustomOpen((open) => !open);
+            }}
+            type="button"
+          >
+            自定义日期
+          </button>
+          {customOpen ? <div className="absolute left-0 top-9 z-40 w-80 max-w-[calc(100vw-2rem)] rounded-lg border border-slate-200 bg-white p-3 shadow-xl">
               <div className="mb-3 flex items-start justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold text-slate-800">自定义时间范围</p>
@@ -256,8 +260,7 @@ export function V2HomeToolbar({
                   应用
                 </button>
               </div>
-            </div> : null}
-          </div>
+          </div> : null}
         </div>
 
         <span className="truncate text-xs tabular-nums text-slate-500">

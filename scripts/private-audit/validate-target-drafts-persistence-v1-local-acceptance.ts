@@ -567,11 +567,13 @@ const run = async () => {
   const snapshotList = await listRuntimeDatasetSnapshots();
   addCheck("historyCanListSafeRuntimeSnapshot", snapshotList.status === "ok" && snapshotList.snapshots.length >= 1, snapshotList.status);
   addCheck("qualityCanReadSafeIssueSummary", activeSnapshot.status === "ok" && activeSnapshot.snapshot.safeIssues.every((issue) => typeof issue.code === "string" && issue.safeCount >= 1), activeSnapshot.status === "ok" ? activeSnapshot.snapshot.safeIssues : activeSnapshot);
+  const historyQualitySources =
+    read("components/upload/history/v1/history-data-v1-dashboard.tsx") +
+    read("components/upload/quality/v1/upload-quality-v1-dashboard.tsx");
   addCheck(
     "historyQualityReadonlySourceBoundary",
-    !/删除|回滚|强制覆盖|重新导入|直接修复|清空数据|修改历史记录/.test(
-      read("components/upload/history/v1/history-data-v1-dashboard.tsx") +
-        read("components/upload/quality/v1/upload-quality-v1-dashboard.tsx"),
+    !/(save|delete|clear|rollback|replace)RuntimeDataset|indexedDB\.(deleteDatabase|open)|\.transaction\([^)]*,\s*["']readwrite["']/.test(
+      historyQualitySources,
     ),
   );
 

@@ -1,0 +1,45 @@
+{
+  "task_type": "data_dashboard",
+  "task_id": "SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1",
+  "business_purpose": "Reduce dashboard operating friction and make target persistence trustworthy without changing imported facts or metric formulas.",
+  "raw_data_files": [
+    "Existing verified Tmall 18-file isolated browser fixture; not read, copied or modified by this task"
+  ],
+  "field_map": [
+    "docs/project/V2_HOME_DATA_CONTRACT.json",
+    "lib/bi/target-metric-definitions.ts",
+    "types/v2/home.ts"
+  ],
+  "decision_questions": [
+    "Does one Home metric-card click select the same trend primary metric?",
+    "Does a target value persist automatically for the same brand, scope and month after refresh?",
+    "Are daily trend terminology and date controls unambiguous across all shared boards?",
+    "Is Series center simpler after removing the deferred contribution design?"
+  ],
+  "scope": {
+    "allowed": [
+      "SaaS V2 shared metric, chart, toolbar, target-center and series-lens UI",
+      "Existing target-draft IndexedDB interaction without schema change",
+      "Focused validators and task evidence"
+    ],
+    "forbidden": [
+      "ETL, raw data, BI formulas or runtime dataset schema",
+      "Secrets or private browser state",
+      "Merge",
+      "Automatic visual or business acceptance"
+    ]
+  },
+  "validation_plan": [
+    "Focused source-contract validator",
+    "Target persistence and metric adapter validators",
+    "TypeScript, lint and production build",
+    "Isolated desktop and mobile browser regression with refresh readback"
+  ],
+  "archive_target": "docs/project/tasks/SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1",
+  "autonomy": "A3_OWNER_AUTHORIZED_FOR_EXACT_COMMIT_PUSH_AND_DEPLOYMENT",
+  "deployment_gate": "A3_AUTHORIZED_2026-07-22",
+  "deliverable_status": "deployment_in_progress",
+  "validation_result": "LOCAL_E2E_54_OF_54_PASS",
+  "validation_evidence": "docs/project/tasks/SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1/validation.md",
+  "owner_gate": "POST_DEPLOY_OWNER_VISUAL_AND_BUSINESS_REVIEW_REQUIRED"
+}

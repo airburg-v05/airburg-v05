@@ -19,7 +19,7 @@ export function ChartPanelV2({ title, description, recommendedPairs, content }: 
         </div>
         <div className="flex rounded-lg border border-slate-200 bg-slate-50 p-1 text-xs font-semibold text-slate-600">
           <button className="rounded-md bg-white px-3 py-1 shadow-sm" type="button">MTD</button>
-          <button className="rounded-md px-3 py-1" type="button">DLY</button>
+          <button className="rounded-md px-3 py-1" type="button">DAY</button>
         </div>
       </div>
       <div className="mt-5 min-h-64 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-5">

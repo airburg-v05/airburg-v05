@@ -1,15 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  deriveTargetMetricValue,
-  formatTargetMetricValue,
-  getDerivedTargetMetricDefinitionsForScope,
   getRequiredTargetMetricDefinitionsForScope,
   type TargetMetricDefinition,
   type TargetMetricScope,
 } from "@/lib/bi/target-metric-definitions";
 import {
+  deleteTargetDraft,
   loadTargetDrafts,
   pauseTargetDraft,
   saveTargetDraft,
@@ -45,6 +43,13 @@ const localMonth = (): string => {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 };
+
+const formatMonthLabel = (value: string): string => {
+  const [year, month] = value.split("-");
+  return year && month ? `${year}年${month}月` : value;
+};
+
+type AutoSaveState = "idle" | "dirty" | "saving" | "saved" | "error";
 
 const latestOperatingMonth = (dataset: V2Dataset): string | null => {
   const dates = [
@@ -116,6 +121,10 @@ export function V2BrandTargetCenter() {
   const [message, setMessage] = useState<string | null>(null);
   const [loadedRequestKey, setLoadedRequestKey] = useState("");
   const [revision, setRevision] = useState(0);
+  const [dirtyQueryKey, setDirtyQueryKey] = useState<string | null>(null);
+  const [saveState, setSaveState] = useState<AutoSaveState>("idle");
+  const editVersion = useRef(0);
+  const loadedContextKey = useRef("");
 
   useEffect(() => {
     if (!hydrated) return;
@@ -180,7 +189,9 @@ export function V2BrandTargetCenter() {
     seriesId: resolvedSeriesId,
     productId: resolvedProductId,
   }), [month, platformCode, resolvedProductId, resolvedSeriesId, scope, selectedStore, storeId]);
-  const requestKey = `${JSON.stringify(query)}:${revision}`;
+  const queryKey = JSON.stringify(query);
+  const contextKey = `${databaseName}:${queryKey}`;
+  const requestKey = `${contextKey}:${revision}`;
   const loading = loadedRequestKey !== requestKey;
 
   useEffect(() => {
@@ -189,6 +200,12 @@ export function V2BrandTargetCenter() {
     void loadTargetDrafts(query, { databaseName }).then((result) => {
       if (cancelled) return;
       const nextRecords = result.status === "ok" ? result.records : [];
+      if (loadedContextKey.current !== contextKey) {
+        loadedContextKey.current = contextKey;
+        setDirtyQueryKey(null);
+        setSaveState("idle");
+        setMessage(null);
+      }
       setRecords(nextRecords);
       setValues(Object.fromEntries(nextRecords.map((record) => [record.metricKey, inputValue(record)])));
       setLoadedRequestKey(requestKey);
@@ -196,25 +213,33 @@ export function V2BrandTargetCenter() {
     return () => {
       cancelled = true;
     };
-  }, [databaseName, hydrated, query, requestKey]);
+  }, [contextKey, databaseName, hydrated, query, requestKey]);
 
-  const requiredDefinitions = getRequiredTargetMetricDefinitionsForScope(scope);
-  const derivedDefinitions = getDerivedTargetMetricDefinitionsForScope(scope);
-  const storedMetricValues = Object.fromEntries(requiredDefinitions.map((definition) => [
-    definition.metricKey,
-    storedValue(definition, values[definition.metricKey] ?? ""),
-  ]));
+  const requiredDefinitions = useMemo(() => getRequiredTargetMetricDefinitionsForScope(scope), [scope]);
   const scopeReady = scope === "brand" || Boolean(
     selectedStore &&
     (scope !== "series" || resolvedSeriesId) &&
     (scope !== "product" || resolvedProductId),
   );
 
-  const save = async () => {
+  const persistTargets = useCallback(async (expectedVersion = editVersion.current): Promise<boolean> => {
     if (!scopeReady) {
       setMessage("当前范围缺少可用实体，请先上传经营数据或维护系列。");
-      return;
+      setSaveState("error");
+      return false;
     }
+    if (loading) return false;
+
+    const invalidDefinition = requiredDefinitions.find((definition) => {
+      const raw = values[definition.metricKey] ?? "";
+      return raw.trim() !== "" && storedValue(definition, raw) === null;
+    });
+    if (invalidDefinition) {
+      setMessage(`${invalidDefinition.title}请输入大于 0 的有效数值。`);
+      setSaveState("error");
+      return false;
+    }
+
     const existingByMetric = new Map(records.map((record) => [record.metricKey, record]));
     const now = new Date().toISOString();
     const nextRecords = requiredDefinitions.flatMap((definition) => {
@@ -238,18 +263,79 @@ export function V2BrandTargetCenter() {
         status: existing?.status ?? "active",
       } satisfies TargetDraftRecord];
     });
-    if (nextRecords.length === 0) {
-      setMessage("请至少填写一个大于 0 的目标值。");
-      return;
+    const requiredMetricKeys = new Set(requiredDefinitions.map((definition) => definition.metricKey));
+    const recordsToDelete = records.filter((record) =>
+      requiredMetricKeys.has(record.metricKey) && (values[record.metricKey] ?? "").trim() === "",
+    );
+
+    if (nextRecords.length === 0 && recordsToDelete.length === 0) {
+      setDirtyQueryKey(null);
+      setSaveState("idle");
+      return true;
     }
-    const result = await saveTargetDrafts(nextRecords, { databaseName });
-    if (result.status === "saved") {
-      setMessage(`已保存 ${result.records.length} 项${SCOPE_OPTIONS.find((item) => item.scope === scope)?.label}目标。`);
+
+    setSaveState("saving");
+    const persistedById = new Map(records.map((record) => [record.targetId, record]));
+    if (nextRecords.length > 0) {
+      const result = await saveTargetDrafts(nextRecords, { databaseName });
+      if (result.status !== "saved") {
+        if (editVersion.current !== expectedVersion) {
+          setSaveState("dirty");
+          return false;
+        }
+        setMessage("自动保存失败，请检查输入后重试。");
+        setSaveState("error");
+        return false;
+      }
+      result.records.forEach((record) => persistedById.set(record.targetId, record));
+    }
+
+    const deleteResults = await Promise.all(
+      recordsToDelete.map((record) => deleteTargetDraft(record.targetId, { databaseName })),
+    );
+    deleteResults.forEach((result) => {
+      if (result.status === "deleted") persistedById.delete(result.targetId);
+    });
+    setRecords([...persistedById.values()]);
+    if (deleteResults.some((result) => result.status !== "deleted")) {
+      if (editVersion.current !== expectedVersion) {
+        setSaveState("dirty");
+        return false;
+      }
+      setMessage("目标清空未能完整保存，请重试。");
+      setSaveState("error");
+      return false;
+    }
+
+    const scopeLabel = SCOPE_OPTIONS.find((item) => item.scope === scope)?.label ?? "当前范围";
+    const removedLabel = recordsToDelete.length > 0 ? `，清除 ${recordsToDelete.length} 项` : "";
+    if (editVersion.current === expectedVersion) {
+      setMessage(`${formatMonthLabel(month)} · 已自动保存 ${nextRecords.length} 项${scopeLabel}目标${removedLabel}。`);
+      setDirtyQueryKey(null);
+      setSaveState("saved");
       setRevision((current) => current + 1);
-      return;
+    } else {
+      setSaveState("dirty");
     }
-    setMessage("目标未保存，请检查输入后重试。");
-  };
+    return true;
+  }, [databaseName, loading, month, query, records, requiredDefinitions, resolvedProductId, resolvedSeriesId, scope, scopeReady, values]);
+
+  useEffect(() => {
+    if (dirtyQueryKey !== queryKey || loading || saveState !== "dirty") return;
+    const expectedVersion = editVersion.current;
+    const timer = window.setTimeout(() => {
+      void persistTargets(expectedVersion);
+    }, 650);
+    return () => window.clearTimeout(timer);
+  }, [dirtyQueryKey, loading, persistTargets, queryKey, saveState]);
+
+  const flushBeforeContextChange = useCallback(async (change: () => void) => {
+    if (dirtyQueryKey === queryKey) {
+      const saved = await persistTargets(editVersion.current);
+      if (!saved) return;
+    }
+    change();
+  }, [dirtyQueryKey, persistTargets, queryKey]);
 
   const toggleStatus = async (record: TargetDraftRecord) => {
     const result = record.status === "active"
@@ -259,29 +345,43 @@ export function V2BrandTargetCenter() {
     setRevision((current) => current + 1);
   };
 
-  return (
-    <div className="space-y-5" data-testid="v2-brand-target-center">
-      <section className="rounded-xl border border-blue-200 bg-blue-50/60 p-5">
-        <h2 className="text-base font-semibold text-slate-950">目标设置独立于数据上传</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-          {brand.name} 的品牌月度目标可直接建立；经营数据只用于计算实际值和完成率。店铺、系列及手动添加商品需要先有对应实体，但不需要额外上传“目标底座”。
-        </p>
-      </section>
+  const markTargetDirty = (metricKey: string, value: string) => {
+    editVersion.current += 1;
+    setValues((current) => ({ ...current, [metricKey]: value }));
+    setDirtyQueryKey(queryKey);
+    setSaveState("dirty");
+    setMessage(null);
+  };
 
+  const saveStatus = loading
+    ? { label: "正在读取", tone: "bg-slate-100 text-slate-500" }
+    : saveState === "dirty"
+      ? { label: "等待自动保存", tone: "bg-amber-50 text-amber-700" }
+      : saveState === "saving"
+        ? { label: "正在自动保存", tone: "bg-blue-50 text-blue-700" }
+        : saveState === "saved"
+          ? { label: "已自动保存", tone: "bg-emerald-50 text-emerald-700" }
+          : saveState === "error"
+            ? { label: "自动保存失败", tone: "bg-rose-50 text-rose-700" }
+            : { label: records.length > 0 ? `已保存 ${records.length} 项` : "修改后自动保存", tone: "bg-slate-100 text-slate-500" };
+
+  return (
+    <div className="space-y-4" data-testid="v2-brand-target-center">
       <section className="rounded-xl border border-slate-200 bg-white p-5">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div>
             <p className="text-xs font-semibold text-slate-500">目标层级</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {SCOPE_OPTIONS.map((item) => {
-                const disabled = item.scope !== "brand" && !currentDataset;
+                const requiresDataset = item.scope !== "brand" && !currentDataset;
+                const disabled = requiresDataset || loading || saveState === "saving";
                 return (
                   <button
                     key={item.scope}
                     className={`rounded-lg px-3 py-2 text-sm font-semibold ${scope === item.scope ? "bg-slate-950 text-white" : "border border-slate-200 bg-white text-slate-600"}`}
                     disabled={disabled}
-                    onClick={() => setScope(item.scope)}
-                    title={disabled ? "细分目标需要先有对应经营实体" : item.description}
+                    onClick={() => void flushBeforeContextChange(() => setScope(item.scope))}
+                    title={requiresDataset ? "细分目标需要先有对应经营实体" : item.description}
                     type="button"
                   >
                     {item.label}
@@ -301,9 +401,13 @@ export function V2BrandTargetCenter() {
               目标月份
               <input
                 className="form-input mt-2"
+                disabled={loading || saveState === "saving"}
                 onChange={(event) => {
-                  monthTouched.current = true;
-                  setMonth(event.target.value);
+                  const nextMonth = event.target.value;
+                  void flushBeforeContextChange(() => {
+                    monthTouched.current = true;
+                    setMonth(nextMonth);
+                  });
                 }}
                 type="month"
                 value={month}
@@ -318,12 +422,15 @@ export function V2BrandTargetCenter() {
               店铺
               <select
                 className="form-input mt-2"
+                disabled={loading || saveState === "saving"}
                 onChange={(event) => {
                   const [nextPlatform, nextStore] = event.target.value.split("::");
-                  setPlatformCode(nextPlatform || "");
-                  setStoreId(nextStore || "");
-                  setSeriesId("");
-                  setProductId("");
+                  void flushBeforeContextChange(() => {
+                    setPlatformCode(nextPlatform || "");
+                    setStoreId(nextStore || "");
+                    setSeriesId("");
+                    setProductId("");
+                  });
                 }}
                 value={selectedStore ? `${selectedStore.platformCode}::${selectedStore.storeId}` : ""}
               >
@@ -333,7 +440,10 @@ export function V2BrandTargetCenter() {
             {scope === "series" ? (
               <label className="text-xs font-semibold text-slate-500">
                 系列
-                <select className="form-input mt-2" onChange={(event) => setSeriesId(event.target.value)} value={resolvedSeriesId}>
+                <select className="form-input mt-2" disabled={loading || saveState === "saving"} onChange={(event) => {
+                  const nextSeriesId = event.target.value;
+                  void flushBeforeContextChange(() => setSeriesId(nextSeriesId));
+                }} value={resolvedSeriesId}>
                   {seriesOptions.map((item) => <option key={item.seriesId} value={item.seriesId}>{item.name}</option>)}
                 </select>
               </label>
@@ -341,7 +451,10 @@ export function V2BrandTargetCenter() {
             {scope === "product" ? (
               <label className="text-xs font-semibold text-slate-500">
                 商品
-                <select className="form-input mt-2" onChange={(event) => setProductId(event.target.value)} value={resolvedProductId}>
+                <select className="form-input mt-2" disabled={loading || saveState === "saving"} onChange={(event) => {
+                  const nextProductId = event.target.value;
+                  void flushBeforeContextChange(() => setProductId(nextProductId));
+                }} value={resolvedProductId}>
                   {productOptions.map((item) => <option key={item.recordId} value={item.productId}>{item.displayName || item.productId}</option>)}
                 </select>
                 {productOptions.length === 0 ? <a className="mt-2 block text-[11px] font-semibold text-blue-700" href="/v2/product-board">先去商品中心手动添加</a> : null}
@@ -352,12 +465,29 @@ export function V2BrandTargetCenter() {
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-base font-semibold text-slate-950">{month} {SCOPE_OPTIONS.find((item) => item.scope === scope)?.label}目标</h2>
-            <p className="mt-1 text-sm text-slate-500">百分比请输入 0-100 的数值；ROI 输入倍数。</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-xl font-semibold text-slate-950">{formatMonthLabel(month)}</h2>
+              <span className="rounded-full bg-slate-950 px-2.5 py-1 text-[10px] font-semibold text-white">
+                {SCOPE_OPTIONS.find((item) => item.scope === scope)?.label}目标
+              </span>
+            </div>
+            <p className="mt-1 text-xs text-slate-500">修改后自动保存；百分比输入 0-100，ROI 输入倍数。</p>
           </div>
-          <button className="primary-button" disabled={!scopeReady || loading} onClick={() => void save()} type="button">保存目标</button>
+          <div className="flex items-center gap-2">
+            <span
+              aria-live="polite"
+              className={`rounded-full px-2.5 py-1.5 text-[11px] font-semibold ${saveStatus.tone}`}
+              data-save-state={loading ? "loading" : saveState}
+              data-testid="v2-target-auto-save-status"
+            >
+              {saveStatus.label}
+            </span>
+            {saveState === "error" ? (
+              <button className="text-xs font-semibold text-blue-700" onClick={() => void persistTargets(editVersion.current)} type="button">重试</button>
+            ) : null}
+          </div>
         </div>
         <div className="mt-5 grid overflow-hidden rounded-xl border border-slate-200 md:grid-cols-2">
           {requiredDefinitions.map((definition) => {
@@ -370,8 +500,9 @@ export function V2BrandTargetCenter() {
                   <input
                     id={inputId}
                     className="min-w-0 flex-1 bg-transparent text-right text-sm font-semibold tabular-nums text-slate-900 outline-none"
+                    disabled={loading}
                     min="0"
-                    onChange={(event) => setValues((current) => ({ ...current, [definition.metricKey]: event.target.value }))}
+                    onChange={(event) => markTargetDirty(definition.metricKey, event.target.value)}
                     placeholder="未设置"
                     step={definition.format === "integer" ? "1" : "0.01"}
                     type="number"
@@ -380,7 +511,12 @@ export function V2BrandTargetCenter() {
                   <span className="ml-1 shrink-0 text-[10px] text-slate-400">{definition.unit}</span>
                 </div>
                 {record ? (
-                  <button className="w-14 shrink-0 text-[11px] font-semibold text-blue-700" onClick={() => void toggleStatus(record)} type="button">
+                  <button
+                    className="w-14 shrink-0 text-[11px] font-semibold text-blue-700 disabled:text-slate-300"
+                    disabled={loading || saveState === "dirty" || saveState === "saving"}
+                    onClick={() => void toggleStatus(record)}
+                    type="button"
+                  >
                     {record.status === "active" ? "暂停此目标" : "重新启用"}
                   </button>
                 ) : <span className="w-14 shrink-0 text-[11px] font-normal text-slate-300">未保存</span>}
@@ -391,24 +527,6 @@ export function V2BrandTargetCenter() {
         {message ? <p className="mt-4 rounded-lg bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700">{message}</p> : null}
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
-        <h2 className="text-base font-semibold text-slate-950">自动推导目标</h2>
-        <p className="mt-1 text-sm text-slate-500">只按已填写目标推导，不把公式结果伪装为人工设定值。</p>
-        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {derivedDefinitions.map((definition) => {
-            const derived = deriveTargetMetricValue(definition.metricKey, storedMetricValues);
-            return (
-              <article key={definition.metricKey} className="rounded-xl bg-slate-50 p-4">
-                <p className="text-sm font-semibold text-slate-800">{definition.title}</p>
-                <p className="mt-2 text-lg font-semibold text-slate-950">{formatTargetMetricValue(derived.value, definition.format)}</p>
-                <p className="mt-2 text-xs leading-5 text-slate-500">
-                  {derived.value === null ? `待补：${derived.missingDependencies.join("、") || "当前不可推导"}` : definition.deriveFormula}
-                </p>
-              </article>
-            );
-          })}
-        </div>
-      </section>
     </div>
   );
 }

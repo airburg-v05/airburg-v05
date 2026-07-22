@@ -298,7 +298,7 @@
       "route": "/v2/series-board",
       "track": "SAAS_UI_V2",
       "pageFile": "app/(workspace-v2)/v2/series-board/page.tsx",
-      "componentFiles": ["components/saas-v2/series/v2-series-board-dashboard.tsx", "components/saas-v2/series/v2-series-analysis-lens.tsx", "components/saas-v2/series/v2-series-store-breakdown.tsx", "components/saas-v2/series/v2-brand-series-manager.tsx", "components/saas-v2/home/v2-home-metric-grid.tsx", "components/saas-v2/home/v2-home-chart.tsx"],
+      "componentFiles": ["components/saas-v2/series/v2-series-board-dashboard.tsx", "components/saas-v2/series/v2-series-analysis-lens.tsx", "components/saas-v2/series/v2-brand-series-manager.tsx", "components/saas-v2/home/v2-home-metric-grid.tsx", "components/saas-v2/home/v2-home-chart.tsx"],
       "uiVersion": "SaaS UI V2",
       "actualDataImports": ["lib/v2/home/v2-home-adapter.ts", "lib/bi/bi.data-source.ts", "lib/bi/bi.home-mapper.ts"],
       "domainImports": ["lib/v05/domain/models.ts"],
@@ -312,7 +312,7 @@
       "isPublic": true,
       "status": "RUNTIME_ADAPTER_BOUND_WITH_SAFE_FALLBACK",
       "bindingClass": "BUSINESS_RUNTIME_READER_WITH_CONTEXT_FALLBACK",
-      "notes": "Not a static mock shell. The public implementation adds explicit all-store brand summary and exactly-one-store drilldown lenses plus a store contribution breakdown; technical regression passed and owner review remains open."
+      "notes": "Not a static mock shell. The current local candidate keeps explicit all-store brand summary and exactly-one-store drilldown lenses while removing the deferred visible store-contribution section; the public runtime remains on the prior technically validated implementation pending deployment authorization and owner review."
     },
     {
       "route": "/v2/store-board",

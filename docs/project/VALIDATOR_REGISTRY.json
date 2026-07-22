@@ -167,7 +167,21 @@
       "requiresRealSamples": false,
       "requiresBrowser": false,
       "requiresHumanReview": false,
-      "notes": "Current source-contract guard for brand-summary and exactly-one-store series lenses, store contribution, target suppression at brand-series scope, truthful visitors/buyers and listing-level product identity; browser, deployment and owner acceptance remain separate gates."
+      "notes": "Current source-contract guard for brand-summary and exactly-one-store series lenses, internal store context, target suppression at brand-series scope, truthful visitors/buyers and listing-level product identity; browser, deployment and owner acceptance remain separate gates."
+    },
+    {
+      "file": "scripts/private-audit/validate-v2-interaction-autosave-and-series-layout-refinement-v1.ts",
+      "taskName": "SAAS_V2_INTERACTION_AUTOSAVE_AND_SERIES_LAYOUT_REFINEMENT_V1",
+      "track": "SAAS_UI_V2",
+      "tier": "TIER_B_MODULE_REGRESSION",
+      "validationType": "SOURCE_STRUCTURE",
+      "current": true,
+      "legacy": false,
+      "stageOnly": false,
+      "requiresRealSamples": false,
+      "requiresBrowser": false,
+      "requiresHumanReview": false,
+      "notes": "Current source-contract guard for complete metric-to-trend primary coverage, visible DAY terminology, custom-date separation, target auto-save and precise clear semantics, removal of the visible series breakdown, and the local-only A2/A3 gate boundary."
     },
     {
       "file": "scripts/private-audit/validate-v2-board-route-mapping-and-home-empty-cta-v1.mjs",

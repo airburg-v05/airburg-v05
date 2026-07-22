@@ -11,7 +11,6 @@ import {
   type V2SeriesAnalysisLens,
 } from "@/components/saas-v2/series/v2-series-analysis-lens";
 import { V2BrandSeriesManager } from "@/components/saas-v2/series/v2-brand-series-manager";
-import { V2SeriesStoreBreakdown } from "@/components/saas-v2/series/v2-series-store-breakdown";
 import {
   loadV2HomeViewModel,
   resolveV2HomeTimeRangePreset,
@@ -269,13 +268,6 @@ export function V2SeriesBoardDashboard() {
                 visibleKeys={[...V2_HOME_DISPLAY_METRIC_KEYS]}
               />
             </section>
-
-            {analysisLens === "brand" ? (
-              <V2SeriesStoreBreakdown
-                items={readyViewModel.storeBreakdown}
-                seriesName={selectedSeries.label}
-              />
-            ) : null}
 
             <V2HomeChart
               comparisonMessage={comparisonMessage}

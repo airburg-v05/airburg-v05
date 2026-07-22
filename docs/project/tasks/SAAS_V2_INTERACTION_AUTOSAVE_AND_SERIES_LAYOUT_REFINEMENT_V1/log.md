@@ -1,0 +1,15 @@
+# Execution Log
+
+- 2026-07-22T15:40:12+08:00: Routed the direct feedback to the existing ecommerce platform project under `ecommerce_data_platform_lead`.
+- 2026-07-22T15:40:12+08:00: Classified scoped UI, Target and browser-local persistence work as A2 authorized; deployment, push and merge remain A3.
+- 2026-07-22T15:40:12+08:00: Confirmed clean baseline `c34e834b2a37ea6156cbdeba9a1110a32a47eaa1` and preserved public implementation `dface84eefdd87a55c819fd323626efb436b19b2` unchanged.
+- 2026-07-22T15:40:12+08:00: Source inspection found seven unique chart primary metrics for sixteen visible cards, explicit-save-only target UX, the custom button inside the Month segmented surface, and a separately rendered series store-contribution section.
+- 2026-07-22T16:03:07+08:00: Added one primary trend entry for every visible metric and connected Home metric cards to the shared trend selector with keyboard-accessible selected state.
+- 2026-07-22T16:03:07+08:00: Replaced visible `DLY` with `DAY` while preserving the internal `dly` mode; separated custom date from the Day/Week/Month segmented control and removed the fallback glyph after screenshot review.
+- 2026-07-22T16:03:07+08:00: Rebuilt Target Center around month/scope inputs plus 650 ms auto-save states, precise current-record deletion on clear, persistence-record reconciliation for concurrent edits, refresh readback and compact month presentation. The explainer and derived-target display were hidden without changing target formulas.
+- 2026-07-22T16:03:07+08:00: Removed the visible brand-series store-contribution section and retained a compact Brand Summary / Store Drilldown switch. The internal store breakdown remains available only to choose a truthful single-store drilldown.
+- 2026-07-22T16:03:07+08:00: Focused source validation passed 8/8; prior cross-platform validation passed 11/11; target persistence acceptance passed; production build passed; full lint had 0 errors and two unrelated pre-existing warnings.
+- 2026-07-22T16:03:07+08:00: Final isolated system-Chrome regression passed 54/54 with two 18-file imports, target clear/readback, four-board `DAY`, desktop/mobile screenshots, zero business console errors and zero failed business requests.
+- 2026-07-22T16:03:07+08:00: Stopped before commit, push, merge or deployment. Public runtime remains `dface84eefdd87a55c819fd323626efb436b19b2`.
+- 2026-07-22T18:51:53+08:00: Zongji explicitly authorized deployment. The gate now permits an intentional implementation commit, push and exact-commit deployment to the existing public SaaS V2 runtime; merge and automatic visual/business acceptance remain forbidden.
+- 2026-07-22T18:55:00+08:00: Rechecked the gate manifest and focused source contracts after authorization: gate PASS, interaction validator 8/8 PASS and cross-platform validator 11/11 PASS. Sensitive baseline scan found zero hard blocks, secrets, real samples, forbidden paths or stale persistence copy. Three manual-review hits were harmless source context (`reloadToken`) and private-audit-only local fixture defaults; private-audit scripts are excluded from the runtime package.

@@ -431,7 +431,7 @@ const importCounts = (client) =>
 const targetCenterPreconditionRegression = async (client) => {
   await setViewport(client, 1440, 1000);
   await navigate(client, "/v2/target-center", "[data-testid='v2-brand-target-center']");
-  await waitForExpression(client, `!Array.from(document.querySelectorAll('[data-testid="v2-brand-target-center"] button')).find((button) => (button.textContent ?? '').trim() === '保存目标')?.disabled`, 30000);
+  await waitForExpression(client, `document.querySelector('[data-testid="v2-target-auto-save-status"]')?.getAttribute('data-save-state') !== 'loading'`, 30000);
   const preconditionState = await evaluate(
     client,
     `(() => {
@@ -440,20 +440,24 @@ const targetCenterPreconditionRegression = async (client) => {
       return {
         body: main?.textContent ?? '',
         hasIndependentCopy: (main?.textContent ?? '').includes("目标设置独立于数据上传"),
+        hasAutoDerivedCopy: (main?.textContent ?? '').includes("自动推导目标"),
         brandEnabled: buttons.some((button) => (button.textContent ?? '').trim() === '品牌' && !button.disabled),
         storeDisabled: buttons.some((button) => (button.textContent ?? '').trim() === '店铺' && button.disabled),
-        hasSaveButton: buttons.some((button) => (button.textContent ?? '').trim() === '保存目标' && !button.disabled),
+        hasSaveButton: buttons.some((button) => (button.textContent ?? '').trim() === '保存目标'),
+        hasAutoSaveStatus: Boolean(main?.querySelector('[data-testid="v2-target-auto-save-status"]')),
         hasUploadFoundationCopy: (main?.textContent ?? '').includes("目标中心数据底座"),
         hasDeleteButton: buttons.some((button) => (button.textContent ?? '').trim() === '删除'),
       };
     })()`,
   );
   check(
-    "targetCenterBrandTargetsAvailableBeforeOperatingUpload",
-    preconditionState.hasIndependentCopy &&
+    "targetCenterUsesAutosaveWithoutRedundantUploadOrDerivedSections",
+    preconditionState.hasIndependentCopy === false &&
+      preconditionState.hasAutoDerivedCopy === false &&
       preconditionState.brandEnabled &&
       preconditionState.storeDisabled &&
-      preconditionState.hasSaveButton &&
+      preconditionState.hasSaveButton === false &&
+      preconditionState.hasAutoSaveStatus &&
       preconditionState.hasUploadFoundationCopy === false &&
       preconditionState.hasDeleteButton === false,
     preconditionState,
@@ -463,39 +467,42 @@ const targetCenterPreconditionRegression = async (client) => {
 
 const targetCenterWritableRegression = async (client) => {
   await navigate(client, "/v2/target-center", "[data-testid='v2-brand-target-center']");
-  await waitForExpression(client, `!Array.from(document.querySelectorAll('button')).find((button) => (button.textContent ?? '').trim() === '保存目标')?.disabled`, 30000);
+  await waitForExpression(client, `document.querySelector('[data-testid="v2-target-auto-save-status"]')?.getAttribute('data-save-state') !== 'loading'`, 30000);
   await setControlValueBySelector(client, 'input[type="month"]', "2026-06");
-  await waitForExpression(client, `document.body.innerText.includes("2026-06 品牌目标")`, 10000);
+  await waitForExpression(client, `document.body.innerText.includes("2026年06月")`, 10000);
   const initialState = await evaluate(
     client,
     `(() => ({
-      hasBoundary: document.body.innerText.includes("目标设置独立于数据上传") && document.body.innerText.includes("不需要额外上传“目标底座”"),
+      hasBoundary: document.body.innerText.includes("目标设置独立于数据上传") || document.body.innerText.includes("不需要额外上传“目标底座”"),
+      hasAutoDerivedCopy: document.body.innerText.includes("自动推导目标"),
+      hasManualSave: Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '保存目标'),
       hasDeleteButton: Array.from(document.querySelectorAll('button')).some((button) => (button.textContent ?? '').trim() === '删除'),
       hasBrandInput: Boolean(document.querySelector('#v2-target-brand-conversionRate')),
     }))()`,
   );
-  check("targetCenterIndependentBoundaryAndNoDelete", initialState.hasBoundary && initialState.hasDeleteButton === false && initialState.hasBrandInput, initialState);
+  check("targetCenterMonthEditorIsCompactAndAutosaveOnly", initialState.hasBoundary === false && initialState.hasAutoDerivedCopy === false && initialState.hasManualSave === false && initialState.hasDeleteButton === false && initialState.hasBrandInput, initialState);
 
   await setControlValueBySelector(client, "#v2-target-brand-gmv", "300000");
   await setControlValueBySelector(client, "#v2-target-brand-conversionRate", "92");
-  await clickText(client, "保存目标", "[data-testid='v2-brand-target-center'] button");
   await waitForExpression(
     client,
-    `document.body.innerText.includes("已保存 2 项品牌目标。")`,
+    `document.querySelector('[data-testid="v2-target-auto-save-status"]')?.getAttribute('data-save-state') === 'saved' && document.body.innerText.includes("已自动保存 2 项品牌目标")`,
     30000,
   );
   const saveAttemptState = await evaluate(
     client,
     `(() => ({
       body: document.body.innerText,
-      hasSuccess: document.body.innerText.includes("已保存 2 项品牌目标。"),
+      hasSuccess: document.body.innerText.includes("2026年06月 · 已自动保存 2 项品牌目标"),
+      saveState: document.querySelector('[data-testid="v2-target-auto-save-status"]')?.getAttribute('data-save-state') ?? null,
       gmvValue: document.querySelector('#v2-target-brand-gmv')?.value ?? null,
       percentValue: document.querySelector('#v2-target-brand-conversionRate')?.value ?? null,
     }))()`,
   );
-  check("targetCenterJuneTargetsSaveSucceeds", saveAttemptState.hasSuccess && saveAttemptState.gmvValue === "300000" && saveAttemptState.percentValue === "92", saveAttemptState);
+  check("targetCenterJuneTargetsAutosaveSucceeds", saveAttemptState.hasSuccess && saveAttemptState.saveState === "saved" && saveAttemptState.gmvValue === "300000" && saveAttemptState.percentValue === "92", saveAttemptState);
 
   await reloadPage(client);
+  await waitForExpression(client, `document.querySelector('[data-testid="v2-target-auto-save-status"]')?.getAttribute('data-save-state') !== 'loading'`, 30000);
   await setControlValueBySelector(client, 'input[type="month"]', "2026-06");
   await waitForExpression(client, `document.querySelector('#v2-target-brand-gmv')?.value === "300000" && document.querySelector('#v2-target-brand-conversionRate')?.value === "92"`, 30000);
   const savedState = await evaluate(
@@ -509,9 +516,36 @@ const targetCenterWritableRegression = async (client) => {
   );
   check("targetCenterJuneTargetsSavedAndReadBack", savedState.gmvValue === "300000" && savedState.percentValue === "92" && savedState.hasPauseButton && savedState.hasDeleteButton === false, savedState);
 
+  await setControlValueBySelector(client, "#v2-target-brand-gmv", "");
+  await waitForExpression(
+    client,
+    `document.querySelector('[data-testid="v2-target-auto-save-status"]')?.getAttribute('data-save-state') === 'saved' && document.body.innerText.includes("清除 1 项")`,
+    30000,
+  );
+  await reloadPage(client);
+  await waitForExpression(client, `document.querySelector('[data-testid="v2-target-auto-save-status"]')?.getAttribute('data-save-state') !== 'loading'`, 30000);
+  await setControlValueBySelector(client, 'input[type="month"]', "2026-06");
+  await waitForExpression(client, `document.querySelector('#v2-target-brand-gmv')?.value === "" && document.querySelector('#v2-target-brand-conversionRate')?.value === "92"`, 30000);
+  const clearedState = await evaluate(
+    client,
+    `(() => ({
+      gmvValue: document.querySelector('#v2-target-brand-gmv')?.value ?? null,
+      percentValue: document.querySelector('#v2-target-brand-conversionRate')?.value ?? null,
+    }))()`,
+  );
+  check("targetCenterClearedMetricDeletesOnlyThatRecord", clearedState.gmvValue === "" && clearedState.percentValue === "92", clearedState);
+
+  await setControlValueBySelector(client, "#v2-target-brand-gmv", "300000");
+  await waitForExpression(
+    client,
+    `document.querySelector('[data-testid="v2-target-auto-save-status"]')?.getAttribute('data-save-state') === 'saved' && document.querySelector('#v2-target-brand-gmv')?.value === "300000"`,
+    30000,
+  );
+
   await clickText(client, "暂停此目标");
   await waitForExpression(client, `document.body.innerText.includes("目标状态已更新。") && document.body.innerText.includes("重新启用")`, 30000);
   await reloadPage(client);
+  await waitForExpression(client, `document.querySelector('[data-testid="v2-target-auto-save-status"]')?.getAttribute('data-save-state') !== 'loading'`, 30000);
   await setControlValueBySelector(client, 'input[type="month"]', "2026-06");
   await waitForExpression(client, `document.body.innerText.includes("目标中心") && document.body.innerText.includes("重新启用")`, 30000);
   const pausedState = await evaluate(
@@ -534,7 +568,8 @@ const targetCenterWritableRegression = async (client) => {
     }))()`,
   );
   check("targetCenterReactivateKeepsTarget", reactivatedState.hasPauseButton && reactivatedState.percentValue === "92" && reactivatedState.hasDeleteButton === false, reactivatedState);
-  return { initialState, savedState, pausedState, reactivatedState };
+  const screenshot = await capture(client, "v2-target-center-autosave-desktop");
+  return { initialState, savedState, clearedState, pausedState, reactivatedState, screenshot };
 };
 
 const uploadTargetFoundationRemovedRegression = async (client) => {
@@ -560,7 +595,7 @@ const uploadTargetFoundationRemovedRegression = async (client) => {
 const homeCustomComparisonRegression = async (client) => {
   await navigate(client, "/v2/home", "[data-testid='v2-home-dashboard']");
   await waitForHomeReady(client, 45000);
-  await clickText(client, "自定义", "[data-testid='v2-home-toolbar'] button");
+  await click(client, '[data-testid="v2-custom-date-trigger"]');
   await waitForExpression(client, `Boolean(document.querySelector('#v2-home-custom-start')) && Boolean(document.querySelector('#v2-home-custom-end'))`, 10000);
   const currentRange = await evaluate(
     client,
@@ -576,15 +611,17 @@ const homeCustomComparisonRegression = async (client) => {
   const customState = await evaluate(
     client,
     `(() => {
-      const custom = Array.from(document.querySelectorAll('[data-testid="v2-home-toolbar"] button')).find((button) => (button.textContent ?? '').trim() === '自定义');
+      const custom = document.querySelector('[data-testid="v2-custom-date-trigger"]');
       return {
         start: ${JSON.stringify(currentRange.start)},
         end: ${JSON.stringify(currentRange.end)},
         active: custom?.className.includes('text-blue-700') ?? false,
+        hasWhiteBlock: custom?.className.includes('bg-white') || custom?.className.includes('shadow'),
+        outsidePresetGroup: custom?.closest('[data-testid="v2-time-presets"]') === null,
       };
     })()`,
   );
-  check("homeCustomRangeRequiresExplicitApplyAndActivates", customState.active && Boolean(customState.start) && Boolean(customState.end), customState);
+  check("homeCustomRangeIsSeparateAndHasNoTrailingWhiteBlock", customState.active && customState.hasWhiteBlock === false && customState.outsidePresetGroup && Boolean(customState.start) && Boolean(customState.end), customState);
 
   await clickText(client, "环比", "[aria-label='指标区间对比'] button");
   await waitForExpression(client, `Array.from(document.querySelectorAll('[aria-label="指标区间对比"] button')).some((button) => (button.textContent ?? '').trim() === '环比' && button.getAttribute('aria-pressed') === 'true')`, 10000);
@@ -670,6 +707,8 @@ const unifiedRouteRegression = async (client) => {
         pathname: window.location.pathname,
         hasReadySelector: Boolean(document.querySelector(${JSON.stringify(spec.selector)})),
         hasUploadPrompt: Array.from(document.querySelectorAll('main a')).some((link) => (link.textContent ?? '').includes('前往数据接入')),
+        hasDayMode: Array.from(document.querySelectorAll('[data-testid="v2-home-chart"] button')).some((button) => (button.textContent ?? '').trim() === 'DAY'),
+        hasDlyMode: Array.from(document.querySelectorAll('[data-testid="v2-home-chart"] button')).some((button) => (button.textContent ?? '').trim() === 'DLY'),
         body: document.querySelector('main')?.textContent ?? '',
       }))()`,
     );
@@ -721,7 +760,10 @@ const seriesConfigurationRegression = async (client, brandGmv) => {
           Boolean(document.querySelector('[data-metric-key="regionalFulfillmentRate"]')),
         hasAnalysisLens: Boolean(document.querySelector('[data-testid="v2-series-analysis-lens"]')),
         hasStoreBreakdown: Boolean(document.querySelector('[data-testid="v2-series-store-breakdown"]')),
+        hasBrandSeriesBreakdownCopy: document.body.innerText.includes('品牌系列拆解'),
         hasHomeChart: Boolean(document.querySelector('[data-testid="v2-home-chart"]')),
+        hasDayMode: Array.from(document.querySelectorAll('[data-testid="v2-home-chart"] button')).some((button) => (button.textContent ?? '').trim() === 'DAY'),
+        hasDlyMode: Array.from(document.querySelectorAll('[data-testid="v2-home-chart"] button')).some((button) => (button.textContent ?? '').trim() === 'DLY'),
         hasLegacySections: ['当前系列概览', '系列商品贡献', '系列目标进度', '系列搜索表现', '数据状态与健康提示'].some((text) => document.body.innerText.includes(text)),
         hasUploadPrompt: Array.from(document.querySelectorAll('main a')).some((link) => (link.textContent ?? '').includes('前往数据接入')),
       };
@@ -736,8 +778,11 @@ const seriesConfigurationRegression = async (client, brandGmv) => {
       managerState.hasPaidBuyers &&
       managerState.hasUnavailablePlaceholders === false &&
       managerState.hasAnalysisLens &&
-      managerState.hasStoreBreakdown &&
+      managerState.hasStoreBreakdown === false &&
+      managerState.hasBrandSeriesBreakdownCopy === false &&
       managerState.hasHomeChart &&
+      managerState.hasDayMode &&
+      managerState.hasDlyMode === false &&
       managerState.hasLegacySections === false &&
       managerState.hasUploadPrompt === false,
     managerState,
@@ -834,10 +879,9 @@ const scopedTargetRegression = async (client) => {
     await clickText(client, scopeLabel, "[data-testid='v2-brand-target-center'] button");
     await waitForExpression(client, `Boolean(document.querySelector('#v2-target-${scopeKey}-gmv'))`, 30000);
     await setControlValueBySelector(client, 'input[type="month"]', "2026-06");
+    await waitForExpression(client, `document.querySelector('[data-testid="v2-target-auto-save-status"]')?.getAttribute('data-save-state') !== 'loading'`, 30000);
     await setControlValueBySelector(client, `#v2-target-${scopeKey}-gmv`, String(value));
-    await waitForExpression(client, `!Array.from(document.querySelectorAll('[data-testid="v2-brand-target-center"] button')).find((button) => (button.textContent ?? '').trim() === '保存目标')?.disabled`, 30000);
-    await clickText(client, "保存目标", "[data-testid='v2-brand-target-center'] button");
-    await waitForExpression(client, `document.body.innerText.includes("已保存 1 项${scopeLabel}目标。")`, 30000);
+    await waitForExpression(client, `document.querySelector('[data-testid="v2-target-auto-save-status"]')?.getAttribute('data-save-state') === 'saved' && document.body.innerText.includes("已自动保存") && document.body.innerText.includes(${JSON.stringify(`${scopeLabel}目标`)})`, 30000);
     return evaluate(
       client,
       `(() => ({
@@ -853,26 +897,33 @@ const scopedTargetRegression = async (client) => {
   await navigate(client, "/v2/store-board", "[data-testid='v2-store-board-dashboard']");
   await switchToFullJuneRange();
   await waitForExpression(client, `document.querySelector('[data-testid="v2-store-metrics"] [data-metric-key="gmv"]')?.getAttribute('data-target-state') === 'ready'`, 30000);
-  const storeState = await evaluate(client, `(() => ({ metricCount: document.querySelectorAll('[data-testid="v2-store-metrics"] [data-metric-key]').length, targetLabel: document.querySelector('[data-testid="v2-store-metrics"] [data-metric-key="gmv"]')?.getAttribute('aria-label') ?? '' }))()`);
-  check("storeTargetAppearsOnFullMetricSurface", storeTarget.month === "2026-06" && storeTarget.dataMonthVisible && storeState.metricCount === 16 && storeState.targetLabel.includes("总目标 200,000"), { storeTarget, storeState });
+  const storeState = await evaluate(client, `(() => ({
+    metricCount: document.querySelectorAll('[data-testid="v2-store-metrics"] [data-metric-key]').length,
+    targetLabel: document.querySelector('[data-testid="v2-store-metrics"] [data-metric-key="gmv"]')?.getAttribute('aria-label') ?? '',
+    hasDayMode: Array.from(document.querySelectorAll('[data-testid="v2-home-chart"] button')).some((button) => (button.textContent ?? '').trim() === 'DAY'),
+    hasDlyMode: Array.from(document.querySelectorAll('[data-testid="v2-home-chart"] button')).some((button) => (button.textContent ?? '').trim() === 'DLY'),
+  }))()`);
+  check("storeTargetAppearsOnFullMetricSurface", storeTarget.month === "2026-06" && storeTarget.dataMonthVisible && storeState.metricCount === 16 && storeState.targetLabel.includes("总目标 200,000") && storeState.hasDayMode && storeState.hasDlyMode === false, { storeTarget, storeState });
 
   const seriesTarget = await setScopeTarget("系列", "series", 100000);
   if (!seriesTarget.selectedSeriesId) throw new Error("series_target_selection_missing");
   await navigate(client, `/v2/series-board?seriesId=${encodeURIComponent(seriesTarget.selectedSeriesId)}`, "[data-testid='v2-series-board-dashboard']");
-  await waitForExpression(client, `Boolean(document.querySelector('[data-testid="v2-series-store-breakdown"]'))`, 30000);
+  await waitForExpression(client, `Boolean(document.querySelector('[data-testid="v2-series-metrics"]'))`, 30000);
   const brandSeriesTargetState = await evaluate(
     client,
     `(() => ({
       targetState: document.querySelector('[data-testid="v2-series-metrics"] [data-metric-key="gmv"]')?.getAttribute('data-target-state') ?? null,
       targetText: document.querySelector('[data-testid="v2-series-metrics"] [data-metric-key="gmv"]')?.textContent ?? '',
       scopeText: document.querySelector('[data-testid="v2-series-metrics"]')?.textContent ?? '',
+      hasStoreBreakdown: Boolean(document.querySelector('[data-testid="v2-series-store-breakdown"]')),
     }))()`,
   );
   check(
     "brandSeriesSummaryDoesNotMergeStoreTargets",
-    brandSeriesTargetState.targetState === "empty" &&
+      brandSeriesTargetState.targetState === "empty" &&
       brandSeriesTargetState.targetText.includes("不合并单店目标") &&
-      brandSeriesTargetState.scopeText.includes("品牌汇总"),
+      brandSeriesTargetState.scopeText.includes("品牌汇总") &&
+      brandSeriesTargetState.hasStoreBreakdown === false,
     brandSeriesTargetState,
   );
   await click(client, '[data-testid="v2-series-analysis-lens"] [aria-label="单店拆解"]');
@@ -883,15 +934,23 @@ const scopedTargetRegression = async (client) => {
   );
   await switchToFullJuneRange();
   await waitForExpression(client, `document.querySelector('[data-testid="v2-series-metrics"] [data-metric-key="gmv"]')?.getAttribute('data-target-state') === 'ready'`, 30000);
-  const seriesState = await evaluate(client, `document.querySelector('[data-testid="v2-series-metrics"] [data-metric-key="gmv"]')?.getAttribute('aria-label') ?? ''`);
-  check("seriesTargetAppearsForMatchingJuneSeries", seriesTarget.month === "2026-06" && String(seriesState).includes("总目标 100,000"), { seriesTarget, seriesState });
+  const seriesState = await evaluate(client, `(() => ({
+    targetLabel: document.querySelector('[data-testid="v2-series-metrics"] [data-metric-key="gmv"]')?.getAttribute('aria-label') ?? '',
+    hasDayMode: Array.from(document.querySelectorAll('[data-testid="v2-home-chart"] button')).some((button) => (button.textContent ?? '').trim() === 'DAY'),
+    hasDlyMode: Array.from(document.querySelectorAll('[data-testid="v2-home-chart"] button')).some((button) => (button.textContent ?? '').trim() === 'DLY'),
+  }))()`);
+  check("seriesTargetAppearsForMatchingJuneSeries", seriesTarget.month === "2026-06" && seriesState.targetLabel.includes("总目标 100,000") && seriesState.hasDayMode && seriesState.hasDlyMode === false, { seriesTarget, seriesState });
 
   const productTarget = await setScopeTarget("商品", "product", 50000);
   await navigate(client, "/v2/product-board", "[data-testid='v2-product-board-dashboard']");
   await switchToFullJuneRange();
   await waitForExpression(client, `document.querySelector('[data-testid="v2-product-metrics"] [data-metric-key="gmv"]')?.getAttribute('data-target-state') === 'ready'`, 30000);
-  const productState = await evaluate(client, `document.querySelector('[data-testid="v2-product-metrics"] [data-metric-key="gmv"]')?.getAttribute('aria-label') ?? ''`);
-  check("manualProductTargetAppearsForMatchingJuneProduct", productTarget.month === "2026-06" && String(productState).includes("总目标 50,000"), { productTarget, productState });
+  const productState = await evaluate(client, `(() => ({
+    targetLabel: document.querySelector('[data-testid="v2-product-metrics"] [data-metric-key="gmv"]')?.getAttribute('aria-label') ?? '',
+    hasDayMode: Array.from(document.querySelectorAll('[data-testid="v2-home-chart"] button')).some((button) => (button.textContent ?? '').trim() === 'DAY'),
+    hasDlyMode: Array.from(document.querySelectorAll('[data-testid="v2-home-chart"] button')).some((button) => (button.textContent ?? '').trim() === 'DLY'),
+  }))()`);
+  check("manualProductTargetAppearsForMatchingJuneProduct", productTarget.month === "2026-06" && productState.targetLabel.includes("总目标 50,000") && productState.hasDayMode && productState.hasDlyMode === false, { productTarget, productState });
 
   return { storeTarget, storeState, seriesTarget, seriesState, productTarget, productState };
 };
@@ -1122,6 +1181,8 @@ const run = async () => {
           hasUnavailablePlaceholders:
             Boolean(document.querySelector('[data-metric-key="mtdTurnover"]')) ||
             Boolean(document.querySelector('[data-metric-key="regionalFulfillmentRate"]')),
+          hasDayMode: Array.from(document.querySelectorAll('[data-testid="v2-home-chart"] button')).some((button) => (button.textContent ?? '').trim() === 'DAY'),
+          hasDlyMode: Array.from(document.querySelectorAll('[data-testid="v2-home-chart"] button')).some((button) => (button.textContent ?? '').trim() === 'DLY'),
         };
       })()`,
     );
@@ -1130,6 +1191,8 @@ const run = async () => {
       homeState.metricCount === 16 &&
         homeState.hasBrandKeywordPaidShare === false &&
         homeState.hasUnavailablePlaceholders === false &&
+        homeState.hasDayMode &&
+        homeState.hasDlyMode === false &&
         homeState.visitorsValue === "143,076" &&
         homeState.paidBuyersValue === "128",
       homeState,
@@ -1150,6 +1213,16 @@ const run = async () => {
     );
     const firstStoreGmv = await homeGmvValue(client);
     check("v2HomeGmvIsNumericAfterUpload", typeof firstStoreGmv === "number" && firstStoreGmv > 0, { firstStoreGmv });
+    await click(client, '[data-metric-key="conversionRate"]');
+    await waitForExpression(client, `document.querySelector('#v2-home-chart-primary')?.value === 'conversionRate' && document.querySelector('[data-metric-key="conversionRate"]')?.getAttribute('aria-pressed') === 'true'`, 30000);
+    const homeMetricChartSyncState = await evaluate(
+      client,
+      `(() => ({
+        primaryMetric: document.querySelector('#v2-home-chart-primary')?.value ?? null,
+        conversionSelected: document.querySelector('[data-metric-key="conversionRate"]')?.getAttribute('aria-pressed') ?? null,
+      }))()`,
+    );
+    check("homeMetricCardSynchronizesTrendPrimaryMetric", homeMetricChartSyncState.primaryMetric === "conversionRate" && homeMetricChartSyncState.conversionSelected === "true", homeMetricChartSyncState);
     const homeDesktopScreenshot = await capture(client, "v2-home-desktop");
 
     currentStage = "v2_home_custom_and_comparison";
@@ -1319,9 +1392,11 @@ const run = async () => {
         homeDesktopScreenshot,
         homeMobileScreenshot,
         seriesDesktopScreenshot: seriesConfigurationState.seriesDesktopScreenshot,
+        targetCenterScreenshot: targetCenterWritableState.screenshot,
       },
       counts,
       homeState,
+      homeMetricChartSyncState,
       refreshedState,
       resetState,
       resetRefreshedState,

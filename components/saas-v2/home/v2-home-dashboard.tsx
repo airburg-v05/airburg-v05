@@ -295,6 +295,11 @@ export function V2HomeDashboard() {
     );
   }
   const readyViewModel = result.viewModel;
+  const selectMetricForChart = (metricKey: V2HomeMetricKey) => {
+    const pair = readyViewModel.chart.availablePairs.find((item) => item.leftMetricKey === metricKey);
+    if (!pair || pair.id === readyViewModel.chart.pair.id) return;
+    updateOptions({ chartPairId: pair.id }, true);
+  };
 
   return (
     <div className="flex min-w-0 flex-col gap-4" data-testid="v2-home-dashboard">
@@ -330,6 +335,7 @@ export function V2HomeDashboard() {
         </div>
         <V2HomeMetricGrid
           metrics={readyViewModel.metrics}
+          onMetricSelect={selectMetricForChart}
           order={preference.order}
           selectedMetricKey={readyViewModel.chart.pair.leftMetricKey}
           targetPeriodLabel={targetPeriodLabel(readyViewModel.timeRange)}

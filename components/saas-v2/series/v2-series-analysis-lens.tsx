@@ -12,7 +12,7 @@ const LENSES: Array<{
     id: "brand",
     label: "品牌汇总",
     eyebrow: "跨平台 / 全店铺",
-    description: "看该系列在整个品牌中的规模、效率与各店铺贡献。",
+    description: "看该系列在整个品牌中的规模、增长与经营效率。",
   },
   {
     id: "store",
@@ -29,36 +29,39 @@ export function V2SeriesAnalysisLensSwitch({
   lens: V2SeriesAnalysisLens;
   onChange: (lens: V2SeriesAnalysisLens) => void;
 }) {
+  const activeLens = LENSES.find((item) => item.id === lens) ?? LENSES[0];
   return (
     <section
-      className="overflow-hidden rounded-xl border border-slate-200 bg-[linear-gradient(115deg,#f8fbff_0%,#ffffff_58%,#f4faf8_100%)]"
+      className="rounded-xl border border-slate-200 bg-white px-3 py-2.5"
       data-testid="v2-series-analysis-lens"
     >
-      <div className="grid gap-2 p-2 sm:grid-cols-2">
-        {LENSES.map((item) => {
-          const active = item.id === lens;
-          return (
-            <button
-              key={item.id}
-              aria-label={item.label}
-              aria-pressed={active}
-              className={`group rounded-lg border px-3.5 py-3 text-left transition ${active
-                ? "border-blue-300 bg-white shadow-[0_8px_24px_rgba(37,99,235,0.08)]"
-                : "border-transparent bg-white/45 hover:border-slate-200 hover:bg-white/80"
-              }`}
-              onClick={() => onChange(item.id)}
-              type="button"
-            >
-              <span className="flex items-center justify-between gap-3">
-                <span className={`text-sm font-semibold ${active ? "text-blue-800" : "text-slate-800"}`}>{item.label}</span>
-                <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${active ? "bg-blue-50 text-blue-700" : "bg-slate-100 text-slate-500"}`}>
-                  {item.eyebrow}
-                </span>
-              </span>
-              <span className="mt-1.5 block text-[11px] leading-5 text-slate-500">{item.description}</span>
-            </button>
-          );
-        })}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="flex shrink-0 rounded-lg bg-slate-100 p-1" role="group" aria-label="系列分析视角">
+          {LENSES.map((item) => {
+            const active = item.id === lens;
+            return (
+              <button
+                key={item.id}
+                aria-label={item.label}
+                aria-pressed={active}
+                className={`rounded-md px-3 py-2 text-xs font-semibold transition ${active
+                  ? "bg-slate-950 text-white shadow-sm"
+                  : "text-slate-500 hover:bg-white hover:text-slate-800"
+                }`}
+                onClick={() => onChange(item.id)}
+                type="button"
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+        <div className="flex min-w-0 flex-1 items-center justify-between gap-3 sm:border-l sm:border-slate-100 sm:pl-3">
+          <p className="min-w-0 text-[11px] leading-5 text-slate-500">{activeLens.description}</p>
+          <span className="shrink-0 rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-semibold text-blue-700">
+            {activeLens.eyebrow}
+          </span>
+        </div>
       </div>
     </section>
   );
