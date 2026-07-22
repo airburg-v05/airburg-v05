@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1",
+  "deployedAt": "2026-07-22T09:31:05+08:00",
+  "validatedAt": "2026-07-22T09:34:54+08:00",
+  "implementationCommit": "dface84eefdd87a55c819fd323626efb436b19b2",
+  "safeArchiveSha256": "3fd518171661fabb4aeeff313d25af4e3c0b85e7037b297e7796983e2885a884",
+  "safeArchiveEntryCount": 1461,
+  "forbiddenFileCount": 0,
+  "activeRelease": "/opt/airburg/releases/saas-v2-cross-platform-series-dface84-20260722T092433",
+  "activeSymlink": "/opt/airburg/ecommerce-platform-optimized",
+  "previousRelease": "/opt/airburg/releases/saas-v2-commercial-refinement-e25660c-20260722T003453",
+  "rollback": {
+    "stableTag": "stable/saas-v2-commercial-refinement-20260722",
+    "stableTagCommit": "7f131274713608a98be35983e99b6ac2e4aa2696",
+    "deployedImplementationCommit": "e25660c67539bc82405e00e4f354df855e82e05c",
+    "pm2Snapshot": "/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-cross-platform-series-dface84-20260722T092433.pm2.json"
+  },
+  "server": {
+    "pm2App": "airburg-tmall-v1",
+    "pm2Status": "online",
+    "pm2RestartCount": 11,
+    "pm2ProcessCwdMatchesActiveRelease": true,
+    "nginx": "active_and_config_valid",
+    "nodeBinding": "127.0.0.1:3000",
+    "publicPort3000ServedApplication": false,
+    "loopbackHomeHttpStatus": 200,
+    "errorLogBytes": 4374,
+    "errorLogLastModified": "2026-07-21T08:09:30+08:00",
+    "errorLogChangedDuringFinalObservation": false
+  },
+  "build": {
+    "npmCi": "PASS",
+    "installedPackages": 366,
+    "productionBuild": "PASS",
+    "generatedRoutes": 27,
+    "auditModerate": 1,
+    "auditHigh": 2,
+    "auditCritical": 0,
+    "auditStatus": "PASS_WITH_LOW_CURRENT_EXPOSURE_NOT_SECURITY_CLOSURE",
+    "sharpAdvisoryBoundary": "Current code uses next/image only with unoptimized browser-local data URLs; no server image upload or remote optimizer allowlist was found, and an unauthorized public remote optimizer request returned HTTP 400.",
+    "postcssAdvisoryBoundary": "No user CSS input or dynamic CSS stringify route was found.",
+    "packageMutationPerformed": false
+  },
+  "publicRoutes": {
+    "status": "PASS",
+    "expectedHttpStatus": 200,
+    "routes": [
+      "/v2/home",
+      "/v2/upload",
+      "/v2/upload/history",
+      "/v2/series-board",
+      "/v2/store-board",
+      "/v2/product-board",
+      "/v2/target-center",
+      "/v2/data-health",
+      "/v2/brand-settings",
+      "/v2/exclusion-rules",
+      "/v2/search-assets"
+    ]
+  },
+  "publicBrowserRegression": {
+    "validator": "validate-v2-home-upload18-system-chrome-local-v1",
+    "status": "PASS",
+    "checksPassed": 52,
+    "checksFailed": 0,
+    "uploadSuccess": 18,
+    "uploadFailed": 0,
+    "uploadSkipped": 0,
+    "homeVisibleMetricCount": 16,
+    "homeVisitors": 143076,
+    "homePaidBuyers": 128,
+    "seriesBrandAndStoreLensesPassed": true,
+    "brandSeriesTargetNotFabricated": true,
+    "storeSeriesTargetActual": 34047,
+    "storeSeriesTargetMonthlyTarget": 100000,
+    "storeSeriesProductTargetScopesPassed": true,
+    "manualProductImageEditDeletePassed": true,
+    "twoStoreAggregationPassed": true,
+    "twoStoreBrandGmv": 83898,
+    "mobileHorizontalOverflow": false,
+    "businessConsoleErrors": 0,
+    "failedBusinessRequests": 0,
+    "isolatedTestRuntimeCleaned": true,
+    "artifactDirectory": "/tmp/airburg-v2-public-dface84-20260722"
+  },
+  "validationLimitations": {
+    "legacyV1CurrentStateValidators": "NOT_APPLICABLE_TO_ACTIVE_SAAS_V2_TASK",
+    "reason": "They assert historical PAGE_PROBLEM_MATRIX_V2 human-review statuses; historical records were preserved rather than rewritten to manufacture PASS.",
+    "dependencySecurityClosed": false
+  },
+  "acceptance": {
+    "technicalValidation": "PASS",
+    "technicalScreenshotInspection": "PASS",
+    "publicAligned": true,
+    "visualAccepted": false,
+    "visualAcceptedScope": null,
+    "humanAccepted": false,
+    "nextGate": "POST_DEPLOY_OWNER_VISUAL_AND_BUSINESS_REVIEW"
+  }
+}

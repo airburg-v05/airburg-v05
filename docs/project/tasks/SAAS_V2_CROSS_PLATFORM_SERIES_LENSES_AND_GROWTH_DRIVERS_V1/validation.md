@@ -1,6 +1,6 @@
 # Validation
 
-Status: LOCAL_E2E_PASS_PENDING_OWNER_DEPLOY_DECISION
+Status: PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW
 
 ## Automated Evidence
 
@@ -28,8 +28,26 @@ Status: LOCAL_E2E_PASS_PENDING_OWNER_DEPLOY_DECISION
 - Mobile home, series, store and product pages had no page-wide horizontal overflow.
 - Browser console business errors: `0`; failed business requests: `0`.
 
+## Deployment Proof
+
+- Exact deployed implementation commit: `dface84eefdd87a55c819fd323626efb436b19b2`.
+- Safe archive SHA-256: `3fd518171661fabb4aeeff313d25af4e3c0b85e7037b297e7796983e2885a884`; 1,461 entries and zero forbidden files.
+- Active immutable release: `/opt/airburg/releases/saas-v2-cross-platform-series-dface84-20260722T092433`.
+- PM2 `airburg-tmall-v1`: online; process cwd matches the active release; restart count `11`.
+- Nginx: active and configuration valid; Node binding is `127.0.0.1:3000`; public port `3000` does not serve the application.
+- All 11 public V2 routes returned HTTP `200`.
+- Public isolated browser regression at `http://123.57.49.121`: PASS, `52/52`.
+- Public browser artifact directory: `/tmp/airburg-v2-public-dface84-20260722`.
+- Final PM2 error log remained `4,374` bytes with no post-deploy modification.
+- Full machine-readable evidence: `deployment-evidence.json`.
+
+## Validation Limitations
+
+- Two Legacy V1 current-state validators remained non-applicable because they require historical `PAGE_PROBLEM_MATRIX_V2` review entries to be closed. That matrix and `UI_BASELINE_LOCK_V2` are historical Legacy V1 governance sources, not the active SaaS V2 acceptance contract.
+- Remote `npm audit` reports one moderate and two high dependency advisories. Current code inspection and a public HTTP 400 check found no active untrusted server-image-processing path, and no user CSS input path exists; this is low-current-exposure evidence, not security closure.
+
 ## Evidence Boundary
 
-- This is local technical and layout evidence only.
-- No deployment, public regression or owner visual acceptance is claimed for the new candidate.
-- The current public release remains the owner-approved stable visual baseline.
+- This proves exact-commit deployment, runtime health and public technical behavior only.
+- It does not prove the new public version is visually or commercially accepted by Zongji.
+- The prior owner-approved stable version, tag and immutable release remain available as rollback evidence.

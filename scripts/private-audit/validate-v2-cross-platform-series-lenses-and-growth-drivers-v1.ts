@@ -112,12 +112,20 @@ check(
   decision.includes("brandProductId") &&
     decision.includes("The UI must not merge listings by title, image or similar IDs."),
 );
+const preDeployGateRecorded =
+  currentTask.deploymentAuthorized === false &&
+  task.includes("Deployment, push or merge without a separate owner decision.");
+const postDeployGateRecorded =
+  currentTask.deploymentAuthorized === true &&
+  currentTask.status === "PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW" &&
+  typeof currentTask.deploymentCommit === "string" &&
+  currentTask.deploymentCommit.length === 40 &&
+  task.includes("After the owner's explicit A3 authorization");
 check(
-  "stableBaselineAndDeploymentGateRecorded",
+  "stableBaselineAndDeploymentLifecycleRecorded",
   currentTask.taskId === "SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1" &&
     currentTask.stableBaselineTag === "stable/saas-v2-commercial-refinement-20260722" &&
-    currentTask.deploymentAuthorized === false &&
-    task.includes("Deployment, push or merge without a separate owner decision."),
+    (preDeployGateRecorded || postDeployGateRecorded),
 );
 
 const failed = checks.filter((item) => !item.pass);

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "updatedAt": "2026-07-22T09:19:29+08:00",
+  "updatedAt": "2026-07-22T09:34:54+08:00",
   "authority": {
     "machineReadableSource": "docs/project/PROJECT_SSOT.json",
     "derivedHumanReadableSources": [
@@ -19,9 +19,9 @@
   },
   "repository": {
     "activeBranch": "feature/saas-ui-v2-shell",
-    "headCommit": "7f131274713608a98be35983e99b6ac2e4aa2696",
-    "headCommitMeaning": "owner-approved public stable-baseline evidence commit; the cross-platform series candidate remains an authorized uncommitted local worktree and is not deployed",
-    "workingTree": "DIRTY_AUTHORIZED_LOCAL_CANDIDATE_AFTER_LOCAL_E2E_PASS",
+    "headCommit": "dface84eefdd87a55c819fd323626efb436b19b2",
+    "headCommitMeaning": "exact deployed runtime implementation commit; the subsequent documentation-only evidence commit does not alter the runtime archive",
+    "workingTree": "CLEAN_AFTER_DEPLOYMENT_EVIDENCE_COMMIT",
     "stableBaselineTag": "stable/saas-v2-commercial-refinement-20260722",
     "stableBaselineImplementationCommit": "e25660c67539bc82405e00e4f354df855e82e05c",
     "remote": "origin=https://github.com/airburg-v05/airburg-v05.git",
@@ -109,7 +109,7 @@
     },
     "saasUiV2": {
       "role": "ACTIVE_PRODUCT_TRACK",
-      "status": "OWNER_APPROVED_PUBLIC_STABLE_BASELINE_WITH_LOCAL_CROSS_PLATFORM_CANDIDATE_PASS",
+      "status": "CROSS_PLATFORM_SERIES_PUBLIC_E2E_PASS_PENDING_OWNER_REVIEW",
       "archiveCommit": "7ade2f433d7dbd90e8fd1a0df5efdb00003ec8fa",
       "routeCount": 11,
       "componentCount": 20,
@@ -136,16 +136,16 @@
         "/v2/exclusion-rules"
       ],
       "remainingStaticShellRouteCount": 0,
-      "routeTruthRebuiltAt": "2026-07-22T09:19:29+08:00",
-      "routeTruthNotes": "Eleven V2 routes exist. The owner-approved public stable baseline remains deployed. The local-only candidate keeps Home as the all-platform/all-store brand cockpit, adds explicit brand-summary and single-store series lenses, adds a series store-contribution breakdown, and replaces two unavailable visible placeholders with trustworthy total visitors and paid buyers while retaining a balanced 16-card display. Product center remains a manually selected platform/store listing surface until an explicit brand-product master mapping exists. Target center remains independent from upload, and brand-series targets remain unknown rather than inferred from incomplete store-series targets.",
+      "routeTruthRebuiltAt": "2026-07-22T09:34:54+08:00",
+      "routeTruthNotes": "Eleven V2 routes exist and the exact cross-platform series implementation commit is public. Home remains the all-platform/all-store brand cockpit; series center has explicit brand-summary and single-store lenses plus store contribution; the shared 16-card display includes trustworthy total visitors and paid buyers. Product center remains a manually selected platform/store listing surface until an explicit brand-product master mapping exists. Target center remains independent from upload, and brand-series targets remain unknown rather than inferred from incomplete store-series targets. Public technical regression passed; owner visual and business review remains open.",
       "localRoutesValidated": true,
       "localE2EPassed": true,
-      "visualAccepted": true,
-      "visualAcceptedScope": "OWNER_APPROVED_PUBLIC_STABLE_BASELINE_ONLY",
+      "visualAccepted": false,
+      "visualAcceptedScope": null,
       "localCandidateVisualAccepted": false,
       "previewDeployed": true,
       "humanAccepted": false,
-      "publicV2RouteStatus": "ELEVEN_V2_ROUTES_OWNER_APPROVED_STABLE_BASELINE_PUBLIC_E2E_PASS",
+      "publicV2RouteStatus": "ELEVEN_V2_ROUTES_CROSS_PLATFORM_SERIES_PUBLIC_E2E_PASS_PENDING_OWNER_REVIEW",
       "activeUnifiedRuntimeTask": "SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1",
       "activeUnifiedRuntimeScope": [
         "browser-local multi-brand workspace isolation",
@@ -163,16 +163,16 @@
         "explicit brand/store/series/product target matching",
         "custom date Apply/Cancel, range-aware targets and truthful YoY/MoM references"
       ],
-      "deploymentCommit": "e25660c67539bc82405e00e4f354df855e82e05c",
-      "previousUxImplementationCommit": "f772af503bcfd29b331798866d9efc2635958bc2",
-      "deployedAt": "2026-07-22T00:39:55+08:00",
-      "release": "/opt/airburg/releases/saas-v2-commercial-refinement-e25660c-20260722T003453",
-      "rollbackPm2Snapshot": "/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-commercial-refinement-e25660c-20260722T003453.pm2.json",
+      "deploymentCommit": "dface84eefdd87a55c819fd323626efb436b19b2",
+      "previousUxImplementationCommit": "e25660c67539bc82405e00e4f354df855e82e05c",
+      "deployedAt": "2026-07-22T09:31:05+08:00",
+      "release": "/opt/airburg/releases/saas-v2-cross-platform-series-dface84-20260722T092433",
+      "rollbackPm2Snapshot": "/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-cross-platform-series-dface84-20260722T092433.pm2.json",
       "publicPreviewRoute": "http://123.57.49.121/v2/home",
-      "publicScreenshotManifest": "docs/project/tasks/SAAS_V2_COMMERCIAL_DASHBOARD_AND_MANUAL_PRODUCT_REFINEMENT_V1/deployment-evidence.json",
+      "publicScreenshotManifest": "docs/project/tasks/SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1/deployment-evidence.json",
       "businessImportsFound": 1,
       "controlsInteractive": true,
-      "visualReviewStatus": "PUBLIC_STABLE_BASELINE_OWNER_APPROVED_LOCAL_CANDIDATE_PENDING_OWNER_REVIEW",
+      "visualReviewStatus": "PUBLIC_TECHNICAL_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW",
       "humanReviewRequired": true,
       "dependencySecurity": {
         "xlsx": {
@@ -182,19 +182,25 @@
           "publicRegression": "18_FILE_REPLACE_PLUS_18_FILE_APPEND_TWO_STORE_UNIFIED_RUNTIME_PASS"
         },
         "nextPostcss": {
-          "status": "BLOCKED_BY_UPSTREAM_STABLE_FIX_LOW_CURRENT_EXPOSURE",
+          "status": "ONE_MODERATE_ADVISORY_LOW_CURRENT_EXPOSURE_NOT_SECURITY_CLOSED",
           "currentNext": "16.2.9",
           "latestStableChecked": "16.2.10",
           "latestStablePostcss": "8.4.31",
           "reason": "Stable 16.2.10 still depends on postcss<8.5.10; npm audit fix --force proposes unsupported downgrade to next 9.3.3; production scan found no user CSS input or dynamic CSS stringify exposure."
+        },
+        "sharp": {
+          "status": "TWO_HIGH_ADVISORIES_LOW_CURRENT_EXPOSURE_NOT_SECURITY_CLOSED",
+          "currentSharp": "0.34.5",
+          "fixedVersion": "0.35.0",
+          "reason": "Current code uses next/image only with unoptimized browser-local data URLs; no server image upload or remote optimizer allowlist was found, and an unauthorized remote optimizer request returned HTTP 400. Upgrade remains required when a compatible dependency path is available."
         }
       },
       "homeVerticalSlice": {
-        "status": "PUBLIC_STABLE_BASELINE_OWNER_APPROVED_LOCAL_CANDIDATE_E2E_PASS_PENDING_DEPLOY_DECISION",
+        "status": "CROSS_PLATFORM_SERIES_PUBLIC_E2E_PASS_PENDING_OWNER_REVIEW",
         "adapter": "lib/v2/home/v2-home-adapter.ts",
-        "latestImplementationCommit": "e25660c67539bc82405e00e4f354df855e82e05c",
+        "latestImplementationCommit": "dface84eefdd87a55c819fd323626efb436b19b2",
         "localCandidateBaseCommit": "7f131274713608a98be35983e99b6ac2e4aa2696",
-        "localCandidateImplementationState": "UNCOMMITTED_AUTHORIZED_WORKTREE_NOT_DEPLOYED",
+        "localCandidateImplementationState": "DEPLOYED_PUBLIC_TECHNICAL_PASS_PENDING_OWNER_REVIEW",
         "previousFull18Plus4TargetValidationCommit": "f184d9dd0bb90bb36c468fe572a46957b54e0ccf",
         "metricCount": 16,
         "truthMetricCount": 19,
@@ -205,16 +211,17 @@
         "mobile390PageWideOverflow": false,
         "publicE2EPassed": true,
         "previewDeployed": true,
-        "visualAccepted": true,
-        "visualAcceptedScope": "OWNER_APPROVED_PUBLIC_STABLE_BASELINE_ONLY",
+        "visualAccepted": false,
+        "visualAcceptedScope": null,
         "localCandidateVisualAccepted": false,
         "humanAccepted": false,
-        "evidence": "docs/project/tasks/SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1/validation.md",
+        "evidence": "docs/project/tasks/SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1/deployment-evidence.json",
         "latestUpload18LocalValidationAt": "2026-07-22T09:19:29+08:00",
-        "latestUpload18PublicValidationAt": "2026-07-22T00:42:08+08:00",
+        "latestUpload18PublicValidationAt": "2026-07-22T09:34:54+08:00",
         "latestBoardEmptyCtaPublicValidationAt": "2026-07-21T00:59:00+08:00",
-        "latestUpload18DeploymentStatus": "LOCAL_CANDIDATE_E2E_52_OF_52_PASS_NOT_DEPLOYED",
+        "latestUpload18DeploymentStatus": "PUBLIC_E2E_52_OF_52_PASS_PENDING_OWNER_REVIEW",
         "latestLocalBrowserArtifact": "/var/folders/j6/vhyptpld7zl0dd14qmjpthrr0000gn/T/airburg-v2-home-upload18-local-nLVt5h",
+        "latestPublicBrowserArtifact": "/tmp/airburg-v2-public-dface84-20260722",
         "latestUpload18DeploymentBlocker": null,
         "latestUpload18DeploymentLikelyCause": "RESOLVED_STALE_SINGLE_SOURCE_SECURITY_GROUP_RULE",
         "latestUpload18ConsoleState": "ALIYUN_AUTHENTICATED_SECURITY_GROUP_CURRENT_SOURCE_BOUND"
@@ -227,17 +234,17 @@
     "metricViewModel": "lib/bi/bi.home-view-model.ts and lib/bi/bi.home-mapper.ts through lib/v2/home/v2-home-adapter.ts",
     "targetOverlay": "lib/bi/target-metric-definitions.ts plus lib/persistence/target-drafts-persistence.ts; overlay only",
     "persistence": "brand-scoped runtime, target and debug IndexedDB boundaries plus browser-local brand, series, metric and manual-product configuration; raw upload rows are not persisted",
-    "ui": "app/(workspace-v2)/v2/** and components/saas-v2/**; home remains brand-wide, the local series candidate separates brand summary from one-store execution, product remains listing-level until explicit brand-product mapping exists, target center is independent from upload, and unsupported capabilities remain explicitly unknown or blocked instead of mocked"
+    "ui": "app/(workspace-v2)/v2/** and components/saas-v2/**; home remains brand-wide, the public series implementation separates brand summary from one-store execution, product remains listing-level until explicit brand-product mapping exists, target center is independent from upload, and unsupported capabilities remain explicitly unknown or blocked instead of mocked"
   },
   "routeMatrix": "docs/project/ROUTE_DATA_SOURCE_MATRIX.json",
   "metricSemantics": "docs/project/METRIC_SEMANTIC_RECONCILIATION_V1.json",
   "validatorRegistry": "docs/project/VALIDATOR_REGISTRY.json",
   "currentTask": {
     "taskId": "SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1",
-    "status": "LOCAL_E2E_PASS_PENDING_OWNER_DEPLOY_DECISION",
+    "status": "PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW",
     "contract": "docs/project/tasks/SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1/TASK.md"
   },
-  "nextAuthorizedEntryGate": "OWNER_DEPLOY_DECISION",
+  "nextAuthorizedEntryGate": "POST_DEPLOY_OWNER_VISUAL_AND_BUSINESS_REVIEW",
   "deprecatedArtifacts": [
     {
       "path": "lib/state/system-state.ts",
@@ -251,7 +258,7 @@
   ],
   "forbiddenClaims": [
     "All SaaS UI V2 routes are DATA_BOUND because the /v2/home vertical slice passed",
-    "The local cross-platform series candidate is VISUAL_ACCEPTED, HUMAN_ACCEPTED or public before explicit owner review and deployment",
+    "The deployed cross-platform series version is VISUAL_ACCEPTED or HUMAN_ACCEPTED before explicit post-deploy owner review",
     "Owner approval of the public stable visual baseline proves the SaaS UI V2 product, multi-platform data model or business workflow is complete",
     "V0.5 is the unique data foundation without the documented compatibility-adapter decision",
     "lib/state/system-state.ts is the project SSOT",

@@ -1,7 +1,7 @@
 {
   "task_id": "SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1",
   "task_type": "data_dashboard_and_semantic_contract",
-  "risk_level": "A2_AUTHORIZED",
+  "risk_level": "A3_OWNER_AUTHORIZED_AND_EXECUTED",
   "business_purpose": "Make cross-platform brand series analysis distinct from single-store execution without fabricating identity or target truth.",
   "evidence_sources": [
     "Latest direct instruction from Zongji on 2026-07-22",
@@ -22,13 +22,15 @@
       "SaaS V2 home, series, store and product presentation",
       "Shared read-only metric adapters and target derivation metadata",
       "Local configuration and focused validators",
-      "Project task and SSOT evidence"
+      "Project task and SSOT evidence",
+      "Exact-commit immutable ECS release, PM2 restart and public technical regression after explicit owner authorization"
     ],
     "forbidden": [
       "Raw business data, raw uploads or secrets",
       "Fabricated marketplace, product identity or target data",
       "Commercial image or presentation generation",
-      "Deploy, push or merge",
+      "Push or merge",
+      "Upload raw business data, raw sample fixtures or secrets",
       "Automatic owner acceptance of the new version"
     ]
   },
@@ -43,8 +45,15 @@
     "TypeScript, lint and production build",
     "Desktop and mobile local browser interaction regression"
   ],
-  "deployment_gate": "A3_NOT_AUTHORIZED",
-  "validation_result": "LOCAL_E2E_52_OF_52_PASS",
-  "public_state": "OWNER_APPROVED_STABLE_BASELINE_UNCHANGED",
-  "owner_gate": "OWNER_DEPLOY_DECISION"
+  "deployment": {
+    "ownerAuthorizedAt": "2026-07-22T09:20:00+08:00",
+    "implementationCommit": "dface84eefdd87a55c819fd323626efb436b19b2",
+    "release": "/opt/airburg/releases/saas-v2-cross-platform-series-dface84-20260722T092433",
+    "publicRoute": "http://123.57.49.121/v2/home",
+    "rollbackPm2Snapshot": "/opt/airburg/rollback/airburg-tmall-v1-pre-saas-v2-cross-platform-series-dface84-20260722T092433.pm2.json"
+  },
+  "deployment_gate": "A3_OWNER_AUTHORIZED_COMPLETED",
+  "validation_result": "LOCAL_AND_PUBLIC_E2E_52_OF_52_PASS",
+  "public_state": "NEW_IMPLEMENTATION_PUBLIC_TECHNICAL_PASS_PENDING_OWNER_REVIEW",
+  "owner_gate": "POST_DEPLOY_OWNER_VISUAL_AND_BUSINESS_REVIEW"
 }

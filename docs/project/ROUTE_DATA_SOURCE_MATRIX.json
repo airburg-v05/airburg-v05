@@ -292,7 +292,7 @@
       "isPublic": true,
       "status": "DATA_BOUND_RUNTIME_DASHBOARD",
       "bindingClass": "BUSINESS_RUNTIME_READER_WITH_TARGET_OVERLAY",
-      "notes": "Reads the active brand runtime plus debug context and target drafts through one V2 adapter. The public stable baseline is owner-approved; the local-only candidate keeps brand-wide scope and adds truthful visitors/buyers but is not deployed or owner-accepted."
+      "notes": "Reads the active brand runtime plus debug context and target drafts through one V2 adapter. The cross-platform series implementation is public and technically validated; it keeps brand-wide scope and adds truthful visitors/buyers, but remains pending owner visual and business review."
     },
     {
       "route": "/v2/series-board",
@@ -312,7 +312,7 @@
       "isPublic": true,
       "status": "RUNTIME_ADAPTER_BOUND_WITH_SAFE_FALLBACK",
       "bindingClass": "BUSINESS_RUNTIME_READER_WITH_CONTEXT_FALLBACK",
-      "notes": "Not a static mock shell. The local candidate adds explicit all-store brand summary and exactly-one-store drilldown lenses plus a store contribution breakdown; it remains undeployed pending owner decision."
+      "notes": "Not a static mock shell. The public implementation adds explicit all-store brand summary and exactly-one-store drilldown lenses plus a store contribution breakdown; technical regression passed and owner review remains open."
     },
     {
       "route": "/v2/store-board",
@@ -332,7 +332,7 @@
       "isPublic": true,
       "status": "RUNTIME_ADAPTER_BOUND_WITH_SAFE_FALLBACK",
       "bindingClass": "BUSINESS_RUNTIME_READER_WITH_CONTEXT_FALLBACK",
-      "notes": "Not a static mock shell. The local candidate makes store selection single-select and uses the shared truthful 16-indicator surface; it remains undeployed pending owner decision."
+      "notes": "Not a static mock shell. The public implementation makes store selection single-select and uses the shared truthful 16-indicator surface; technical regression passed and owner review remains open."
     },
     {
       "route": "/v2/product-board",
@@ -352,7 +352,7 @@
       "isPublic": true,
       "status": "RUNTIME_ADAPTER_BOUND_WITH_SAFE_FALLBACK",
       "bindingClass": "BUSINESS_RUNTIME_READER_WITH_CONTEXT_FALLBACK",
-      "notes": "Not a static mock shell. Product records remain listing-level and are never inferred as cross-platform brand-product masters; the local metric refinement remains undeployed pending owner decision."
+      "notes": "Not a static mock shell. Product records remain listing-level and are never inferred as cross-platform brand-product masters; the metric refinement is public and remains pending owner review."
     },
     {
       "route": "/v2/upload",

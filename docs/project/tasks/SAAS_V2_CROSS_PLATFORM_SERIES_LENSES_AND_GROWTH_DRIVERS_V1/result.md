@@ -1,8 +1,8 @@
 # Result
 
-Status: LOCAL_E2E_PASS_PENDING_OWNER_DEPLOY_DECISION
+Status: PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW
 
-The local candidate now models the requested operating hierarchy without changing the accepted public baseline.
+The cross-platform series candidate is now deployed at `http://123.57.49.121/v2/home` and passed exact-commit public technical regression. The new public version still requires Zongji's visual and business review.
 
 ## Implemented Outcome
 
@@ -17,6 +17,8 @@ The local candidate now models the requested operating hierarchy without changin
 ## Gate State
 
 - Local isolated browser regression: `52/52 PASS`.
-- Public stable baseline: unchanged at `http://123.57.49.121/v2/home`.
-- Deployment, push and merge: not performed.
-- Next decision: Zongji decides whether this local candidate should replace the accepted public stable baseline.
+- Public isolated browser regression: `52/52 PASS`.
+- Implementation commit: `dface84eefdd87a55c819fd323626efb436b19b2`.
+- Active release: `/opt/airburg/releases/saas-v2-cross-platform-series-dface84-20260722T092433`.
+- Prior stable tag and release are retained for rollback; no push or merge was performed.
+- Next decision: Zongji inspects the public version and decides whether to accept it as the next stable visual baseline or request changes.

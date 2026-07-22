@@ -2,7 +2,7 @@
 
 Task ID: SAAS_V2_CROSS_PLATFORM_SERIES_LENSES_AND_GROWTH_DRIVERS_V1
 
-Status: LOCAL_E2E_PASS_PENDING_OWNER_DEPLOY_DECISION
+Status: PUBLIC_E2E_PASS_PENDING_POST_DEPLOY_OWNER_REVIEW
 
 ## Objective
 
@@ -17,6 +17,7 @@ Refine the SaaS V2 operating model for a brand with many platforms and stores wh
 - Remove unavailable turnover and regional-fulfillment placeholders from the visible 16-card surface without deleting them from the truth contract.
 - Document the future brand-product and platform-listing identity contract.
 - Run focused validators, TypeScript, lint, production build and local browser regression.
+- After the owner's explicit A3 authorization, deploy the exact validated commit as an immutable release and run public regression.
 
 ## Out of Scope
 
@@ -24,7 +25,8 @@ Refine the SaaS V2 operating model for a brand with many platforms and stores wh
 - Adding unsupported paid-order, cart, favorite, inventory, profit or fulfillment metrics.
 - New marketplace adapters, server-side tenancy or cross-device persistence.
 - Editing raw business data or reading secrets.
-- Deployment, push or merge without a separate owner decision.
+- Push or merge.
+- Automatic visual or business acceptance after technical deployment.
 
 ## Acceptance Evidence
 
@@ -34,4 +36,6 @@ Refine the SaaS V2 operating model for a brand with many platforms and stores wh
 - Store-drilldown mode requires exactly one store and uses the existing scoped target behavior.
 - Home, series, store and product surfaces show total visitors and paid buyers and retain a balanced 16-card layout.
 - Unsupported runtime facts remain absent or explicitly unknown.
-- Local automated and browser gates pass with no deployment claim.
+- Local automated and browser gates pass before deployment.
+- The exact implementation commit is active in an immutable release, all public V2 routes return HTTP 200, and isolated public browser regression passes.
+- Technical deployment evidence remains separate from Zongji's post-deploy visual review.

@@ -4,12 +4,15 @@
 
 Zongji explicitly accepted the currently deployed SaaS V2 refinement as the latest stable visual baseline and asked for the next refinement to model one brand across multiple platforms and stores more precisely. The series center should distinguish brand-wide series performance from a single store's series execution, and useful missing indicators should be added to home, store and product surfaces when the current data source actually supports them.
 
+After the local implementation passed, Zongji explicitly instructed Codex to check and complete public deployment, then provide the public link for inspection from another computer.
+
 ## Current Truth
 
-- Repository evidence baseline: 7f131274713608a98be35983e99b6ac2e4aa2696.
-- Deployed business implementation: e25660c67539bc82405e00e4f354df855e82e05c.
-- Owner-approved stable tag: stable/saas-v2-commercial-refinement-20260722.
-- Preserved active release: /opt/airburg/releases/saas-v2-commercial-refinement-e25660c-20260722T003453.
+- Exact deployed business implementation: dface84eefdd87a55c819fd323626efb436b19b2.
+- Active immutable release: /opt/airburg/releases/saas-v2-cross-platform-series-dface84-20260722T092433.
+- Public isolated browser regression: 52/52 PASS.
+- Prior owner-approved stable tag: stable/saas-v2-commercial-refinement-20260722.
+- Preserved prior release: /opt/airburg/releases/saas-v2-commercial-refinement-e25660c-20260722T003453.
 - Current series records already bind one brand series to many platform, store and product references.
 - Current manually managed product records are listing-level records. They do not prove a cross-platform brand-product identity.
 - The current runtime has trustworthy total visitors and paidBuyers. Paid orders, cart additions, favorites, inventory turnover and regional fulfillment are not currently bound as reliable runtime facts.
@@ -43,7 +46,8 @@ Zongji explicitly accepted the currently deployed SaaS V2 refinement as the late
 
 ## Gates
 
-- Source and local UI changes are A2_AUTHORIZED by the direct request.
-- Deployment, push and merge remain A3_NOT_AUTHORIZED for this task.
+- Source and local UI changes were A2_AUTHORIZED by the direct request.
+- Deployment was explicitly A3 owner-authorized and completed with immutable-release and rollback evidence.
+- Push and merge remain unauthorized and were not performed.
 - Technical validation cannot establish business completion.
-- Owner review is required before the new implementation replaces the accepted public stable baseline.
+- Post-deploy owner review is required before the new implementation can be recorded as the next accepted stable visual baseline.
